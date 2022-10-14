@@ -1,0 +1,6 @@
+contract Test {
+    resources_bound: 2
+    agents_bound: 2
+    tokens_bound: 2
+    @pre xn>0 play(xa?xn:xt){ if #xt >= 100 then xa!#xt:xt else skip }
+}
