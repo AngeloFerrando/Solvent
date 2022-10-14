@@ -71,4 +71,4 @@ class Z3Visitor(LTLVisitor):
 
     # Visit a parse tree produced by LTLParser#atomExpr.
     def visitAtomExpr(self, ctx:LTLParser.AtomExprContext):
-        ctx.text
+        return self.visitChildren(ctx)
