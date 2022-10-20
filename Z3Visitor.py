@@ -30,7 +30,37 @@ class Z3Visitor(TxScriptVisitor):
         #     self.__nextStateAgents['ag' + str(i)] = []
         # for i in range(0, self.__Tokens):
         #     self.__nextStateTokens['tk' + str(i)] = []
-        return (ctx.name.text, self.visit(ctx.child))
+        selector, equation = self.visit(ctx.child)
+        return '''
+from z3 import *
+import time
+
+N = {N}
+
+{selector}
+
+s = Solver()
+
+for i in range(N):
+    s.add({equation})
+
+timeStart = time.time()
+
+queries = [
+    ...
+]
+
+for q in queries:
+    print(str(q) + " : ", end = '')
+    if s.check(q)==sat:
+        print(" sat")
+        printState(s.model())
+    else:
+        print(" unsat")
+
+timeTot = time.time() - timeStart
+print("Solving time: " + str(timeTot) + "s")
+        '''.format(N=self.__N, selector=selector, equation=equation)
 
 
     # Visit a parse tree produced by TxScriptParser#proceduresExpr.
@@ -127,7 +157,7 @@ class Z3Visitor(TxScriptVisitor):
         #         equation = eq + ', ' + equation
         #     i = i+1
 
-        return selector + '\n\n' + equation
+        return selector, equation
 
 
     # Visit a parse tree produced by TxScriptParser#procedureExpr.

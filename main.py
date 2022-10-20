@@ -35,7 +35,7 @@ def parse(pattern):
         tree = parser.contractExpr()
 
         visitor = Z3Visitor()
-        print(visitor.visit(tree)[1])
+        print(visitor.visit(tree))
     # except Exception as e:
     #     print(str(e))
 
