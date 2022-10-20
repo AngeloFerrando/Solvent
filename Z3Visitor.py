@@ -87,10 +87,8 @@ class Z3Visitor(TxScriptVisitor):
                     equationAux = equations[0].format(ag=ag, tk=tk)
                     a = a.format(ag=ag)
                     t = t.format(tk=tk)
-                    print(equationAux)
                     equationAux = equationAux.replace(a+'[i]', '('+a+'[i]-'+self.__mapInput[m]+'[i])')
                     equationAux = equationAux.replace(t+'[i]', '('+t+'[i]+'+self.__mapInput[m]+'[i])')
-                    print(equationAux + '\n')
                     if (a+'[i+1]') in equationAux or (a+'[i]') in equationAux:
                         foundA= True
                     if (t+'[i+1]') in equationAux or (t+'[i]') in equationAux:
