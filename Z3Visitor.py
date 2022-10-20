@@ -17,6 +17,8 @@ class Z3Visitor(TxScriptVisitor):
         # self.__tokensAgentsGive = {}
         # self.__tokensWalletsGet = {}
         self.__input = set()
+        # self.__nextStateAgents = {}
+        # self.__nextStateTokens = {}
 
 
     # Visit a parse tree produced by TxScriptParser#contractExpr.
@@ -24,6 +26,10 @@ class Z3Visitor(TxScriptVisitor):
         self.__N = int(ctx.resBound.text)
         self.__Agents = int(ctx.agentBound.text)
         self.__Tokens = int(ctx.tokenBound.text)
+        # for i in range(0, self.__Agents):
+        #     self.__nextStateAgents['ag' + str(i)] = []
+        # for i in range(0, self.__Tokens):
+        #     self.__nextStateTokens['tk' + str(i)] = []
         return (ctx.name.text, self.visit(ctx.child))
 
 
@@ -37,6 +43,43 @@ class Z3Visitor(TxScriptVisitor):
         # foundT = [False for i in range(0, len(self.__input))]
         for ag in range(0, self.__Agents):
             for tk in range(0, self.__Tokens):
+                # foundTK = False
+                # equationAuxAg = None
+                # for side_effect in self.__nextStateAgents['ag' + str(ag)]:
+                #     if side_effect.startswith('+'):
+                #         if side_effect[1:].startswith('tk'):
+                #             foundTK = True
+                #         if equationAuxAg:
+                #             equationAuxAg = equationAuxAg + side_effect.format(ag=ag, tk=tk)
+                #         else:
+                #             equationAuxAg = side_effect.format(ag=ag, tk=tk)
+                # for side_effect in self.__nextStateAgents['ag' + str(ag)]:
+                #     if side_effect.startswith('-'):
+                #         if side_effect[1:].startswith('ag') or side_effect[1:].startswith('tk') or not foundTK:
+                #             if equationAuxAg:
+                #                 equationAuxAg = equationAuxAg + side_effect.format(ag=ag, tk=tk)
+                #             else:
+                #                 equationAuxAg = side_effect.format(ag=ag, tk=tk)
+                # equationAuxAg = 'ag{ag}[i+1]==ag{ag}[i]'.format(ag=ag) + equationAuxAg
+                # foundTK = False
+                # equationAuxTk = None
+                # for side_effect in self.__nextStateTokens['tk' + str(tk)]:
+                #     if side_effect.startswith('-'):
+                #         if side_effect[1:].startswith('tk'):
+                #             foundTK = True
+                #         if equationAuxTk:
+                #             equationAuxTk = equationAuxAg + side_effect.format(ag=ag, tk=tk)
+                #         else:
+                #             equationAuxTk = side_effect.format(ag=ag, tk=tk)
+                # for side_effect in self.__nextStateTokens['tk' + str(tk)]:
+                #     if side_effect.startswith('+'):
+                #         if side_effect[1:].startswith('ag') or side_effect[1:].startswith('tk') or not foundTK:
+                #             if equationAuxTk:
+                #                 equationAuxTk = equationAuxTk + side_effect.format(ag=ag, tk=tk)
+                #             else:
+                #                 equationAuxTk = side_effect.format(ag=ag, tk=tk)
+                # equationAuxTk = 'tk{tk}[i+1]==tk{tk}[i]'.format(tk=tk) + equationAuxTk
+                # equationAux = 'And(' + equationAuxAg + ', ' + equationAuxTk + ')'
                 i = 0
                 for (a, t, m, eq) in self.__input:
                     foundA = False
@@ -44,8 +87,10 @@ class Z3Visitor(TxScriptVisitor):
                     equationAux = equations[0].format(ag=ag, tk=tk)
                     a = a.format(ag=ag)
                     t = t.format(tk=tk)
-                    equationAux = equationAux.replace(a+'[i]', a+'[i]-'+self.__mapInput[m]+'[i]')
-                    equationAux = equationAux.replace(t+'[i]', t+'[i]+'+self.__mapInput[m]+'[i]')
+                    print(equationAux)
+                    equationAux = equationAux.replace(a+'[i]', '('+a+'[i]-'+self.__mapInput[m]+'[i])')
+                    equationAux = equationAux.replace(t+'[i]', '('+t+'[i]+'+self.__mapInput[m]+'[i])')
+                    print(equationAux + '\n')
                     if (a+'[i+1]') in equationAux or (a+'[i]') in equationAux:
                         foundA= True
                     if (t+'[i+1]') in equationAux or (t+'[i]') in equationAux:
@@ -135,7 +180,7 @@ class Z3Visitor(TxScriptVisitor):
     def visitWallet(self, ctx:TxScriptParser.WalletContext):
         # assuming for now just variable xt
         child = self.visit(ctx.child)
-        return child
+        return child + '[i]'
 
 
     # Visit a parse tree produced by TxScriptParser#variable.
@@ -204,8 +249,12 @@ class Z3Visitor(TxScriptVisitor):
     def visitInputToken(self, ctx:TxScriptParser.InputTokenContext):
         # for now we only consider the scenario where all three are variables (a?x:t)
         amount = ctx.data.text
+        # for i in range(0, self.__Agents):
+        #     self.__nextStateAgents['ag' + str(i)].append('-' + amount)
+        # for i in range(0, self.__Tokens):
+        #     self.__nextStateTokens['tk' + str(i)].append('+' + amount)
         self.__input.add(('ag{ag}', 'tk{tk}', amount, 'And(' + 'tk{tk}[i+1]==tk{tk}[i]+' + amount + '[i], ' + 'ag{ag}[i+1]==ag{ag}[i]-' + amount + '[i])'))
-        return ''
+        # return ''
 
 
 
@@ -228,6 +277,11 @@ class Z3Visitor(TxScriptVisitor):
     def visitOutputToken(self, ctx:TxScriptParser.OutputTokenContext):
         # for now we assume all variables (a!x:t)
         amount = self.visit(ctx.data)
+        # for i in range(0, self.__Agents):
+        #     self.__nextStateAgents['ag' + str(i)].append('+' + amount)
+        # for i in range(0, self.__Tokens):
+        #     self.__nextStateTokens['tk' + str(i)].append('-' + amount)
+        # return ''
         return 'And(' + 'tk{tk}[i+1]==tk{tk}[i]-' + amount + ', ' + 'ag{ag}[i+1]==ag{ag}[i]+' + amount + ')'
 
 
