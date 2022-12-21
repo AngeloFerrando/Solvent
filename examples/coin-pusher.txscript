@@ -5,12 +5,12 @@ contract Coinpusher {
     global:
       int x = 0
     @time [0, 2]
-    @pre xn>0 
+    @pre xn>0
     play(xa?xn:xt){ if #xt >= 100 then xa!#xt:xt else skip }
 }
 
 query {
-  ({#1:0}0 == 98 and {#2:0}0 == 1 and {#3:0}0 == 1) and 
+  ({#1:0}0 == 98 and {#2:0}0 == 1 and {#3:0}0 == 1) and
   (Exists n. n >= 0 and n <= 3 and {#2:0}n == 100)
 }
 

@@ -16,7 +16,7 @@ class Z3Visitor(TxScriptVisitor):
         self.__mapAgent = {}
         self.__i = 0
         self.__j = 0
-      
+
         ###
         # self.__tokensAgentsGive = {}
         # self.__tokensWalletsGet = {}
@@ -36,7 +36,7 @@ class Z3Visitor(TxScriptVisitor):
         #     self.__nextStateAgents['ag' + str(i)] = []
         # for i in range(0, self.__Tokens):
         #     self.__nextStateTokens['tk' + str(i)] = []
-        formulas = self.visit(ctx.phis)  
+        formulas = self.visit(ctx.phis)
         selector, equation = self.visit(ctx.child)
         initGlobalVars = []
         for (ty, name, val) in self.__globalVars:
@@ -49,7 +49,7 @@ class Z3Visitor(TxScriptVisitor):
             initGlobalVars.append('tk{tk}(0) == 0'.format(tk=j))
         parseFunction = '''def parse(model):
     tokens = dict()
-    for tk in range(0, 1):
+    for tk in range(0, {Tk}):
         tokens['tk' + str(tk)] = dict()
         eq = model.index('=', model.index('tk' + str(tk)))
         assignments = model[eq+3:model.index(']', eq)]
@@ -58,8 +58,8 @@ class Z3Visitor(TxScriptVisitor):
             value = assignment[assignment.index('->')+2:].strip()
             tokens['tk' + str(tk)][key] = value
     agents = dict()
-    for ag in range(1, 4):
-        for tk in range(0, 1):
+    for ag in range(1, {Ag}):
+        for tk in range(0, {Tk}):
             agents['ag' + str(ag) + str(tk)] = dict()
             eq = model.index('=', model.index('ag' + str(ag) + str(tk)))
             assignments = model[eq+3:model.index(']', eq)]
@@ -105,7 +105,7 @@ class Z3Visitor(TxScriptVisitor):
         out += '\\n'
         if str(i) in f:
             if int(f[str(i)]) >= len([{actions}]):
-                out += '--> skip \\n'    
+                out += '--> skip \\n'
             else:
                 out += '--> ' + [{actions}][int(f[str(i)])] + '('
                 if str(i) in sender:
@@ -114,7 +114,7 @@ class Z3Visitor(TxScriptVisitor):
                     out += 'A' + sender['else'] + '!' + str(getConsumerDownV(i, agents)) + ':' + 'T' + str(getConsumerUp(i, tokens)) + ')' + '@' + str(i) + '\\n'
         else:
             if int(f['else']) >= len([{actions}]):
-                out += '--> skip \\n'    
+                out += '--> skip \\n'
             else:
                 out += '--> ' + [{actions}][int(f['else'])] + '('
                 if str(i) in sender:
@@ -127,16 +127,16 @@ def getConsumerDown(i, elems):
     for j in elems:
         if str(i) in elems[j] and str(i+1) in elems[j] and int(elems[j][str(i)]) > int(elems[j][str(i+1)]):
             return j
-        elif str(i) not in elems[j] and str(i+1) in elems[j] and int(elems[j]['else']) > int(elems[j][str(i+1)]): 
+        elif str(i) not in elems[j] and str(i+1) in elems[j] and int(elems[j]['else']) > int(elems[j][str(i+1)]):
             return j
         elif str(i) in elems[j] and str(i+1) not in elems[j] and int(elems[j][str(i)]) > int(elems[j]['else']):
-           return j 
+           return j
     return None
 def getConsumerUp(i, elems):
     for j in elems:
         if str(i) in elems[j] and str(i+1) in elems[j] and int(elems[j][str(i)]) < int(elems[j][str(i+1)]):
             return j
-        elif str(i) not in elems[j] and str(i+1) in elems[j] and int(elems[j]['else']) < int(elems[j][str(i+1)]): 
+        elif str(i) not in elems[j] and str(i+1) in elems[j] and int(elems[j]['else']) < int(elems[j][str(i+1)]):
             return j
         elif str(i) in elems[j] and str(i+1) not in elems[j] and int(elems[j][str(i)]) < int(elems[j]['else']):
            return j
@@ -145,19 +145,19 @@ def getConsumerDownV(i, elems):
     for j in elems:
         if str(i) in elems[j] and str(i+1) in elems[j] and int(elems[j][str(i)]) > int(elems[j][str(i+1)]):
             return int(elems[j][str(i)]) - int(elems[j][str(i+1)])
-        elif str(i) not in elems[j] and str(i+1) in elems[j] and int(elems[j]['else']) > int(elems[j][str(i+1)]): 
+        elif str(i) not in elems[j] and str(i+1) in elems[j] and int(elems[j]['else']) > int(elems[j][str(i+1)]):
             return int(elems[j]['else']) - int(elems[j][str(i+1)])
         elif str(i) in elems[j] and str(i+1) not in elems[j] and int(elems[j][str(i)]) > int(elems[j]['else']):
-            return int(elems[j][str(i)]) - int(elems[j]['else']) 
+            return int(elems[j][str(i)]) - int(elems[j]['else'])
     return None
 def getConsumerUpV(i, elems):
     for j in elems:
         if str(i) in elems[j] and str(i+1) in elems[j] and int(elems[j][str(i)]) < int(elems[j][str(i+1)]):
             return int(elems[j][str(i+1)]) - int(elems[j][str(i)])
-        elif str(i) not in elems[j] and str(i+1) in elems[j] and int(elems[j]['else']) < int(elems[j][str(i+1)]): 
+        elif str(i) not in elems[j] and str(i+1) in elems[j] and int(elems[j]['else']) < int(elems[j][str(i+1)]):
             return int(elems[j][str(i+1)]) - int(elems[j]['else'])
         elif str(i) in elems[j] and str(i+1) not in elems[j] and int(elems[j][str(i)]) < int(elems[j]['else']):
-           return int(elems[j]['else']) - int(elems[j][str(i)]) 
+           return int(elems[j]['else']) - int(elems[j][str(i)])
     return None'''.format(name=ctx.name.text, N=self.__N, Tk=self.__Tokens, Ag=self.__Agents+1, actions=','.join(['\'play\''])) # to be updated with actual actions
         return '''
 from z3 import *
@@ -591,7 +591,7 @@ print("Solving time: " + str(timeTot) + "s")
         for i in range(int(ctx.varMin.text), int(ctx.varMax.text)):
             sums.append(equation.replace(ctx.var.text, str(i)))
         return '(' + '+'.join(sums) + ')'
-        
+
     # Visit a parse tree produced by TxScriptParser#impliesFormula.
     def visitGroupFormula(self, ctx:TxScriptParser.ImpliesFormulaContext):
         return self.visit(ctx.child)
@@ -599,7 +599,7 @@ print("Solving time: " + str(timeTot) + "s")
     # Visit a parse tree produced by TxScriptParser#tokenijn.
     def visitToken0jn(self, ctx:TxScriptParser.TokenijnContext):
         return 'tk{j}({n})'.format(j=ctx.j.text, n=ctx.n.text)
-          
+
     # Visit a parse tree produced by TxScriptParser#tokenijn.
     def visitTokenijn(self, ctx:TxScriptParser.TokenijnContext):
         if ctx.i.text == '0':
