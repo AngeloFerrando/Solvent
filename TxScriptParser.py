@@ -1732,15 +1732,16 @@ class TxScriptParser ( Parser ):
             self.start = None # Token
             self.end = None # Token
             self.preconditions = None # PreconditionsExprContext
+            self.action = None # Token
             self.pArgs = None # PArgsExprContext
             self.body = None # BodyExprContext
-
-        def LABEL(self):
-            return self.getToken(TxScriptParser.LABEL, 0)
 
         def preconditionsExpr(self):
             return self.getTypedRuleContext(TxScriptParser.PreconditionsExprContext,0)
 
+
+        def LABEL(self):
+            return self.getToken(TxScriptParser.LABEL, 0)
 
         def pArgsExpr(self):
             return self.getTypedRuleContext(TxScriptParser.PArgsExprContext,0)
@@ -1812,7 +1813,7 @@ class TxScriptParser ( Parser ):
             self.state = 172
             localctx.preconditions = self.preconditionsExpr()
             self.state = 173
-            self.match(TxScriptParser.LABEL)
+            localctx.action = self.match(TxScriptParser.LABEL)
             self.state = 174
             self.match(TxScriptParser.T__16)
             self.state = 175
