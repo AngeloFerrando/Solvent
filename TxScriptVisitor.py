@@ -14,6 +14,126 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TxScriptParser#globalVarsExpr.
+    def visitGlobalVarsExpr(self, ctx:TxScriptParser.GlobalVarsExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#globalVarExpr.
+    def visitGlobalVarExpr(self, ctx:TxScriptParser.GlobalVarExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#firstOrderFormulasExpr.
+    def visitFirstOrderFormulasExpr(self, ctx:TxScriptParser.FirstOrderFormulasExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#functionFormula.
+    def visitFunctionFormula(self, ctx:TxScriptParser.FunctionFormulaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#tokenijn.
+    def visitTokenijn(self, ctx:TxScriptParser.TokenijnContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#NEqFormula.
+    def visitNEqFormula(self, ctx:TxScriptParser.NEqFormulaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#MultDivEqFormula.
+    def visitMultDivEqFormula(self, ctx:TxScriptParser.MultDivEqFormulaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#LessEqFormula.
+    def visitLessEqFormula(self, ctx:TxScriptParser.LessEqFormulaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#atomFormula.
+    def visitAtomFormula(self, ctx:TxScriptParser.AtomFormulaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#sumFormula.
+    def visitSumFormula(self, ctx:TxScriptParser.SumFormulaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#andFormula.
+    def visitAndFormula(self, ctx:TxScriptParser.AndFormulaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#notFormula.
+    def visitNotFormula(self, ctx:TxScriptParser.NotFormulaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#existsFormula.
+    def visitExistsFormula(self, ctx:TxScriptParser.ExistsFormulaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#orFormula.
+    def visitOrFormula(self, ctx:TxScriptParser.OrFormulaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#groupFormula.
+    def visitGroupFormula(self, ctx:TxScriptParser.GroupFormulaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#GreaterEqFormula.
+    def visitGreaterEqFormula(self, ctx:TxScriptParser.GreaterEqFormulaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#token0jn.
+    def visitToken0jn(self, ctx:TxScriptParser.Token0jnContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#SumSubEqFormula.
+    def visitSumSubEqFormula(self, ctx:TxScriptParser.SumSubEqFormulaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#forallFormula.
+    def visitForallFormula(self, ctx:TxScriptParser.ForallFormulaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#GreaterFormula.
+    def visitGreaterFormula(self, ctx:TxScriptParser.GreaterFormulaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#EqFormula.
+    def visitEqFormula(self, ctx:TxScriptParser.EqFormulaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#LessFormula.
+    def visitLessFormula(self, ctx:TxScriptParser.LessFormulaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#gVarn.
+    def visitGVarn(self, ctx:TxScriptParser.GVarnContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#impliesFormula.
+    def visitImpliesFormula(self, ctx:TxScriptParser.ImpliesFormulaContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TxScriptParser#proceduresExpr.
     def visitProceduresExpr(self, ctx:TxScriptParser.ProceduresExprContext):
         return self.visitChildren(ctx)
