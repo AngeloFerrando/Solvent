@@ -47,7 +47,20 @@ class Z3Visitor(TxScriptVisitor):
         #         initGlobalVars.append('ag{ag}{tk}(0) == 5'.format(ag=i, tk=j))
         for j in range(0, self.__Tokens):
             initGlobalVars.append('tk{tk}(0) == 0'.format(tk=j))
-        parseFunction = '''def parse(model):
+
+        parseFunction = '''def parse(m):
+    out = ''
+    for i in range(0, {N}):
+        out += '|' \n'''.format(N=self.__N+1)
+        for j in range(0, self.__Tokens):
+            parseFunction += '''        out += 'T{j}:' + str(m.eval(tk{j}(i))) + ' | ' \n'''.format(j=j)
+        for i in range(1, self.__Agents+1):
+            for j in range(0, self.__Tokens):
+                parseFunction += '''        out += 'A{i}' + '[' + str(m.eval(ag{i}{j}(i))) + ':T{j}' + ']' + ' | ' \n'''.format(i=i,j=j)
+        parseFunction += '''        out += '\\n' \n'''
+        parseFunction += '''    return out'''
+        
+        parseFunctionOld = '''def parse(model):
     tokens = dict()
     for tk in range(0, {Tk}):
         tokens['tk' + str(tk)] = dict()
@@ -186,7 +199,7 @@ for q in queries:
     print(str(q) + " : ", end = '')
     if s.check(q)==sat:
         print(" sat")
-        print(parse(str(s.model())))
+        print(parse(s.model()))
     else:
         print(" unsat")
 

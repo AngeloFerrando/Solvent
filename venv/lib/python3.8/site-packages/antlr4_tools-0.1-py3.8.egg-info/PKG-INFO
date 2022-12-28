@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: antlr4-tools
+Version: 0.1
+Summary: Tools to run ANTLR4 tool and grammar interpreter/profiler
+Home-page: http://www.antlr.org
+Author: Terence Parr
+Author-email: parrt@antlr.org
+License: BSD
+Description: UNKNOWN
+Platform: UNKNOWN

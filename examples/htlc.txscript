@@ -21,7 +21,7 @@ contract HTLC {
    }
 
    @pre a==owner
-   @pre H(s)==h
+   @pre H(s)==hash
    reveal(a?xn:xt, int s) {
        owner!#xt:xt;
    }
