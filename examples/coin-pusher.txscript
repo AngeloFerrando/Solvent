@@ -1,12 +1,24 @@
 contract Coinpusher {
-    resources_bound: 3
+    resources_bound: 10
     agents_bound: 3
     tokens_bound: 1
     global:
       int x = 0
+
     @time [0, 2]
     @pre xn>0
     play(xa?xn:xt){ if #xt >= 100 then xa!#xt:xt else skip }
+}
+
+query {
+  (Forall n. (n >= 0 and n <= 5 and {#0:0}n > 0) ->
+  	  (Exists m. m > n and m <= 10 and {#0:0}m == 0))
+}
+
+query {
+  ({#0:0}0 == 98 and {#1:0}0 == 1 and {#2:0}0 == 1 and {#3:0}0 == 1) and
+  (Exists n. n >= 0 and n <= 5 and {#2:0}n == 100)
+
 }
 
 query {
