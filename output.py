@@ -7,6 +7,7 @@ N = 10
 f = Function('f', IntSort(), IntSort())
 Time = Function('Time', IntSort(), IntSort())
 Sender = Function('Sender', IntSort(), IntSort())
+m = Int('m')
 n = Int('n')
 x = Function('x', IntSort(), IntSort())
 ag10 = Function('ag10', IntSort(), IntSort())
@@ -25,7 +26,8 @@ for i in range(N):
 timeStart = time.time()
 
 queries = [
-    And(And(And(ag10(0)==98,ag20(0)==1),ag30(0)==1),Exists(n,And(And(n>=0,n<=3),ag20(n)==100)))
+    ForAll(n,Implies(And(And(n>=0,n<=5),tk0(n)>0),Exists(m,And(And(m>n,m<=10),tk0(m)==0)))),
+	And(And(And(And(tk0(0)==98,ag10(0)==1),ag20(0)==1),ag30(0)==1),Exists(n,And(And(n>=0,n<=5),ag20(n)==100)))
 ]
 
 def parse(m):

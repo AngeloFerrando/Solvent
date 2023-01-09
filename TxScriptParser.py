@@ -11,7 +11,7 @@ else:
 
 def serializedATN():
     with StringIO() as buf:
-        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3?")
+        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3A")
         buf.write("\u010a\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
         buf.write("\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t\r\3\2")
         buf.write("\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3")
@@ -164,7 +164,8 @@ class TxScriptParser ( Parser ):
                       "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                       "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                       "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "LABEL", "LABELUPPER", "NUMBER", "REAL", "TYPE", "WS" ]
+                      "LABEL", "LABELUPPER", "NUMBER", "REAL", "TYPE", "WS", 
+                      "COMMENT", "LINE_COMMENT" ]
 
     RULE_contractExpr = 0
     RULE_globalVarsExpr = 1
@@ -246,6 +247,8 @@ class TxScriptParser ( Parser ):
     REAL=59
     TYPE=60
     WS=61
+    COMMENT=62
+    LINE_COMMENT=63
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)

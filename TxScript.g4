@@ -82,3 +82,6 @@ TYPE : 'int' | 'float' | 'bool';
 WS: [ \r\n\t]+ -> channel (HIDDEN);
 fragment DIGIT: ('0'..'9');
 fragment DIGIT_NOT_ZERO: ('1'..'9');
+
+COMMENT: '/*' .*? '*/' -> channel(HIDDEN);
+LINE_COMMENT: '//' ~[\r\n]* -> channel(HIDDEN);
