@@ -1,4 +1,4 @@
-# Generated from TxScript.g4 by ANTLR 4.8
+# Generated from TxScript.g4 by ANTLR 4.7.2
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .TxScriptParser import TxScriptParser
@@ -66,6 +66,11 @@ class TxScriptVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by TxScriptParser#andFormula.
     def visitAndFormula(self, ctx:TxScriptParser.AndFormulaContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#atomFormulaN.
+    def visitAtomFormulaN(self, ctx:TxScriptParser.AtomFormulaNContext):
         return self.visitChildren(ctx)
 
 
@@ -206,6 +211,11 @@ class TxScriptVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by TxScriptParser#Less.
     def visitLess(self, ctx:TxScriptParser.LessContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#pArgsExprs.
+    def visitPArgsExprs(self, ctx:TxScriptParser.PArgsExprsContext):
         return self.visitChildren(ctx)
 
 

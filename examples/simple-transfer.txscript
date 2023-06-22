@@ -1,0 +1,28 @@
+contract SimpleTransfer {
+    resources_bound: 10
+    agents_bound: 2
+    tokens_bound: 1
+
+    @time [0, 10]
+    @pre xn==0 amount <= #xt amount >= 0
+    withdraw(xa?xn:xt amount) {
+        xa!amount:xt
+    }
+}
+
+query {
+  Exists n. n >= 0 and n <= 10 and 
+    (sum ({#i:0}n, i in [1, 3]) - sum ({#i:0}0, i in [1, 3])) > {#0:0}0
+}
+
+query {
+    Exists n. n >= 0 and n < 10 and
+        Exists m. m == n+1 and 
+            {#0:0}n + sum ({#i:0}n, i in [1, 3]) != {#0:0}m + sum ({#i:0}m, i in [1, 3])
+}
+
+query {
+    Exists n. n >=0 and n < 10 and
+        Exists m. m == n+1 and 
+        ((amount:n > {#0:0}n) and (sum ({#i:0}n, i in [1, 3]) != sum ({#i:0}m, i in [1, 3])))
+}

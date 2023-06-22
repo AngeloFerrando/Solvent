@@ -1,4 +1,4 @@
-# Generated from TxScript.g4 by ANTLR 4.8
+# Generated from TxScript.g4 by ANTLR 4.7.2
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .TxScriptParser import TxScriptParser
@@ -113,6 +113,15 @@ class TxScriptListener(ParseTreeListener):
 
     # Exit a parse tree produced by TxScriptParser#andFormula.
     def exitAndFormula(self, ctx:TxScriptParser.AndFormulaContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#atomFormulaN.
+    def enterAtomFormulaN(self, ctx:TxScriptParser.AtomFormulaNContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#atomFormulaN.
+    def exitAtomFormulaN(self, ctx:TxScriptParser.AtomFormulaNContext):
         pass
 
 
@@ -368,6 +377,15 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TxScriptParser#pArgsExprs.
+    def enterPArgsExprs(self, ctx:TxScriptParser.PArgsExprsContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#pArgsExprs.
+    def exitPArgsExprs(self, ctx:TxScriptParser.PArgsExprsContext):
+        pass
+
+
     # Enter a parse tree produced by TxScriptParser#variableArg.
     def enterVariableArg(self, ctx:TxScriptParser.VariableArgContext):
         pass
@@ -449,5 +467,3 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
-
-del TxScriptParser

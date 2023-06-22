@@ -540,6 +540,12 @@ print("Solving time: " + str(timeTot) + "s")
     def visitAtomFormula(self, ctx:TxScriptParser.AtomFormulaContext):
         return ctx.child.text
 
+    # Visit a parse tree produced by TxScriptParser#atomFormula.
+    def visitAtomFormulaN(self, ctx:TxScriptParser.AtomFormulaNContext):
+        if ctx.child.text not in self.__mapInput:
+            self.__mapInput[ctx.child.text] = ctx.child.text + str(self.__i)
+            self.__i = self.__i + 1
+        return self.__mapInput[ctx.child.text] + '(' + ctx.n.text + ')'
 
     # Visit a parse tree produced by TxScriptParser#andFormula.
     def visitAndFormula(self, ctx:TxScriptParser.AndFormulaContext):

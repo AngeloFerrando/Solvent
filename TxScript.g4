@@ -10,6 +10,7 @@ firstOrderFormulasExpr : ('query' '{' child=firstOrderFormulaExpr '}')*;
 
 firstOrderFormulaExpr : 
   child=(LABEL|NUMBER)                                                         # atomFormula
+  | child=LABEL ':' n=(LABEL|NUMBER)                                           # atomFormulaN
   | '{' '#' j=(LABEL|NUMBER) '}' n=(LABEL|NUMBER)                              # token0jn
   | '{' '#' i=(LABEL|NUMBER) ':' j=(LABEL|NUMBER) '}' n=(LABEL|NUMBER)         # tokenijn
   | '{' x=LABEL '}' n=(LABEL|NUMBER)                                           # gVarn
@@ -33,7 +34,7 @@ firstOrderFormulaExpr :
 
 proceduresExpr : (child=procedureExpr)+;
 
-procedureExpr : '@time' '[' start=(NUMBER|'_') ',' end=(NUMBER|'_') ']' '@pre' preconditions=preconditionsExpr action=LABEL'(' pArgs=pArgsExpr ')' '{' body=bodyExpr '}';
+procedureExpr : '@time' '[' start=(NUMBER|'_') ',' end=(NUMBER|'_') ']' '@pre' preconditions=preconditionsExpr action=LABEL'(' pArgs=pArgsExprs ')' '{' body=bodyExpr '}';
 
 preconditionsExpr : (child=expression)+;
 
@@ -51,6 +52,8 @@ expression :
  | left=expression ('<=') right=expression                  # LessEq
  | left=expression ('>=') right=expression                  # GreaterEq
 ;
+
+pArgsExprs : (pArgsExpr)+;
 
 pArgsExpr :
  variable=LABEL                                             # variableArg
