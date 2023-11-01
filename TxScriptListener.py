@@ -17,435 +17,246 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#globalVarsExpr.
-    def enterGlobalVarsExpr(self, ctx:TxScriptParser.GlobalVarsExprContext):
+    # Enter a parse tree produced by TxScriptParser#declsExpr.
+    def enterDeclsExpr(self, ctx:TxScriptParser.DeclsExprContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#globalVarsExpr.
-    def exitGlobalVarsExpr(self, ctx:TxScriptParser.GlobalVarsExprContext):
+    # Exit a parse tree produced by TxScriptParser#declsExpr.
+    def exitDeclsExpr(self, ctx:TxScriptParser.DeclsExprContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#globalVarExpr.
-    def enterGlobalVarExpr(self, ctx:TxScriptParser.GlobalVarExprContext):
+    # Enter a parse tree produced by TxScriptParser#intDecl.
+    def enterIntDecl(self, ctx:TxScriptParser.IntDeclContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#globalVarExpr.
-    def exitGlobalVarExpr(self, ctx:TxScriptParser.GlobalVarExprContext):
+    # Exit a parse tree produced by TxScriptParser#intDecl.
+    def exitIntDecl(self, ctx:TxScriptParser.IntDeclContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#firstOrderFormulasExpr.
-    def enterFirstOrderFormulasExpr(self, ctx:TxScriptParser.FirstOrderFormulasExprContext):
+    # Enter a parse tree produced by TxScriptParser#strDecl.
+    def enterStrDecl(self, ctx:TxScriptParser.StrDeclContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#firstOrderFormulasExpr.
-    def exitFirstOrderFormulasExpr(self, ctx:TxScriptParser.FirstOrderFormulasExprContext):
+    # Exit a parse tree produced by TxScriptParser#strDecl.
+    def exitStrDecl(self, ctx:TxScriptParser.StrDeclContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#functionFormula.
-    def enterFunctionFormula(self, ctx:TxScriptParser.FunctionFormulaContext):
+    # Enter a parse tree produced by TxScriptParser#constrDecl.
+    def enterConstrDecl(self, ctx:TxScriptParser.ConstrDeclContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#functionFormula.
-    def exitFunctionFormula(self, ctx:TxScriptParser.FunctionFormulaContext):
+    # Exit a parse tree produced by TxScriptParser#constrDecl.
+    def exitConstrDecl(self, ctx:TxScriptParser.ConstrDeclContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#tokenijn.
-    def enterTokenijn(self, ctx:TxScriptParser.TokenijnContext):
+    # Enter a parse tree produced by TxScriptParser#funDecl.
+    def enterFunDecl(self, ctx:TxScriptParser.FunDeclContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#tokenijn.
-    def exitTokenijn(self, ctx:TxScriptParser.TokenijnContext):
+    # Exit a parse tree produced by TxScriptParser#funDecl.
+    def exitFunDecl(self, ctx:TxScriptParser.FunDeclContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#NEqFormula.
-    def enterNEqFormula(self, ctx:TxScriptParser.NEqFormulaContext):
+    # Enter a parse tree produced by TxScriptParser#argsExpr.
+    def enterArgsExpr(self, ctx:TxScriptParser.ArgsExprContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#NEqFormula.
-    def exitNEqFormula(self, ctx:TxScriptParser.NEqFormulaContext):
+    # Exit a parse tree produced by TxScriptParser#argsExpr.
+    def exitArgsExpr(self, ctx:TxScriptParser.ArgsExprContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#MultDivEqFormula.
-    def enterMultDivEqFormula(self, ctx:TxScriptParser.MultDivEqFormulaContext):
+    # Enter a parse tree produced by TxScriptParser#arg.
+    def enterArg(self, ctx:TxScriptParser.ArgContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#MultDivEqFormula.
-    def exitMultDivEqFormula(self, ctx:TxScriptParser.MultDivEqFormulaContext):
+    # Exit a parse tree produced by TxScriptParser#arg.
+    def exitArg(self, ctx:TxScriptParser.ArgContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#LessEqFormula.
-    def enterLessEqFormula(self, ctx:TxScriptParser.LessEqFormulaContext):
+    # Enter a parse tree produced by TxScriptParser#sendCmd.
+    def enterSendCmd(self, ctx:TxScriptParser.SendCmdContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#LessEqFormula.
-    def exitLessEqFormula(self, ctx:TxScriptParser.LessEqFormulaContext):
+    # Exit a parse tree produced by TxScriptParser#sendCmd.
+    def exitSendCmd(self, ctx:TxScriptParser.SendCmdContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#atomFormula.
-    def enterAtomFormula(self, ctx:TxScriptParser.AtomFormulaContext):
+    # Enter a parse tree produced by TxScriptParser#requireCmd.
+    def enterRequireCmd(self, ctx:TxScriptParser.RequireCmdContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#atomFormula.
-    def exitAtomFormula(self, ctx:TxScriptParser.AtomFormulaContext):
+    # Exit a parse tree produced by TxScriptParser#requireCmd.
+    def exitRequireCmd(self, ctx:TxScriptParser.RequireCmdContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#sumFormula.
-    def enterSumFormula(self, ctx:TxScriptParser.SumFormulaContext):
+    # Enter a parse tree produced by TxScriptParser#skipCmd.
+    def enterSkipCmd(self, ctx:TxScriptParser.SkipCmdContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#sumFormula.
-    def exitSumFormula(self, ctx:TxScriptParser.SumFormulaContext):
+    # Exit a parse tree produced by TxScriptParser#skipCmd.
+    def exitSkipCmd(self, ctx:TxScriptParser.SkipCmdContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#andFormula.
-    def enterAndFormula(self, ctx:TxScriptParser.AndFormulaContext):
+    # Enter a parse tree produced by TxScriptParser#groupCmd.
+    def enterGroupCmd(self, ctx:TxScriptParser.GroupCmdContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#andFormula.
-    def exitAndFormula(self, ctx:TxScriptParser.AndFormulaContext):
+    # Exit a parse tree produced by TxScriptParser#groupCmd.
+    def exitGroupCmd(self, ctx:TxScriptParser.GroupCmdContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#atomFormulaN.
-    def enterAtomFormulaN(self, ctx:TxScriptParser.AtomFormulaNContext):
+    # Enter a parse tree produced by TxScriptParser#assignCmd.
+    def enterAssignCmd(self, ctx:TxScriptParser.AssignCmdContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#atomFormulaN.
-    def exitAtomFormulaN(self, ctx:TxScriptParser.AtomFormulaNContext):
+    # Exit a parse tree produced by TxScriptParser#assignCmd.
+    def exitAssignCmd(self, ctx:TxScriptParser.AssignCmdContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#notFormula.
-    def enterNotFormula(self, ctx:TxScriptParser.NotFormulaContext):
+    # Enter a parse tree produced by TxScriptParser#ifelseCmd.
+    def enterIfelseCmd(self, ctx:TxScriptParser.IfelseCmdContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#notFormula.
-    def exitNotFormula(self, ctx:TxScriptParser.NotFormulaContext):
+    # Exit a parse tree produced by TxScriptParser#ifelseCmd.
+    def exitIfelseCmd(self, ctx:TxScriptParser.IfelseCmdContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#existsFormula.
-    def enterExistsFormula(self, ctx:TxScriptParser.ExistsFormulaContext):
+    # Enter a parse tree produced by TxScriptParser#seqCmd.
+    def enterSeqCmd(self, ctx:TxScriptParser.SeqCmdContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#existsFormula.
-    def exitExistsFormula(self, ctx:TxScriptParser.ExistsFormulaContext):
+    # Exit a parse tree produced by TxScriptParser#seqCmd.
+    def exitSeqCmd(self, ctx:TxScriptParser.SeqCmdContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#orFormula.
-    def enterOrFormula(self, ctx:TxScriptParser.OrFormulaContext):
+    # Enter a parse tree produced by TxScriptParser#walletExpr.
+    def enterWalletExpr(self, ctx:TxScriptParser.WalletExprContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#orFormula.
-    def exitOrFormula(self, ctx:TxScriptParser.OrFormulaContext):
+    # Exit a parse tree produced by TxScriptParser#walletExpr.
+    def exitWalletExpr(self, ctx:TxScriptParser.WalletExprContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#groupFormula.
-    def enterGroupFormula(self, ctx:TxScriptParser.GroupFormulaContext):
+    # Enter a parse tree produced by TxScriptParser#groupExpr.
+    def enterGroupExpr(self, ctx:TxScriptParser.GroupExprContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#groupFormula.
-    def exitGroupFormula(self, ctx:TxScriptParser.GroupFormulaContext):
+    # Exit a parse tree produced by TxScriptParser#groupExpr.
+    def exitGroupExpr(self, ctx:TxScriptParser.GroupExprContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#GreaterEqFormula.
-    def enterGreaterEqFormula(self, ctx:TxScriptParser.GreaterEqFormulaContext):
+    # Enter a parse tree produced by TxScriptParser#greaterEqExpr.
+    def enterGreaterEqExpr(self, ctx:TxScriptParser.GreaterEqExprContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#GreaterEqFormula.
-    def exitGreaterEqFormula(self, ctx:TxScriptParser.GreaterEqFormulaContext):
+    # Exit a parse tree produced by TxScriptParser#greaterEqExpr.
+    def exitGreaterEqExpr(self, ctx:TxScriptParser.GreaterEqExprContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#token0jn.
-    def enterToken0jn(self, ctx:TxScriptParser.Token0jnContext):
+    # Enter a parse tree produced by TxScriptParser#lessExpr.
+    def enterLessExpr(self, ctx:TxScriptParser.LessExprContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#token0jn.
-    def exitToken0jn(self, ctx:TxScriptParser.Token0jnContext):
+    # Exit a parse tree produced by TxScriptParser#lessExpr.
+    def exitLessExpr(self, ctx:TxScriptParser.LessExprContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#SumSubEqFormula.
-    def enterSumSubEqFormula(self, ctx:TxScriptParser.SumSubEqFormulaContext):
+    # Enter a parse tree produced by TxScriptParser#neqExpr.
+    def enterNeqExpr(self, ctx:TxScriptParser.NeqExprContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#SumSubEqFormula.
-    def exitSumSubEqFormula(self, ctx:TxScriptParser.SumSubEqFormulaContext):
+    # Exit a parse tree produced by TxScriptParser#neqExpr.
+    def exitNeqExpr(self, ctx:TxScriptParser.NeqExprContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#forallFormula.
-    def enterForallFormula(self, ctx:TxScriptParser.ForallFormulaContext):
+    # Enter a parse tree produced by TxScriptParser#greaterExpr.
+    def enterGreaterExpr(self, ctx:TxScriptParser.GreaterExprContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#forallFormula.
-    def exitForallFormula(self, ctx:TxScriptParser.ForallFormulaContext):
+    # Exit a parse tree produced by TxScriptParser#greaterExpr.
+    def exitGreaterExpr(self, ctx:TxScriptParser.GreaterExprContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#GreaterFormula.
-    def enterGreaterFormula(self, ctx:TxScriptParser.GreaterFormulaContext):
+    # Enter a parse tree produced by TxScriptParser#eqExpr.
+    def enterEqExpr(self, ctx:TxScriptParser.EqExprContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#GreaterFormula.
-    def exitGreaterFormula(self, ctx:TxScriptParser.GreaterFormulaContext):
+    # Exit a parse tree produced by TxScriptParser#eqExpr.
+    def exitEqExpr(self, ctx:TxScriptParser.EqExprContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#EqFormula.
-    def enterEqFormula(self, ctx:TxScriptParser.EqFormulaContext):
+    # Enter a parse tree produced by TxScriptParser#notExpr.
+    def enterNotExpr(self, ctx:TxScriptParser.NotExprContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#EqFormula.
-    def exitEqFormula(self, ctx:TxScriptParser.EqFormulaContext):
+    # Exit a parse tree produced by TxScriptParser#notExpr.
+    def exitNotExpr(self, ctx:TxScriptParser.NotExprContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#LessFormula.
-    def enterLessFormula(self, ctx:TxScriptParser.LessFormulaContext):
+    # Enter a parse tree produced by TxScriptParser#sumSubEqExpr.
+    def enterSumSubEqExpr(self, ctx:TxScriptParser.SumSubEqExprContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#LessFormula.
-    def exitLessFormula(self, ctx:TxScriptParser.LessFormulaContext):
+    # Exit a parse tree produced by TxScriptParser#sumSubEqExpr.
+    def exitSumSubEqExpr(self, ctx:TxScriptParser.SumSubEqExprContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#gVarn.
-    def enterGVarn(self, ctx:TxScriptParser.GVarnContext):
+    # Enter a parse tree produced by TxScriptParser#lessEqExpr.
+    def enterLessEqExpr(self, ctx:TxScriptParser.LessEqExprContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#gVarn.
-    def exitGVarn(self, ctx:TxScriptParser.GVarnContext):
+    # Exit a parse tree produced by TxScriptParser#lessEqExpr.
+    def exitLessEqExpr(self, ctx:TxScriptParser.LessEqExprContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#impliesFormula.
-    def enterImpliesFormula(self, ctx:TxScriptParser.ImpliesFormulaContext):
+    # Enter a parse tree produced by TxScriptParser#constExpr.
+    def enterConstExpr(self, ctx:TxScriptParser.ConstExprContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#impliesFormula.
-    def exitImpliesFormula(self, ctx:TxScriptParser.ImpliesFormulaContext):
+    # Exit a parse tree produced by TxScriptParser#constExpr.
+    def exitConstExpr(self, ctx:TxScriptParser.ConstExprContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#proceduresExpr.
-    def enterProceduresExpr(self, ctx:TxScriptParser.ProceduresExprContext):
+    # Enter a parse tree produced by TxScriptParser#multDivEqExpr.
+    def enterMultDivEqExpr(self, ctx:TxScriptParser.MultDivEqExprContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#proceduresExpr.
-    def exitProceduresExpr(self, ctx:TxScriptParser.ProceduresExprContext):
+    # Exit a parse tree produced by TxScriptParser#multDivEqExpr.
+    def exitMultDivEqExpr(self, ctx:TxScriptParser.MultDivEqExprContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#procedureExpr.
-    def enterProcedureExpr(self, ctx:TxScriptParser.ProcedureExprContext):
+    # Enter a parse tree produced by TxScriptParser#andExpr.
+    def enterAndExpr(self, ctx:TxScriptParser.AndExprContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#procedureExpr.
-    def exitProcedureExpr(self, ctx:TxScriptParser.ProcedureExprContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#preconditionsExpr.
-    def enterPreconditionsExpr(self, ctx:TxScriptParser.PreconditionsExprContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#preconditionsExpr.
-    def exitPreconditionsExpr(self, ctx:TxScriptParser.PreconditionsExprContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#LessEq.
-    def enterLessEq(self, ctx:TxScriptParser.LessEqContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#LessEq.
-    def exitLessEq(self, ctx:TxScriptParser.LessEqContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#SumSubEq.
-    def enterSumSubEq(self, ctx:TxScriptParser.SumSubEqContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#SumSubEq.
-    def exitSumSubEq(self, ctx:TxScriptParser.SumSubEqContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#constant.
-    def enterConstant(self, ctx:TxScriptParser.ConstantContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#constant.
-    def exitConstant(self, ctx:TxScriptParser.ConstantContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#null.
-    def enterNull(self, ctx:TxScriptParser.NullContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#null.
-    def exitNull(self, ctx:TxScriptParser.NullContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#Wallet.
-    def enterWallet(self, ctx:TxScriptParser.WalletContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#Wallet.
-    def exitWallet(self, ctx:TxScriptParser.WalletContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#variable.
-    def enterVariable(self, ctx:TxScriptParser.VariableContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#variable.
-    def exitVariable(self, ctx:TxScriptParser.VariableContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#GreaterEq.
-    def enterGreaterEq(self, ctx:TxScriptParser.GreaterEqContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#GreaterEq.
-    def exitGreaterEq(self, ctx:TxScriptParser.GreaterEqContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#Greater.
-    def enterGreater(self, ctx:TxScriptParser.GreaterContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#Greater.
-    def exitGreater(self, ctx:TxScriptParser.GreaterContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#NEq.
-    def enterNEq(self, ctx:TxScriptParser.NEqContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#NEq.
-    def exitNEq(self, ctx:TxScriptParser.NEqContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#MultDivEq.
-    def enterMultDivEq(self, ctx:TxScriptParser.MultDivEqContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#MultDivEq.
-    def exitMultDivEq(self, ctx:TxScriptParser.MultDivEqContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#Eq.
-    def enterEq(self, ctx:TxScriptParser.EqContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#Eq.
-    def exitEq(self, ctx:TxScriptParser.EqContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#Less.
-    def enterLess(self, ctx:TxScriptParser.LessContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#Less.
-    def exitLess(self, ctx:TxScriptParser.LessContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#pArgsExprs.
-    def enterPArgsExprs(self, ctx:TxScriptParser.PArgsExprsContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#pArgsExprs.
-    def exitPArgsExprs(self, ctx:TxScriptParser.PArgsExprsContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#variableArg.
-    def enterVariableArg(self, ctx:TxScriptParser.VariableArgContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#variableArg.
-    def exitVariableArg(self, ctx:TxScriptParser.VariableArgContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#inputToken.
-    def enterInputToken(self, ctx:TxScriptParser.InputTokenContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#inputToken.
-    def exitInputToken(self, ctx:TxScriptParser.InputTokenContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#sequence.
-    def enterSequence(self, ctx:TxScriptParser.SequenceContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#sequence.
-    def exitSequence(self, ctx:TxScriptParser.SequenceContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#ifstatement.
-    def enterIfstatement(self, ctx:TxScriptParser.IfstatementContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#ifstatement.
-    def exitIfstatement(self, ctx:TxScriptParser.IfstatementContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#outputToken.
-    def enterOutputToken(self, ctx:TxScriptParser.OutputTokenContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#outputToken.
-    def exitOutputToken(self, ctx:TxScriptParser.OutputTokenContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#skipBody.
-    def enterSkipBody(self, ctx:TxScriptParser.SkipBodyContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#skipBody.
-    def exitSkipBody(self, ctx:TxScriptParser.SkipBodyContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#assignmentBody.
-    def enterAssignmentBody(self, ctx:TxScriptParser.AssignmentBodyContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#assignmentBody.
-    def exitAssignmentBody(self, ctx:TxScriptParser.AssignmentBodyContext):
+    # Exit a parse tree produced by TxScriptParser#andExpr.
+    def exitAndExpr(self, ctx:TxScriptParser.AndExprContext):
         pass
 
 
@@ -458,12 +269,30 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#agentOrTokenConstant.
-    def enterAgentOrTokenConstant(self, ctx:TxScriptParser.AgentOrTokenConstantContext):
+    # Enter a parse tree produced by TxScriptParser#strConstant.
+    def enterStrConstant(self, ctx:TxScriptParser.StrConstantContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#agentOrTokenConstant.
-    def exitAgentOrTokenConstant(self, ctx:TxScriptParser.AgentOrTokenConstantContext):
+    # Exit a parse tree produced by TxScriptParser#strConstant.
+    def exitStrConstant(self, ctx:TxScriptParser.StrConstantContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#trueConstant.
+    def enterTrueConstant(self, ctx:TxScriptParser.TrueConstantContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#trueConstant.
+    def exitTrueConstant(self, ctx:TxScriptParser.TrueConstantContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#falseConstant.
+    def enterFalseConstant(self, ctx:TxScriptParser.FalseConstantContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#falseConstant.
+    def exitFalseConstant(self, ctx:TxScriptParser.FalseConstantContext):
         pass
 
 

@@ -1,0 +1,39 @@
+contract HTLC {
+    resources_bound: 10
+    agents_bound: 3
+    tokens_bound: 1
+
+    global:
+      int owner = 1;
+      int verifier = 2;
+      int hash = 0;
+      int start = 0;
+
+   init(a?xn:xt, int v, int t) {
+       owner := a;
+       verifier := v;
+       start := t;
+   }
+
+   @pre a==owner and xn>=1
+   commit(a?xn:xt, int h) {
+       hash := h;
+   }
+
+   @pre a==owner
+   @pre H(s)==hash
+   reveal(a?xn:xt, int s) {
+       owner!#xt:xt;
+   }
+
+   @time [start,start + 1000]
+   timeout() {
+       verifier!#xt:xt;   
+   }
+}
+
+
+query {
+      (Forall n. (n >= 0 and n <= 5 and {#0:0}n > 0) ->
+      	      (Exists m. (m>n and {#0:0}m == 0)))
+}

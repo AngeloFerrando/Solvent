@@ -4,499 +4,385 @@ from TxScriptParser import *
 from TxScriptVisitor import *
 
 class Z3Visitor(TxScriptVisitor):
-    def __init__(self):
-        self.__N = None
-        self.__Agents = None
-        self.__Tokens = None
-        self.__globalVars = []
-        self.__phiVars = set()
-        self.__vectors = []
-        self.__equation = None
-        self.__mapInput = {}
-        self.__mapAgent = {}
-        self.__i = 0
-        self.__j = 0
-
-        ###
-        # self.__tokensAgentsGive = {}
-        # self.__tokensWalletsGet = {}
-        self.__input = []
-        # self.__nextStateAgents = {}
-        # self.__nextStateTokens = {}
-
+    def __init__(self, N, A):
+        self.__proc = set()
+        self.__add_last_cmd = False
+        self.__args_map = {}
+        # N = upper bound on the length of trace
+        self.__N = N
+        # A = upper bound on the number of actors (A+1)
+        self.__A = A
 
     # Visit a parse tree produced by TxScriptParser#contractExpr.
     def visitContractExpr(self, ctx:TxScriptParser.ContractExprContext):
-        self.__N = int(ctx.resBound.text)
-        self.__Agents = int(ctx.agentBound.text)
-        self.__Tokens = int(ctx.tokenBound.text)
-        if ctx.gVars:
-            self.visit(ctx.gVars)
-        # for i in range(0, self.__Agents):
-        #     self.__nextStateAgents['ag' + str(i)] = []
-        # for i in range(0, self.__Tokens):
-        #     self.__nextStateTokens['tk' + str(i)] = []
-        formulas = self.visit(ctx.phis)
-        selector, equation = self.visit(ctx.child)
-        initGlobalVars = []
-        for (ty, name, val) in self.__globalVars:
-            initGlobalVars.append('{name}(0) == {val}'.format(name=name, val=val))
-        # just for now until we add it in the DSL
-        # for i in range(0, self.__Agents):
-        #     for j in range(0, self.__Tokens):
-        #         initGlobalVars.append('ag{ag}{tk}(0) == 5'.format(ag=i, tk=j))
-        for j in range(0, self.__Tokens):
-            initGlobalVars.append('tk{tk}(0) == 0'.format(tk=j))
-
-        parseFunction = '''def parse(m):
-    out = ''
-    for i in range(0, {N}):
-        out += '|' \n'''.format(N=self.__N+1)
-        for j in range(0, self.__Tokens):
-            parseFunction += '''        out += 'T{j}:' + str(m.eval(tk{j}(i))) + ' | ' \n'''.format(j=j)
-        for i in range(1, self.__Agents+1):
-            for j in range(0, self.__Tokens):
-                parseFunction += '''        out += 'A{i}' + '[' + str(m.eval(ag{i}{j}(i))) + ':T{j}' + ']' + ' | ' \n'''.format(i=i,j=j)
-        parseFunction += '''        out += '\\n' \n'''
-        parseFunction += '''    return out'''
-        
-        parseFunctionOld = '''def parse(model):
-    tokens = dict()
-    for tk in range(0, {Tk}):
-        tokens['tk' + str(tk)] = dict()
-        eq = model.index('=', model.index('tk' + str(tk)))
-        assignments = model[eq+3:model.index(']', eq)]
-        for assignment in assignments.split(','):
-            key = assignment[0:assignment.index('->')].strip()
-            value = assignment[assignment.index('->')+2:].strip()
-            tokens['tk' + str(tk)][key] = value
-    agents = dict()
-    for ag in range(1, {Ag}):
-        for tk in range(0, {Tk}):
-            agents['ag' + str(ag) + str(tk)] = dict()
-            eq = model.index('=', model.index('ag' + str(ag) + str(tk)))
-            assignments = model[eq+3:model.index(']', eq)]
-            for assignment in assignments.split(','):
-                key = assignment[0:assignment.index('->')].strip()
-                value = assignment[assignment.index('->')+2:].strip()
-                agents['ag' + str(ag) + str(tk)][key] = value
-    sender = dict()
-    eq = model.index('=', model.index('Sender'))
-    assignments = model[eq+3:model.index(']', eq)]
-    for assignment in assignments.split(','):
-        key = assignment[0:assignment.index('->')].strip()
-        value = assignment[assignment.index('->')+2:].strip()
-        sender[key] = value
-    time = dict()
-    eq = model.index('=', model.index('Time'))
-    assignments = model[eq+3:model.index(']', eq)]
-    for assignment in assignments.split(','):
-        key = assignment[0:assignment.index('->')].strip()
-        value = assignment[assignment.index('->')+2:].strip()
-        time[key] = value
-    f = dict()
-    eq = model.index('=', model.index('f'))
-    assignments = model[eq+3:model.index(']', eq)]
-    for assignment in assignments.split(','):
-        key = assignment[0:assignment.index('->')].strip()
-        value = assignment[assignment.index('->')+2:].strip()
-        f[key] = value
-    out = ''
-    for i in range(0, {N}):
-        out += '{name} '
-        for tk in range(0, {Tk}):
-            if str(i) in tokens['tk' + str(tk)]:
-                out += '[' + tokens['tk' + str(tk)][str(i)] + ':' + 'T' + str(tk) + '] |'
-            else:
-                out += '[' + tokens['tk' + str(tk)]['else'] + ':' + 'T' + str(tk) + '] |'
-        for ag in range(1, {Ag}):
-            for tk in range(0, {Tk}):
-                if str(i) in agents['ag' + str(ag) + str(tk)]:
-                    out += 'A' + str(ag) + '[' + agents['ag' + str(ag) + str(tk)][str(i)] + ':' + 'T'+ str(tk) + '] |'
-                else:
-                    out += 'A' + str(ag) + '[' + agents['ag' + str(ag) + str(tk)]['else'] + ':' + 'T'+ str(tk) + '] |'
-        out += '\\n'
-        if str(i) in f:
-            if int(f[str(i)]) >= len([{actions}]):
-                out += '--> skip \\n'
-            else:
-                out += '--> ' + [{actions}][int(f[str(i)])] + '('
-                if str(i) in sender:
-                    out += 'A' + sender[str(i)] + '!' + str(getConsumerDownV(i, agents)) + ':' + 'T' + str(getConsumerUp(i, tokens)) + ')' + '@' + str(i) + '\\n'
-                else:
-                    out += 'A' + sender['else'] + '!' + str(getConsumerDownV(i, agents)) + ':' + 'T' + str(getConsumerUp(i, tokens)) + ')' + '@' + str(i) + '\\n'
-        else:
-            if int(f['else']) >= len([{actions}]):
-                out += '--> skip \\n'
-            else:
-                out += '--> ' + [{actions}][int(f['else'])] + '('
-                if str(i) in sender:
-                    out += 'A' + sender[str(i)] + '!' + str(getConsumerDownV(i, agents)) + ':' + 'T' + str(getConsumerUp(i, tokens)).replace('tk', '') + ')' + '@' + str(i) + '\\n'
-                else:
-                    out += 'A' + sender['else'] + '!' + str(getConsumerDownV(i, agents)) + ':' + 'T' + str(getConsumerUp(i, tokens)).replace('tk', '') + ')' + '@' + str(i) + '\\n'
-    return out
-
-def getConsumerDown(i, elems):
-    for j in elems:
-        if str(i) in elems[j] and str(i+1) in elems[j] and int(elems[j][str(i)]) > int(elems[j][str(i+1)]):
-            return j
-        elif str(i) not in elems[j] and str(i+1) in elems[j] and int(elems[j]['else']) > int(elems[j][str(i+1)]):
-            return j
-        elif str(i) in elems[j] and str(i+1) not in elems[j] and int(elems[j][str(i)]) > int(elems[j]['else']):
-           return j
-    return None
-def getConsumerUp(i, elems):
-    for j in elems:
-        if str(i) in elems[j] and str(i+1) in elems[j] and int(elems[j][str(i)]) < int(elems[j][str(i+1)]):
-            return j
-        elif str(i) not in elems[j] and str(i+1) in elems[j] and int(elems[j]['else']) < int(elems[j][str(i+1)]):
-            return j
-        elif str(i) in elems[j] and str(i+1) not in elems[j] and int(elems[j][str(i)]) < int(elems[j]['else']):
-           return j
-    return None
-def getConsumerDownV(i, elems):
-    for j in elems:
-        if str(i) in elems[j] and str(i+1) in elems[j] and int(elems[j][str(i)]) > int(elems[j][str(i+1)]):
-            return int(elems[j][str(i)]) - int(elems[j][str(i+1)])
-        elif str(i) not in elems[j] and str(i+1) in elems[j] and int(elems[j]['else']) > int(elems[j][str(i+1)]):
-            return int(elems[j]['else']) - int(elems[j][str(i+1)])
-        elif str(i) in elems[j] and str(i+1) not in elems[j] and int(elems[j][str(i)]) > int(elems[j]['else']):
-            return int(elems[j][str(i)]) - int(elems[j]['else'])
-    return None
-def getConsumerUpV(i, elems):
-    for j in elems:
-        if str(i) in elems[j] and str(i+1) in elems[j] and int(elems[j][str(i)]) < int(elems[j][str(i+1)]):
-            return int(elems[j][str(i+1)]) - int(elems[j][str(i)])
-        elif str(i) not in elems[j] and str(i+1) in elems[j] and int(elems[j]['else']) < int(elems[j][str(i+1)]):
-            return int(elems[j][str(i+1)]) - int(elems[j]['else'])
-        elif str(i) in elems[j] and str(i+1) not in elems[j] and int(elems[j][str(i)]) < int(elems[j]['else']):
-           return int(elems[j]['else']) - int(elems[j][str(i)])
-    return None'''.format(name=ctx.name.text, N=self.__N, Tk=self.__Tokens, Ag=self.__Agents+1, actions=','.join(['\'play\''])) # to be updated with actual actions
-        return '''
+        decl = self.visit(ctx.decl)
+        proc = ''
+        for p in self.__proc:
+            proc += 'Proc.declare(\'{name}\')\n'.format(name=p.text)
+        res = '''
 from z3 import *
 import time
 
-N = {N}
 
-{selector}
+def stringOfXA(m, i):
+    return "A" + str(m.eval(xa[i]))
 
-s = Solver()
 
-s.add(And({initGlobalVars}))
+def stringOfTx(m, i):
+    contract = "C4"
+    sender = stringOfXA(m, i)
+    method = str(m.eval(f[i]))
+    args = str(m.eval(xn[i]))
+    return "-- " + sender + ": " + contract + "." + method + "(" + args + ") -->"
 
-for i in range(N):
-    s.add({equation})
+
+def stringOfWal(m, i):
+    s = ""
+    for j in range(A+1):
+        s += "A" + str(j) + "[" + str(m.eval(aw[i][j])) + ":T] | "
+    return s
+
+
+def stringOfContr(m, i):
+    contract = "C4"
+    return contract + "[" + str(m.eval(w[i])) + ":T] "
+
+
+def stringOfSuccess(m, i):
+    s = "| success:"
+    return s + str(m.eval(success[i]))
+
+
+def printState(m):
+    for i in range(N):
+        print(stringOfWal(m, i), end='')
+        print(stringOfContr(m, i), end='')
+        print(stringOfSuccess(m, i), end='')
+        print()
+        print(stringOfTx(m, i), end='')
+        print()
+    print(stringOfWal(m, N), end='')
+    print(stringOfContr(m, N), end='')
+    print()
+
 
 timeStart = time.time()
 
-queries = [
-    {phis}
-]
+# N = upper bound on the length of trace
+N = {N}
 
-{parse}
+# A = upper bound on the number of actors (A+1)
+A = {A}
 
-for q in queries:
-    print(str(q) + " : ", end = '')
-    if s.check(q)==sat:
-        print(" sat")
-        print(parse(s.model()))
+# Contract's balance
+w = [Int("w_%s" % (i)) for i in range(N+1)]
+w_q = Int("wq")
+
+Proc = Datatype('Proc')
+{proc}
+Proc = Proc.create()
+
+# Called procedure
+f = [Const("f_%s" % (i), Proc) for i in range(N+1)]
+f_q = Const("f_q", Proc)
+
+# users' wallets
+aw = [[Int("aw_%s_%s" % (i, j)) for j in range(A+1)] for i in range(N+1)]
+aw_q = [Int("awq_%s" % j) for j in range(A+1)]
+
+# msg.sender
+xa = [Int("xa_%s" % (i)) for i in range(N+1)]
+xa_q = Int("xa_q")
+
+# msg.value
+xn = [Int("xn_%s" % (i)) for i in range(N+1)]
+xn_q = Int("xn_q")
+
+# List of ids hard coded
+hard_coded_list = [0]
+
+# This param should be computed automatically
+# Maximum functions depth
+M = 2
+
+# Temporary contract balance. Used inside functions to model internal states
+t_w = [[Int("t_w_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]
+t_w_q = [Int("t_wq_%s" % (m)) for m in range(M)] 
+
+# Temporary users wallets
+t_aw = [[[Int("t_aw_%s_%s_%s" % (i, m, j)) for j in range(A+1)]
+         for m in range(M)] for i in range(N+1)]
+
+t_aw_q = [[Int("t_awq_%s_%s" % (m, j)) for j in range(A+1)]
+         for m in range(M)]
+
+s = Solver()
+
+# initial state
+s.add(w[0] >= 0)
+# s.add(w[0] == 1)
+
+def valid_tx(xa1, xn1, w1, w2):
+    return And(xa1 >= 0, xa1 <= A, xn1 > 0)
+
+def next_state_tx(aw1, aw2, w1, w2):
+    return And(w2 == w1,
+               And([aw2[j] == aw1[j] for j in range(A+1)]))
+
+def send(sender_id, amount, w_b, w_a, aw_b, aw_a): # '_b' and '_a' mean 'before' and 'after'
+    return And(w_a == w_b - amount,
+                  And([If(j == sender_id,
+                          aw_a[j] == aw_b[j] + amount,
+                          aw_a[j] == aw_b[j]) for j in range(A+1)]))
+
+{decl}
+
+
+def user_is_legit(xa1):
+    return And(xa1 >= 0, xa1 <= A)
+
+
+def user_has_not_already_played(xa, xa1, f, i):
+    return Not(Or([And(xa[k] == xa1, f[k] == Proc.pay) for k in range(i)]))
+
+
+def user_is_not_hard_coded(xa1):
+    return Not(Or([xa1 == hc_i for hc_i in hard_coded_list]))
+
+
+def user_is_fresh(xa, xa1, f, i):
+    return And(user_is_not_hard_coded(xa1), user_has_not_already_played(xa, xa1, f, i))
+
+# transition rules
+
+
+def step_trans(f1, xa1, xn1, aw1, aw2, w1, w2, t_aw, t_w, i):
+    return And(valid_tx(xa1, xn1, w1, w2),
+               And([aw1[j] >= 0 for j in range(A+1)]),
+               If(f1 == Proc.pay,
+                  pay(xa1, xn1, aw1, aw2, w1, w2, t_aw, t_w),
+                  #   The only other possible transition is f[i] == Proc.deposit
+                  deposit(xn1, w1, w2, aw1, aw2)
+                  #new_state_tx(aw1, aw2, w1, w2)
+                  ))
+
+
+for i in range(N):
+    new_state = step_trans(f[i], xa[i], xn[i], aw[i],
+                           aw[i+1], w[i], w[i+1], t_aw[i], t_w[i], i)
+
+    s.add(new_state)
+
+
+# print(s)
+
+def p(i):
+    t_awq_list = [t_awq_m_j for t_awq_m in t_aw_q for t_awq_m_j in t_awq_m]
+    #print([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list ])
+    return And(w[i] > 0,
+               Exists([xa_q], And(user_is_legit(xa_q), user_is_fresh(xa, xa_q, f,  i),
+                      ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list ], Or(Not(step_trans(f_q, xa_q, xn_q, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, i)), w_q > 0)))))
+                      #ForAll([xn_q, f_q, w_q, *aw_q ], Or(Not(step_trans(f_q, xa_q, xn_q, aw[i], aw_q, w[i], w_q, t_aw[i], t_w[i], i)), w_q > 0)))))
+
+queries = [p(i) for i in range(N)]
+
+# queries = [ p(0) ]
+
+for i, q in enumerate(queries):
+    timeStart = time.time()
+    # print("q : ", q)
+    print("p " + str(i) + " : ", end='')
+    # sq = s
+    # sq.add(q)
+    # print("\\n\\nsq:", sq, "\\n\\n")
+    res = s.check(q)
+    if res == sat:
+        print(" sat (=> not liquid)")
+        m = s.model()
+        # print(m)
+        #printState(m)
+        # exit()
     else:
-        print(" unsat")
+        print(" unsat (=> liquid)")
 
-timeTot = time.time() - timeStart
-print("Solving time: " + str(timeTot) + "s")
-        '''.format(N=self.__N, selector=selector, equation=equation, phis=',\n\t'.join(formulas), initGlobalVars=', '.join(initGlobalVars), parse=parseFunction)
-
-
-    # Visit a parse tree produced by TxScriptParser#proceduresExpr.
-    def visitProceduresExpr(self, ctx:TxScriptParser.ProceduresExprContext):
-        equations = []
-        for procedure in ctx.procedureExpr():
-            equations.append(self.visit(procedure))
-            self.__j = self.__j + 1
-        aux = None
-        # foundA = [False for i in range(0, len(self.__input))]
-        # foundT = [False for i in range(0, len(self.__input))]
-        for i in range(0, len(ctx.procedureExpr())):
-            equation = None
-            for ag in range(1, self.__Agents+1):
-                for tk in range(0, self.__Tokens):
-                    # i = 0
-                    aux = None
-                    for (a, t, m, eq) in self.__input[i]:
-                        foundA = False
-                        foundT = False
-                        equationAux = equations[i][2].format(ag=ag, tk=tk)
-                        a = a.format(ag=ag, tk=tk)
-                        t = t.format(ag=ag, tk=tk)
-                        equationAux = equationAux.replace(a+'(i)', '('+a+'(i)-'+self.__mapInput[m]+'(i))')
-                        equationAux = equationAux.replace(t+'(i)', '('+t+'(i)+'+self.__mapInput[m]+'(i))')
-                        # if (a+'(i+1)') in equationAux or (a+'(i)') in equationAux:
-                        #     foundA= True
-                        # if (t+'(i+1)') in equationAux or (t+'(i)') in equationAux:
-                        #     foundT = True
-                        # # i = i + 1
-                        # if not foundA or not foundT:
-                        #     equationAux = eq.format(ag=ag, tk=tk) + ', ' + equationAux
-                        equationAux = a + '(i)>=' + self.__mapInput[m] + '(i), ' + equationAux
-                        equationAux = 'Time(i)>={start}, Time(i)<{end}, '.format(start=equations[i][0], end=equations[i][1]) + equationAux
-                        if aux:
-                            aux = aux + ', ' + equationAux
-                        else:
-                            aux = equationAux
-                    for ag1 in range(1, self.__Agents+1):
-                        for tk1 in range(0, self.__Tokens):
-                            if 'ag{ag}{tk}(i+1)=='.format(ag=ag1, tk=tk1) not in aux:
-                                aux = aux + ', ag{ag}{tk}(i+1)==ag{ag}{tk}(i)'.format(ag=ag1, tk=tk1)
-                    for tk1 in range(0, self.__Tokens):
-                        if 'tk{tk}(i+1)=='.format(tk=tk1) not in aux:
-                            aux = aux + ', tk{tk}(i+1)==tk{tk}(i)'.format(tk=tk1)
-                    # for j in self.__mapInput.keys():
-                    #     if '{xs}(i+1)==' not in aux:
-                    #         aux = aux + ',' + '{xs}(i+1)=={xs}(i)'.format(xs=self.__mapInput[j])
-                    for (_, name, _) in self.__globalVars:
-                        if '{name}(i+1)=='.format(name=name) not in aux:
-                            aux = aux + ', {name}(i+1)=={name}(i)'.format(name=name)
-                    condition = 'And(f(i)=={i}, Sender(i)=={ag})'.format(i=i, ag=ag)
-                    if equation:
-                        equation = equation + ', If(' + condition + ', ' + 'And(' + aux + ')'
-                    else:
-                        equation = 'If(' + condition + ', ' + 'And(' + aux + ')'
-        equation = equation + ', And('
-        first = True
-        for ag in range(1, self.__Agents+1):
-            for tk in range(0, self.__Tokens):
-                if first:
-                    first = False
-                else:
-                    equation = equation + ', '
-                equation = equation + 'ag{ag}{tk}(i+1)==ag{ag}{tk}(i)'.format(ag=ag, tk=tk)
-        for tk in range(0, self.__Tokens):
-            equation = equation + ', tk{tk}(i+1)==tk{tk}(i)'.format(tk=tk)
-        # for j in self.__mapInput.keys():
-        #     equation = equation + ',' + '{xs}(i+1)=={xs}(i)'.format(xs=self.__mapInput[j])
-        for (_, name, _) in self.__globalVars:
-            equation = equation + ', ' + '{name}(i+1)=={name}(i)'.format(name=name)
-        equation = equation + ')'
-        for j in range(0, len(ctx.procedureExpr())*self.__Agents*self.__Tokens):
-            equation = equation + ')'
-        # for i in range(1, len(ctx.procedureExpr())):
-        #     aux = None
-        #     for ag in range(0, self.__Agents):
-        #         for tk in range(0, self.__Tokens):
-        #             if aux:
-        #                 aux = 'And(' + aux + ', ' + equations[i][2].format(ag=ag, tk=tk) + ')'
-        #             else:
-        #                 aux = equations[i][2].format(ag=ag, tk=tk)
-        #     aux = 'And(' + 'Time(i)>={start}, Time(i)<{end}, '.format(start=equations[i][0], end=equations[i][1]) + aux + ')'
-        #     equation = 'And(f(i)=={i}, '.format(i=i) + aux + ')'
-        #     equation = 'Or(' + equation + ',' + aux + ')'
-        # equation = 'for i in range(N):\n\t'.format(N = self.__N) + equation
-        # selector = 'f = IntVector(\'f\', {n})'.format(n = self.__N) #len(ctx.procedureExpr()))
-        selector = 'f = Function(\'f\', IntSort(), IntSort())'
-        # selector = selector + '\n' + 'Time = IntVector(\'Time\', {n})'.format(n = self.__N)
-        selector = selector + '\n' + 'Time = Function(\'Time\', IntSort(), IntSort())'
-        selector = selector + '\n' + 'Sender = Function(\'Sender\', IntSort(), IntSort())'
-        for v in self.__phiVars:
-            selector = selector + '\n' + '{v} = Int(\'{v}\')'.format(v=v)
-        for (ty, name, val) in self.__globalVars:
-            if ty == 'int':
-                # selector = selector + '\n' + '{name} = IntVector(\'{name}\', {n})'.format(name=name, n=self.__N)
-                selector = selector + '\n' + '{name} = Function(\'{name}\', IntSort(), IntSort())'.format(name=name)
-            elif ty == 'bool':
-                # selector = selector + '\n' + '{name} = BoolVector(\'{name}\', {n})'.format(name=name, n=self.__N)
-                  selector = selector + '\n' + '{name} = Function(\'{name}\', IntSort(), BoolSort())'.format(name=name)
-            else:
-                # selector = selector + '\n' + '{name} = RealVector(\'{name}\', {n})'.format(name=name, n=self.__N)
-                selector = selector + '\n' + '{name} = Function(\'{name}\', IntSort(), RealSort())'.format(name=name)
-            # selector = selector + '\n' + '{name}[0] = {val}'.format(name=name, val=val)
-        for i in range(1, self.__Agents+1):
-            for j in range(0, self.__Tokens):
-              # selector = selector + '\n' + 'ag{i}{j} = IntVector(\'ag{i}{j}\', {n})'.format(i = i, j=j, n = self.__N)
-                selector = selector + '\n' + 'ag{i}{j} = Function(\'ag{i}{j}\', IntSort(), IntSort())'.format(i = i, j=j)
-        for i in range(0, self.__Tokens):
-            # selector = selector + '\n' + 'tk{i} = IntVector(\'tk{i}\', {n})'.format(i = i, n = self.__N)
-              selector = selector + '\n' + 'tk{i} = Function(\'tk{i}\', IntSort(), IntSort())'.format(i = i)
-        for i in self.__mapInput.keys():
-            # selector = selector + '\n' + '{xs} = IntVector(\'{xs}\', {n})'.format(xs=self.__mapInput[i], n = self.__N)
-              selector = selector + '\n' + '{xs} = Function(\'{xs}\', IntSort(), IntSort())'.format(xs=self.__mapInput[i])
-        self.__vectors.append(selector)
-
-        # i = 0
-        # for (a, t, m, eq) in self.__input:
-        #     if not foundA[i] or not foundT[i]:
-        #         equation = eq + ', ' + equation
-        #     i = i+1
-
-        return selector, equation
+    timeTot = time.time() - timeStart
+    print("Solving time: " + str(timeTot) + "s")
+                      
+'''.format(N=self.__N, A=self.__A, proc=proc, decl=decl)
+        return res
 
 
-    # Visit a parse tree produced by TxScriptParser#procedureExpr.
-    def visitProcedureExpr(self, ctx:TxScriptParser.ProcedureExprContext):
-        start = 0 if ctx.start.text == '_' else int(ctx.start.text)
-        end = self.__N if ctx.end.text == '_' else int(ctx.end.text)
-        preconditions = self.visit(ctx.preconditions)
-        pArgs = self.visit(ctx.pArgs)
-        body = self.visit(ctx.body)
-        return (start, end, preconditions + ', ' + body) # TBC
-        # TBD
+    # Visit a parse tree produced by TxScriptParser#declsExpr.
+    def visitDeclsExpr(self, ctx:TxScriptParser.DeclsExprContext):
+        return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TxScriptParser#preconditionsExpr.
-    def visitPreconditionsExpr(self, ctx:TxScriptParser.PreconditionsExprContext):
-        equation = None
-        for precondition in ctx.expression():
-            if equation:
-                equation = equation + ', ' + self.visit(precondition)
-            else:
-                equation = self.visit(precondition)
-        return equation
+    # Visit a parse tree produced by TxScriptParser#intDecl.
+    def visitIntDecl(self, ctx:TxScriptParser.IntDeclContext):
+        return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TxScriptParser#LessEq.
-    def visitLessEq(self, ctx:TxScriptParser.LessEqContext):
+    # Visit a parse tree produced by TxScriptParser#strDecl.
+    def visitStrDecl(self, ctx:TxScriptParser.StrDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#constrDecl.
+    def visitConstrDecl(self, ctx:TxScriptParser.ConstrDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#funDecl.
+    def visitFunDecl(self, ctx:TxScriptParser.FunDeclContext):
+        self.__proc.add(ctx.name)
+        self.__args_map = {}
+        args = self.visit(ctx.args)
+        self.__add_last_cmd = True
+        body = self.visit(ctx.cmds)
+        res ='''
+def {name}(xa1, {args}, awNow, awNext, wNow, wNext, t_aw, t_w):
+    {body}
+'''.format(name=ctx.name.text, args=','.join(args), body=body)
+        return res
+
+
+    # Visit a parse tree produced by TxScriptParser#argsExpr.
+    def visitArgsExpr(self, ctx:TxScriptParser.ArgsExprContext):
+        args = set()
+        i = 1
+        for arg in ctx.argExpr():
+            args.add('xn' + str(i))
+            self.__args_map[arg.var.text] = 'xn' + str(i)
+            i += 1
+        return args
+
+
+    # Visit a parse tree produced by TxScriptParser#arg.
+    def visitArg(self, ctx:TxScriptParser.ArgContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#sendCmd.
+    def visitSendCmd(self, ctx:TxScriptParser.SendCmdContext):
+        sender = ctx.sender.text
+        if sender == 'sender':
+            res = 'send(xa1, {amount}, wNow, t_w[0], awNow, t_aw[0])'.format(amount=self.visit(ctx.amount))
+            return res
+        else:
+            raise Exception('Not handled, yet')
+
+
+    # Visit a parse tree produced by TxScriptParser#requireCmd.
+    def visitRequireCmd(self, ctx:TxScriptParser.RequireCmdContext):
+        return 'If(\n\tNot(' + self.visit(ctx.child) + '), \n\t\tnext_state_tx(awNow, awNext, wNow, wNext), \n\t\t{subs})'
+
+
+    # Visit a parse tree produced by TxScriptParser#skipCmd.
+    def visitSkipCmd(self, ctx:TxScriptParser.SkipCmdContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#groupCmd.
+    def visitGroupCmd(self, ctx:TxScriptParser.GroupCmdContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#assignCmd.
+    def visitAssignCmd(self, ctx:TxScriptParser.AssignCmdContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#ifelseCmd.
+    def visitIfelseCmd(self, ctx:TxScriptParser.IfelseCmdContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#seqCmd.
+    def visitSeqCmd(self, ctx:TxScriptParser.SeqCmdContext):
+        seq1 = self.visit(ctx.seq1)
+        seq2 = self.visit(ctx.seq2)
+        if self.__add_last_cmd:
+            seq2 = 'And({seq2}, next_state_tx(t_aw[1], awNext, t_w[1], wNext))'.format(seq2=seq2)
+            self.__add_last_cmd = False
+        aux = seq1.format(subs=seq2)
+        if aux == seq1:
+            return 'And(\n\t{seq1},\n\t{seq2})'.format(seq1=seq1, seq2=seq2)
+        else:
+            return aux
+    
+
+    # Visit a parse tree produced by TxScriptParser#walletExpr.
+    def visitWalletExpr(self, ctx:TxScriptParser.WalletExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#groupExpr.
+    def visitGroupExpr(self, ctx:TxScriptParser.GroupExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#greaterEqExpr.
+    def visitGreaterEqExpr(self, ctx:TxScriptParser.GreaterEqExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#lessExpr.
+    def visitLessExpr(self, ctx:TxScriptParser.LessExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#neqExpr.
+    def visitNeqExpr(self, ctx:TxScriptParser.NeqExprContext):
+        return self.visitChildren(ctx)
+
+
+    # # Visit a parse tree produced by TxScriptParser#variableExpr.
+    # def visitVariableExpr(self, ctx:TxScriptParser.VariableExprContext):
+    #     return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#greaterExpr.
+    def visitGreaterExpr(self, ctx:TxScriptParser.GreaterExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#eqExpr.
+    def visitEqExpr(self, ctx:TxScriptParser.EqExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#notExpr.
+    def visitNotExpr(self, ctx:TxScriptParser.NotExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#sumSubEqExpr.
+    def visitSumSubEqExpr(self, ctx:TxScriptParser.SumSubEqExprContext):
+        left = self.visit(ctx.left)
+        right = self.visit(ctx.right)
+        return left + ctx.op.text + right
+
+
+    # Visit a parse tree produced by TxScriptParser#lessEqExpr.
+    def visitLessEqExpr(self, ctx:TxScriptParser.LessEqExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
         return left + '<=' + right
 
 
-    # Visit a parse tree produced by TxScriptParser#SumSubEq.
-    def visitSumSubEq(self, ctx:TxScriptParser.SumSubEqContext):
-        left = self.visit(ctx.left)
-        right = self.visit(ctx.right)
-        return left + ctx.op.text + right
+    # Visit a parse tree produced by TxScriptParser#constExpr.
+    def visitConstExpr(self, ctx:TxScriptParser.ConstExprContext):
+        return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TxScriptParser#constant.
-    def visitConstant(self, ctx:TxScriptParser.ConstantContext):
-        return self.visit(ctx.child)
+    # Visit a parse tree produced by TxScriptParser#multDivEqExpr.
+    def visitMultDivEqExpr(self, ctx:TxScriptParser.MultDivEqExprContext):
+        return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TxScriptParser#null.
-    def visitNull(self, ctx:TxScriptParser.NullContext):
-        return
-
-
-    # Visit a parse tree produced by TxScriptParser#Wallet.
-    def visitWallet(self, ctx:TxScriptParser.WalletContext):
-        # assuming for now just variable xt
-        child = self.visit(ctx.child)
-        return child + '(i)'
-
-
-    # Visit a parse tree produced by TxScriptParser#variable.
-    def visitVariable(self, ctx:TxScriptParser.VariableContext):
-        if ctx.child.text == 'xt':
-            return 'tk{tk}'
-        if ctx.child.text not in self.__mapInput:
-            self.__mapInput[ctx.child.text] = ctx.child.text + str(self.__i)
-            self.__i = self.__i + 1
-        return self.__mapInput[ctx.child.text] + '(i)'
-
-
-    # Visit a parse tree produced by TxScriptParser#GreaterEq.
-    def visitGreaterEq(self, ctx:TxScriptParser.GreaterEqContext):
-        left = self.visit(ctx.left)
-        right = self.visit(ctx.right)
-        return left + '>=' + right
-
-
-    # Visit a parse tree produced by TxScriptParser#Greater.
-    def visitGreater(self, ctx:TxScriptParser.GreaterContext):
-        left = self.visit(ctx.left)
-        right = self.visit(ctx.right)
-        return left + '>' + right
-
-
-    # Visit a parse tree produced by TxScriptParser#NEq.
-    def visitNEq(self, ctx:TxScriptParser.NEqContext):
-        left = self.visit(ctx.left)
-        right = self.visit(ctx.right)
-        return left + '!=' + right
-
-
-    # Visit a parse tree produced by TxScriptParser#MultDivEq.
-    def visitMultDivEq(self, ctx:TxScriptParser.MultDivEqContext):
-        left = self.visit(ctx.left)
-        right = self.visit(ctx.right)
-        return left + ctx.op.text + right
-
-
-    # Visit a parse tree produced by TxScriptParser#Eq.
-    def visitEq(self, ctx:TxScriptParser.EqContext):
-        left = self.visit(ctx.left)
-        right = self.visit(ctx.right)
-        return left + '==' + right
-
-
-    # Visit a parse tree produced by TxScriptParser#Less.
-    def visitLess(self, ctx:TxScriptParser.LessContext):
-        left = self.visit(ctx.left)
-        right = self.visit(ctx.right)
-        return left + '<' + right
-
-
-    # Visit a parse tree produced by TxScriptParser#variableArg.
-    def visitVariableArg(self, ctx:TxScriptParser.VariableArgContext):
-        if ctx.variable.text not in self.__mapInput:
-            self.__mapInput[ctx.variable.text] = ctx.variable.text + str(self.__i)
-            self.__i = self.__i + 1
-        return self.__mapInput[ctx.variable.text]
-        # self.__mapInput[ctx.variable.text] = self.__i
-        # self.__i = self.__i + 1
-
-
-    # Visit a parse tree produced by TxScriptParser#inputToken.
-    def visitInputToken(self, ctx:TxScriptParser.InputTokenContext):
-        # for now we only consider the scenario where all three are variables (a?x:t)
-        amount = ctx.data.text
-        if self.__j >= len(self.__input):
-            self.__input.append(set())
-        self.__input[self.__j].add(('ag{ag}{tk}', 'tk{tk}', amount, 'And(' + 'ag{ag}{tk}(i)>=' + amount + ', And(' + 'tk{tk}(i+1)==tk{tk}(i)+' + amount + '(i), ' + 'ag{ag}{tk}(i+1)==ag{ag}{tk}(i)-' + amount + '(i)))'))
-        # return ''
-
-
-    # Visit a parse tree produced by TxScriptParser#sequence.
-    def visitSequence(self, ctx:TxScriptParser.SequenceContext):
-        left = self.visit(ctx.left)
-        right = self.visit(ctx.right)
-        return 'And(' + left + ', ' + right + ')'
-
-
-    # Visit a parse tree produced by TxScriptParser#ifstatement.
-    def visitIfstatement(self, ctx:TxScriptParser.IfstatementContext):
-        condition = self.visit(ctx.condition)
-        first = self.visit(ctx.first)
-        second = self.visit(ctx.second)
-        return 'If(' + condition + ', ' + first + ', ' + second + ')'
-
-
-    # Visit a parse tree produced by TxScriptParser#outputToken.
-    def visitOutputToken(self, ctx:TxScriptParser.OutputTokenContext):
-        # for now we assume all variables (a!x:t)
-        amount = self.visit(ctx.data)
-        # for i in range(0, self.__Agents):
-        #     self.__nextStateAgents['ag' + str(i)].append('+' + amount)
-        # for i in range(0, self.__Tokens):
-        #     self.__nextStateTokens['tk' + str(i)].append('-' + amount)
-        # return ''
-        return 'And(' + 'tk{tk}(i+1)==tk{tk}(i)-' + amount + ', ' + 'ag{ag}{tk}(i+1)==ag{ag}{tk}(i)+' + amount + ')'
-
-
-    # Visit a parse tree produced by TxScriptParser#skipBody.
-    def visitSkipBody(self, ctx:TxScriptParser.SkipBodyContext):
-        return 'And(ag{ag}{tk}(i+1)==ag{ag}{tk}(i), tk{tk}(i+1)==tk{tk}(i))'
-        # return 'True'
-
-
-    # Visit a parse tree produced by TxScriptParser#assignmentBody.
-    def visitAssignmentBody(self, ctx:TxScriptParser.AssignmentBodyContext):
-        child = self.visit(ctx.child)
-        if ctx.variable.text not in self.__mapInput:
-            self.__mapInput[ctx.variable.text] = self.__i
-            self.__i = self.__i + 1
-        return self.__mapInput[ctx.variable.text] + '(i)==' + child
-
+    # Visit a parse tree produced by TxScriptParser#andExpr.
+    def visitAndExpr(self, ctx:TxScriptParser.AndExprContext):
+        return self.visitChildren(ctx)
 
 
     # Visit a parse tree produced by TxScriptParser#numberConstant.
@@ -504,136 +390,20 @@ print("Solving time: " + str(timeTot) + "s")
         return ctx.v.text
 
 
-    # Visit a parse tree produced by TxScriptParser#agentOrTokenConstant.
-    def visitAgentOrTokenConstant(self, ctx:TxScriptParser.AgentOrTokenConstantContext):
+    # Visit a parse tree produced by TxScriptParser#strConstant.
+    def visitStrConstant(self, ctx:TxScriptParser.StrConstantContext):
+        if ctx.v.text == 'balance':
+            return 'wNow'
+        if ctx.v.text in self.__args_map:
+            return self.__args_map[ctx.v.text]
         return ctx.v.text
 
-# Visit a parse tree produced by TxScriptParser#firstOrderFormulasExpr.
-    def visitFirstOrderFormulasExpr(self, ctx:TxScriptParser.FirstOrderFormulasExprContext):
-        formulas = []
-        for phi in ctx.firstOrderFormulaExpr():
-            formulas.append(self.visit(phi))
-        return formulas
+
+    # Visit a parse tree produced by TxScriptParser#trueConstant.
+    def visitTrueConstant(self, ctx:TxScriptParser.TrueConstantContext):
+        return ctx.v.text
 
 
-    # Visit a parse tree produced by TxScriptParser#functionFormula.
-    def visitFunctionFormula(self, ctx:TxScriptParser.FunctionFormulaContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TxScriptParser#NEqFormula.
-    def visitNEqFormula(self, ctx:TxScriptParser.NEqFormulaContext):
-        return self.visit(ctx.left) + '!=' + self.visit(ctx.right)
-
-
-    # Visit a parse tree produced by TxScriptParser#MultDivEqFormula.
-    def visitMultDivEqFormula(self, ctx:TxScriptParser.MultDivEqFormulaContext):
-        return self.visit(ctx.left) + '*' + self.visit(ctx.right)
-
-
-    # Visit a parse tree produced by TxScriptParser#LessEqFormula.
-    def visitLessEqFormula(self, ctx:TxScriptParser.LessEqFormulaContext):
-        return self.visit(ctx.left) + '<=' + self.visit(ctx.right)
-
-
-    # Visit a parse tree produced by TxScriptParser#atomFormula.
-    def visitAtomFormula(self, ctx:TxScriptParser.AtomFormulaContext):
-        return ctx.child.text
-
-    # Visit a parse tree produced by TxScriptParser#atomFormula.
-    def visitAtomFormulaN(self, ctx:TxScriptParser.AtomFormulaNContext):
-        if ctx.child.text not in self.__mapInput:
-            self.__mapInput[ctx.child.text] = ctx.child.text + str(self.__i)
-            self.__i = self.__i + 1
-        return self.__mapInput[ctx.child.text] + '(' + ctx.n.text + ')'
-
-    # Visit a parse tree produced by TxScriptParser#andFormula.
-    def visitAndFormula(self, ctx:TxScriptParser.AndFormulaContext):
-        return 'And(' + self.visit(ctx.left) + ',' + self.visit(ctx.right) + ')'
-
-
-    # Visit a parse tree produced by TxScriptParser#notFormula.
-    def visitNotFormula(self, ctx:TxScriptParser.NotFormulaContext):
-        return 'Not(' + self.visit(ctx.child) + ')'
-
-
-    # Visit a parse tree produced by TxScriptParser#existsFormula.
-    def visitExistsFormula(self, ctx:TxScriptParser.ExistsFormulaContext):
-        self.__phiVars.add(ctx.var.text)
-        return 'Exists(' + ctx.var.text + ',' + self.visit(ctx.child) + ')'
-
-
-    # Visit a parse tree produced by TxScriptParser#orFormula.
-    def visitOrFormula(self, ctx:TxScriptParser.OrFormulaContext):
-        return 'Or(' + self.visit(ctx.left) + ',' + self.visit(ctx.right) + ')'
-
-
-    # Visit a parse tree produced by TxScriptParser#GreaterEqFormula.
-    def visitGreaterEqFormula(self, ctx:TxScriptParser.GreaterEqFormulaContext):
-        return self.visit(ctx.left) + '>=' + self.visit(ctx.right)
-
-
-    # Visit a parse tree produced by TxScriptParser#SumSubEqFormula.
-    def visitSumSubEqFormula(self, ctx:TxScriptParser.SumSubEqFormulaContext):
-        return self.visit(ctx.left) + ctx.op.text + self.visit(ctx.right)
-
-
-    # Visit a parse tree produced by TxScriptParser#forallFormula.
-    def visitForallFormula(self, ctx:TxScriptParser.ForallFormulaContext):
-        self.__phiVars.add(ctx.var.text)
-        return 'ForAll(' + ctx.var.text + ',' + self.visit(ctx.child) + ')'
-
-
-    # Visit a parse tree produced by TxScriptParser#GreaterFormula.
-    def visitGreaterFormula(self, ctx:TxScriptParser.GreaterFormulaContext):
-        return self.visit(ctx.left) + '>' + self.visit(ctx.right)
-
-
-    # Visit a parse tree produced by TxScriptParser#EqFormula.
-    def visitEqFormula(self, ctx:TxScriptParser.EqFormulaContext):
-        return self.visit(ctx.left) + '==' + self.visit(ctx.right)
-
-
-    # Visit a parse tree produced by TxScriptParser#LessFormula.
-    def visitLessFormula(self, ctx:TxScriptParser.LessFormulaContext):
-        return self.visit(ctx.left) + '<' + self.visit(ctx.right)
-
-
-    # Visit a parse tree produced by TxScriptParser#impliesFormula.
-    def visitImpliesFormula(self, ctx:TxScriptParser.ImpliesFormulaContext):
-        return 'Implies(' + self.visit(ctx.left) + ',' + self.visit(ctx.right) + ')'
-
-    # Visit a parse tree produced by TxScriptParser#sumFormula.
-    def visitSumFormula(self, ctx:TxScriptParser.SumFormulaContext):
-        equation = self.visit(ctx.child)
-        sums = []
-        for i in range(int(ctx.varMin.text), int(ctx.varMax.text)):
-            sums.append(equation.replace(ctx.var.text, str(i)))
-        return '(' + '+'.join(sums) + ')'
-
-    # Visit a parse tree produced by TxScriptParser#impliesFormula.
-    def visitGroupFormula(self, ctx:TxScriptParser.ImpliesFormulaContext):
-        return self.visit(ctx.child)
-
-    # Visit a parse tree produced by TxScriptParser#tokenijn.
-    def visitToken0jn(self, ctx:TxScriptParser.TokenijnContext):
-        return 'tk{j}({n})'.format(j=ctx.j.text, n=ctx.n.text)
-
-    # Visit a parse tree produced by TxScriptParser#tokenijn.
-    def visitTokenijn(self, ctx:TxScriptParser.TokenijnContext):
-        if ctx.i.text == '0':
-            return 'tk{j}({n})'.format(j=ctx.j.text, n=ctx.n.text)
-        else:
-            return 'ag{i}{j}({n})'.format(i=ctx.i.text, j=ctx.j.text, n=ctx.n.text)
-
-    def visitGVarn(self, ctx:TxScriptParser.TokenijnContext):
-        return '{name}({n})'.format(name=ctx.x.text, n=ctx.n.text)
-
-    # Visit a parse tree produced by TxScriptParser#globalVarsExpr.
-    def visitGlobalVarsExpr(self, ctx:TxScriptParser.GlobalVarsExprContext):
-        for gVar in ctx.globalVarExpr():
-            self.__globalVars.append(self.visit(gVar))
-
-    # Visit a parse tree produced by TxScriptParser#globalVarExpr.
-    def visitGlobalVarExpr(self, ctx:TxScriptParser.GlobalVarExprContext):
-        return (ctx.ty.text, ctx.name.text, ctx.val.text)
+    # Visit a parse tree produced by TxScriptParser#falseConstant.
+    def visitFalseConstant(self, ctx:TxScriptParser.FalseConstantContext):
+        return ctx.v.text

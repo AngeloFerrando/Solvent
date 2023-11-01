@@ -34,7 +34,7 @@ def parse(pattern):
         # parser.addErrorListener(TxScriptErrorListener())
         tree = parser.contractExpr()
 
-        visitor = Z3Visitor()
+        visitor = Z3Visitor(3, 3)
         print(visitor.visit(tree))
     # except Exception as e:
     #     print(str(e))
