@@ -34,8 +34,13 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TxScriptParser#funDecl.
-    def visitFunDecl(self, ctx:TxScriptParser.FunDeclContext):
+    # Visit a parse tree produced by TxScriptParser#payableFunDecl.
+    def visitPayableFunDecl(self, ctx:TxScriptParser.PayableFunDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#nonPayableFunDecl.
+    def visitNonPayableFunDecl(self, ctx:TxScriptParser.NonPayableFunDeclContext):
         return self.visitChildren(ctx)
 
 
@@ -84,28 +89,8 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TxScriptParser#walletExpr.
-    def visitWalletExpr(self, ctx:TxScriptParser.WalletExprContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by TxScriptParser#groupExpr.
     def visitGroupExpr(self, ctx:TxScriptParser.GroupExprContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TxScriptParser#greaterEqExpr.
-    def visitGreaterEqExpr(self, ctx:TxScriptParser.GreaterEqExprContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TxScriptParser#lessExpr.
-    def visitLessExpr(self, ctx:TxScriptParser.LessExprContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TxScriptParser#neqExpr.
-    def visitNeqExpr(self, ctx:TxScriptParser.NeqExprContext):
         return self.visitChildren(ctx)
 
 
@@ -121,6 +106,16 @@ class TxScriptVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by TxScriptParser#notExpr.
     def visitNotExpr(self, ctx:TxScriptParser.NotExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#greaterEqExpr.
+    def visitGreaterEqExpr(self, ctx:TxScriptParser.GreaterEqExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#lessExpr.
+    def visitLessExpr(self, ctx:TxScriptParser.LessExprContext):
         return self.visitChildren(ctx)
 
 
@@ -141,6 +136,11 @@ class TxScriptVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by TxScriptParser#multDivEqExpr.
     def visitMultDivEqExpr(self, ctx:TxScriptParser.MultDivEqExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#neqExpr.
+    def visitNeqExpr(self, ctx:TxScriptParser.NeqExprContext):
         return self.visitChildren(ctx)
 
 

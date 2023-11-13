@@ -1,14 +1,15 @@
 contract C18 {
 
-  /*function deposit(?n:T) { 
-	// anyone can deposit
-  }*/
+  function deposit() payable { 
+    skip
+  }
 
   function pay(amount) {
     require (amount <= balance); // se è falso, lo stato nuovo della blockchain è uguale a quello vecchio
-    sender ! true : 1;
+    sender ! 1;
     require (amount - 1 <= balance);
-    sender ! true : amount - 1
+    sender ! amount - 1
     // se sono arrivato qui, allora lo stato nuovo della blockchain è uguale all'ultimo stato della computazione interna
   }
+
 }

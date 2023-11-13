@@ -6,8 +6,12 @@ from TxScriptVisitor import *
 class Z3Visitor(TxScriptVisitor):
     def __init__(self, N, A):
         self.__proc = set()
+        self.__proc_args = {}
         self.__add_last_cmd = False
+        self.__prefix = ''
         self.__args_map = {}
+        self.__nesting = 0
+        self.__max_nesting = 0
         # N = upper bound on the length of trace
         self.__N = N
         # A = upper bound on the number of actors (A+1)
@@ -15,10 +19,24 @@ class Z3Visitor(TxScriptVisitor):
 
     # Visit a parse tree produced by TxScriptParser#contractExpr.
     def visitContractExpr(self, ctx:TxScriptParser.ContractExprContext):
-        decl = self.visit(ctx.decl)
+        decls = self.visit(ctx.decl)
         proc = ''
         for p in self.__proc:
             proc += 'Proc.declare(\'{name}\')\n'.format(name=p.text)
+        args = ['{a} = [Int("{a}_%s" % (i)) for i in range(N+1)] \n{a}_q = Int("{a}_q")'.format(a=self.__args_map[a]) for a in self.__args_map]
+        step_trans_args = [self.__args_map[a] for a in self.__args_map]
+        functions_call = ''
+        n_tabs = 0
+        keys = list(self.__proc_args.keys())
+        if keys:
+            for p in keys[:-1]:
+                functions_call += '\t'*n_tabs + 'If(f1 == Proc.' + p.text + ',\n'
+                n_tabs += 1
+                functions_call += '\t'*n_tabs + p.text + '(xa1, xn1, ' + (','.join(self.__proc_args[p])+', ' if self.__proc_args[p] else '') + 'aw1, aw2, w1, w2, t_aw, t_w),\n'
+            n_tabs += 1
+            functions_call += '\t'*n_tabs + keys[-1].text + '(xa1, xn1, ' + (','.join(self.__proc_args[keys[-1]])+', ' if self.__proc_args[keys[-1]] else '') + 'aw1, aw2, w1, w2, t_aw, t_w)'
+            functions_call += ')'*len(keys)
+
         res = '''
 from z3 import *
 import time
@@ -98,12 +116,14 @@ xa_q = Int("xa_q")
 xn = [Int("xn_%s" % (i)) for i in range(N+1)]
 xn_q = Int("xn_q")
 
+# functions args
+{args}
+
 # List of ids hard coded
 hard_coded_list = [0]
 
-# This param should be computed automatically
 # Maximum functions depth
-M = 2
+M = {max_nesting}
 
 # Temporary contract balance. Used inside functions to model internal states
 t_w = [[Int("t_w_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]
@@ -135,7 +155,7 @@ def send(sender_id, amount, w_b, w_a, aw_b, aw_a): # '_b' and '_a' mean 'before'
                           aw_a[j] == aw_b[j] + amount,
                           aw_a[j] == aw_b[j]) for j in range(A+1)]))
 
-{decl}
+{decls}
 
 
 def user_is_legit(xa1):
@@ -156,19 +176,13 @@ def user_is_fresh(xa, xa1, f, i):
 # transition rules
 
 
-def step_trans(f1, xa1, xn1, aw1, aw2, w1, w2, t_aw, t_w, i):
+def step_trans(f1, xa1, xn1, {step_trans_args} aw1, aw2, w1, w2, t_aw, t_w, i):
     return And(valid_tx(xa1, xn1, w1, w2),
                And([aw1[j] >= 0 for j in range(A+1)]),
-               If(f1 == Proc.pay,
-                  pay(xa1, xn1, aw1, aw2, w1, w2, t_aw, t_w),
-                  #   The only other possible transition is f[i] == Proc.deposit
-                  deposit(xn1, w1, w2, aw1, aw2)
-                  #new_state_tx(aw1, aw2, w1, w2)
-                  ))
-
+               {functions_call}
 
 for i in range(N):
-    new_state = step_trans(f[i], xa[i], xn[i], aw[i],
+    new_state = step_trans(f[i], xa[i], xn[i], {step_trans_args_i} aw[i],
                            aw[i+1], w[i], w[i+1], t_aw[i], t_w[i], i)
 
     s.add(new_state)
@@ -181,7 +195,7 @@ def p(i):
     #print([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list ])
     return And(w[i] > 0,
                Exists([xa_q], And(user_is_legit(xa_q), user_is_fresh(xa, xa_q, f,  i),
-                      ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list ], Or(Not(step_trans(f_q, xa_q, xn_q, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, i)), w_q > 0)))))
+                      ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list, pay_amount_q ], Or(Not(step_trans(f_q, xa_q, xn_q, pay_amount_q, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, i)), w_q > 0)))))
                       #ForAll([xn_q, f_q, w_q, *aw_q ], Or(Not(step_trans(f_q, xa_q, xn_q, aw[i], aw_q, w[i], w_q, t_aw[i], t_w[i], i)), w_q > 0)))))
 
 queries = [p(i) for i in range(N)]
@@ -208,13 +222,25 @@ for i, q in enumerate(queries):
     timeTot = time.time() - timeStart
     print("Solving time: " + str(timeTot) + "s")
                       
-'''.format(N=self.__N, A=self.__A, proc=proc, decl=decl)
+'''.format(
+        N=self.__N, A=self.__A, 
+        proc=proc, decls='\n'.join(decls), 
+        args='\n'.join(args), 
+        step_trans_args=', '.join(step_trans_args)+',' if step_trans_args else '', 
+        step_trans_args_i=', '.join([s+'[i]' for s in step_trans_args])+',' if step_trans_args else '',
+        functions_call=functions_call,
+        max_nesting = self.__max_nesting
+    )
         return res
 
 
     # Visit a parse tree produced by TxScriptParser#declsExpr.
     def visitDeclsExpr(self, ctx:TxScriptParser.DeclsExprContext):
-        return self.visitChildren(ctx)
+        decls = []
+        for decl in ctx.declExpr():
+            decls.append(self.visit(decl))
+            self.__max_nesting = max(self.__nesting, self.__max_nesting)
+        return decls
 
 
     # Visit a parse tree produced by TxScriptParser#intDecl.
@@ -232,28 +258,48 @@ for i, q in enumerate(queries):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TxScriptParser#payableFunDecl.
+    def visitPayableFunDecl(self, ctx:TxScriptParser.PayableFunDeclContext):
+        self.__nesting = 1
+        self.__t_curr_w = 't_w[0]'
+        self.__t_new_w = 't_w[1]'
+        self.__t_curr_a = 't_aw[0]'
+        self.__t_new_a = 't_aw[1]'
+        return self.visitFun(ctx, 'And(t_w[0] == wNow + xn1')
+        # return self.visitFun(ctx, 'And(t_w[0] == wNow + xn1, t_aw[0][xa1] == awNow - xn1, for (...)')
+
+
+    # Visit a parse tree produced by TxScriptParser#nonPayableFunDecl.
+    def visitNonPayableFunDecl(self, ctx:TxScriptParser.NonPayableFunDeclContext):
+        self.__nesting = 0
+        self.__t_curr_w = 'wNow'
+        self.__t_new_w = 't_w[0]'
+        self.__t_curr_a = 'awNow'
+        self.__t_new_a = 't_aw[0]'
+        return self.visitFun(ctx, 'If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext)')
+
+
     # Visit a parse tree produced by TxScriptParser#funDecl.
-    def visitFunDecl(self, ctx:TxScriptParser.FunDeclContext):
+    def visitFun(self, ctx, reqs):
         self.__proc.add(ctx.name)
-        self.__args_map = {}
+        self.__prefix = ctx.name.text
         args = self.visit(ctx.args)
         self.__add_last_cmd = True
         body = self.visit(ctx.cmds)
+        self.__proc_args[ctx.name] = args
         res ='''
-def {name}(xa1, {args}, awNow, awNext, wNow, wNext, t_aw, t_w):
-    {body}
-'''.format(name=ctx.name.text, args=','.join(args), body=body)
+def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w):
+    return {reqs}, \n\t{body})
+'''.format(name=ctx.name.text, args=(','.join(args)+', ' if args else ''), body=body, reqs=reqs)
         return res
 
 
     # Visit a parse tree produced by TxScriptParser#argsExpr.
     def visitArgsExpr(self, ctx:TxScriptParser.ArgsExprContext):
         args = set()
-        i = 1
         for arg in ctx.argExpr():
-            args.add('xn' + str(i))
-            self.__args_map[arg.var.text] = 'xn' + str(i)
-            i += 1
+            args.add(self.__prefix + '_' + arg.var.text)
+            self.__args_map[arg.var.text] = self.__prefix + '_' + arg.var.text
         return args
 
 
@@ -265,12 +311,16 @@ def {name}(xa1, {args}, awNow, awNext, wNow, wNext, t_aw, t_w):
     # Visit a parse tree produced by TxScriptParser#sendCmd.
     def visitSendCmd(self, ctx:TxScriptParser.SendCmdContext):
         sender = ctx.sender.text
-        if sender == 'sender':
-            res = 'send(xa1, {amount}, wNow, t_w[0], awNow, t_aw[0])'.format(amount=self.visit(ctx.amount))
-            return res
+        self.__nesting += 1
+        if sender == 'sender' or sender == 'msg.sender' or sender == 'xa1':
+            res = 'send(xa1, {amount}, {t_curr_w}, {t_new_w}, {t_curr_a}, {t_new_a})'.format(amount=self.visit(ctx.amount), t_curr_w=self.__t_curr_w, t_new_w=self.__t_new_w, t_curr_a=self.__t_curr_a, t_new_a=self.__t_new_a)
         else:
             raise Exception('Not handled, yet')
-
+        self.__t_curr_a = 't_aw[' + str(self.__nesting-1) + ']'
+        self.__t_new_a = 't_aw[' + str(self.__nesting) + ']'
+        self.__t_curr_w = 't_w[' + str(self.__nesting-1) + ']'
+        self.__t_new_w = 't_w[' + str(self.__nesting) + ']'
+        return res
 
     # Visit a parse tree produced by TxScriptParser#requireCmd.
     def visitRequireCmd(self, ctx:TxScriptParser.RequireCmdContext):
@@ -279,7 +329,7 @@ def {name}(xa1, {args}, awNow, awNext, wNow, wNext, t_aw, t_w):
 
     # Visit a parse tree produced by TxScriptParser#skipCmd.
     def visitSkipCmd(self, ctx:TxScriptParser.SkipCmdContext):
-        return self.visitChildren(ctx)
+        return 'next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext)'.format(t_curr_a=self.__t_curr_a, t_curr_w=self.__t_curr_w)
 
 
     # Visit a parse tree produced by TxScriptParser#groupCmd.
@@ -302,18 +352,13 @@ def {name}(xa1, {args}, awNow, awNext, wNow, wNext, t_aw, t_w):
         seq1 = self.visit(ctx.seq1)
         seq2 = self.visit(ctx.seq2)
         if self.__add_last_cmd:
-            seq2 = 'And({seq2}, next_state_tx(t_aw[1], awNext, t_w[1], wNext))'.format(seq2=seq2)
+            seq2 = 'And({seq2}, next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext))'.format(seq2=seq2, t_curr_a=self.__t_curr_a, t_curr_w=self.__t_curr_w)
             self.__add_last_cmd = False
         aux = seq1.format(subs=seq2)
         if aux == seq1:
             return 'And(\n\t{seq1},\n\t{seq2})'.format(seq1=seq1, seq2=seq2)
         else:
             return aux
-    
-
-    # Visit a parse tree produced by TxScriptParser#walletExpr.
-    def visitWalletExpr(self, ctx:TxScriptParser.WalletExprContext):
-        return self.visitChildren(ctx)
 
 
     # Visit a parse tree produced by TxScriptParser#groupExpr.
@@ -348,7 +393,9 @@ def {name}(xa1, {args}, awNow, awNext, wNow, wNext, t_aw, t_w):
 
     # Visit a parse tree produced by TxScriptParser#eqExpr.
     def visitEqExpr(self, ctx:TxScriptParser.EqExprContext):
-        return self.visitChildren(ctx)
+        left = self.visit(ctx.left)
+        right = self.visit(ctx.right)
+        return left + '==' + right
 
 
     # Visit a parse tree produced by TxScriptParser#notExpr.
@@ -393,7 +440,11 @@ def {name}(xa1, {args}, awNow, awNext, wNow, wNext, t_aw, t_w):
     # Visit a parse tree produced by TxScriptParser#strConstant.
     def visitStrConstant(self, ctx:TxScriptParser.StrConstantContext):
         if ctx.v.text == 'balance':
-            return 'wNow'
+            return self.__t_curr_w
+        if ctx.v.text == 'msg.value':
+            return 'xn1'
+        if ctx.v.text == 'msg.sender':
+            return 'xa1'
         if ctx.v.text in self.__args_map:
             return self.__args_map[ctx.v.text]
         return ctx.v.text

@@ -53,12 +53,21 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#funDecl.
-    def enterFunDecl(self, ctx:TxScriptParser.FunDeclContext):
+    # Enter a parse tree produced by TxScriptParser#payableFunDecl.
+    def enterPayableFunDecl(self, ctx:TxScriptParser.PayableFunDeclContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#funDecl.
-    def exitFunDecl(self, ctx:TxScriptParser.FunDeclContext):
+    # Exit a parse tree produced by TxScriptParser#payableFunDecl.
+    def exitPayableFunDecl(self, ctx:TxScriptParser.PayableFunDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#nonPayableFunDecl.
+    def enterNonPayableFunDecl(self, ctx:TxScriptParser.NonPayableFunDeclContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#nonPayableFunDecl.
+    def exitNonPayableFunDecl(self, ctx:TxScriptParser.NonPayableFunDeclContext):
         pass
 
 
@@ -143,48 +152,12 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#walletExpr.
-    def enterWalletExpr(self, ctx:TxScriptParser.WalletExprContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#walletExpr.
-    def exitWalletExpr(self, ctx:TxScriptParser.WalletExprContext):
-        pass
-
-
     # Enter a parse tree produced by TxScriptParser#groupExpr.
     def enterGroupExpr(self, ctx:TxScriptParser.GroupExprContext):
         pass
 
     # Exit a parse tree produced by TxScriptParser#groupExpr.
     def exitGroupExpr(self, ctx:TxScriptParser.GroupExprContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#greaterEqExpr.
-    def enterGreaterEqExpr(self, ctx:TxScriptParser.GreaterEqExprContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#greaterEqExpr.
-    def exitGreaterEqExpr(self, ctx:TxScriptParser.GreaterEqExprContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#lessExpr.
-    def enterLessExpr(self, ctx:TxScriptParser.LessExprContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#lessExpr.
-    def exitLessExpr(self, ctx:TxScriptParser.LessExprContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#neqExpr.
-    def enterNeqExpr(self, ctx:TxScriptParser.NeqExprContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#neqExpr.
-    def exitNeqExpr(self, ctx:TxScriptParser.NeqExprContext):
         pass
 
 
@@ -212,6 +185,24 @@ class TxScriptListener(ParseTreeListener):
 
     # Exit a parse tree produced by TxScriptParser#notExpr.
     def exitNotExpr(self, ctx:TxScriptParser.NotExprContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#greaterEqExpr.
+    def enterGreaterEqExpr(self, ctx:TxScriptParser.GreaterEqExprContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#greaterEqExpr.
+    def exitGreaterEqExpr(self, ctx:TxScriptParser.GreaterEqExprContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#lessExpr.
+    def enterLessExpr(self, ctx:TxScriptParser.LessExprContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#lessExpr.
+    def exitLessExpr(self, ctx:TxScriptParser.LessExprContext):
         pass
 
 
@@ -248,6 +239,15 @@ class TxScriptListener(ParseTreeListener):
 
     # Exit a parse tree produced by TxScriptParser#multDivEqExpr.
     def exitMultDivEqExpr(self, ctx:TxScriptParser.MultDivEqExprContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#neqExpr.
+    def enterNeqExpr(self, ctx:TxScriptParser.NeqExprContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#neqExpr.
+    def exitNeqExpr(self, ctx:TxScriptParser.NeqExprContext):
         pass
 
 

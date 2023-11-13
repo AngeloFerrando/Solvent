@@ -8,7 +8,8 @@ declExpr :
 'int' var=NUMBER                                                                     # intDecl
     | 'string' var=LABEL                                                             # strDecl
     | 'constraint' name=LABEL '(' args=argsExpr  ')' '{' cmds=cmdExpr '}'            # constrDecl
-    | 'function' name=LABEL '(' args=argsExpr ')' '{' cmds=cmdExpr '}'               # funDecl
+    | 'function' name=LABEL '(' args=argsExpr ')' 'payable' '{' cmds=cmdExpr '}'     # payableFunDecl
+    | 'function' name=LABEL '(' args=argsExpr ')' '{' cmds=cmdExpr '}'               # nonPayableFunDecl
 ;
 
 argsExpr : (argExpr)*;
@@ -21,7 +22,7 @@ cmdExpr :
     | 'require' '(' child=expression ')'                                # requireCmd
     | 'if' condition=expression ifcmd=cmdExpr 'else' elsecmd=cmdExpr    # ifelseCmd
     | var=LABEL '=' child=expression                                    # assignCmd
-    | sender=LABEL '!' child=expression ':' amount=expression           # sendCmd
+    | sender=LABEL '!' amount=expression                                # sendCmd
     | <assoc=right> seq1=cmdExpr ';' seq2=cmdExpr                       # seqCmd
     | '(' cmdExpr ')'                                                   # groupCmd
 ;
@@ -29,7 +30,7 @@ cmdExpr :
 expression :
  child=constantExpr                                                     # constExpr
 //  | child=LABEL                                                          # variableExpr
- | '#' child=expression                                                 # walletExpr
+//  | '#' child=expression                                                 # walletExpr
  | left=expression op=('*' | '/') right=expression                      # multDivEqExpr
  | left=expression op=('+' | '-') right=expression                      # sumSubEqExpr
  | left=expression ('==') right=expression                              # eqExpr
@@ -51,7 +52,7 @@ constantExpr :
 ;
 
 
-LABEL : [_a-z][_a-zA-Z0-9]*;
+LABEL : [_a-z.][_a-zA-Z0-9.]*;
 LABELUPPER : [_a-zA-Z][_a-zA-Z0-9]*;
 
 NUMBER : ('-')? DIGIT | ('-')? (DIGIT_NOT_ZERO DIGIT+);
