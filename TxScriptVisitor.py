@@ -29,6 +29,11 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TxScriptParser#addrDecl.
+    def visitAddrDecl(self, ctx:TxScriptParser.AddrDeclContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TxScriptParser#constrDecl.
     def visitConstrDecl(self, ctx:TxScriptParser.ConstrDeclContext):
         return self.visitChildren(ctx)
@@ -41,6 +46,11 @@ class TxScriptVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by TxScriptParser#nonPayableFunDecl.
     def visitNonPayableFunDecl(self, ctx:TxScriptParser.NonPayableFunDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#constructorDecl.
+    def visitConstructorDecl(self, ctx:TxScriptParser.ConstructorDeclContext):
         return self.visitChildren(ctx)
 
 

@@ -5,11 +5,13 @@ contractExpr : 'contract' name=LABELUPPER '{' decl=declsExpr '}';
 
 declsExpr : (declExpr)+;
 declExpr : 
-'int' var=NUMBER                                                                     # intDecl
+'int' var=LABEL                                                                      # intDecl
     | 'string' var=LABEL                                                             # strDecl
+    | 'address' var=LABEL                                                            # addrDecl
     | 'constraint' name=LABEL '(' args=argsExpr  ')' '{' cmds=cmdExpr '}'            # constrDecl
     | 'function' name=LABEL '(' args=argsExpr ')' 'payable' '{' cmds=cmdExpr '}'     # payableFunDecl
     | 'function' name=LABEL '(' args=argsExpr ')' '{' cmds=cmdExpr '}'               # nonPayableFunDecl
+    | 'constructor' '(' args=argsExpr ')' '{' cmds=cmdExpr '}'                       # constructorDecl
 ;
 
 argsExpr : (argExpr)*;
@@ -20,7 +22,7 @@ argExpr :
 cmdExpr :
     'skip'                                                              # skipCmd
     | 'require' '(' child=expression ')'                                # requireCmd
-    | 'if' condition=expression ifcmd=cmdExpr 'else' elsecmd=cmdExpr    # ifelseCmd
+    | 'if' '(' condition=expression ')' '{' ifcmd=cmdExpr '}' 'else' '{' elsecmd=cmdExpr '}'    # ifelseCmd
     | var=LABEL '=' child=expression                                    # assignCmd
     | sender=LABEL '!' amount=expression                                # sendCmd
     | <assoc=right> seq1=cmdExpr ';' seq2=cmdExpr                       # seqCmd

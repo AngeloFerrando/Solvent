@@ -44,6 +44,15 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TxScriptParser#addrDecl.
+    def enterAddrDecl(self, ctx:TxScriptParser.AddrDeclContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#addrDecl.
+    def exitAddrDecl(self, ctx:TxScriptParser.AddrDeclContext):
+        pass
+
+
     # Enter a parse tree produced by TxScriptParser#constrDecl.
     def enterConstrDecl(self, ctx:TxScriptParser.ConstrDeclContext):
         pass
@@ -68,6 +77,15 @@ class TxScriptListener(ParseTreeListener):
 
     # Exit a parse tree produced by TxScriptParser#nonPayableFunDecl.
     def exitNonPayableFunDecl(self, ctx:TxScriptParser.NonPayableFunDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#constructorDecl.
+    def enterConstructorDecl(self, ctx:TxScriptParser.ConstructorDeclContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#constructorDecl.
+    def exitConstructorDecl(self, ctx:TxScriptParser.ConstructorDeclContext):
         pass
 
 

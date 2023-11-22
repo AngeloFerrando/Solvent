@@ -1,6 +1,8 @@
 contract C18 {
 
-  function deposit() payable { 
+  int count
+
+  constructor() {
     skip
   }
 

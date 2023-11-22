@@ -76,13 +76,25 @@ public class TxScriptBaseListener implements TxScriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFunDecl(TxScriptParser.FunDeclContext ctx) { }
+	@Override public void enterPayableFunDecl(TxScriptParser.PayableFunDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitFunDecl(TxScriptParser.FunDeclContext ctx) { }
+	@Override public void exitPayableFunDecl(TxScriptParser.PayableFunDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNonPayableFunDecl(TxScriptParser.NonPayableFunDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNonPayableFunDecl(TxScriptParser.NonPayableFunDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -196,18 +208,6 @@ public class TxScriptBaseListener implements TxScriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterWalletExpr(TxScriptParser.WalletExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitWalletExpr(TxScriptParser.WalletExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterGroupExpr(TxScriptParser.GroupExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -215,42 +215,6 @@ public class TxScriptBaseListener implements TxScriptListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitGroupExpr(TxScriptParser.GroupExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterGreaterEqExpr(TxScriptParser.GreaterEqExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitGreaterEqExpr(TxScriptParser.GreaterEqExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterLessExpr(TxScriptParser.LessExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLessExpr(TxScriptParser.LessExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterNeqExpr(TxScriptParser.NeqExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitNeqExpr(TxScriptParser.NeqExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -287,6 +251,30 @@ public class TxScriptBaseListener implements TxScriptListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitNotExpr(TxScriptParser.NotExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterGreaterEqExpr(TxScriptParser.GreaterEqExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitGreaterEqExpr(TxScriptParser.GreaterEqExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterLessExpr(TxScriptParser.LessExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLessExpr(TxScriptParser.LessExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -335,6 +323,18 @@ public class TxScriptBaseListener implements TxScriptListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitMultDivEqExpr(TxScriptParser.MultDivEqExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterNeqExpr(TxScriptParser.NeqExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitNeqExpr(TxScriptParser.NeqExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -11,7 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["./examples/liquidity18.txscript"]
+            "args": ["./examples/liquidity18.txscript", "5", "3"]
         }
     ]
 }
