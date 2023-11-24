@@ -215,7 +215,7 @@ def p(i):
                       ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list{func_args_q}{global_args_q} ], Or(Not(step_trans(f_q, xa_q, xn_q{func_args_q}, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, i{global_args_phi})), w_q > 0)))))
                       #ForAll([xn_q, f_q, w_q, *aw_q ], Or(Not(step_trans(f_q, xa_q, xn_q, aw[i], aw_q, w[i], w_q, t_aw[i], t_w[i], i)), w_q > 0)))))
 
-queries = [p(i) for i in range(N)]
+queries = [p(i) for i in range(1, N)]
 
 # queries = [ p(0) ]
 
@@ -392,7 +392,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
 
     # Visit a parse tree produced by TxScriptParser#groupCmd.
     def visitGroupCmd(self, ctx:TxScriptParser.GroupCmdContext):
-        return self.visitChildren(ctx)
+        return self.visit(ctx.child)
 
 
     # Visit a parse tree produced by TxScriptParser#assignCmd.
@@ -440,7 +440,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
 
     # Visit a parse tree produced by TxScriptParser#groupExpr.
     def visitGroupExpr(self, ctx:TxScriptParser.GroupExprContext):
-        return self.visitChildren(ctx)
+        return self.visit(ctx.child)
 
 
     # Visit a parse tree produced by TxScriptParser#greaterEqExpr.
@@ -520,7 +520,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
 
     # Visit a parse tree produced by TxScriptParser#andExpr.
     def visitAndExpr(self, ctx:TxScriptParser.AndExprContext):
-        return self.visitChildren(ctx)
+        return 'And(' + self.visit(ctx.left) + ',' + self.visit(ctx.right) + ')'
 
 
     # Visit a parse tree produced by TxScriptParser#numberConstant.
