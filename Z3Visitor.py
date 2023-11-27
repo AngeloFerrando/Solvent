@@ -25,7 +25,11 @@ class Z3Visitor(TxScriptVisitor):
         decls = self.visit(ctx.decl)
         decls = [decl for decl in decls if decl is not None]
         if not any('constructor' in decl for decl in decls):
-            decls.append('def constructor(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):\n\treturn And({global_args_assign}next_state_tx(awNow, awNext, wNow, wNext))'.format(global_args = (', ' + ', '.join([g.text+'1, '+g.text+'2, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '', global_args_assign = (', '.join([g.text+'2 == '+g.text+'2' for (g, _) in self.__globals]) + ', ') if self.__globals else ''))
+            decls.append('def constructor(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):\n\treturn next_state_tx(awNow, awNext, wNow, wNext{global_args_next_state_tx})'.format(
+                global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '', 
+                # global_args_assign = (', '.join([g.text+'Next == '+g.text+'Next' for (g, _) in self.__globals]) + ', ') if self.__globals else ''), 
+                global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+            ))
         proc = ''
         for p in self.__proc:
             if p == 'constructor': continue
@@ -40,14 +44,14 @@ class Z3Visitor(TxScriptVisitor):
             for p in keys[:-1]:
                 functions_call += '\t'*n_tabs + 'If(f1 == Proc.' + p + ',\n'
                 n_tabs += 1
-                functions_call += '\t'*n_tabs + p + '(xa1, xn1, ' + (','.join(self.__proc_args[p])+', ' if self.__proc_args[p] else '') + 'aw1, aw2, w1, w2, t_aw, t_w' + ((', ' + ', '.join([g.text+'1, '+g.text+'2, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + '),\n'
+                functions_call += '\t'*n_tabs + p + '(xa1, xn1, ' + (','.join(self.__proc_args[p])+', ' if self.__proc_args[p] else '') + 'aw1, aw2, w1, w2, t_aw, t_w' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + '),\n'
             n_tabs += 1
-            functions_call += '\t'*n_tabs + keys[-1] + '(xa1, xn1, ' + (','.join(self.__proc_args[keys[-1]])+', ' if self.__proc_args[keys[-1]] else '') + 'aw1, aw2, w1, w2, t_aw, t_w' + ((', ' + ', '.join([g.text+'1, '+g.text+'2, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + ')'
+            functions_call += '\t'*n_tabs + keys[-1] + '(xa1, xn1, ' + (','.join(self.__proc_args[keys[-1]])+', ' if self.__proc_args[keys[-1]] else '') + 'aw1, aw2, w1, w2, t_aw, t_w' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + ')'
             functions_call += ')'*len(keys)
         contract_globals = ''
         for (g_var,g_type) in self.__globals:
             contract_globals += '''
-{g} = [Int("{g}_%s" % (i)) for i in range(N+1)]
+{g} = [{ty}("{g}_%s" % (i)) for i in range(N+1)]
 {g}_q = {ty}("{g}q")
 t_{g} = [[{ty}("t_{g}_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]
 t_{g}_q = [{ty}("t_{g}q_%s" % (m)) for m in range(M)]'''.format(g=g_var.text, ty=g_type)
@@ -160,9 +164,10 @@ s = Solver()
 s.add(w[0] >= 0)
 # s.add(w[0] == 1)
 
-def next_state_tx(aw1, aw2, w1, w2):
+def next_state_tx(aw1, aw2, w1, w2{global_args_next_state_tx}):
     return And(w2 == w1,
-               And([aw2[j] == aw1[j] for j in range(A+1)]))
+               And([aw2[j] == aw1[j] for j in range(A+1)])
+               {global_args_next_state_tx_eval})
 
 def send(sender_id, amount, w_b, w_a, aw_b, aw_a): # '_b' and '_a' mean 'before' and 'after'
     return And(w_a == w_b - amount,
@@ -246,7 +251,9 @@ for i, q in enumerate(queries):
         args='\n'.join(args), 
         step_trans_args=', '.join(step_trans_args)+',' if step_trans_args else '', 
         step_trans_args_i=', '.join([s+'[i]' for s in step_trans_args])+',' if step_trans_args else '',
-        global_args = (', ' + ', '.join([g.text+'1, '+g.text+'2, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '', 
+        global_args_next_state_tx = (', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '',
+        global_args_next_state_tx_eval = (', ' + ', '.join([g.text+'Now=='+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '',
+        global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '', 
         global_args_i = (', ' + ', '.join([g.text+'[i], '+g.text+'[i+1]'+', t_'+g.text+'[i]' for (g, _) in self.__globals])) if self.__globals else '', 
         global_args_0 = (', ' + ', '.join([g.text+'[0], '+g.text+'[1]'+', t_'+g.text+'[0]' for (g, _) in self.__globals])) if self.__globals else '', 
         global_args_phi = (', ' + ', '.join([g.text+'[i], '+g.text+'_q, t_'+g.text+'_q' for (g, _) in self.__globals])) if self.__globals else '', 
@@ -276,6 +283,12 @@ for i, q in enumerate(queries):
         self.__globals_index[ctx.var.text] = 0
 
 
+    # Visit a parse tree produced by TxScriptParser#boolDecl.
+    def visitBoolDecl(self, ctx:TxScriptParser.BoolDeclContext):
+        self.__globals.add((ctx.var, 'Bool'))
+        self.__globals_index[ctx.var.text] = 0
+
+
     # Visit a parse tree produced by TxScriptParser#strDecl.
     def visitStrDecl(self, ctx:TxScriptParser.StrDeclContext):
         self.__globals.add((ctx.var, 'String'))
@@ -298,10 +311,12 @@ for i, q in enumerate(queries):
         self.__nesting = 1
         self.__t_curr_w = 't_w[0]'
         self.__t_new_w = 't_w[1]'
-        self.__t_curr_a = 't_aw[0]'
-        self.__t_new_a = 't_aw[1]'
+        self.__t_curr_a = 'awNow'
+        self.__t_new_a = 't_aw[0]'
         self.__proc.add('constructor')
         self.__prefix = 'constructor'
+        for k in self.__globals_index:
+            self.__globals_index[k] = 0
         return self.visitFun(ctx, 'And(t_w[0] == wNow + xn1')
 
 
@@ -310,10 +325,12 @@ for i, q in enumerate(queries):
         self.__nesting = 1
         self.__t_curr_w = 't_w[0]'
         self.__t_new_w = 't_w[1]'
-        self.__t_curr_a = 't_aw[0]'
-        self.__t_new_a = 't_aw[1]'
+        self.__t_curr_a = 'awNow'
+        self.__t_new_a = 't_aw[0]'
         self.__proc.add(ctx.name.text)
         self.__prefix = ctx.name.text
+        for k in self.__globals_index:
+            self.__globals_index[k] = 0
         return self.visitFun(ctx, 'And(t_w[0] == wNow + xn1')
         # return self.visitFun(ctx, 'And(t_w[0] == wNow + xn1, t_aw[0][xa1] == awNow - xn1, for (...)')
 
@@ -327,27 +344,29 @@ for i, q in enumerate(queries):
         self.__t_new_a = 't_aw[0]'
         self.__proc.add(ctx.name.text)
         self.__prefix = ctx.name.text
-        return self.visitFun(ctx, 'If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext)')
+        for k in self.__globals_index:
+            self.__globals_index[k] = 0
+        return self.visitFun(ctx, 'If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext{global_args_next_state_tx})'.format(
+            global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+        ))
 
 
     # Visit a parse tree produced by TxScriptParser#funDecl.
     def visitFun(self, ctx, reqs):
         args = self.visit(ctx.args)
         self.__add_last_cmd = True
-        for k in self.__globals_index:
-            self.__globals_index[k] = 0
         body = self.visit(ctx.cmds)
         self.__proc_args[self.__prefix] = args
         res ='''
 def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
-    return {reqs}, \n\tAnd({body}{globals_update}))
+    return {reqs}, \n\tAnd({body}))
 '''.format(
         name=self.__prefix, 
         args=(','.join(args)+', ' if args else ''), 
         body=body, 
         reqs=reqs,
-        global_args = (', ' + ', '.join([g.text+'1, '+g.text+'2, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '',
-        globals_update = (', \n\t\t' + ', '.join([('t_'+g.text+'['+str(self.__globals_index[g.text]-1)+']' if self.__globals_index[g.text]>0 else g.text+'1') + ' == '+g.text+'2' for (g, _) in self.__globals])) if self.__globals else ''
+        global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else ''
+        # globals_update = (', \n\t\t' + ', '.join([('t_'+g.text+'['+str(self.__globals_index[g.text]-1)+']' if self.__globals_index[g.text]>0 else g.text+'Now') + ' == '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
     )
         return res
 
@@ -382,12 +401,16 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
 
     # Visit a parse tree produced by TxScriptParser#requireCmd.
     def visitRequireCmd(self, ctx:TxScriptParser.RequireCmdContext):
-        return 'If(\n\tNot(' + self.visit(ctx.child) + '), \n\t\tnext_state_tx(awNow, awNext, wNow, wNext), And(\n\t\t{subs}))'
+        return 'If(\n\tNot(' + self.visit(ctx.child) + '), \n\t\tnext_state_tx(awNow, awNext, wNow, wNext'+((', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '')+'), And(\n\t\t{subs}))'
 
 
     # Visit a parse tree produced by TxScriptParser#skipCmd.
     def visitSkipCmd(self, ctx:TxScriptParser.SkipCmdContext):
-        return 'next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext)'.format(t_curr_a=self.__t_curr_a, t_curr_w=self.__t_curr_w)
+        return 'next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
+            t_curr_a=self.__t_curr_a, 
+            t_curr_w=self.__t_curr_w, 
+            global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+        )
 
 
     # Visit a parse tree produced by TxScriptParser#groupCmd.
@@ -428,8 +451,13 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
     def visitSeqCmd(self, ctx:TxScriptParser.SeqCmdContext):
         seq1 = self.visit(ctx.seq1)
         seq2 = self.visit(ctx.seq2)
-        if self.__add_last_cmd:
-            seq2 = 'And({seq2}, next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext))'.format(seq2=seq2, t_curr_a=self.__t_curr_a, t_curr_w=self.__t_curr_w)
+        if self.__add_last_cmd and not isinstance(ctx.seq2, TxScriptParser.SkipCmdContext):
+            seq2 = 'And({seq2}, next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx}))'.format(
+                seq2=seq2, 
+                t_curr_a=self.__t_curr_a, 
+                t_curr_w=self.__t_curr_w,
+                global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+            )
             self.__add_last_cmd = False
         aux = seq1.format(subs=seq2)
         if aux == seq1:
@@ -457,7 +485,9 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
 
     # Visit a parse tree produced by TxScriptParser#neqExpr.
     def visitNeqExpr(self, ctx:TxScriptParser.NeqExprContext):
-        return self.visitChildren(ctx)
+        left = self.visit(ctx.left)
+        right = self.visit(ctx.right)
+        return left + '!=' + right
 
 
     # # Visit a parse tree produced by TxScriptParser#variableExpr.
@@ -481,7 +511,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
 
     # Visit a parse tree produced by TxScriptParser#notExpr.
     def visitNotExpr(self, ctx:TxScriptParser.NotExprContext):
-        return self.visitChildren(ctx)
+        return 'Not('+self.visit(ctx.child)+')'
 
 
     # Visit a parse tree produced by TxScriptParser#sumSubEqExpr.
@@ -490,12 +520,12 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
         right = self.visit(ctx.right)
         if left in self.__globals_index:
             if self.__globals_index[left]+self.__globals_modifier <= 0:
-                left = left + '1'
+                left = left + 'Now'
             else:
                 left = 't_'+left + '['+str(self.__globals_index[left]+self.__globals_modifier)+']'
         if right in self.__globals_index:
             if self.__globals_index[right]+self.__globals_modifier <= 0:
-                right = right + '1'
+                right = right + 'Now'
             else:
                 right = 't_'+right + '['+str(self.__globals_index[right]+self.__globals_modifier)+']'
         return left + ctx.op.text + right
@@ -532,15 +562,15 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
     def visitStrConstant(self, ctx:TxScriptParser.StrConstantContext):
         if ctx.v.text == 'balance':
             return self.__t_curr_w
-        if ctx.v.text == 'msg.value':
+        if ctx.v.text == 'msg.value' or ctx.v.text == 'value':
             return 'xn1'
-        if ctx.v.text == 'msg.sender':
+        if ctx.v.text == 'msg.sender' or ctx.v.text == 'sender':
             return 'xa1'
         if ctx.v.text in self.__args_map:
             return self.__args_map[ctx.v.text]
         if ctx.v.text in self.__globals_index:
             if self.__globals_index[ctx.v.text]+self.__globals_modifier <= 0:
-                return ctx.v.text + '1'
+                return ctx.v.text + 'Now'
             else:
                 return 't_'+ctx.v.text + '['+str(self.__globals_index[ctx.v.text]+self.__globals_modifier)+']'
         return ctx.v.text

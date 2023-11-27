@@ -24,6 +24,11 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TxScriptParser#boolDecl.
+    def visitBoolDecl(self, ctx:TxScriptParser.BoolDeclContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TxScriptParser#strDecl.
     def visitStrDecl(self, ctx:TxScriptParser.StrDeclContext):
         return self.visitChildren(ctx)

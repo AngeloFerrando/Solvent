@@ -64,6 +64,18 @@ public class TxScriptBaseListener implements TxScriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterAddrDecl(TxScriptParser.AddrDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAddrDecl(TxScriptParser.AddrDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterConstrDecl(TxScriptParser.ConstrDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -95,6 +107,18 @@ public class TxScriptBaseListener implements TxScriptListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitNonPayableFunDecl(TxScriptParser.NonPayableFunDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterConstructorDecl(TxScriptParser.ConstructorDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConstructorDecl(TxScriptParser.ConstructorDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

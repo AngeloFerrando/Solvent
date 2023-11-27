@@ -35,6 +35,15 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TxScriptParser#boolDecl.
+    def enterBoolDecl(self, ctx:TxScriptParser.BoolDeclContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#boolDecl.
+    def exitBoolDecl(self, ctx:TxScriptParser.BoolDeclContext):
+        pass
+
+
     # Enter a parse tree produced by TxScriptParser#strDecl.
     def enterStrDecl(self, ctx:TxScriptParser.StrDeclContext):
         pass

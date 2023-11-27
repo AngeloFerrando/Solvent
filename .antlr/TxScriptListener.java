@@ -51,6 +51,18 @@ public interface TxScriptListener extends ParseTreeListener {
 	 */
 	void exitStrDecl(TxScriptParser.StrDeclContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code addrDecl}
+	 * labeled alternative in {@link TxScriptParser#declExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterAddrDecl(TxScriptParser.AddrDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code addrDecl}
+	 * labeled alternative in {@link TxScriptParser#declExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitAddrDecl(TxScriptParser.AddrDeclContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code constrDecl}
 	 * labeled alternative in {@link TxScriptParser#declExpr}.
 	 * @param ctx the parse tree
@@ -86,6 +98,18 @@ public interface TxScriptListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitNonPayableFunDecl(TxScriptParser.NonPayableFunDeclContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code constructorDecl}
+	 * labeled alternative in {@link TxScriptParser#declExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstructorDecl(TxScriptParser.ConstructorDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code constructorDecl}
+	 * labeled alternative in {@link TxScriptParser#declExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstructorDecl(TxScriptParser.ConstructorDeclContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link TxScriptParser#argsExpr}.
 	 * @param ctx the parse tree

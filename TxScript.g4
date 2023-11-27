@@ -6,6 +6,7 @@ contractExpr : 'contract' name=LABELUPPER '{' decl=declsExpr '}';
 declsExpr : (declExpr)+;
 declExpr : 
 'int' var=LABEL                                                                      # intDecl
+    | 'bool' var=LABEL                                                               # boolDecl
     | 'string' var=LABEL                                                             # strDecl
     | 'address' var=LABEL                                                            # addrDecl
     | 'constraint' name=LABEL '(' args=argsExpr  ')' '{' cmds=cmdExpr '}'            # constrDecl
@@ -49,8 +50,8 @@ expression :
 constantExpr :
   v=NUMBER                                                              # numberConstant
   | v=LABEL                                                             # strConstant
-  | v='true'                                                            # trueConstant
-  | v='false'                                                           # falseConstant
+  | v=('true'|'True')                                                   # trueConstant
+  | v=('false'|'False')                                                 # falseConstant
 ;
 
 
