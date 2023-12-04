@@ -397,7 +397,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
                 t_curr_a=self.__t_curr_a, 
                 t_new_a=self.__t_new_a
             )
-        else: # double check!!
+        else:
             if sender in self.__globals_index:
                 sender = sender + 'Now' if self.__globals_index[sender]+self.__globals_modifier <= 0 else 't_'+sender + '['+str(self.__globals_index[sender]-1+self.__globals_modifier)+']'
             elif sender in self.__args_map:
@@ -469,8 +469,16 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
         backup = self.__globals_index.copy()
         backup_add = self.__add_last_cmd
         self.__add_last_cmd = False
+        backup__t_curr_a = self.__t_curr_a
+        backup__t_new_a = self.__t_new_a
+        backup__t_curr_w = self.__t_curr_w
+        backup__t_new_w = self.__t_new_w
         ifcmd = self.visit(ctx.ifcmd)
         self.__globals_index = backup
+        self.__t_curr_a = backup__t_curr_a
+        self.__t_new_a = backup__t_new_a
+        self.__t_curr_w = backup__t_curr_w
+        self.__t_new_w = backup__t_new_w
         elsecmd = self.visit(ctx.elsecmd)
         self.__add_last_cmd = backup_add
         self.__globals_index = backup
