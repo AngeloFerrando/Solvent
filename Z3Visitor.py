@@ -12,7 +12,7 @@ class Z3Visitor(TxScriptVisitor):
         self.__args_map = {}
         self.__nesting = 0
         self.__max_nesting = 0
-        self.__globals = set()
+        self.__globals = []
         self.__globals_index = {}
         self.__globals_modifier = 0
         # N = upper bound on the length of trace
@@ -279,25 +279,25 @@ for i, q in enumerate(queries):
 
     # Visit a parse tree produced by TxScriptParser#intDecl.
     def visitIntDecl(self, ctx:TxScriptParser.IntDeclContext):
-        self.__globals.add((ctx.var, 'Int'))
+        self.__globals.append((ctx.var, 'Int'))
         self.__globals_index[ctx.var.text] = 0
 
 
     # Visit a parse tree produced by TxScriptParser#boolDecl.
     def visitBoolDecl(self, ctx:TxScriptParser.BoolDeclContext):
-        self.__globals.add((ctx.var, 'Bool'))
+        self.__globals.append((ctx.var, 'Bool'))
         self.__globals_index[ctx.var.text] = 0
 
 
     # Visit a parse tree produced by TxScriptParser#strDecl.
     def visitStrDecl(self, ctx:TxScriptParser.StrDeclContext):
-        self.__globals.add((ctx.var, 'String'))
+        self.__globals.append((ctx.var, 'String'))
         self.__globals_index[ctx.var.text] = 0
 
 
     # Visit a parse tree produced by TxScriptParser#addrDecl.
     def visitAddrDecl(self, ctx:TxScriptParser.AddrDeclContext):
-        self.__globals.add((ctx.var, 'Int'))
+        self.__globals.append((ctx.var, 'Int'))
         self.__globals_index[ctx.var.text] = 0
 
 
@@ -390,9 +390,26 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
         sender = ctx.sender.text
         self.__nesting += 1
         if sender == 'sender' or sender == 'msg.sender' or sender == 'xa1':
-            res = 'send(xa1, {amount}, {t_curr_w}, {t_new_w}, {t_curr_a}, {t_new_a})'.format(amount=self.visit(ctx.amount), t_curr_w=self.__t_curr_w, t_new_w=self.__t_new_w, t_curr_a=self.__t_curr_a, t_new_a=self.__t_new_a)
-        else:
-            raise Exception('Not handled, yet')
+            res = 'send(xa1, {amount}, {t_curr_w}, {t_new_w}, {t_curr_a}, {t_new_a})'.format(
+                amount=self.visit(ctx.amount), 
+                t_curr_w=self.__t_curr_w, 
+                t_new_w=self.__t_new_w, 
+                t_curr_a=self.__t_curr_a, 
+                t_new_a=self.__t_new_a
+            )
+        else: # double check!!
+            if sender in self.__globals_index:
+                sender = sender + 'Now' if self.__globals_index[sender]+self.__globals_modifier <= 0 else 't_'+sender + '['+str(self.__globals_index[sender]-1+self.__globals_modifier)+']'
+            elif sender in self.__args_map:
+                sender = self.__args_map[sender]
+            res = 'send({sender}, {amount}, {t_curr_w}, {t_new_w}, {t_curr_a}, {t_new_a})'.format(
+                sender=sender, 
+                amount=self.visit(ctx.amount), 
+                t_curr_w=self.__t_curr_w, 
+                t_new_w=self.__t_new_w, 
+                t_curr_a=self.__t_curr_a, 
+                t_new_a=self.__t_new_a
+            )
         self.__t_curr_a = 't_aw[' + str(self.__nesting-1) + ']'
         self.__t_new_a = 't_aw[' + str(self.__nesting) + ']'
         self.__t_curr_w = 't_w[' + str(self.__nesting-1) + ']'
@@ -428,6 +445,23 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
         self.__globals_index[left] = i+1
         return 't_'+left+'['+str(i)+']' + ' == ' + right
 
+
+    # Visit a parse tree produced by TxScriptParser#ifCmd.
+    def visitIfCmd(self, ctx:TxScriptParser.IfCmdContext):
+        cond = self.visit(ctx.condition)
+        backup = self.__globals_index.copy()
+        backup_add = self.__add_last_cmd
+        self.__add_last_cmd = False
+        ifcmd = self.visit(ctx.ifcmd)
+        self.__globals_index = backup
+        self.__add_last_cmd = backup_add
+        self.__globals_index = backup
+        return 'If({cond},{ifcmd},{elsecmd})'.format(
+            cond = 'And'+'('+cond+')',
+            ifcmd = 'And'+'('+ifcmd+')',
+            elsecmd = 'True'
+        )
+    
 
     # Visit a parse tree produced by TxScriptParser#ifelseCmd.
     def visitIfelseCmd(self, ctx:TxScriptParser.IfelseCmdContext):

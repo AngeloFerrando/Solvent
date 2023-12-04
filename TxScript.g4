@@ -24,6 +24,7 @@ cmdExpr :
     'skip'                                                              # skipCmd
     | 'require' '(' child=expression ')'                                # requireCmd
     | 'if' '(' condition=expression ')' '{' ifcmd=cmdExpr '}' 'else' '{' elsecmd=cmdExpr '}'    # ifelseCmd
+    | 'if' '(' condition=expression ')' '{' ifcmd=cmdExpr '}'           # ifCmd
     | var=LABEL '=' child=expression                                    # assignCmd
     | sender=LABEL '!' amount=expression                                # sendCmd
     | <assoc=right> seq1=cmdExpr ';' seq2=cmdExpr                       # seqCmd

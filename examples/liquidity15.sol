@@ -1,20 +1,18 @@
 contract C15 {
-  bool b
+  address owner
 
   constructor () {
-    b = False;
-    skip
-  }
-
-  function unlock() {
-    require(not b); 
-    b = true
+    owner = msg.sender
   }
 
   function pay(amount) {
-    require (amount <= balance && b);
-    b = false;
-    sender ! amount
+    require (amount <= balance);
+    //owner ! amount
+    if (owner == msg.sender) {
+      msg.sender ! amount
+    } else {
+      skip
+    }
   }
 
-}
+} 

@@ -39,6 +39,18 @@ public interface TxScriptListener extends ParseTreeListener {
 	 */
 	void exitIntDecl(TxScriptParser.IntDeclContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code boolDecl}
+	 * labeled alternative in {@link TxScriptParser#declExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterBoolDecl(TxScriptParser.BoolDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code boolDecl}
+	 * labeled alternative in {@link TxScriptParser#declExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitBoolDecl(TxScriptParser.BoolDeclContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code strDecl}
 	 * labeled alternative in {@link TxScriptParser#declExpr}.
 	 * @param ctx the parse tree

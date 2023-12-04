@@ -99,6 +99,11 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TxScriptParser#ifCmd.
+    def visitIfCmd(self, ctx:TxScriptParser.IfCmdContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TxScriptParser#seqCmd.
     def visitSeqCmd(self, ctx:TxScriptParser.SeqCmdContext):
         return self.visitChildren(ctx)

@@ -52,6 +52,18 @@ public class TxScriptBaseListener implements TxScriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterBoolDecl(TxScriptParser.BoolDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBoolDecl(TxScriptParser.BoolDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterStrDecl(TxScriptParser.StrDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}

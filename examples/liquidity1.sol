@@ -5,7 +5,7 @@ contract C1 {
 
   constructor() {
     owner = msg.sender;
-    maxCount = 100;
+    maxCount = 1;
     count = 0
   } 
   

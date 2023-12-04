@@ -170,6 +170,15 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TxScriptParser#ifCmd.
+    def enterIfCmd(self, ctx:TxScriptParser.IfCmdContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#ifCmd.
+    def exitIfCmd(self, ctx:TxScriptParser.IfCmdContext):
+        pass
+
+
     # Enter a parse tree produced by TxScriptParser#seqCmd.
     def enterSeqCmd(self, ctx:TxScriptParser.SeqCmdContext):
         pass
