@@ -7,75 +7,86 @@ import sys
 
 def serializedATN():
     with StringIO() as buf:
-        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3/")
-        buf.write("\u00b3\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
+        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\62")
+        buf.write("\u00c5\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
         buf.write("\4\b\t\b\4\t\t\t\3\2\3\2\3\2\3\2\3\2\3\2\3\3\6\3\32\n")
         buf.write("\3\r\3\16\3\33\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4")
         buf.write("\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3")
         buf.write("\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4")
-        buf.write("\3\4\3\4\3\4\3\4\3\4\3\4\3\4\5\4J\n\4\3\5\7\5M\n\5\f\5")
-        buf.write("\16\5P\13\5\3\6\3\6\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3")
+        buf.write("\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\5")
+        buf.write("\4P\n\4\3\5\7\5S\n\5\f\5\16\5V\13\5\3\6\3\6\3\7\3\7\3")
         buf.write("\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7")
         buf.write("\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3")
-        buf.write("\7\3\7\5\7y\n\7\3\7\3\7\3\7\7\7~\n\7\f\7\16\7\u0081\13")
-        buf.write("\7\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\5\b\u008b\n\b\3\b\3")
+        buf.write("\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7")
+        buf.write("\3\7\5\7\u0086\n\7\3\7\3\7\3\7\7\7\u008b\n\7\f\7\16\7")
+        buf.write("\u008e\13\7\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3")
+        buf.write("\b\3\b\3\b\5\b\u009d\n\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3")
         buf.write("\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b")
-        buf.write("\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\7\b\u00a8")
-        buf.write("\n\b\f\b\16\b\u00ab\13\b\3\t\3\t\3\t\3\t\5\t\u00b1\n\t")
-        buf.write("\3\t\2\4\f\16\n\2\4\6\b\n\f\16\20\2\7\3\2\27\30\3\2\31")
-        buf.write("\32\3\2!\"\3\2$%\3\2&\'\2\u00c8\2\22\3\2\2\2\4\31\3\2")
-        buf.write("\2\2\6I\3\2\2\2\bN\3\2\2\2\nQ\3\2\2\2\fx\3\2\2\2\16\u008a")
-        buf.write("\3\2\2\2\20\u00b0\3\2\2\2\22\23\7\3\2\2\23\24\7)\2\2\24")
-        buf.write("\25\7\4\2\2\25\26\5\4\3\2\26\27\7\5\2\2\27\3\3\2\2\2\30")
-        buf.write("\32\5\6\4\2\31\30\3\2\2\2\32\33\3\2\2\2\33\31\3\2\2\2")
-        buf.write("\33\34\3\2\2\2\34\5\3\2\2\2\35\36\7\6\2\2\36J\7(\2\2\37")
-        buf.write(" \7\7\2\2 J\7(\2\2!\"\7\b\2\2\"J\7(\2\2#$\7\t\2\2$J\7")
-        buf.write("(\2\2%&\7\n\2\2&\'\7(\2\2\'(\7\13\2\2()\5\b\5\2)*\7\f")
-        buf.write("\2\2*+\7\4\2\2+,\5\f\7\2,-\7\5\2\2-J\3\2\2\2./\7\r\2\2")
-        buf.write("/\60\7(\2\2\60\61\7\13\2\2\61\62\5\b\5\2\62\63\7\f\2\2")
-        buf.write("\63\64\7\16\2\2\64\65\7\4\2\2\65\66\5\f\7\2\66\67\7\5")
-        buf.write("\2\2\67J\3\2\2\289\7\r\2\29:\7(\2\2:;\7\13\2\2;<\5\b\5")
-        buf.write("\2<=\7\f\2\2=>\7\4\2\2>?\5\f\7\2?@\7\5\2\2@J\3\2\2\2A")
-        buf.write("B\7\17\2\2BC\7\13\2\2CD\5\b\5\2DE\7\f\2\2EF\7\4\2\2FG")
-        buf.write("\5\f\7\2GH\7\5\2\2HJ\3\2\2\2I\35\3\2\2\2I\37\3\2\2\2I")
-        buf.write("!\3\2\2\2I#\3\2\2\2I%\3\2\2\2I.\3\2\2\2I8\3\2\2\2IA\3")
-        buf.write("\2\2\2J\7\3\2\2\2KM\5\n\6\2LK\3\2\2\2MP\3\2\2\2NL\3\2")
-        buf.write("\2\2NO\3\2\2\2O\t\3\2\2\2PN\3\2\2\2QR\7(\2\2R\13\3\2\2")
-        buf.write("\2ST\b\7\1\2Ty\7\20\2\2UV\7\21\2\2VW\7\13\2\2WX\5\16\b")
-        buf.write("\2XY\7\f\2\2Yy\3\2\2\2Z[\7\22\2\2[\\\7\13\2\2\\]\5\16")
-        buf.write("\b\2]^\7\f\2\2^_\7\4\2\2_`\5\f\7\2`a\7\5\2\2ab\7\23\2")
-        buf.write("\2bc\7\4\2\2cd\5\f\7\2de\7\5\2\2ey\3\2\2\2fg\7\22\2\2")
-        buf.write("gh\7\13\2\2hi\5\16\b\2ij\7\f\2\2jk\7\4\2\2kl\5\f\7\2l")
-        buf.write("m\7\5\2\2my\3\2\2\2no\7(\2\2op\7\24\2\2py\5\16\b\2qr\7")
-        buf.write("(\2\2rs\7\25\2\2sy\5\16\b\2tu\7\13\2\2uv\5\f\7\2vw\7\f")
-        buf.write("\2\2wy\3\2\2\2xS\3\2\2\2xU\3\2\2\2xZ\3\2\2\2xf\3\2\2\2")
-        buf.write("xn\3\2\2\2xq\3\2\2\2xt\3\2\2\2y\177\3\2\2\2z{\f\4\2\2")
-        buf.write("{|\7\26\2\2|~\5\f\7\4}z\3\2\2\2~\u0081\3\2\2\2\177}\3")
-        buf.write("\2\2\2\177\u0080\3\2\2\2\u0080\r\3\2\2\2\u0081\177\3\2")
-        buf.write("\2\2\u0082\u0083\b\b\1\2\u0083\u008b\5\20\t\2\u0084\u0085")
-        buf.write("\7#\2\2\u0085\u008b\5\16\b\4\u0086\u0087\7\13\2\2\u0087")
-        buf.write("\u0088\5\16\b\2\u0088\u0089\7\f\2\2\u0089\u008b\3\2\2")
-        buf.write("\2\u008a\u0082\3\2\2\2\u008a\u0084\3\2\2\2\u008a\u0086")
-        buf.write("\3\2\2\2\u008b\u00a9\3\2\2\2\u008c\u008d\f\r\2\2\u008d")
-        buf.write("\u008e\t\2\2\2\u008e\u00a8\5\16\b\16\u008f\u0090\f\f\2")
-        buf.write("\2\u0090\u0091\t\3\2\2\u0091\u00a8\5\16\b\r\u0092\u0093")
-        buf.write("\f\13\2\2\u0093\u0094\7\33\2\2\u0094\u00a8\5\16\b\f\u0095")
-        buf.write("\u0096\f\n\2\2\u0096\u0097\7\34\2\2\u0097\u00a8\5\16\b")
-        buf.write("\13\u0098\u0099\f\t\2\2\u0099\u009a\7\35\2\2\u009a\u00a8")
-        buf.write("\5\16\b\n\u009b\u009c\f\b\2\2\u009c\u009d\7\36\2\2\u009d")
-        buf.write("\u00a8\5\16\b\t\u009e\u009f\f\7\2\2\u009f\u00a0\7\37\2")
-        buf.write("\2\u00a0\u00a8\5\16\b\b\u00a1\u00a2\f\6\2\2\u00a2\u00a3")
-        buf.write("\7 \2\2\u00a3\u00a8\5\16\b\7\u00a4\u00a5\f\5\2\2\u00a5")
-        buf.write("\u00a6\t\4\2\2\u00a6\u00a8\5\16\b\6\u00a7\u008c\3\2\2")
-        buf.write("\2\u00a7\u008f\3\2\2\2\u00a7\u0092\3\2\2\2\u00a7\u0095")
-        buf.write("\3\2\2\2\u00a7\u0098\3\2\2\2\u00a7\u009b\3\2\2\2\u00a7")
-        buf.write("\u009e\3\2\2\2\u00a7\u00a1\3\2\2\2\u00a7\u00a4\3\2\2\2")
-        buf.write("\u00a8\u00ab\3\2\2\2\u00a9\u00a7\3\2\2\2\u00a9\u00aa\3")
-        buf.write("\2\2\2\u00aa\17\3\2\2\2\u00ab\u00a9\3\2\2\2\u00ac\u00b1")
-        buf.write("\7*\2\2\u00ad\u00b1\7(\2\2\u00ae\u00b1\t\5\2\2\u00af\u00b1")
-        buf.write("\t\6\2\2\u00b0\u00ac\3\2\2\2\u00b0\u00ad\3\2\2\2\u00b0")
-        buf.write("\u00ae\3\2\2\2\u00b0\u00af\3\2\2\2\u00b1\21\3\2\2\2\13")
-        buf.write("\33INx\177\u008a\u00a7\u00a9\u00b0")
+        buf.write("\3\b\3\b\3\b\3\b\3\b\3\b\7\b\u00ba\n\b\f\b\16\b\u00bd")
+        buf.write("\13\b\3\t\3\t\3\t\3\t\5\t\u00c3\n\t\3\t\2\4\f\16\n\2\4")
+        buf.write("\6\b\n\f\16\20\2\7\3\2\32\33\3\2\34\35\3\2$%\3\2\'(\3")
+        buf.write("\2)*\2\u00dd\2\22\3\2\2\2\4\31\3\2\2\2\6O\3\2\2\2\bT\3")
+        buf.write("\2\2\2\nW\3\2\2\2\f\u0085\3\2\2\2\16\u009c\3\2\2\2\20")
+        buf.write("\u00c2\3\2\2\2\22\23\7\3\2\2\23\24\7,\2\2\24\25\7\4\2")
+        buf.write("\2\25\26\5\4\3\2\26\27\7\5\2\2\27\3\3\2\2\2\30\32\5\6")
+        buf.write("\4\2\31\30\3\2\2\2\32\33\3\2\2\2\33\31\3\2\2\2\33\34\3")
+        buf.write("\2\2\2\34\5\3\2\2\2\35\36\7\6\2\2\36P\7+\2\2\37 \7\7\2")
+        buf.write("\2 P\7+\2\2!\"\7\b\2\2\"P\7+\2\2#$\7\t\2\2$P\7+\2\2%&")
+        buf.write("\7\n\2\2&\'\7\t\2\2\'(\7\13\2\2()\7\6\2\2)*\7\f\2\2*P")
+        buf.write("\7+\2\2+,\7\r\2\2,-\7+\2\2-.\7\n\2\2./\5\b\5\2/\60\7\f")
+        buf.write("\2\2\60\61\7\4\2\2\61\62\5\f\7\2\62\63\7\5\2\2\63P\3\2")
+        buf.write("\2\2\64\65\7\16\2\2\65\66\7+\2\2\66\67\7\n\2\2\678\5\b")
+        buf.write("\5\289\7\f\2\29:\7\17\2\2:;\7\4\2\2;<\5\f\7\2<=\7\5\2")
+        buf.write("\2=P\3\2\2\2>?\7\16\2\2?@\7+\2\2@A\7\n\2\2AB\5\b\5\2B")
+        buf.write("C\7\f\2\2CD\7\4\2\2DE\5\f\7\2EF\7\5\2\2FP\3\2\2\2GH\7")
+        buf.write("\20\2\2HI\7\n\2\2IJ\5\b\5\2JK\7\f\2\2KL\7\4\2\2LM\5\f")
+        buf.write("\7\2MN\7\5\2\2NP\3\2\2\2O\35\3\2\2\2O\37\3\2\2\2O!\3\2")
+        buf.write("\2\2O#\3\2\2\2O%\3\2\2\2O+\3\2\2\2O\64\3\2\2\2O>\3\2\2")
+        buf.write("\2OG\3\2\2\2P\7\3\2\2\2QS\5\n\6\2RQ\3\2\2\2SV\3\2\2\2")
+        buf.write("TR\3\2\2\2TU\3\2\2\2U\t\3\2\2\2VT\3\2\2\2WX\7+\2\2X\13")
+        buf.write("\3\2\2\2YZ\b\7\1\2Z\u0086\7\21\2\2[\\\7\22\2\2\\]\7\n")
+        buf.write("\2\2]^\5\16\b\2^_\7\f\2\2_\u0086\3\2\2\2`a\7\23\2\2ab")
+        buf.write("\7\n\2\2bc\5\16\b\2cd\7\f\2\2de\7\4\2\2ef\5\f\7\2fg\7")
+        buf.write("\5\2\2gh\7\24\2\2hi\7\4\2\2ij\5\f\7\2jk\7\5\2\2k\u0086")
+        buf.write("\3\2\2\2lm\7\23\2\2mn\7\n\2\2no\5\16\b\2op\7\f\2\2pq\7")
+        buf.write("\4\2\2qr\5\f\7\2rs\7\5\2\2s\u0086\3\2\2\2tu\7+\2\2uv\7")
+        buf.write("\25\2\2v\u0086\5\16\b\2wx\7+\2\2xy\7\26\2\2yz\5\16\b\2")
+        buf.write("z{\7\27\2\2{|\7\25\2\2|}\5\16\b\2}\u0086\3\2\2\2~\177")
+        buf.write("\7+\2\2\177\u0080\7\30\2\2\u0080\u0086\5\16\b\2\u0081")
+        buf.write("\u0082\7\n\2\2\u0082\u0083\5\f\7\2\u0083\u0084\7\f\2\2")
+        buf.write("\u0084\u0086\3\2\2\2\u0085Y\3\2\2\2\u0085[\3\2\2\2\u0085")
+        buf.write("`\3\2\2\2\u0085l\3\2\2\2\u0085t\3\2\2\2\u0085w\3\2\2\2")
+        buf.write("\u0085~\3\2\2\2\u0085\u0081\3\2\2\2\u0086\u008c\3\2\2")
+        buf.write("\2\u0087\u0088\f\4\2\2\u0088\u0089\7\31\2\2\u0089\u008b")
+        buf.write("\5\f\7\4\u008a\u0087\3\2\2\2\u008b\u008e\3\2\2\2\u008c")
+        buf.write("\u008a\3\2\2\2\u008c\u008d\3\2\2\2\u008d\r\3\2\2\2\u008e")
+        buf.write("\u008c\3\2\2\2\u008f\u0090\b\b\1\2\u0090\u009d\5\20\t")
+        buf.write("\2\u0091\u0092\7+\2\2\u0092\u0093\7\26\2\2\u0093\u0094")
+        buf.write("\5\16\b\2\u0094\u0095\7\27\2\2\u0095\u009d\3\2\2\2\u0096")
+        buf.write("\u0097\7&\2\2\u0097\u009d\5\16\b\4\u0098\u0099\7\n\2\2")
+        buf.write("\u0099\u009a\5\16\b\2\u009a\u009b\7\f\2\2\u009b\u009d")
+        buf.write("\3\2\2\2\u009c\u008f\3\2\2\2\u009c\u0091\3\2\2\2\u009c")
+        buf.write("\u0096\3\2\2\2\u009c\u0098\3\2\2\2\u009d\u00bb\3\2\2\2")
+        buf.write("\u009e\u009f\f\r\2\2\u009f\u00a0\t\2\2\2\u00a0\u00ba\5")
+        buf.write("\16\b\16\u00a1\u00a2\f\f\2\2\u00a2\u00a3\t\3\2\2\u00a3")
+        buf.write("\u00ba\5\16\b\r\u00a4\u00a5\f\13\2\2\u00a5\u00a6\7\36")
+        buf.write("\2\2\u00a6\u00ba\5\16\b\f\u00a7\u00a8\f\n\2\2\u00a8\u00a9")
+        buf.write("\7\37\2\2\u00a9\u00ba\5\16\b\13\u00aa\u00ab\f\t\2\2\u00ab")
+        buf.write("\u00ac\7 \2\2\u00ac\u00ba\5\16\b\n\u00ad\u00ae\f\b\2\2")
+        buf.write("\u00ae\u00af\7!\2\2\u00af\u00ba\5\16\b\t\u00b0\u00b1\f")
+        buf.write("\7\2\2\u00b1\u00b2\7\"\2\2\u00b2\u00ba\5\16\b\b\u00b3")
+        buf.write("\u00b4\f\6\2\2\u00b4\u00b5\7#\2\2\u00b5\u00ba\5\16\b\7")
+        buf.write("\u00b6\u00b7\f\5\2\2\u00b7\u00b8\t\4\2\2\u00b8\u00ba\5")
+        buf.write("\16\b\6\u00b9\u009e\3\2\2\2\u00b9\u00a1\3\2\2\2\u00b9")
+        buf.write("\u00a4\3\2\2\2\u00b9\u00a7\3\2\2\2\u00b9\u00aa\3\2\2\2")
+        buf.write("\u00b9\u00ad\3\2\2\2\u00b9\u00b0\3\2\2\2\u00b9\u00b3\3")
+        buf.write("\2\2\2\u00b9\u00b6\3\2\2\2\u00ba\u00bd\3\2\2\2\u00bb\u00b9")
+        buf.write("\3\2\2\2\u00bb\u00bc\3\2\2\2\u00bc\17\3\2\2\2\u00bd\u00bb")
+        buf.write("\3\2\2\2\u00be\u00c3\7-\2\2\u00bf\u00c3\7+\2\2\u00c0\u00c3")
+        buf.write("\t\5\2\2\u00c1\u00c3\t\6\2\2\u00c2\u00be\3\2\2\2\u00c2")
+        buf.write("\u00bf\3\2\2\2\u00c2\u00c0\3\2\2\2\u00c2\u00c1\3\2\2\2")
+        buf.write("\u00c3\21\3\2\2\2\13\33OT\u0085\u008c\u009c\u00b9\u00bb")
+        buf.write("\u00c2")
         return buf.getvalue()
 
 
@@ -90,12 +101,12 @@ class TxScriptParser ( Parser ):
     sharedContextCache = PredictionContextCache()
 
     literalNames = [ "<INVALID>", "'contract'", "'{'", "'}'", "'int'", "'bool'", 
-                     "'string'", "'address'", "'constraint'", "'('", "')'", 
+                     "'string'", "'address'", "'('", "'->'", "')'", "'constraint'", 
                      "'function'", "'payable'", "'constructor'", "'skip'", 
-                     "'require'", "'if'", "'else'", "'='", "'!'", "';'", 
-                     "'*'", "'/'", "'+'", "'-'", "'=='", "'!='", "'<'", 
-                     "'>'", "'<='", "'>='", "'and'", "'&&'", "'not'", "'true'", 
-                     "'True'", "'false'", "'False'" ]
+                     "'require'", "'if'", "'else'", "'='", "'['", "']'", 
+                     "'!'", "';'", "'*'", "'/'", "'+'", "'-'", "'=='", "'!='", 
+                     "'<'", "'>'", "'<='", "'>='", "'and'", "'&&'", "'not'", 
+                     "'true'", "'True'", "'false'", "'False'" ]
 
     symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                       "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
@@ -106,8 +117,9 @@ class TxScriptParser ( Parser ):
                       "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                       "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                       "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "LABEL", "LABELUPPER", "NUMBER", 
-                      "REAL", "TYPE", "WS", "COMMENT", "LINE_COMMENT" ]
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                      "<INVALID>", "LABEL", "LABELUPPER", "NUMBER", "REAL", 
+                      "TYPE", "WS", "COMMENT", "LINE_COMMENT" ]
 
     RULE_contractExpr = 0
     RULE_declsExpr = 1
@@ -159,14 +171,17 @@ class TxScriptParser ( Parser ):
     T__34=35
     T__35=36
     T__36=37
-    LABEL=38
-    LABELUPPER=39
-    NUMBER=40
-    REAL=41
-    TYPE=42
-    WS=43
-    COMMENT=44
-    LINE_COMMENT=45
+    T__37=38
+    T__38=39
+    T__39=40
+    LABEL=41
+    LABELUPPER=42
+    NUMBER=43
+    REAL=44
+    TYPE=45
+    WS=46
+    COMMENT=47
+    LINE_COMMENT=48
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
@@ -284,7 +299,7 @@ class TxScriptParser ( Parser ):
                 self.state = 25 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << TxScriptParser.T__3) | (1 << TxScriptParser.T__4) | (1 << TxScriptParser.T__5) | (1 << TxScriptParser.T__6) | (1 << TxScriptParser.T__7) | (1 << TxScriptParser.T__10) | (1 << TxScriptParser.T__12))) != 0)):
+                if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << TxScriptParser.T__3) | (1 << TxScriptParser.T__4) | (1 << TxScriptParser.T__5) | (1 << TxScriptParser.T__6) | (1 << TxScriptParser.T__7) | (1 << TxScriptParser.T__10) | (1 << TxScriptParser.T__11) | (1 << TxScriptParser.T__13))) != 0)):
                     break
 
         except RecognitionException as re:
@@ -482,6 +497,31 @@ class TxScriptParser ( Parser ):
                 return visitor.visitChildren(self)
 
 
+    class MapAddrDeclIntContext(DeclExprContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TxScriptParser.DeclExprContext
+            super().__init__(parser)
+            self.var = None # Token
+            self.copyFrom(ctx)
+
+        def LABEL(self):
+            return self.getToken(TxScriptParser.LABEL, 0)
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterMapAddrDeclInt" ):
+                listener.enterMapAddrDeclInt(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitMapAddrDeclInt" ):
+                listener.exitMapAddrDeclInt(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitMapAddrDeclInt" ):
+                return visitor.visitMapAddrDeclInt(self)
+            else:
+                return visitor.visitChildren(self)
+
+
     class PayableFunDeclContext(DeclExprContext):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a TxScriptParser.DeclExprContext
@@ -546,7 +586,7 @@ class TxScriptParser ( Parser ):
         localctx = TxScriptParser.DeclExprContext(self, self._ctx, self.state)
         self.enterRule(localctx, 4, self.RULE_declExpr)
         try:
-            self.state = 71
+            self.state = 77
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,1,self._ctx)
             if la_ == 1:
@@ -586,86 +626,103 @@ class TxScriptParser ( Parser ):
                 pass
 
             elif la_ == 5:
-                localctx = TxScriptParser.ConstrDeclContext(self, localctx)
+                localctx = TxScriptParser.MapAddrDeclIntContext(self, localctx)
                 self.enterOuterAlt(localctx, 5)
                 self.state = 35
                 self.match(TxScriptParser.T__7)
                 self.state = 36
-                localctx.name = self.match(TxScriptParser.LABEL)
+                self.match(TxScriptParser.T__6)
                 self.state = 37
                 self.match(TxScriptParser.T__8)
                 self.state = 38
-                localctx.args = self.argsExpr()
+                self.match(TxScriptParser.T__3)
                 self.state = 39
                 self.match(TxScriptParser.T__9)
                 self.state = 40
-                self.match(TxScriptParser.T__1)
-                self.state = 41
-                localctx.cmds = self.cmdExpr(0)
-                self.state = 42
-                self.match(TxScriptParser.T__2)
+                localctx.var = self.match(TxScriptParser.LABEL)
                 pass
 
             elif la_ == 6:
-                localctx = TxScriptParser.PayableFunDeclContext(self, localctx)
+                localctx = TxScriptParser.ConstrDeclContext(self, localctx)
                 self.enterOuterAlt(localctx, 6)
-                self.state = 44
+                self.state = 41
                 self.match(TxScriptParser.T__10)
-                self.state = 45
+                self.state = 42
                 localctx.name = self.match(TxScriptParser.LABEL)
-                self.state = 46
-                self.match(TxScriptParser.T__8)
-                self.state = 47
+                self.state = 43
+                self.match(TxScriptParser.T__7)
+                self.state = 44
                 localctx.args = self.argsExpr()
-                self.state = 48
+                self.state = 45
                 self.match(TxScriptParser.T__9)
-                self.state = 49
-                self.match(TxScriptParser.T__11)
-                self.state = 50
+                self.state = 46
                 self.match(TxScriptParser.T__1)
-                self.state = 51
+                self.state = 47
                 localctx.cmds = self.cmdExpr(0)
-                self.state = 52
+                self.state = 48
                 self.match(TxScriptParser.T__2)
                 pass
 
             elif la_ == 7:
-                localctx = TxScriptParser.NonPayableFunDeclContext(self, localctx)
+                localctx = TxScriptParser.PayableFunDeclContext(self, localctx)
                 self.enterOuterAlt(localctx, 7)
-                self.state = 54
-                self.match(TxScriptParser.T__10)
-                self.state = 55
+                self.state = 50
+                self.match(TxScriptParser.T__11)
+                self.state = 51
                 localctx.name = self.match(TxScriptParser.LABEL)
-                self.state = 56
-                self.match(TxScriptParser.T__8)
-                self.state = 57
+                self.state = 52
+                self.match(TxScriptParser.T__7)
+                self.state = 53
                 localctx.args = self.argsExpr()
-                self.state = 58
+                self.state = 54
                 self.match(TxScriptParser.T__9)
-                self.state = 59
+                self.state = 55
+                self.match(TxScriptParser.T__12)
+                self.state = 56
                 self.match(TxScriptParser.T__1)
-                self.state = 60
+                self.state = 57
                 localctx.cmds = self.cmdExpr(0)
-                self.state = 61
+                self.state = 58
                 self.match(TxScriptParser.T__2)
                 pass
 
             elif la_ == 8:
-                localctx = TxScriptParser.ConstructorDeclContext(self, localctx)
+                localctx = TxScriptParser.NonPayableFunDeclContext(self, localctx)
                 self.enterOuterAlt(localctx, 8)
+                self.state = 60
+                self.match(TxScriptParser.T__11)
+                self.state = 61
+                localctx.name = self.match(TxScriptParser.LABEL)
+                self.state = 62
+                self.match(TxScriptParser.T__7)
                 self.state = 63
-                self.match(TxScriptParser.T__12)
-                self.state = 64
-                self.match(TxScriptParser.T__8)
-                self.state = 65
                 localctx.args = self.argsExpr()
-                self.state = 66
+                self.state = 64
                 self.match(TxScriptParser.T__9)
-                self.state = 67
+                self.state = 65
                 self.match(TxScriptParser.T__1)
-                self.state = 68
+                self.state = 66
                 localctx.cmds = self.cmdExpr(0)
+                self.state = 67
+                self.match(TxScriptParser.T__2)
+                pass
+
+            elif la_ == 9:
+                localctx = TxScriptParser.ConstructorDeclContext(self, localctx)
+                self.enterOuterAlt(localctx, 9)
                 self.state = 69
+                self.match(TxScriptParser.T__13)
+                self.state = 70
+                self.match(TxScriptParser.T__7)
+                self.state = 71
+                localctx.args = self.argsExpr()
+                self.state = 72
+                self.match(TxScriptParser.T__9)
+                self.state = 73
+                self.match(TxScriptParser.T__1)
+                self.state = 74
+                localctx.cmds = self.cmdExpr(0)
+                self.state = 75
                 self.match(TxScriptParser.T__2)
                 pass
 
@@ -718,13 +775,13 @@ class TxScriptParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 76
+            self.state = 82
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==TxScriptParser.LABEL:
-                self.state = 73
+                self.state = 79
                 self.argExpr()
-                self.state = 78
+                self.state = 84
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
@@ -785,7 +842,7 @@ class TxScriptParser ( Parser ):
         try:
             localctx = TxScriptParser.ArgContext(self, localctx)
             self.enterOuterAlt(localctx, 1)
-            self.state = 79
+            self.state = 85
             localctx.var = self.match(TxScriptParser.LABEL)
         except RecognitionException as re:
             localctx.exception = re
@@ -1035,6 +1092,39 @@ class TxScriptParser ( Parser ):
                 return visitor.visitChildren(self)
 
 
+    class AssignMapCmdContext(CmdExprContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TxScriptParser.CmdExprContext
+            super().__init__(parser)
+            self.var = None # Token
+            self.index = None # ExpressionContext
+            self.child = None # ExpressionContext
+            self.copyFrom(ctx)
+
+        def LABEL(self):
+            return self.getToken(TxScriptParser.LABEL, 0)
+        def expression(self, i:int=None):
+            if i is None:
+                return self.getTypedRuleContexts(TxScriptParser.ExpressionContext)
+            else:
+                return self.getTypedRuleContext(TxScriptParser.ExpressionContext,i)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterAssignMapCmd" ):
+                listener.enterAssignMapCmd(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitAssignMapCmd" ):
+                listener.exitAssignMapCmd(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAssignMapCmd" ):
+                return visitor.visitAssignMapCmd(self)
+            else:
+                return visitor.visitChildren(self)
+
+
 
     def cmdExpr(self, _p:int=0):
         _parentctx = self._ctx
@@ -1045,7 +1135,7 @@ class TxScriptParser ( Parser ):
         self.enterRecursionRule(localctx, 10, self.RULE_cmdExpr, _p)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 118
+            self.state = 131
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,3,self._ctx)
             if la_ == 1:
@@ -1053,21 +1143,21 @@ class TxScriptParser ( Parser ):
                 self._ctx = localctx
                 _prevctx = localctx
 
-                self.state = 82
-                self.match(TxScriptParser.T__13)
+                self.state = 88
+                self.match(TxScriptParser.T__14)
                 pass
 
             elif la_ == 2:
                 localctx = TxScriptParser.RequireCmdContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
-                self.state = 83
-                self.match(TxScriptParser.T__14)
-                self.state = 84
-                self.match(TxScriptParser.T__8)
-                self.state = 85
+                self.state = 89
+                self.match(TxScriptParser.T__15)
+                self.state = 90
+                self.match(TxScriptParser.T__7)
+                self.state = 91
                 localctx.child = self.expression(0)
-                self.state = 86
+                self.state = 92
                 self.match(TxScriptParser.T__9)
                 pass
 
@@ -1075,27 +1165,27 @@ class TxScriptParser ( Parser ):
                 localctx = TxScriptParser.IfelseCmdContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
-                self.state = 88
-                self.match(TxScriptParser.T__15)
-                self.state = 89
-                self.match(TxScriptParser.T__8)
-                self.state = 90
-                localctx.condition = self.expression(0)
-                self.state = 91
-                self.match(TxScriptParser.T__9)
-                self.state = 92
-                self.match(TxScriptParser.T__1)
-                self.state = 93
-                localctx.ifcmd = self.cmdExpr(0)
                 self.state = 94
-                self.match(TxScriptParser.T__2)
-                self.state = 95
                 self.match(TxScriptParser.T__16)
+                self.state = 95
+                self.match(TxScriptParser.T__7)
                 self.state = 96
-                self.match(TxScriptParser.T__1)
+                localctx.condition = self.expression(0)
                 self.state = 97
-                localctx.elsecmd = self.cmdExpr(0)
+                self.match(TxScriptParser.T__9)
                 self.state = 98
+                self.match(TxScriptParser.T__1)
+                self.state = 99
+                localctx.ifcmd = self.cmdExpr(0)
+                self.state = 100
+                self.match(TxScriptParser.T__2)
+                self.state = 101
+                self.match(TxScriptParser.T__17)
+                self.state = 102
+                self.match(TxScriptParser.T__1)
+                self.state = 103
+                localctx.elsecmd = self.cmdExpr(0)
+                self.state = 104
                 self.match(TxScriptParser.T__2)
                 pass
 
@@ -1103,19 +1193,19 @@ class TxScriptParser ( Parser ):
                 localctx = TxScriptParser.IfCmdContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
-                self.state = 100
-                self.match(TxScriptParser.T__15)
-                self.state = 101
-                self.match(TxScriptParser.T__8)
-                self.state = 102
-                localctx.condition = self.expression(0)
-                self.state = 103
-                self.match(TxScriptParser.T__9)
-                self.state = 104
-                self.match(TxScriptParser.T__1)
-                self.state = 105
-                localctx.ifcmd = self.cmdExpr(0)
                 self.state = 106
+                self.match(TxScriptParser.T__16)
+                self.state = 107
+                self.match(TxScriptParser.T__7)
+                self.state = 108
+                localctx.condition = self.expression(0)
+                self.state = 109
+                self.match(TxScriptParser.T__9)
+                self.state = 110
+                self.match(TxScriptParser.T__1)
+                self.state = 111
+                localctx.ifcmd = self.cmdExpr(0)
+                self.state = 112
                 self.match(TxScriptParser.T__2)
                 pass
 
@@ -1123,41 +1213,59 @@ class TxScriptParser ( Parser ):
                 localctx = TxScriptParser.AssignCmdContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
-                self.state = 108
+                self.state = 114
                 localctx.var = self.match(TxScriptParser.LABEL)
-                self.state = 109
-                self.match(TxScriptParser.T__17)
-                self.state = 110
+                self.state = 115
+                self.match(TxScriptParser.T__18)
+                self.state = 116
                 localctx.child = self.expression(0)
                 pass
 
             elif la_ == 6:
-                localctx = TxScriptParser.SendCmdContext(self, localctx)
+                localctx = TxScriptParser.AssignMapCmdContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
-                self.state = 111
-                localctx.sender = self.match(TxScriptParser.LABEL)
-                self.state = 112
+                self.state = 117
+                localctx.var = self.match(TxScriptParser.LABEL)
+                self.state = 118
+                self.match(TxScriptParser.T__19)
+                self.state = 119
+                localctx.index = self.expression(0)
+                self.state = 120
+                self.match(TxScriptParser.T__20)
+                self.state = 121
                 self.match(TxScriptParser.T__18)
-                self.state = 113
-                localctx.amount = self.expression(0)
+                self.state = 122
+                localctx.child = self.expression(0)
                 pass
 
             elif la_ == 7:
+                localctx = TxScriptParser.SendCmdContext(self, localctx)
+                self._ctx = localctx
+                _prevctx = localctx
+                self.state = 124
+                localctx.sender = self.match(TxScriptParser.LABEL)
+                self.state = 125
+                self.match(TxScriptParser.T__21)
+                self.state = 126
+                localctx.amount = self.expression(0)
+                pass
+
+            elif la_ == 8:
                 localctx = TxScriptParser.GroupCmdContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
-                self.state = 114
-                self.match(TxScriptParser.T__8)
-                self.state = 115
+                self.state = 127
+                self.match(TxScriptParser.T__7)
+                self.state = 128
                 self.cmdExpr(0)
-                self.state = 116
+                self.state = 129
                 self.match(TxScriptParser.T__9)
                 pass
 
 
             self._ctx.stop = self._input.LT(-1)
-            self.state = 125
+            self.state = 138
             self._errHandler.sync(self)
             _alt = self._interp.adaptivePredict(self._input,4,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
@@ -1168,15 +1276,15 @@ class TxScriptParser ( Parser ):
                     localctx = TxScriptParser.SeqCmdContext(self, TxScriptParser.CmdExprContext(self, _parentctx, _parentState))
                     localctx.seq1 = _prevctx
                     self.pushNewRecursionContext(localctx, _startState, self.RULE_cmdExpr)
-                    self.state = 120
+                    self.state = 133
                     if not self.precpred(self._ctx, 2):
                         from antlr4.error.Errors import FailedPredicateException
                         raise FailedPredicateException(self, "self.precpred(self._ctx, 2)")
-                    self.state = 121
-                    self.match(TxScriptParser.T__19)
-                    self.state = 122
+                    self.state = 134
+                    self.match(TxScriptParser.T__22)
+                    self.state = 135
                     localctx.seq2 = self.cmdExpr(2) 
-                self.state = 127
+                self.state = 140
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,4,self._ctx)
 
@@ -1225,6 +1333,125 @@ class TxScriptParser ( Parser ):
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitGroupExpr" ):
                 return visitor.visitGroupExpr(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class GreaterEqExprContext(ExpressionContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TxScriptParser.ExpressionContext
+            super().__init__(parser)
+            self.left = None # ExpressionContext
+            self.right = None # ExpressionContext
+            self.copyFrom(ctx)
+
+        def expression(self, i:int=None):
+            if i is None:
+                return self.getTypedRuleContexts(TxScriptParser.ExpressionContext)
+            else:
+                return self.getTypedRuleContext(TxScriptParser.ExpressionContext,i)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterGreaterEqExpr" ):
+                listener.enterGreaterEqExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitGreaterEqExpr" ):
+                listener.exitGreaterEqExpr(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitGreaterEqExpr" ):
+                return visitor.visitGreaterEqExpr(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class MapExprContext(ExpressionContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TxScriptParser.ExpressionContext
+            super().__init__(parser)
+            self.mapVar = None # Token
+            self.index = None # ExpressionContext
+            self.copyFrom(ctx)
+
+        def LABEL(self):
+            return self.getToken(TxScriptParser.LABEL, 0)
+        def expression(self):
+            return self.getTypedRuleContext(TxScriptParser.ExpressionContext,0)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterMapExpr" ):
+                listener.enterMapExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitMapExpr" ):
+                listener.exitMapExpr(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitMapExpr" ):
+                return visitor.visitMapExpr(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class LessExprContext(ExpressionContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TxScriptParser.ExpressionContext
+            super().__init__(parser)
+            self.left = None # ExpressionContext
+            self.right = None # ExpressionContext
+            self.copyFrom(ctx)
+
+        def expression(self, i:int=None):
+            if i is None:
+                return self.getTypedRuleContexts(TxScriptParser.ExpressionContext)
+            else:
+                return self.getTypedRuleContext(TxScriptParser.ExpressionContext,i)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterLessExpr" ):
+                listener.enterLessExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitLessExpr" ):
+                listener.exitLessExpr(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitLessExpr" ):
+                return visitor.visitLessExpr(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class NeqExprContext(ExpressionContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a TxScriptParser.ExpressionContext
+            super().__init__(parser)
+            self.left = None # ExpressionContext
+            self.right = None # ExpressionContext
+            self.copyFrom(ctx)
+
+        def expression(self, i:int=None):
+            if i is None:
+                return self.getTypedRuleContexts(TxScriptParser.ExpressionContext)
+            else:
+                return self.getTypedRuleContext(TxScriptParser.ExpressionContext,i)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterNeqExpr" ):
+                listener.enterNeqExpr(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitNeqExpr" ):
+                listener.exitNeqExpr(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitNeqExpr" ):
+                return visitor.visitNeqExpr(self)
             else:
                 return visitor.visitChildren(self)
 
@@ -1311,66 +1538,6 @@ class TxScriptParser ( Parser ):
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitNotExpr" ):
                 return visitor.visitNotExpr(self)
-            else:
-                return visitor.visitChildren(self)
-
-
-    class GreaterEqExprContext(ExpressionContext):
-
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a TxScriptParser.ExpressionContext
-            super().__init__(parser)
-            self.left = None # ExpressionContext
-            self.right = None # ExpressionContext
-            self.copyFrom(ctx)
-
-        def expression(self, i:int=None):
-            if i is None:
-                return self.getTypedRuleContexts(TxScriptParser.ExpressionContext)
-            else:
-                return self.getTypedRuleContext(TxScriptParser.ExpressionContext,i)
-
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterGreaterEqExpr" ):
-                listener.enterGreaterEqExpr(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitGreaterEqExpr" ):
-                listener.exitGreaterEqExpr(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitGreaterEqExpr" ):
-                return visitor.visitGreaterEqExpr(self)
-            else:
-                return visitor.visitChildren(self)
-
-
-    class LessExprContext(ExpressionContext):
-
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a TxScriptParser.ExpressionContext
-            super().__init__(parser)
-            self.left = None # ExpressionContext
-            self.right = None # ExpressionContext
-            self.copyFrom(ctx)
-
-        def expression(self, i:int=None):
-            if i is None:
-                return self.getTypedRuleContexts(TxScriptParser.ExpressionContext)
-            else:
-                return self.getTypedRuleContext(TxScriptParser.ExpressionContext,i)
-
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterLessExpr" ):
-                listener.enterLessExpr(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitLessExpr" ):
-                listener.exitLessExpr(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitLessExpr" ):
-                return visitor.visitLessExpr(self)
             else:
                 return visitor.visitChildren(self)
 
@@ -1493,36 +1660,6 @@ class TxScriptParser ( Parser ):
                 return visitor.visitChildren(self)
 
 
-    class NeqExprContext(ExpressionContext):
-
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a TxScriptParser.ExpressionContext
-            super().__init__(parser)
-            self.left = None # ExpressionContext
-            self.right = None # ExpressionContext
-            self.copyFrom(ctx)
-
-        def expression(self, i:int=None):
-            if i is None:
-                return self.getTypedRuleContexts(TxScriptParser.ExpressionContext)
-            else:
-                return self.getTypedRuleContext(TxScriptParser.ExpressionContext,i)
-
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterNeqExpr" ):
-                listener.enterNeqExpr(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitNeqExpr" ):
-                listener.exitNeqExpr(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitNeqExpr" ):
-                return visitor.visitNeqExpr(self)
-            else:
-                return visitor.visitChildren(self)
-
-
     class AndExprContext(ExpressionContext):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a TxScriptParser.ExpressionContext
@@ -1564,42 +1701,57 @@ class TxScriptParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 136
+            self.state = 154
             self._errHandler.sync(self)
-            token = self._input.LA(1)
-            if token in [TxScriptParser.T__33, TxScriptParser.T__34, TxScriptParser.T__35, TxScriptParser.T__36, TxScriptParser.LABEL, TxScriptParser.NUMBER]:
+            la_ = self._interp.adaptivePredict(self._input,5,self._ctx)
+            if la_ == 1:
                 localctx = TxScriptParser.ConstExprContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
 
-                self.state = 129
+                self.state = 142
                 localctx.child = self.constantExpr()
                 pass
-            elif token in [TxScriptParser.T__32]:
+
+            elif la_ == 2:
+                localctx = TxScriptParser.MapExprContext(self, localctx)
+                self._ctx = localctx
+                _prevctx = localctx
+                self.state = 143
+                localctx.mapVar = self.match(TxScriptParser.LABEL)
+                self.state = 144
+                self.match(TxScriptParser.T__19)
+                self.state = 145
+                localctx.index = self.expression(0)
+                self.state = 146
+                self.match(TxScriptParser.T__20)
+                pass
+
+            elif la_ == 3:
                 localctx = TxScriptParser.NotExprContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
-                self.state = 130
-                self.match(TxScriptParser.T__32)
-                self.state = 131
+                self.state = 148
+                self.match(TxScriptParser.T__35)
+                self.state = 149
                 localctx.child = self.expression(2)
                 pass
-            elif token in [TxScriptParser.T__8]:
+
+            elif la_ == 4:
                 localctx = TxScriptParser.GroupExprContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
-                self.state = 132
-                self.match(TxScriptParser.T__8)
-                self.state = 133
+                self.state = 150
+                self.match(TxScriptParser.T__7)
+                self.state = 151
                 localctx.child = self.expression(0)
-                self.state = 134
+                self.state = 152
                 self.match(TxScriptParser.T__9)
                 pass
-            else:
-                raise NoViableAltException(self)
+
 
             self._ctx.stop = self._input.LT(-1)
-            self.state = 167
+            self.state = 185
             self._errHandler.sync(self)
             _alt = self._interp.adaptivePredict(self._input,7,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
@@ -1607,26 +1759,26 @@ class TxScriptParser ( Parser ):
                     if self._parseListeners is not None:
                         self.triggerExitRuleEvent()
                     _prevctx = localctx
-                    self.state = 165
+                    self.state = 183
                     self._errHandler.sync(self)
                     la_ = self._interp.adaptivePredict(self._input,6,self._ctx)
                     if la_ == 1:
                         localctx = TxScriptParser.MultDivEqExprContext(self, TxScriptParser.ExpressionContext(self, _parentctx, _parentState))
                         localctx.left = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
-                        self.state = 138
+                        self.state = 156
                         if not self.precpred(self._ctx, 11):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 11)")
-                        self.state = 139
+                        self.state = 157
                         localctx.op = self._input.LT(1)
                         _la = self._input.LA(1)
-                        if not(_la==TxScriptParser.T__20 or _la==TxScriptParser.T__21):
+                        if not(_la==TxScriptParser.T__23 or _la==TxScriptParser.T__24):
                             localctx.op = self._errHandler.recoverInline(self)
                         else:
                             self._errHandler.reportMatch(self)
                             self.consume()
-                        self.state = 140
+                        self.state = 158
                         localctx.right = self.expression(12)
                         pass
 
@@ -1634,19 +1786,19 @@ class TxScriptParser ( Parser ):
                         localctx = TxScriptParser.SumSubEqExprContext(self, TxScriptParser.ExpressionContext(self, _parentctx, _parentState))
                         localctx.left = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
-                        self.state = 141
+                        self.state = 159
                         if not self.precpred(self._ctx, 10):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 10)")
-                        self.state = 142
+                        self.state = 160
                         localctx.op = self._input.LT(1)
                         _la = self._input.LA(1)
-                        if not(_la==TxScriptParser.T__22 or _la==TxScriptParser.T__23):
+                        if not(_la==TxScriptParser.T__25 or _la==TxScriptParser.T__26):
                             localctx.op = self._errHandler.recoverInline(self)
                         else:
                             self._errHandler.reportMatch(self)
                             self.consume()
-                        self.state = 143
+                        self.state = 161
                         localctx.right = self.expression(11)
                         pass
 
@@ -1654,14 +1806,14 @@ class TxScriptParser ( Parser ):
                         localctx = TxScriptParser.EqExprContext(self, TxScriptParser.ExpressionContext(self, _parentctx, _parentState))
                         localctx.left = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
-                        self.state = 144
+                        self.state = 162
                         if not self.precpred(self._ctx, 9):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 9)")
 
-                        self.state = 145
-                        self.match(TxScriptParser.T__24)
-                        self.state = 146
+                        self.state = 163
+                        self.match(TxScriptParser.T__27)
+                        self.state = 164
                         localctx.right = self.expression(10)
                         pass
 
@@ -1669,14 +1821,14 @@ class TxScriptParser ( Parser ):
                         localctx = TxScriptParser.NeqExprContext(self, TxScriptParser.ExpressionContext(self, _parentctx, _parentState))
                         localctx.left = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
-                        self.state = 147
+                        self.state = 165
                         if not self.precpred(self._ctx, 8):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 8)")
 
-                        self.state = 148
-                        self.match(TxScriptParser.T__25)
-                        self.state = 149
+                        self.state = 166
+                        self.match(TxScriptParser.T__28)
+                        self.state = 167
                         localctx.right = self.expression(9)
                         pass
 
@@ -1684,14 +1836,14 @@ class TxScriptParser ( Parser ):
                         localctx = TxScriptParser.LessExprContext(self, TxScriptParser.ExpressionContext(self, _parentctx, _parentState))
                         localctx.left = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
-                        self.state = 150
+                        self.state = 168
                         if not self.precpred(self._ctx, 7):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 7)")
 
-                        self.state = 151
-                        self.match(TxScriptParser.T__26)
-                        self.state = 152
+                        self.state = 169
+                        self.match(TxScriptParser.T__29)
+                        self.state = 170
                         localctx.right = self.expression(8)
                         pass
 
@@ -1699,14 +1851,14 @@ class TxScriptParser ( Parser ):
                         localctx = TxScriptParser.GreaterExprContext(self, TxScriptParser.ExpressionContext(self, _parentctx, _parentState))
                         localctx.left = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
-                        self.state = 153
+                        self.state = 171
                         if not self.precpred(self._ctx, 6):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 6)")
 
-                        self.state = 154
-                        self.match(TxScriptParser.T__27)
-                        self.state = 155
+                        self.state = 172
+                        self.match(TxScriptParser.T__30)
+                        self.state = 173
                         localctx.right = self.expression(7)
                         pass
 
@@ -1714,14 +1866,14 @@ class TxScriptParser ( Parser ):
                         localctx = TxScriptParser.LessEqExprContext(self, TxScriptParser.ExpressionContext(self, _parentctx, _parentState))
                         localctx.left = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
-                        self.state = 156
+                        self.state = 174
                         if not self.precpred(self._ctx, 5):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 5)")
 
-                        self.state = 157
-                        self.match(TxScriptParser.T__28)
-                        self.state = 158
+                        self.state = 175
+                        self.match(TxScriptParser.T__31)
+                        self.state = 176
                         localctx.right = self.expression(6)
                         pass
 
@@ -1729,14 +1881,14 @@ class TxScriptParser ( Parser ):
                         localctx = TxScriptParser.GreaterEqExprContext(self, TxScriptParser.ExpressionContext(self, _parentctx, _parentState))
                         localctx.left = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
-                        self.state = 159
+                        self.state = 177
                         if not self.precpred(self._ctx, 4):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 4)")
 
-                        self.state = 160
-                        self.match(TxScriptParser.T__29)
-                        self.state = 161
+                        self.state = 178
+                        self.match(TxScriptParser.T__32)
+                        self.state = 179
                         localctx.right = self.expression(5)
                         pass
 
@@ -1744,23 +1896,23 @@ class TxScriptParser ( Parser ):
                         localctx = TxScriptParser.AndExprContext(self, TxScriptParser.ExpressionContext(self, _parentctx, _parentState))
                         localctx.left = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
-                        self.state = 162
+                        self.state = 180
                         if not self.precpred(self._ctx, 3):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 3)")
-                        self.state = 163
+                        self.state = 181
                         _la = self._input.LA(1)
-                        if not(_la==TxScriptParser.T__30 or _la==TxScriptParser.T__31):
+                        if not(_la==TxScriptParser.T__33 or _la==TxScriptParser.T__34):
                             self._errHandler.recoverInline(self)
                         else:
                             self._errHandler.reportMatch(self)
                             self.consume()
-                        self.state = 164
+                        self.state = 182
                         localctx.right = self.expression(4)
                         pass
 
              
-                self.state = 169
+                self.state = 187
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,7,self._ctx)
 
@@ -1891,40 +2043,40 @@ class TxScriptParser ( Parser ):
         self.enterRule(localctx, 14, self.RULE_constantExpr)
         self._la = 0 # Token type
         try:
-            self.state = 174
+            self.state = 192
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [TxScriptParser.NUMBER]:
                 localctx = TxScriptParser.NumberConstantContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 170
+                self.state = 188
                 localctx.v = self.match(TxScriptParser.NUMBER)
                 pass
             elif token in [TxScriptParser.LABEL]:
                 localctx = TxScriptParser.StrConstantContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 171
+                self.state = 189
                 localctx.v = self.match(TxScriptParser.LABEL)
                 pass
-            elif token in [TxScriptParser.T__33, TxScriptParser.T__34]:
+            elif token in [TxScriptParser.T__36, TxScriptParser.T__37]:
                 localctx = TxScriptParser.TrueConstantContext(self, localctx)
                 self.enterOuterAlt(localctx, 3)
-                self.state = 172
+                self.state = 190
                 localctx.v = self._input.LT(1)
                 _la = self._input.LA(1)
-                if not(_la==TxScriptParser.T__33 or _la==TxScriptParser.T__34):
+                if not(_la==TxScriptParser.T__36 or _la==TxScriptParser.T__37):
                     localctx.v = self._errHandler.recoverInline(self)
                 else:
                     self._errHandler.reportMatch(self)
                     self.consume()
                 pass
-            elif token in [TxScriptParser.T__35, TxScriptParser.T__36]:
+            elif token in [TxScriptParser.T__38, TxScriptParser.T__39]:
                 localctx = TxScriptParser.FalseConstantContext(self, localctx)
                 self.enterOuterAlt(localctx, 4)
-                self.state = 173
+                self.state = 191
                 localctx.v = self._input.LT(1)
                 _la = self._input.LA(1)
-                if not(_la==TxScriptParser.T__35 or _la==TxScriptParser.T__36):
+                if not(_la==TxScriptParser.T__38 or _la==TxScriptParser.T__39):
                     localctx.v = self._errHandler.recoverInline(self)
                 else:
                     self._errHandler.reportMatch(self)

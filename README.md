@@ -8,4 +8,4 @@ python3 main.py <file.sol> <number of transitions> <number of agents> > output.p
 antlr4 -Dlanguage=Python3 -visitor TxScript.g4 
 
 ## Requirements
-antlr4-python3-runtime version 4.8
+antlr4-python3-runtime version 4.7.2

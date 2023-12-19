@@ -15,6 +15,7 @@ class Z3Visitor(TxScriptVisitor):
         self.__globals = []
         self.__globals_index = {}
         self.__globals_modifier = 0
+        self.__maps = set()
         # N = upper bound on the length of trace
         self.__N = N
         # A = upper bound on the number of actors (A+1)
@@ -50,7 +51,14 @@ class Z3Visitor(TxScriptVisitor):
             functions_call += ')'*len(keys)
         contract_globals = ''
         for (g_var,g_type) in self.__globals:
-            contract_globals += '''
+            if type(g_type) is tuple:
+                contract_globals += '''
+{g} = [[{ty}("{g}_%s_%s" % (i, j)) for j in range(A+1)] for i in range(N+1)]
+{g}_q = [{ty}("{g}q_%s" % j) for j in range(A+1)]
+t_{g} = [[[{ty}("t_{g}_%s_%s_%s" % (i, m, j)) for j in range(A+1)] for m in range(M)] for i in range(N+1)]
+t_{g}_q = [[{ty}("t_{g}q_%s_%s" % (m, j)) for j in range(A+1)] for m in range(M)]'''.format(g=g_var.text, ty=g_type[1])
+            else:
+                contract_globals += '''
 {g} = [{ty}("{g}_%s" % (i)) for i in range(N+1)]
 {g}_q = {ty}("{g}q")
 t_{g} = [[{ty}("t_{g}_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]
@@ -167,7 +175,8 @@ s.add(w[0] >= 0)
 def next_state_tx(aw1, aw2, w1, w2{global_args_next_state_tx}):
     return And(w2 == w1,
                And([aw2[j] == aw1[j] for j in range(A+1)])
-               {global_args_next_state_tx_eval})
+               {global_args_next_state_tx_eval}
+               {global_args_next_state_tx_map_eval})
 
 def send(sender_id, amount, w_b, w_a, aw_b, aw_a): # '_b' and '_a' mean 'before' and 'after'
     return And(w_a == w_b - amount,
@@ -252,7 +261,8 @@ for i, q in enumerate(queries):
         step_trans_args=', '.join(step_trans_args)+',' if step_trans_args else '', 
         step_trans_args_i=', '.join([s+'[i]' for s in step_trans_args])+',' if step_trans_args else '',
         global_args_next_state_tx = (', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '',
-        global_args_next_state_tx_eval = (', ' + ', '.join([g.text+'Now=='+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '',
+        global_args_next_state_tx_eval = (', ' + ', '.join([g.text+'Now=='+g.text+'Next' for (g, _) in self.__globals if g.text not in self.__maps])) if self.__globals else '',
+        global_args_next_state_tx_map_eval = (', ' + ', '.join([f'And([{g.text}Now[j] == {g.text}Next[j] for j in range(A+1)])' for (g, _) in self.__globals if g.text in self.__maps])) if self.__globals else '',
         global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '', 
         global_args_i = (', ' + ', '.join([g.text+'[i], '+g.text+'[i+1]'+', t_'+g.text+'[i]' for (g, _) in self.__globals])) if self.__globals else '', 
         global_args_0 = (', ' + ', '.join([g.text+'[0], '+g.text+'[1]'+', t_'+g.text+'[0]' for (g, _) in self.__globals])) if self.__globals else '', 
@@ -299,6 +309,13 @@ for i, q in enumerate(queries):
     def visitAddrDecl(self, ctx:TxScriptParser.AddrDeclContext):
         self.__globals.append((ctx.var, 'Int'))
         self.__globals_index[ctx.var.text] = 0
+
+
+    # Visit a parse tree produced by TxScriptParser#mapAddrDecl.
+    def visitMapAddrDeclInt(self, ctx:TxScriptParser.MapAddrDeclIntContext):
+        self.__globals.append((ctx.var, ('MapAddr', 'Int')))
+        self.__globals_index[ctx.var.text] = 0
+        self.__maps.add(ctx.var.text)
 
 
     # Visit a parse tree produced by TxScriptParser#constrDecl.
@@ -444,6 +461,19 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
         i = self.__globals_index[left]
         self.__globals_index[left] = i+1
         return 't_'+left+'['+str(i)+']' + ' == ' + right
+    
+
+    # Visit a parse tree produced by TxScriptParser#assignMapCmd.
+    def visitAssignMapCmd(self, ctx:TxScriptParser.AssignMapCmdContext):
+        left = ctx.var.text
+        index = self.visit(ctx.index)
+        self.__globals_modifier -= 1
+        right = self.visit(ctx.child)
+        self.__globals_modifier += 1
+        i = self.__globals_index[left]
+        self.__globals_index[left] = i+1
+        prev_i = f'{left}Now' if i == 0 else f't_{left}[{str(i-1)}]'
+        return 'And('+ 't_'+left+'['+str(i)+']'+'['+str(index)+']' + ' == ' + right + ', ' + 'And(' + f'[t_{left}[{str(i)}][j] == {prev_i}[j] for j in range(A+1) if j != {str(index)}]' + ')' ')'
 
 
     # Visit a parse tree produced by TxScriptParser#ifCmd.
@@ -598,6 +628,17 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
     # Visit a parse tree produced by TxScriptParser#numberConstant.
     def visitNumberConstant(self, ctx:TxScriptParser.NumberConstantContext):
         return ctx.v.text
+    
+
+    # Visit a parse tree produced by TxScriptParser#mapExpr.
+    def visitMapExpr(self, ctx:TxScriptParser.MapExprContext):
+        index = self.visit(ctx.index)
+        if ctx.mapVar.text in self.__globals_index:
+            if self.__globals_index[ctx.mapVar.text]+self.__globals_modifier < 0:
+                return ctx.mapVar.text + 'Now' + '['+index+']'
+            else:
+                return 't_'+ctx.mapVar.text + '['+str(self.__globals_index[ctx.mapVar.text]+self.__globals_modifier)+']' + '['+index+']'
+        return ctx.mapVar.text + '[' + index + ']'
 
 
     # Visit a parse tree produced by TxScriptParser#strConstant.
@@ -611,7 +652,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
         if ctx.v.text in self.__args_map:
             return self.__args_map[ctx.v.text]
         if ctx.v.text in self.__globals_index:
-            if self.__globals_index[ctx.v.text]+self.__globals_modifier <= 0:
+            if self.__globals_index[ctx.v.text]+self.__globals_modifier < 0:
                 return ctx.v.text + 'Now'
             else:
                 return 't_'+ctx.v.text + '['+str(self.__globals_index[ctx.v.text]+self.__globals_modifier)+']'

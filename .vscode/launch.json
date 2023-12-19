@@ -11,7 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["./examples/liquidity1.sol", "3", "2"]
+            "args": ["./examples/liquidity1.sol", "2", "2"]
         }
     ]
 }

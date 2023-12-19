@@ -9,6 +9,7 @@ declExpr :
     | 'bool' var=LABEL                                                               # boolDecl
     | 'string' var=LABEL                                                             # strDecl
     | 'address' var=LABEL                                                            # addrDecl
+    | '(' 'address' '->' 'int' ')' var=LABEL                                         # mapAddrDeclInt 
     | 'constraint' name=LABEL '(' args=argsExpr  ')' '{' cmds=cmdExpr '}'            # constrDecl
     | 'function' name=LABEL '(' args=argsExpr ')' 'payable' '{' cmds=cmdExpr '}'     # payableFunDecl
     | 'function' name=LABEL '(' args=argsExpr ')' '{' cmds=cmdExpr '}'               # nonPayableFunDecl
@@ -26,6 +27,7 @@ cmdExpr :
     | 'if' '(' condition=expression ')' '{' ifcmd=cmdExpr '}' 'else' '{' elsecmd=cmdExpr '}'    # ifelseCmd
     | 'if' '(' condition=expression ')' '{' ifcmd=cmdExpr '}'           # ifCmd
     | var=LABEL '=' child=expression                                    # assignCmd
+    | var=LABEL '[' index=expression ']' '=' child=expression           # assignMapCmd
     | sender=LABEL '!' amount=expression                                # sendCmd
     | <assoc=right> seq1=cmdExpr ';' seq2=cmdExpr                       # seqCmd
     | '(' cmdExpr ')'                                                   # groupCmd
@@ -33,6 +35,7 @@ cmdExpr :
 
 expression :
  child=constantExpr                                                     # constExpr
+ | mapVar=LABEL '[' index=expression ']'                                # mapExpr
 //  | child=LABEL                                                          # variableExpr
 //  | '#' child=expression                                                 # walletExpr
  | left=expression op=('*' | '/') right=expression                      # multDivEqExpr
@@ -62,7 +65,7 @@ LABELUPPER : [_a-zA-Z][_a-zA-Z0-9]*;
 NUMBER : ('-')? DIGIT | ('-')? (DIGIT_NOT_ZERO DIGIT+);
 REAL : NUMBER '.' (DIGIT+) | NUMBER '.' (DIGIT+);
 
-TYPE : 'int' | 'float' | 'bool' | 'participant';
+TYPE : 'int' | 'float' | 'bool' | 'address';
 
 WS: [ \r\n\t]+ -> channel (HIDDEN);
 fragment DIGIT: ('0'..'9');
