@@ -1,7 +1,14 @@
 # txscript-z3
 
-python3 main.py <file.sol> <number of transitions> <number of agents> > output.py
+```bash
+python3 main.py <file.sol> <number of transitions> <number of participants> > output.py
+```
 
+## To test examples
+
+```bash
+./test.sh <number of transiations> <number of participants>
+```
 
 ## Run Antlr4
 
