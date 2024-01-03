@@ -1,0 +1,6 @@
+p 0 :  sat (=> not liquid)
+Solving time: 0.0030670166015625s
+p 1 :  sat (=> not liquid)
+Solving time: 0.029468059539794922s
+p 2 :  sat (=> not liquid)
+Solving time: 0.0020694732666015625s

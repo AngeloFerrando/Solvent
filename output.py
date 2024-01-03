@@ -48,7 +48,7 @@ def printState(m):
 timeStart = time.time()
 
 # N = upper bound on the length of trace
-N = 3
+N = 4
 
 # A = upper bound on the number of actors (A+1)
 A = 2
@@ -61,8 +61,8 @@ w = [Int("w_%s" % (i)) for i in range(N+1)]
 w_q = Int("wq")
 
 Proc = Datatype('Proc')
-Proc.declare('pay')
 Proc.declare('deposit')
+Proc.declare('pay')
 
 Proc = Proc.create()
 
