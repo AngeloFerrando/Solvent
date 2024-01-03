@@ -6,8 +6,9 @@ if [ "$#" -eq 2 ]; then
     # Check if the folder exists
     if [ -d "$folder_path" ]; then
         # Use a for loop to iterate through files in the folder
-        for file in "$folder_path"/*; do
-            echo -n "$(basename "$file") "
+        for file in $(ls -1 "$folder_path" | sort); do
+            file="$folder_path/$file"
+            echo -n -e "$(basename "$file")\t\t"
             start_time=$(date +%s.%N)
             python3 main.py $file $1 $2 > output.py
             end_time=$(date +%s.%N)
