@@ -392,16 +392,23 @@ for i, q in enumerate(queries):
         self.__proc_args[self.__prefix] = args
         res ='''
 def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
-    return {reqs}, \n\tAnd({body}))
-'''.format(
+    return {reqs}, \n\tAnd({body}'''.format(
         name=self.__prefix, 
         args=(','.join(args)+', ' if args else ''), 
         body=body, 
         reqs=reqs,
-        global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else ''
+        global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '',
         # globals_update = (', \n\t\t' + ', '.join([('t_'+g.text+'['+str(self.__globals_index[g.text]-1)+']' if self.__globals_index[g.text]>0 else g.text+'Now') + ' == '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
     )
-        return res
+        skip = 'next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
+            t_curr_a=self.__t_curr_a, 
+            t_curr_w=self.__t_curr_w, 
+            global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+        )
+        if res.format(subs=skip) == res:
+            return res + f', {skip}))'
+        else:
+            return res.format(subs=skip) + '))'
 
 
     # Visit a parse tree produced by TxScriptParser#argsExpr.
@@ -539,14 +546,14 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
     def visitSeqCmd(self, ctx:TxScriptParser.SeqCmdContext):
         seq1 = self.visit(ctx.seq1)
         seq2 = self.visit(ctx.seq2)
-        if self.__add_last_cmd and not isinstance(ctx.seq2, TxScriptParser.SkipCmdContext):
-            seq2 = 'And({seq2}, next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx}))'.format(
-                seq2=seq2, 
-                t_curr_a=self.__t_curr_a, 
-                t_curr_w=self.__t_curr_w,
-                global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
-            )
-            self.__add_last_cmd = False
+        # if self.__add_last_cmd and not isinstance(ctx.seq2, TxScriptParser.SkipCmdContext):
+        #     seq2 = 'And({seq2}, next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx}))'.format(
+        #         seq2=seq2, 
+        #         t_curr_a=self.__t_curr_a, 
+        #         t_curr_w=self.__t_curr_w,
+        #         global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+        #     )
+        #     self.__add_last_cmd = False
         aux = seq1.format(subs=seq2)
         if aux == seq1:
             return 'And(\n\t{seq1},\n\t{seq2})'.format(seq1=seq1, seq2=seq2)

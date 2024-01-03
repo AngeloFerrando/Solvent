@@ -8,8 +8,7 @@ contract OracleBet {
   } 
 
   function deposit() payable {
-      require (msg.sender==p2 && msg.value==1);
-      skip
+      require (msg.sender==p2 && msg.value==1)
   }
   
   function pay() {

@@ -61,8 +61,8 @@ w = [Int("w_%s" % (i)) for i in range(N+1)]
 w_q = Int("wq")
 
 Proc = Datatype('Proc')
-Proc.declare('deposit')
 Proc.declare('pay')
+Proc.declare('deposit')
 
 Proc = Proc.create()
 
@@ -134,8 +134,7 @@ def constructor(xa1, xn1, constructor_p, awNow, awNext, wNow, wNext, t_aw, t_w, 
     return And(t_w[0] == wNow + xn1, 
 	And(And(
 	t_p1[0] == xa1,
-	And(t_p2[0] == constructor_p, next_state_tx(awNow, awNext, t_w[0], wNext, t_p1[0], p1Next, t_p2[0], p2Next)))))
-
+	t_p2[0] == constructor_p), next_state_tx(awNow, awNext, t_w[0], wNext, t_p1[0], p1Next, t_p2[0], p2Next)))
 
 def deposit(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, p1Now, p1Next, t_p1, p2Now, p2Next, t_p2):
     return And(t_w[0] == wNow + xn1, 
@@ -144,14 +143,12 @@ def deposit(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, p1Now, p1Next, t_p1
 		next_state_tx(awNow, awNext, wNow, wNext, p1Now, p1Next, p2Now, p2Next), And(
 		next_state_tx(awNow, awNext, t_w[0], wNext, p1Now, p1Next, p2Now, p2Next)))))
 
-
 def pay(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, p1Now, p1Next, t_p1, p2Now, p2Next, t_p2):
     return If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext, p1Now, p1Next, p2Now, p2Next), 
 	And(If(
 	Not(xa1==p1Now), 
 		next_state_tx(awNow, awNext, wNow, wNext, p1Now, p1Next, p2Now, p2Next), And(
-		And(send(xa1, wNow, wNow, t_w[0], awNow, t_aw[0]), next_state_tx(t_aw[0], awNext, t_w[0], wNext, p1Now, p1Next, p2Now, p2Next))))))
-
+		send(xa1, wNow, wNow, t_w[0], awNow, t_aw[0]))), next_state_tx(t_aw[0], awNext, t_w[0], wNext, p1Now, p1Next, p2Now, p2Next)))
 
 
 def user_is_legit(xa1):
