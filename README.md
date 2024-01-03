@@ -12,7 +12,9 @@ python3 main.py <file.sol> <number of transitions> <number of participants> > ou
 
 ## Run Antlr4
 
+```bash
 antlr4 -Dlanguage=Python3 -visitor TxScript.g4 
+```
 
 ## Requirements
 antlr4-python3-runtime version 4.7.2
