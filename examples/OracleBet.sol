@@ -2,7 +2,7 @@ contract OracleBet {
   address p1
   address p2
 
-  constructor(p) {
+  constructor(p) payable {
       p1 = msg.sender;
       p2 = p
   } 

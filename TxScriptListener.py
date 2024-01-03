@@ -98,12 +98,21 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#constructorDecl.
-    def enterConstructorDecl(self, ctx:TxScriptParser.ConstructorDeclContext):
+    # Enter a parse tree produced by TxScriptParser#payableConstructorDecl.
+    def enterPayableConstructorDecl(self, ctx:TxScriptParser.PayableConstructorDeclContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#constructorDecl.
-    def exitConstructorDecl(self, ctx:TxScriptParser.ConstructorDeclContext):
+    # Exit a parse tree produced by TxScriptParser#payableConstructorDecl.
+    def exitPayableConstructorDecl(self, ctx:TxScriptParser.PayableConstructorDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#nonPayableConstructorDecl.
+    def enterNonPayableConstructorDecl(self, ctx:TxScriptParser.NonPayableConstructorDeclContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#nonPayableConstructorDecl.
+    def exitNonPayableConstructorDecl(self, ctx:TxScriptParser.NonPayableConstructorDeclContext):
         pass
 
 

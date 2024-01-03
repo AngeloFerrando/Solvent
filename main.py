@@ -26,16 +26,19 @@ def resetZ3Folder():
             print('Failed to delete %s. Reason: %s' % (file_path, e))
 
 def parse(pattern):
-    # try:
-        resetZ3Folder()
-        lexer = TxScriptLexer(InputStream(pattern))
-        stream = CommonTokenStream(lexer)
-        parser = TxScriptParser(stream)
-        # parser.addErrorListener(TxScriptErrorListener())
-        tree = parser.contractExpr()
+    if len(sys.argv) != 4:
+        print('The script requires 3 parameters, as follows: <name of the SOL file> <number of transactions> <number of participants>')
+        return
+    # try:`
+    resetZ3Folder()
+    lexer = TxScriptLexer(InputStream(pattern))
+    stream = CommonTokenStream(lexer)
+    parser = TxScriptParser(stream)
+    # parser.addErrorListener(TxScriptErrorListener())
+    tree = parser.contractExpr()
 
-        visitor = Z3Visitor(int(sys.argv[2]), int(sys.argv[3]))
-        print(visitor.visit(tree))
+    visitor = Z3Visitor(int(sys.argv[2]), int(sys.argv[3]))
+    print(visitor.visit(tree))
     # except Exception as e:
     #     print(str(e))
 

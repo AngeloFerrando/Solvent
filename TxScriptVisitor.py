@@ -59,8 +59,13 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TxScriptParser#constructorDecl.
-    def visitConstructorDecl(self, ctx:TxScriptParser.ConstructorDeclContext):
+    # Visit a parse tree produced by TxScriptParser#payableConstructorDecl.
+    def visitPayableConstructorDecl(self, ctx:TxScriptParser.PayableConstructorDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#nonPayableConstructorDecl.
+    def visitNonPayableConstructorDecl(self, ctx:TxScriptParser.NonPayableConstructorDeclContext):
         return self.visitChildren(ctx)
 
 

@@ -5,15 +5,16 @@ contractExpr : 'contract' name=LABELUPPER '{' decl=declsExpr '}';
 
 declsExpr : (declExpr)+;
 declExpr : 
-'int' var=LABEL                                                                      # intDecl
-    | 'bool' var=LABEL                                                               # boolDecl
-    | 'string' var=LABEL                                                             # strDecl
-    | 'address' var=LABEL                                                            # addrDecl
-    | '(' 'address' '->' 'int' ')' var=LABEL                                         # mapAddrDeclInt 
-    | 'constraint' name=LABEL '(' args=argsExpr  ')' '{' cmds=cmdExpr '}'            # constrDecl
-    | 'function' name=LABEL '(' args=argsExpr ')' 'payable' '{' cmds=cmdExpr '}'     # payableFunDecl
-    | 'function' name=LABEL '(' args=argsExpr ')' '{' cmds=cmdExpr '}'               # nonPayableFunDecl
-    | 'constructor' '(' args=argsExpr ')' '{' cmds=cmdExpr '}'                       # constructorDecl
+'int' var=LABEL                                                                                     # intDecl
+    | 'bool' var=LABEL                                                                              # boolDecl
+    | 'string' var=LABEL                                                                            # strDecl
+    | 'address' var=LABEL                                                                           # addrDecl
+    | '(' 'address' '->' 'int' ')' var=LABEL                                                        # mapAddrDeclInt 
+    | 'constraint' name=LABEL '(' args=argsExpr  ')' '{' cmds=cmdExpr '}'                           # constrDecl
+    | 'function' name=LABEL '(' args=argsExpr ')' 'payable' '{' cmds=cmdExpr '}'                    # payableFunDecl
+    | 'function' name=LABEL '(' args=argsExpr ')' '{' cmds=cmdExpr '}'                              # nonPayableFunDecl
+    | 'constructor' '(' args=argsExpr ')' 'payable'  '{' cmds=cmdExpr '}'                           # payableConstructorDecl
+    | 'constructor' '(' args=argsExpr ')' '{' cmds=cmdExpr '}'                                      # nonPayableConstructorDecl
 ;
 
 argsExpr : (argExpr)*;

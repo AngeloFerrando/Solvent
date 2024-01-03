@@ -323,8 +323,24 @@ for i, q in enumerate(queries):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TxScriptParser#constructorDecl.
-    def visitConstructorDecl(self, ctx:TxScriptParser.ConstructorDeclContext):
+    # Visit a parse tree produced by TxScriptParser#nonPayableConstructorDecl.
+    def visitNonPayableConstructorDecl(self, ctx:TxScriptParser.NonPayableConstructorDeclContext):
+        self.__nesting = 0
+        self.__t_curr_w = 'wNow'
+        self.__t_new_w = 't_w[0]'
+        self.__t_curr_a = 'awNow'
+        self.__t_new_a = 't_aw[0]'
+        self.__proc.add('constructor')
+        self.__prefix = 'constructor'
+        for k in self.__globals_index:
+            self.__globals_index[k] = 0
+        return self.visitFun(ctx, 'If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext{global_args_next_state_tx})'.format(
+            global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+        ))
+    
+
+    # Visit a parse tree produced by TxScriptParser#payableConstructorDecl.
+    def visitPayableConstructorDecl(self, ctx:TxScriptParser.PayableConstructorDeclContext):
         self.__nesting = 1
         self.__t_curr_w = 't_w[0]'
         self.__t_new_w = 't_w[1]'

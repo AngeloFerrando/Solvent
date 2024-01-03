@@ -61,8 +61,8 @@ w = [Int("w_%s" % (i)) for i in range(N+1)]
 w_q = Int("wq")
 
 Proc = Datatype('Proc')
-Proc.declare('pay')
 Proc.declare('deposit')
+Proc.declare('pay')
 
 Proc = Proc.create()
 
