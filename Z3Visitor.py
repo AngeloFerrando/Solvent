@@ -634,7 +634,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
     def visitMapExpr(self, ctx:TxScriptParser.MapExprContext):
         index = self.visit(ctx.index)
         if ctx.mapVar.text in self.__globals_index:
-            if self.__globals_index[ctx.mapVar.text]+self.__globals_modifier < 0:
+            if self.__globals_index[ctx.mapVar.text]+self.__globals_modifier <= 0:
                 return ctx.mapVar.text + 'Now' + '['+index+']'
             else:
                 return 't_'+ctx.mapVar.text + '['+str(self.__globals_index[ctx.mapVar.text]+self.__globals_modifier)+']' + '['+index+']'
@@ -652,7 +652,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
         if ctx.v.text in self.__args_map:
             return self.__args_map[ctx.v.text]
         if ctx.v.text in self.__globals_index:
-            if self.__globals_index[ctx.v.text]+self.__globals_modifier < 0:
+            if self.__globals_index[ctx.v.text]+self.__globals_modifier <= 0:
                 return ctx.v.text + 'Now'
             else:
                 return 't_'+ctx.v.text + '['+str(self.__globals_index[ctx.v.text]+self.__globals_modifier)+']'

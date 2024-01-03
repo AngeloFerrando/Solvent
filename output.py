@@ -48,7 +48,7 @@ def printState(m):
 timeStart = time.time()
 
 # N = upper bound on the length of trace
-N = 2
+N = 3
 
 # A = upper bound on the number of actors (A+1)
 A = 2
@@ -62,27 +62,20 @@ w_q = Int("wq")
 
 Proc = Datatype('Proc')
 Proc.declare('pay')
+Proc.declare('deposit')
 
 Proc = Proc.create()
 
 # Contract's state variables
 
-maxCount = [Int("maxCount_%s" % (i)) for i in range(N+1)]
-maxCount_q = Int("maxCountq")
-t_maxCount = [[Int("t_maxCount_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]
-t_maxCount_q = [Int("t_maxCountq_%s" % (m)) for m in range(M)]
-count = [Int("count_%s" % (i)) for i in range(N+1)]
-count_q = Int("countq")
-t_count = [[Int("t_count_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]
-t_count_q = [Int("t_countq_%s" % (m)) for m in range(M)]
-owner = [Int("owner_%s" % (i)) for i in range(N+1)]
-owner_q = Int("ownerq")
-t_owner = [[Int("t_owner_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]
-t_owner_q = [Int("t_ownerq_%s" % (m)) for m in range(M)]
-myMap = [[Int("myMap_%s_%s" % (i, j)) for j in range(A+1)] for i in range(N+1)]
-myMap_q = [Int("myMapq_%s" % j) for j in range(A+1)]
-t_myMap = [[[Int("t_myMap_%s_%s_%s" % (i, m, j)) for j in range(A+1)] for m in range(M)] for i in range(N+1)]
-t_myMap_q = [[Int("t_myMapq_%s_%s" % (m, j)) for j in range(A+1)] for m in range(M)]
+p1 = [Int("p1_%s" % (i)) for i in range(N+1)]
+p1_q = Int("p1q")
+t_p1 = [[Int("t_p1_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]
+t_p1_q = [Int("t_p1q_%s" % (m)) for m in range(M)]
+p2 = [Int("p2_%s" % (i)) for i in range(N+1)]
+p2_q = Int("p2q")
+t_p2 = [[Int("t_p2_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]
+t_p2_q = [Int("t_p2q_%s" % (m)) for m in range(M)]
 
 # Called procedure
 f = [Const("f_%s" % (i), Proc) for i in range(N+1)]
@@ -101,7 +94,8 @@ xn = [Int("xn_%s" % (i)) for i in range(N+1)]
 xn_q = Int("xn_q")
 
 # functions args
-
+constructor_p = [Int("constructor_p_%s" % (i)) for i in range(N+1)] 
+constructor_p_q = Int("constructor_p_q")
 
 # List of ids hard coded
 hard_coded_list = [0]
@@ -123,11 +117,11 @@ s = Solver()
 s.add(w[0] >= 0)
 # s.add(w[0] == 1)
 
-def next_state_tx(aw1, aw2, w1, w2, maxCountNow, maxCountNext, countNow, countNext, ownerNow, ownerNext, myMapNow, myMapNext):
+def next_state_tx(aw1, aw2, w1, w2, p1Now, p1Next, p2Now, p2Next):
     return And(w2 == w1,
                And([aw2[j] == aw1[j] for j in range(A+1)])
-               , maxCountNow==maxCountNext, countNow==countNext, ownerNow==ownerNext
-               , And([myMapNow[j] == myMapNext[j] for j in range(A+1)]))
+               , p1Now==p1Next, p2Now==p2Next
+               , )
 
 def send(sender_id, amount, w_b, w_a, aw_b, aw_a): # '_b' and '_a' mean 'before' and 'after'
     return And(w_a == w_b - amount,
@@ -136,27 +130,27 @@ def send(sender_id, amount, w_b, w_a, aw_b, aw_a): # '_b' and '_a' mean 'before'
                           aw_a[j] == aw_b[j]) for j in range(A+1)]))
 
 
-def constructor(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, maxCountNow, maxCountNext, t_maxCount, countNow, countNext, t_count, ownerNow, ownerNext, t_owner, myMapNow, myMapNext, t_myMap):
+def constructor(xa1, xn1, constructor_p, awNow, awNext, wNow, wNext, t_aw, t_w, p1Now, p1Next, t_p1, p2Now, p2Next, t_p2):
     return And(t_w[0] == wNow + xn1, 
 	And(And(
-	t_owner[0] == xa1,
-	And(
-	t_maxCount[0] == 1,
-	And(t_count[0] == 0, next_state_tx(awNow, awNext, t_w[0], wNext, t_maxCount[0], maxCountNext, t_count[0], countNext, t_owner[0], ownerNext, myMapNow, myMapNext))))))
+	t_p1[0] == xa1,
+	And(t_p2[0] == constructor_p, next_state_tx(awNow, awNext, t_w[0], wNext, t_p1[0], p1Next, t_p2[0], p2Next)))))
 
 
-def pay(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, maxCountNow, maxCountNext, t_maxCount, countNow, countNext, t_count, ownerNow, ownerNext, t_owner, myMapNow, myMapNext, t_myMap):
-    return If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext, maxCountNow, maxCountNext, countNow, countNext, ownerNow, ownerNext, myMapNow, myMapNext), 
+def deposit(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, p1Now, p1Next, t_p1, p2Now, p2Next, t_p2):
+    return And(t_w[0] == wNow + xn1, 
 	And(If(
-	Not(t_count[0]<t_maxCount[0]), 
-		next_state_tx(awNow, awNext, wNow, wNext, maxCountNow, maxCountNext, countNow, countNext, ownerNow, ownerNext, myMapNow, myMapNext), And(
-		And(
-	And(t_myMap[0][xa1] == 10, And([t_myMap[0][j] == myMapNow[j] for j in range(A+1) if j != xa1])),
-	And(
-	And(t_myMap[1][xa1] == t_myMap[0][xa1]+2, And([t_myMap[1][j] == t_myMap[0][j] for j in range(A+1) if j != xa1])),
-	And(If(And(xa1==t_owner[0]),And(t_count[0] == countNow+1),And(And(
-	t_count[0] == countNow,
-	send(xa1, wNow, wNow, t_w[0], awNow, t_aw[0])))), next_state_tx(t_aw[0], awNext, t_w[0], wNext, maxCountNow, maxCountNext, t_count[0], countNext, ownerNow, ownerNext, t_myMap[1], myMapNext))))))))
+	Not(And(xa1==p2Now,xn1==1)), 
+		next_state_tx(awNow, awNext, wNow, wNext, p1Now, p1Next, p2Now, p2Next), And(
+		next_state_tx(awNow, awNext, t_w[0], wNext, p1Now, p1Next, p2Now, p2Next)))))
+
+
+def pay(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, p1Now, p1Next, t_p1, p2Now, p2Next, t_p2):
+    return If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext, p1Now, p1Next, p2Now, p2Next), 
+	And(If(
+	Not(xa1==p1Now), 
+		next_state_tx(awNow, awNext, wNow, wNext, p1Now, p1Next, p2Now, p2Next), And(
+		And(send(xa1, wNow, wNow, t_w[0], awNow, t_aw[0]), next_state_tx(t_aw[0], awNext, t_w[0], wNext, p1Now, p1Next, p2Now, p2Next))))))
 
 
 
@@ -177,18 +171,20 @@ def user_is_fresh(xa, xa1, f, i):
 
 # transition rules
 
-def step_trans(f1, xa1, xn1,  aw1, aw2, w1, w2, t_aw, t_w, i, maxCountNow, maxCountNext, t_maxCount, countNow, countNext, t_count, ownerNow, ownerNext, t_owner, myMapNow, myMapNext, t_myMap):
+def step_trans(f1, xa1, xn1,  aw1, aw2, w1, w2, t_aw, t_w, i, p1Now, p1Next, t_p1, p2Now, p2Next, t_p2):
     return And(And(xa1 >= 0, xa1 <= A, xn1 >= 0),
                And([aw1[j] >= 0 for j in range(A+1)]),
-               	pay(xa1, xn1, aw1, aw2, w1, w2, t_aw, t_w, maxCountNow, maxCountNext, t_maxCount, countNow, countNext, t_count, ownerNow, ownerNext, t_owner, myMapNow, myMapNext, t_myMap))
+               If(f1 == Proc.deposit,
+	deposit(xa1, xn1, aw1, aw2, w1, w2, t_aw, t_w, p1Now, p1Next, t_p1, p2Now, p2Next, t_p2),
+		pay(xa1, xn1, aw1, aw2, w1, w2, t_aw, t_w, p1Now, p1Next, t_p1, p2Now, p2Next, t_p2)))
 
 new_state = And(And(xa[0] >= 0, xa[0] <= A, xn[0] >= 0),
                And([aw[0][j] >= 0 for j in range(A+1)]),
-                  constructor(xa[0], xn[0],  aw[0], aw[1], w[0], w[1], t_aw[0], t_w[0], maxCount[0], maxCount[1], t_maxCount[0], count[0], count[1], t_count[0], owner[0], owner[1], t_owner[0], myMap[0], myMap[1], t_myMap[0]))
+                  constructor(xa[0], xn[0], constructor_p[0],  aw[0], aw[1], w[0], w[1], t_aw[0], t_w[0], p1[0], p1[1], t_p1[0], p2[0], p2[1], t_p2[0]))
 s.add(new_state)
 for i in range(1, N):
     new_state = step_trans(f[i], xa[i], xn[i],  aw[i],
-                           aw[i+1], w[i], w[i+1], t_aw[i], t_w[i], i, maxCount[i], maxCount[i+1], t_maxCount[i], count[i], count[i+1], t_count[i], owner[i], owner[i+1], t_owner[i], myMap[i], myMap[i+1], t_myMap[i])
+                           aw[i+1], w[i], w[i+1], t_aw[i], t_w[i], i, p1[i], p1[i+1], t_p1[i], p2[i], p2[i+1], t_p2[i])
     s.add(new_state)
 
 
@@ -199,7 +195,7 @@ def p(i):
     #print([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list ])
     return And(w[i] > 0,
                Exists([xa_q], And(user_is_legit(xa_q), user_is_fresh(xa, xa_q, f,  i),
-                      ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list, maxCount_q, *t_maxCount_q, count_q, *t_count_q, owner_q, *t_owner_q, myMap_q, *t_myMap_q ], Or(Not(step_trans(f_q, xa_q, xn_q, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, i, maxCount[i], maxCount_q, t_maxCount_q, count[i], count_q, t_count_q, owner[i], owner_q, t_owner_q, myMap[i], myMap_q, t_myMap_q)), w_q > 0)))))
+                      ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list, p1_q, *t_p1_q, p2_q, *t_p2_q ], Or(Not(step_trans(f_q, xa_q, xn_q, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, i, p1[i], p1_q, t_p1_q, p2[i], p2_q, t_p2_q)), w_q > 0)))))
                       #ForAll([xn_q, f_q, w_q, *aw_q ], Or(Not(step_trans(f_q, xa_q, xn_q, aw[i], aw_q, w[i], w_q, t_aw[i], t_w[i], i)), w_q > 0)))))
 
 queries = [p(i) for i in range(1, N)]
