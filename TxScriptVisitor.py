@@ -14,6 +14,16 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TxScriptParser#propertiesExpr.
+    def visitPropertiesExpr(self, ctx:TxScriptParser.PropertiesExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#propertyExpr.
+    def visitPropertyExpr(self, ctx:TxScriptParser.PropertyExprContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TxScriptParser#declsExpr.
     def visitDeclsExpr(self, ctx:TxScriptParser.DeclsExprContext):
         return self.visitChildren(ctx)
@@ -186,6 +196,11 @@ class TxScriptVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by TxScriptParser#andExpr.
     def visitAndExpr(self, ctx:TxScriptParser.AndExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#qslf.
+    def visitQslf(self, ctx:TxScriptParser.QslfContext):
         return self.visitChildren(ctx)
 
 

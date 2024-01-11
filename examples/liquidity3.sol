@@ -9,3 +9,9 @@ contract C3 {
     msg.sender!amount
   }
 }
+
+property {
+  Forall xa 
+    Exists s (s, xa) 
+      [xa==0 -> can_withdraw(balance)]
+}

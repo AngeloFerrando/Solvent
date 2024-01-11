@@ -9,3 +9,9 @@ contract C4 {
     sender!amount
   }
 }
+
+property {
+  Forall xa 
+    Exists s (s, xa) 
+      [balance>1 -> can_withdraw(balance - 1)]
+}

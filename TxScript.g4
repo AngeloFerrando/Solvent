@@ -1,7 +1,10 @@
 grammar TxScript;
 
+contractExpr : 'contract' name=LABELUPPER '{' decl=declsExpr '}' properties=propertiesExpr;
 
-contractExpr : 'contract' name=LABELUPPER '{' decl=declsExpr '}';
+propertiesExpr : (propertyExpr)*;
+
+propertyExpr : 'property' '{' phi=qslf '}';
 
 declsExpr : (declExpr)+;
 declExpr : 
@@ -51,6 +54,41 @@ expression :
  | 'not' child=expression                                               # notExpr
  | '(' child=expression ')'                                             # groupExpr
 ;
+
+qslf : 
+  'Forall' ag=LABEL 'Exists' st=LABEL '(' st=LABEL ',' ag=LABEL ')' '[' where=expression '->' 'can_withdraw' '(' body=expression ')' ']'
+;
+
+// qslf :
+//  child=constantExpr                                                     # qslfAtomExpr
+//  | functor=LABEL '(' args=qslfArgsExpr ')'                              # qslfFunctionExpr
+//  | ('E' | 'Exists') 'a' var=NUMBER child=qslf                           # qslfExistsAgentExpr
+//  | ('E' | 'Exists') 's' var=NUMBER child=qslf                           # qslfExistsStrategyExpr
+//  | ('A' | 'Forall') 'a' var=NUMBER child=qslf                           # qslfForallAgentExpr
+//  | ('A' | 'Forall') 's' var=NUMBER child=qslf                           # qslfForallStrategyExpr
+//  | '(' 'a' var=NUMBER ',' 's' var=NUMBER ')' child=qslf                 # qslfBindingExpr
+//  | ('X' | 'Next') child=qslf                                            # qslfNextExpr
+//  | ('G' | 'Globally') child=qslf                                        # qslfGloballyExpr
+//  | ('F' | 'Eventually') child=qslf                                      # qslfEventuallyExpr
+//  | left=qslf ('and' | '&&') right=qslf                                  # qslfAndExpr
+//  | left=qslf ('or' | '||') right=qslf                                   # qslfOrExpr
+//  | left=qslf ('implies' | '->') right=qslf                              # qslfImpliesExpr
+//  | left=expression op=('*' | '/') right=expression                      # qslfMultDivEqExpr
+//  | left=expression op=('+' | '-') right=expression                      # qslfSumSubEqExpr
+//  | left=expression ('==') right=expression                              # qslfEqExpr
+//  | left=expression ('!=') right=expression                              # qslfNeqExpr
+//  | left=expression ('<') right=expression                               # qslfLessExpr
+//  | left=expression ('>') right=expression                               # qslfGreaterExpr
+//  | left=expression ('<=') right=expression                              # qslfLessEqExpr
+//  | left=expression ('>=') right=expression                              # qslfGreaterEqExpr
+//  | 'not' child=expression                                               # qslfNotExpr
+//  | '(' child=expression ')'                                             # qslfGroupExpr
+// ;
+
+// qslfArgsExpr : 
+//   child=qslf                                                            # qslfSingleArgExpr
+//   | left=qslf ',' right=qslf                                            # qslfMultiArgExpr
+// ;
 
 constantExpr :
   v=NUMBER                                                              # numberConstant

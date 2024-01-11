@@ -15,6 +15,7 @@ class Z3Visitor(TxScriptVisitor):
         self.__globals = []
         self.__globals_index = {}
         self.__globals_modifier = 0
+        self.__visit_properties = False
         self.__maps = set()
         # N = upper bound on the length of trace
         self.__N = N
@@ -25,6 +26,9 @@ class Z3Visitor(TxScriptVisitor):
     def visitContractExpr(self, ctx:TxScriptParser.ContractExprContext):
         decls = self.visit(ctx.decl)
         decls = [decl for decl in decls if decl is not None]
+        self.__visit_properties = True
+        props = self.visit(ctx.properties)
+        self.__visit_properties = False
         if not any('constructor' in decl for decl in decls):
             decls.append('def constructor(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):\n\treturn next_state_tx(awNow, awNext, wNow, wNext{global_args_next_state_tx})'.format(
                 global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '', 
@@ -221,13 +225,15 @@ for i in range(1, N):
 
 # print(s)
 
-def p(i):
-    t_awq_list = [t_awq_m_j for t_awq_m in t_aw_q for t_awq_m_j in t_awq_m]
-    #print([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list ])
-    return And(w[i] > 0,
-               Exists([xa_q], And(user_is_legit(xa_q), user_is_fresh(xa, xa_q, f,  i),
-                      ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list{func_args_q}{global_args_q} ], Or(Not(step_trans(f_q, xa_q, xn_q{func_args_q}, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, i{global_args_phi})), w_q > 0)))))
-                      #ForAll([xn_q, f_q, w_q, *aw_q ], Or(Not(step_trans(f_q, xa_q, xn_q, aw[i], aw_q, w[i], w_q, t_aw[i], t_w[i], i)), w_q > 0)))))
+# def p(i):
+#     t_awq_list = [t_awq_m_j for t_awq_m in t_aw_q for t_awq_m_j in t_awq_m]
+#     #print([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list ])
+#     return And(w[i] > 0,
+#                Exists([xa_q], And(user_is_legit(xa_q), user_is_fresh(xa, xa_q, f,  i),
+#                       ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list{func_args_q}{global_args_q} ], Or(Not(step_trans(f_q, xa_q, xn_q{func_args_q}, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, i{global_args_phi})), w_q > 0)))))
+#                       #ForAll([xn_q, f_q, w_q, *aw_q ], Or(Not(step_trans(f_q, xa_q, xn_q, aw[i], aw_q, w[i], w_q, t_aw[i], t_w[i], i)), w_q > 0)))))
+
+{props}
 
 queries = [p(i) for i in range(1, N)]
 
@@ -273,7 +279,8 @@ for i, q in enumerate(queries):
         constr_args = (','.join(self.__proc_args['constructor'])+', ' if 'constructor' in self.__proc_args and self.__proc_args['constructor'] else ''),
         constr_args_0 = (','.join([s+'[0]' for s in self.__proc_args['constructor']])+', ' if 'constructor' in self.__proc_args and self.__proc_args['constructor'] else ''),
         contract_globals = contract_globals, 
-        max_nesting = self.__max_nesting
+        max_nesting = self.__max_nesting,
+        props = props[0]
     )
         return res
 
@@ -285,6 +292,19 @@ for i, q in enumerate(queries):
             decls.append(self.visit(decl))
             self.__max_nesting = max(self.__nesting, self.__max_nesting)
         return decls
+    
+
+    # Visit a parse tree produced by TxScriptParser#propertiesExpr.
+    def visitPropertiesExpr(self, ctx:TxScriptParser.PropertiesExprContext):
+        props = []
+        for prop in ctx.propertyExpr():
+            props.append(self.visit(prop))
+        return props
+
+
+    # Visit a parse tree produced by TxScriptParser#propertyExpr.
+    def visitPropertyExpr(self, ctx:TxScriptParser.PropertyExprContext):
+        return self.visit(ctx.phi)
 
 
     # Visit a parse tree produced by TxScriptParser#intDecl.
@@ -648,6 +668,26 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
         return 'And(' + self.visit(ctx.left) + ',' + self.visit(ctx.right) + ')'
 
 
+    # Visit a parse tree produced by TxScriptParser#qslf.
+    def visitQslf(self, ctx:TxScriptParser.QslfContext):
+        agent = ctx.ag.text + '_q'
+        condition = self.visit(ctx.where)
+        body = self.visit(ctx.body)
+        step_trans_args = [self.__args_map[a] for a in self.__args_map if 'constructor' not in self.__args_map[a]]
+        global_args_q = (', ' + ', '.join([g.text+'_q, *t_'+g.text+'_q' for (g, _) in self.__globals])) if self.__globals else ''
+        func_args_q = (', ' + ', '.join([s+'_q' for s in step_trans_args]) if step_trans_args else '')
+        global_args_phi = (', ' + ', '.join([g.text+'[i], '+g.text+'_q, t_'+g.text+'_q' for (g, _) in self.__globals])) if self.__globals else ''
+        return f'''
+def p(i):
+    t_awq_list = [t_awq_m_j for t_awq_m in t_aw_q for t_awq_m_j in t_awq_m]
+    return And(
+        Exists([{agent}], And(user_is_legit({agent}), {condition},
+            ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list{func_args_q}{global_args_q}],  
+                Or(
+                    Not(step_trans(f_q, {agent}, xn_q{func_args_q}, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, i{global_args_phi})), 
+                    Not(w_q <= w[i]-({body})))))))'''
+
+
     # Visit a parse tree produced by TxScriptParser#numberConstant.
     def visitNumberConstant(self, ctx:TxScriptParser.NumberConstantContext):
         return ctx.v.text
@@ -666,20 +706,31 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
 
     # Visit a parse tree produced by TxScriptParser#strConstant.
     def visitStrConstant(self, ctx:TxScriptParser.StrConstantContext):
-        if ctx.v.text == 'balance':
-            return self.__t_curr_w
-        if ctx.v.text == 'msg.value' or ctx.v.text == 'value':
-            return 'xn1'
-        if ctx.v.text == 'msg.sender' or ctx.v.text == 'sender':
-            return 'xa1'
-        if ctx.v.text in self.__args_map:
-            return self.__args_map[ctx.v.text]
-        if ctx.v.text in self.__globals_index:
-            if self.__globals_index[ctx.v.text]+self.__globals_modifier <= 0:
-                return ctx.v.text + 'Now'
-            else:
-                return 't_'+ctx.v.text + '['+str(self.__globals_index[ctx.v.text]+self.__globals_modifier)+']'
-        return ctx.v.text
+        if not self.__visit_properties:
+            if ctx.v.text == 'balance':
+                return self.__t_curr_w
+            if ctx.v.text == 'msg.value' or ctx.v.text == 'value':
+                return 'xn1'
+            if ctx.v.text == 'msg.sender' or ctx.v.text == 'sender':
+                return 'xa1'
+            if ctx.v.text in self.__args_map:
+                return self.__args_map[ctx.v.text]
+            if ctx.v.text in self.__globals_index:
+                if self.__globals_index[ctx.v.text]+self.__globals_modifier <= 0:
+                    return ctx.v.text + 'Now'
+                else:
+                    return 't_'+ctx.v.text + '['+str(self.__globals_index[ctx.v.text]+self.__globals_modifier)+']'
+            return ctx.v.text
+        else:
+            if ctx.v.text == 'balance':
+                return 'w[i]'
+            if ctx.v.text == 'msg.value' or ctx.v.text == 'value':
+                return 'xn_q'
+            if ctx.v.text == 'msg.sender' or ctx.v.text == 'sender':
+                return 'xa_q'
+            if ctx.v.text in self.__args_map:
+                return self.__args_map[ctx.v.text]                
+            return ctx.v.text + '_q'
 
 
     # Visit a parse tree produced by TxScriptParser#trueConstant.
@@ -690,3 +741,4 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
     # Visit a parse tree produced by TxScriptParser#falseConstant.
     def visitFalseConstant(self, ctx:TxScriptParser.FalseConstantContext):
         return 'False'
+    

@@ -17,6 +17,24 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TxScriptParser#propertiesExpr.
+    def enterPropertiesExpr(self, ctx:TxScriptParser.PropertiesExprContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#propertiesExpr.
+    def exitPropertiesExpr(self, ctx:TxScriptParser.PropertiesExprContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#propertyExpr.
+    def enterPropertyExpr(self, ctx:TxScriptParser.PropertyExprContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#propertyExpr.
+    def exitPropertyExpr(self, ctx:TxScriptParser.PropertyExprContext):
+        pass
+
+
     # Enter a parse tree produced by TxScriptParser#declsExpr.
     def enterDeclsExpr(self, ctx:TxScriptParser.DeclsExprContext):
         pass
@@ -329,6 +347,15 @@ class TxScriptListener(ParseTreeListener):
 
     # Exit a parse tree produced by TxScriptParser#andExpr.
     def exitAndExpr(self, ctx:TxScriptParser.AndExprContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#qslf.
+    def enterQslf(self, ctx:TxScriptParser.QslfContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#qslf.
+    def exitQslf(self, ctx:TxScriptParser.QslfContext):
         pass
 
 
