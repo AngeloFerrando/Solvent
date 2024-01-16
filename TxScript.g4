@@ -51,12 +51,18 @@ expression :
  | left=expression ('<=') right=expression                              # lessEqExpr
  | left=expression ('>=') right=expression                              # greaterEqExpr
  | left=expression ('and' | '&&') right=expression                      # andExpr
+ | left=expression ('or' | '||') right=expression                       # orExpr
  | 'not' child=expression                                               # notExpr
  | '(' child=expression ')'                                             # groupExpr
 ;
 
 qslf : 
-  'Forall' ag=LABEL 'Exists' st=LABEL '(' st=LABEL ',' ag=LABEL ')' '[' where=expression '->' 'can_withdraw' '(' body=expression ')' ']'
+  'Forall' ag=LABEL '[' where=expression '->' 'Exists' st=LABEL '(' st=LABEL ',' ag=LABEL ')' body=canWithdrawExpr ']'
+;
+canWithdrawExpr : 
+  'can_withdraw' '('ag=constantExpr ',' body=expression ')'             # baseWithdrawExpr
+  | left=canWithdrawExpr ('and' | '&&') right=canWithdrawExpr           # andWithdrawExpr
+  | left=canWithdrawExpr ('or' | '||') right=canWithdrawExpr            # orWithdrawExpr
 ;
 
 // qslf :

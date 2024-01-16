@@ -12,6 +12,5 @@ contract C4 {
 
 property {
   Forall xa 
-    Exists s (s, xa) 
-      [balance>1 -> can_withdraw(balance - 1)]
+      [balance>1 -> Exists s (s, xa) can_withdraw(balance - 1)]
 }

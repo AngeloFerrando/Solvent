@@ -11,7 +11,6 @@ contract C3 {
 }
 
 property {
-  Forall xa 
-    Exists s (s, xa) 
-      [xa==0 -> can_withdraw(balance)]
+  Forall xa  
+      [xa==0 -> Exists s (s, xa) can_withdraw(balance)]
 }

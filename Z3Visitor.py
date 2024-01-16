@@ -49,9 +49,9 @@ class Z3Visitor(TxScriptVisitor):
             for p in keys[:-1]:
                 functions_call += '\t'*n_tabs + 'If(f1 == Proc.' + p + ',\n'
                 n_tabs += 1
-                functions_call += '\t'*n_tabs + p + '(xa1, xn1, ' + (','.join(self.__proc_args[p])+', ' if self.__proc_args[p] else '') + 'aw1, aw2, w1, w2, t_aw, t_w' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + '),\n'
+                functions_call += '\t'*n_tabs + p + '(xa1, xn1, ' + (','.join(self.__proc_args[p])+', ' if self.__proc_args[p] else '') + 'aw1, aw2, w1, w2, t_aw, t_w, block_num1' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + '),\n'
             n_tabs += 1
-            functions_call += '\t'*n_tabs + keys[-1] + '(xa1, xn1, ' + (','.join(self.__proc_args[keys[-1]])+', ' if self.__proc_args[keys[-1]] else '') + 'aw1, aw2, w1, w2, t_aw, t_w' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + ')'
+            functions_call += '\t'*n_tabs + keys[-1] + '(xa1, xn1, ' + (','.join(self.__proc_args[keys[-1]])+', ' if self.__proc_args[keys[-1]] else '') + 'aw1, aw2, w1, w2, t_aw, t_w, block_num1' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + ')'
             functions_call += ')'*len(keys)
         contract_globals = ''
         for (g_var,g_type) in self.__globals:
@@ -129,6 +129,10 @@ M = {max_nesting}
 # Contract's balance
 w = [Int("w_%s" % (i)) for i in range(N+1)]
 w_q = Int("wq")
+
+# Block number
+block_num = [Int("block_num_%s" % (i)) for i in range(N+1)]
+block_num_q = Int("block_num_q")
 
 Proc = Datatype('Proc')
 {proc}
@@ -208,18 +212,19 @@ def user_is_fresh(xa, xa1, f, i):
 
 # transition rules
 
-def step_trans(f1, xa1, xn1, {step_trans_args} aw1, aw2, w1, w2, t_aw, t_w, i{global_args}):
+def step_trans(f1, xa1, xn1, {step_trans_args} aw1, aw2, w1, w2, t_aw, t_w, block_num1, block_num2, i{global_args}):
     return And(And(xa1 >= 0, xa1 <= A, xn1 >= 0),
                And([aw1[j] >= 0 for j in range(A+1)]),
+               block_num2 >= block_num1,
                {functions_call}
 
 new_state = And(And(xa[0] >= 0, xa[0] <= A, xn[0] >= 0),
                And([aw[0][j] >= 0 for j in range(A+1)]),
-                  constructor(xa[0], xn[0], {constr_args_0} aw[0], aw[1], w[0], w[1], t_aw[0], t_w[0]{global_args_0}))
+                  constructor(xa[0], xn[0], {constr_args_0} aw[0], aw[1], w[0], w[1], t_aw[0], t_w[0], block_num[0]{global_args_0}))
 s.add(new_state)
 for i in range(1, N):
     new_state = step_trans(f[i], xa[i], xn[i], {step_trans_args_i} aw[i],
-                           aw[i+1], w[i], w[i+1], t_aw[i], t_w[i], i{global_args_i})
+                           aw[i+1], w[i], w[i+1], t_aw[i], t_w[i], block_num[i], block_num[i+1], i{global_args_i})
     s.add(new_state)
 
 
@@ -411,7 +416,7 @@ for i, q in enumerate(queries):
         body = self.visit(ctx.cmds)
         self.__proc_args[self.__prefix] = args
         res ='''
-def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
+def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{global_args}):
     return {reqs}, \n\tAnd({body}'''.format(
         name=self.__prefix, 
         args=(','.join(args)+', ' if args else ''), 
@@ -588,7 +593,10 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
 
     # Visit a parse tree produced by TxScriptParser#greaterEqExpr.
     def visitGreaterEqExpr(self, ctx:TxScriptParser.GreaterEqExprContext):
-        return self.visitChildren(ctx)
+        left = self.visit(ctx.left)
+        right = self.visit(ctx.right)
+        return left + '>=' + right
+
 
 
     # Visit a parse tree produced by TxScriptParser#lessExpr.
@@ -666,6 +674,26 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):
     # Visit a parse tree produced by TxScriptParser#andExpr.
     def visitAndExpr(self, ctx:TxScriptParser.AndExprContext):
         return 'And(' + self.visit(ctx.left) + ',' + self.visit(ctx.right) + ')'
+    
+
+    # Visit a parse tree produced by TxScriptParser#orExpr.
+    def visitOrExpr(self, ctx:TxScriptParser.OrExprContext):
+        return 'Or(' + self.visit(ctx.left) + ',' + self.visit(ctx.right) + ')'
+
+
+    # Visit a parse tree produced by TxScriptParser#orWithdrawExpr.
+    def visitOrWithdrawExpr(self, ctx:TxScriptParser.OrWithdrawExprContext):
+        return f'Or({self.visit(ctx.left)},{self.visit(ctx.right)})'
+
+
+    # Visit a parse tree produced by TxScriptParser#andWithdrawExpr.
+    def visitAndWithdrawExpr(self, ctx:TxScriptParser.AndWithdrawExprContext):
+        return f'And({self.visit(ctx.left)},{self.visit(ctx.right)})'
+
+
+    # Visit a parse tree produced by TxScriptParser#baseWithdrawExpr.
+    def visitBaseWithdrawExpr(self, ctx:TxScriptParser.BaseWithdrawExprContext):
+        return f'Not(w_q <= w[{self.visit(ctx.ag)}]-({self.visit(ctx.body)}))'
 
 
     # Visit a parse tree produced by TxScriptParser#qslf.
@@ -682,10 +710,10 @@ def p(i):
     t_awq_list = [t_awq_m_j for t_awq_m in t_aw_q for t_awq_m_j in t_awq_m]
     return And(
         Exists([{agent}], And(user_is_legit({agent}), {condition},
-            ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list{func_args_q}{global_args_q}],  
+            ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list, block_num_q{func_args_q}{global_args_q}],  
                 Or(
-                    Not(step_trans(f_q, {agent}, xn_q{func_args_q}, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, i{global_args_phi})), 
-                    Not(w_q <= w[i]-({body})))))))'''
+                    Not(step_trans(f_q, {agent}, xn_q{func_args_q}, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, block_num[i], block_num_q, i{global_args_phi})), 
+                    {body})))))'''
 
 
     # Visit a parse tree produced by TxScriptParser#numberConstant.
@@ -709,6 +737,8 @@ def p(i):
         if not self.__visit_properties:
             if ctx.v.text == 'balance':
                 return self.__t_curr_w
+            if ctx.v.text == 'block.number':
+                return 'block_num'
             if ctx.v.text == 'msg.value' or ctx.v.text == 'value':
                 return 'xn1'
             if ctx.v.text == 'msg.sender' or ctx.v.text == 'sender':
@@ -724,12 +754,16 @@ def p(i):
         else:
             if ctx.v.text == 'balance':
                 return 'w[i]'
+            if ctx.v.text == 'block.number':
+                return 'block_num[i]'
             if ctx.v.text == 'msg.value' or ctx.v.text == 'value':
                 return 'xn_q'
             if ctx.v.text == 'msg.sender' or ctx.v.text == 'sender':
                 return 'xa_q'
             if ctx.v.text in self.__args_map:
-                return self.__args_map[ctx.v.text]                
+                return self.__args_map[ctx.v.text]  
+            if ctx.v.text in self.__globals_index:              
+                return ctx.v.text + '[i]'
             return ctx.v.text + '_q'
 
 

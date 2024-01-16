@@ -269,6 +269,15 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TxScriptParser#orExpr.
+    def enterOrExpr(self, ctx:TxScriptParser.OrExprContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#orExpr.
+    def exitOrExpr(self, ctx:TxScriptParser.OrExprContext):
+        pass
+
+
     # Enter a parse tree produced by TxScriptParser#neqExpr.
     def enterNeqExpr(self, ctx:TxScriptParser.NeqExprContext):
         pass
@@ -356,6 +365,33 @@ class TxScriptListener(ParseTreeListener):
 
     # Exit a parse tree produced by TxScriptParser#qslf.
     def exitQslf(self, ctx:TxScriptParser.QslfContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#orWithdrawExpr.
+    def enterOrWithdrawExpr(self, ctx:TxScriptParser.OrWithdrawExprContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#orWithdrawExpr.
+    def exitOrWithdrawExpr(self, ctx:TxScriptParser.OrWithdrawExprContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#andWithdrawExpr.
+    def enterAndWithdrawExpr(self, ctx:TxScriptParser.AndWithdrawExprContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#andWithdrawExpr.
+    def exitAndWithdrawExpr(self, ctx:TxScriptParser.AndWithdrawExprContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#baseWithdrawExpr.
+    def enterBaseWithdrawExpr(self, ctx:TxScriptParser.BaseWithdrawExprContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#baseWithdrawExpr.
+    def exitBaseWithdrawExpr(self, ctx:TxScriptParser.BaseWithdrawExprContext):
         pass
 
 
