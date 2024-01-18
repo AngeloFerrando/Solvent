@@ -693,7 +693,14 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
 
     # Visit a parse tree produced by TxScriptParser#baseWithdrawExpr.
     def visitBaseWithdrawExpr(self, ctx:TxScriptParser.BaseWithdrawExprContext):
-        return f'Not(w_q <= w[{self.visit(ctx.ag)}]-({self.visit(ctx.body)}))'
+        index = self.visit(ctx.ag)
+        arr_name = 'w'
+        res = f'Not(w_q <= {arr_name}[{index}]-({self.visit(ctx.body)}))'
+        if '[i]' in index:
+            res_with_j = res.replace(f"{arr_name}[{index}]", f"{arr_name}[j]")
+            return f"And([Or(j != {index}, {res_with_j}) for j in range(A+1)])"
+        else:
+            return res
 
 
     # Visit a parse tree produced by TxScriptParser#qslf.
