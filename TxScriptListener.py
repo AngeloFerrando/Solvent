@@ -368,33 +368,6 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#orWithdrawExpr.
-    def enterOrWithdrawExpr(self, ctx:TxScriptParser.OrWithdrawExprContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#orWithdrawExpr.
-    def exitOrWithdrawExpr(self, ctx:TxScriptParser.OrWithdrawExprContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#andWithdrawExpr.
-    def enterAndWithdrawExpr(self, ctx:TxScriptParser.AndWithdrawExprContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#andWithdrawExpr.
-    def exitAndWithdrawExpr(self, ctx:TxScriptParser.AndWithdrawExprContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#baseWithdrawExpr.
-    def enterBaseWithdrawExpr(self, ctx:TxScriptParser.BaseWithdrawExprContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#baseWithdrawExpr.
-    def exitBaseWithdrawExpr(self, ctx:TxScriptParser.BaseWithdrawExprContext):
-        pass
-
-
     # Enter a parse tree produced by TxScriptParser#numberConstant.
     def enterNumberConstant(self, ctx:TxScriptParser.NumberConstantContext):
         pass

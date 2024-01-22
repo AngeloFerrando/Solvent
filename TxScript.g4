@@ -57,13 +57,13 @@ expression :
 ;
 
 qslf : 
-  'Forall' ag=LABEL '[' where=expression '->' 'Exists' st=LABEL '(' st=LABEL ',' ag=LABEL ')' body=canWithdrawExpr ']'
+  'Forall' ag=LABEL '[' where=expression '->' 'Exists' tx=LABEL '[' body=expression ']' ']'
 ;
-canWithdrawExpr : 
-  'can_withdraw' '('ag=constantExpr ',' body=expression ')'             # baseWithdrawExpr
-  | left=canWithdrawExpr ('and' | '&&') right=canWithdrawExpr           # andWithdrawExpr
-  | left=canWithdrawExpr ('or' | '||') right=canWithdrawExpr            # orWithdrawExpr
-;
+// canWithdrawExpr : 
+//   'can_withdraw' '('ag=constantExpr ',' body=expression ')'             # baseWithdrawExpr
+//   | left=canWithdrawExpr ('and' | '&&') right=canWithdrawExpr           # andWithdrawExpr
+//   | left=canWithdrawExpr ('or' | '||') right=canWithdrawExpr            # orWithdrawExpr
+// ;
 
 // qslf :
 //  child=constantExpr                                                     # qslfAtomExpr
@@ -104,7 +104,7 @@ constantExpr :
 ;
 
 
-LABEL : [_a-z.][_a-zA-Z0-9.]*;
+LABEL : [_a-z.][_a-zA-Z0-9.]*('['[_a-z.][_a-zA-Z0-9.]*']')?;
 LABELUPPER : [_a-zA-Z][_a-zA-Z0-9]*;
 
 NUMBER : ('-')? DIGIT | ('-')? (DIGIT_NOT_ZERO DIGIT+);

@@ -209,21 +209,6 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TxScriptParser#orWithdrawExpr.
-    def visitOrWithdrawExpr(self, ctx:TxScriptParser.OrWithdrawExprContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TxScriptParser#andWithdrawExpr.
-    def visitAndWithdrawExpr(self, ctx:TxScriptParser.AndWithdrawExprContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TxScriptParser#baseWithdrawExpr.
-    def visitBaseWithdrawExpr(self, ctx:TxScriptParser.BaseWithdrawExprContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by TxScriptParser#numberConstant.
     def visitNumberConstant(self, ctx:TxScriptParser.NumberConstantContext):
         return self.visitChildren(ctx)

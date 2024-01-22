@@ -65,9 +65,9 @@ block_num = [Int("block_num_%s" % (i)) for i in range(N+1)]
 block_num_q = Int("block_num_q")
 
 Proc = Datatype('Proc')
-Proc.declare('win')
-Proc.declare('timeout')
 Proc.declare('join')
+Proc.declare('timeout')
+Proc.declare('win')
 
 Proc = Proc.create()
 
@@ -147,7 +147,7 @@ def send(sender_id, amount, w_b, w_a, aw_b, aw_a): # '_b' and '_a' mean 'before'
                           aw_a[j] == aw_b[j]) for j in range(A+1)]))
 
 
-def constructor(xa1, xn1, constructor_d,constructor_o, awNow, awNext, wNow, wNext, t_aw, t_w, block_num, oracleNow, oracleNext, t_oracle, deadlineNow, deadlineNext, t_deadline, p1Now, p1Next, t_p1, p2Now, p2Next, t_p2):
+def constructor(xa1, xn1, constructor_o,constructor_d, awNow, awNext, wNow, wNext, t_aw, t_w, block_num, oracleNow, oracleNext, t_oracle, deadlineNow, deadlineNext, t_deadline, p1Now, p1Next, t_p1, p2Now, p2Next, t_p2):
     return And(t_w[0] == wNow + xn1, 
 	And(If(
 	Not(xn1==1), 
@@ -229,7 +229,7 @@ def step_trans(f1, xa1, xn1, win_winner, aw1, aw2, w1, w2, t_aw, t_w, block_num1
 
 new_state = And(And(xa[0] >= 0, xa[0] <= A, xn[0] >= 0),
                And([aw[0][j] >= 0 for j in range(A+1)]),
-                  constructor(xa[0], xn[0], constructor_d[0],constructor_o[0],  aw[0], aw[1], w[0], w[1], t_aw[0], t_w[0], block_num[0], oracle[0], oracle[1], t_oracle[0], deadline[0], deadline[1], t_deadline[0], p1[0], p1[1], t_p1[0], p2[0], p2[1], t_p2[0]))
+                  constructor(xa[0], xn[0], constructor_o[0],constructor_d[0],  aw[0], aw[1], w[0], w[1], t_aw[0], t_w[0], block_num[0], oracle[0], oracle[1], t_oracle[0], deadline[0], deadline[1], t_deadline[0], p1[0], p1[1], t_p1[0], p2[0], p2[1], t_p2[0]))
 s.add(new_state)
 for i in range(1, N):
     new_state = step_trans(f[i], xa[i], xn[i], win_winner[i], aw[i],
@@ -254,8 +254,11 @@ def p(i):
         Exists([xa_q], And(user_is_legit(xa_q), And(block_num[i]<deadline[i],w[i]==2),
             ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list, block_num_q, win_winner_q, oracle_q, *t_oracle_q, deadline_q, *t_deadline_q, p1_q, *t_p1_q, p2_q, *t_p2_q],  
                 Or(
-                    Not(step_trans(f_q, oracle[i], xn_q, win_winner_q, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, block_num[i], block_num_q, i, oracle[i], oracle_q, t_oracle_q, deadline[i], deadline_q, t_deadline_q, p1[i], p1_q, t_p1_q, p2[i], p2_q, t_p2_q)), 
-                    And(True,Or(And([Or(j != p1[i], Not(aw_q[j]-aw[i][j] >= 2)) for j in range(A+1)]),And([Or(j != p2[i], Not(aw_q[j]-aw[i][j] >= 2)) for j in range(A+1)]))))))))
+                    Not(step_trans(f_q, oracle_q, xn_q, win_winner_q, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, block_num[i], block_num_q, i, oracle[i], oracle_q, t_oracle_q, deadline[i], deadline_q, t_deadline_q, p1[i], p1_q, t_p1_q, p2[i], p2_q, t_p2_q)), 
+                    Or(
+                        And([Or(j != p1[i], Not(aw_q[j] >= aw[i][j]+(2))) for j in range(A+1)]),
+                        And([Or(j != p2[i], Not(aw_q[j] >= aw[i][j]+(2))) for j in range(A+1)])
+                    ))))))
 
 queries = [p(i) for i in range(1, N)]
 

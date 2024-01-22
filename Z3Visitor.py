@@ -16,6 +16,9 @@ class Z3Visitor(TxScriptVisitor):
         self.__globals_index = {}
         self.__globals_modifier = 0
         self.__visit_properties = False
+        self.__visit_properties_body = False
+        self.__tx_sender = 'xa'
+        self.__prop_nested_i = set()
         self.__maps = set()
         # N = upper bound on the length of trace
         self.__N = N
@@ -595,7 +598,13 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     def visitGreaterEqExpr(self, ctx:TxScriptParser.GreaterEqExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        return left + '>=' + right
+        if not self.__visit_properties_body:
+            return left + '>=' + right
+        else:
+            for el in self.__prop_nested_i:
+                if el in left or el in right:
+                    return f'And([Or(j != {el}, '+f'Not({left} >= {right})) for j in range(A+1)])'.replace(el, 'j')        
+            return f'Not({left} >= {right})'
 
 
 
@@ -603,7 +612,13 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     def visitLessExpr(self, ctx:TxScriptParser.LessExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        return left + '<' + right
+        if not self.__visit_properties_body:
+            return left + '<' + right
+        else:
+            for el in self.__prop_nested_i:
+                if el in left or el in right:
+                    return f'And([Or(j != {el}, '+f'Not({left} < {right})) for j in range(A+1)])'.replace(el, 'j')        
+            return f'Not({left} < {right})'
 
 
     # Visit a parse tree produced by TxScriptParser#neqExpr.
@@ -622,13 +637,25 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     def visitGreaterExpr(self, ctx:TxScriptParser.GreaterExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        return left + '>' + right
+        if not self.__visit_properties_body:
+            return left + '>' + right
+        else:
+            for el in self.__prop_nested_i:
+                if el in left or el in right:
+                    return f'And([Or(j != {el}, '+f'Not({left} > {right})) for j in range(A+1)])'.replace(el, 'j')        
+            return f'Not({left} > {right})'
 
 
     # Visit a parse tree produced by TxScriptParser#eqExpr.
     def visitEqExpr(self, ctx:TxScriptParser.EqExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
+        if left == 'tx_sender':
+            self.__tx_sender = right
+            return 'True'
+        if right == 'tx_sender':
+            self.__tx_sender = left
+            return 'True'
         return left + '==' + right
 
 
@@ -658,7 +685,13 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     def visitLessEqExpr(self, ctx:TxScriptParser.LessEqExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        return left + '<=' + right
+        if not self.__visit_properties_body:
+            return left + '<=' + right
+        else:
+            for el in self.__prop_nested_i:
+                if el in left or el in right:
+                    return f'And([Or(j != {el}, '+f'Not({left} <= {right})) for j in range(A+1)])'.replace(el, 'j')        
+            return f'Not({left} <= {right})'
 
 
     # Visit a parse tree produced by TxScriptParser#constExpr.
@@ -681,33 +714,35 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         return 'Or(' + self.visit(ctx.left) + ',' + self.visit(ctx.right) + ')'
 
 
-    # Visit a parse tree produced by TxScriptParser#orWithdrawExpr.
-    def visitOrWithdrawExpr(self, ctx:TxScriptParser.OrWithdrawExprContext):
-        return f'Or({self.visit(ctx.left)},{self.visit(ctx.right)})'
+    # # Visit a parse tree produced by TxScriptParser#orWithdrawExpr.
+    # def visitOrWithdrawExpr(self, ctx:TxScriptParser.OrWithdrawExprContext):
+    #     return f'Or({self.visit(ctx.left)},{self.visit(ctx.right)})'
 
 
-    # Visit a parse tree produced by TxScriptParser#andWithdrawExpr.
-    def visitAndWithdrawExpr(self, ctx:TxScriptParser.AndWithdrawExprContext):
-        return f'And({self.visit(ctx.left)},{self.visit(ctx.right)})'
+    # # Visit a parse tree produced by TxScriptParser#andWithdrawExpr.
+    # def visitAndWithdrawExpr(self, ctx:TxScriptParser.AndWithdrawExprContext):
+    #     return f'And({self.visit(ctx.left)},{self.visit(ctx.right)})'
 
 
-    # Visit a parse tree produced by TxScriptParser#baseWithdrawExpr.
-    def visitBaseWithdrawExpr(self, ctx:TxScriptParser.BaseWithdrawExprContext):
-        index = self.visit(ctx.ag)
-        arr_name = 'w'
-        res = f'Not(w_q <= {arr_name}[{index}]-({self.visit(ctx.body)}))'
-        if '[i]' in index:
-            res_with_j = res.replace(f"{arr_name}[{index}]", f"{arr_name}[j]")
-            return f"And([Or(j != {index}, {res_with_j}) for j in range(A+1)])"
-        else:
-            return res
+    # # Visit a parse tree produced by TxScriptParser#baseWithdrawExpr.
+    # def visitBaseWithdrawExpr(self, ctx:TxScriptParser.BaseWithdrawExprContext):
+    #     index = self.visit(ctx.ag)
+    #     arr_name = 'w'
+    #     res = f'Not(w_q <= {arr_name}[{index}]-({self.visit(ctx.body)}))'
+    #     if '[i]' in index:
+    #         res_with_j = res.replace(f"{arr_name}[{index}]", f"{arr_name}[j]")
+    #         return f"And([Or(j != {index}, {res_with_j}) for j in range(A+1)])"
+    #     else:
+    #         return res
 
 
     # Visit a parse tree produced by TxScriptParser#qslf.
     def visitQslf(self, ctx:TxScriptParser.QslfContext):
         agent = ctx.ag.text + '_q'
         condition = self.visit(ctx.where)
+        self.__visit_properties_body = True
         body = self.visit(ctx.body)
+        self.__visit_properties_body = False
         step_trans_args = [self.__args_map[a] for a in self.__args_map if 'constructor' not in self.__args_map[a]]
         global_args_q = (', ' + ', '.join([g.text+'_q, *t_'+g.text+'_q' for (g, _) in self.__globals])) if self.__globals else ''
         func_args_q = (', ' + ', '.join([s+'_q' for s in step_trans_args]) if step_trans_args else '')
@@ -719,7 +754,7 @@ def p(i):
         Exists([{agent}], And(user_is_legit({agent}), {condition},
             ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list, block_num_q{func_args_q}{global_args_q}],  
                 Or(
-                    Not(step_trans(f_q, {agent}, xn_q{func_args_q}, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, block_num[i], block_num_q, i{global_args_phi})), 
+                    Not(step_trans(f_q, {self.__tx_sender}, xn_q{func_args_q}, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, block_num[i], block_num_q, i{global_args_phi})), 
                     {body})))))'''
 
 
@@ -759,19 +794,27 @@ def p(i):
                     return 't_'+ctx.v.text + '['+str(self.__globals_index[ctx.v.text]+self.__globals_modifier)+']'
             return ctx.v.text
         else:
-            if ctx.v.text == 'balance':
-                return 'w[i]'
-            if ctx.v.text == 'block.number':
-                return 'block_num[i]'
-            if ctx.v.text == 'msg.value' or ctx.v.text == 'value':
+            if 'app_tx_st' in ctx.v.text:
+                i = '_q'
+            else:
+                i = '[i]'
+            if 'st.balance' in ctx.v.text and '[' in ctx.v.text and ']' in ctx.v.text:
+                ag = ctx.v.text[ctx.v.text.index('[')+1:ctx.v.text.index(']')]
+                self.__prop_nested_i.add(ag+'[i]')
+                return f'aw{i}[{ag}[i]]'
+            if 'st.balance' in ctx.v.text:
+                return f'w{i}'
+            if 'st.block.number' in ctx.v.text:
+                return f'block_num{i}'
+            if 'tx.msg.value' in ctx.v.text:
                 return 'xn_q'
-            if ctx.v.text == 'msg.sender' or ctx.v.text == 'sender':
-                return 'xa_q'
-            if ctx.v.text in self.__args_map:
+            if 'tx.msg.sender' in ctx.v.text:
+                return 'tx_sender'
+            if ctx.v.text.replace('st.','') in self.__args_map:
                 return self.__args_map[ctx.v.text]  
-            if ctx.v.text in self.__globals_index:              
-                return ctx.v.text + '[i]'
-            return ctx.v.text + '_q'
+            if ctx.v.text.replace('st.','') in self.__globals_index:              
+                return ctx.v.text.replace('st.','') + f'{i}'
+            return ctx.v.text.replace('st.', '') + '_q'
 
 
     # Visit a parse tree produced by TxScriptParser#trueConstant.
