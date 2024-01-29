@@ -19,6 +19,7 @@ class Z3Visitor(TxScriptVisitor):
         self.__visit_properties_body = False
         self.__tx_sender = 'xa'
         self.__prop_nested_i = set()
+        self.__n_transactions = 1
         self.__maps = set()
         # N = upper bound on the length of trace
         self.__N = N
@@ -42,8 +43,26 @@ class Z3Visitor(TxScriptVisitor):
         for p in self.__proc:
             if p == 'constructor': continue
             proc += 'Proc.declare(\'{name}\')\n'.format(name=p)
-        args = ['{a} = [Int("{a}_%s" % (i)) for i in range(N+1)] \n{a}_q = Int("{a}_q")'.format(a=self.__args_map[a]) for a in self.__args_map]
+        args = ['{a} = [Int("{a}_%s" % (i)) for i in range(N+1)]'.format(a=self.__args_map[a]) for a in self.__args_map]
+        for i in range(0, self.__n_transactions):
+            args += ['{a}_q{i} = Int("{a}{i}_q")'.format(i=i, a=self.__args_map[a]) for a in self.__args_map]
         step_trans_args = [self.__args_map[a] for a in self.__args_map if 'constructor' not in self.__args_map[a]]
+        t_aw_qs = ''
+        for i in range(0, self.__n_transactions):
+            t_aw_qs += f't_aw_q{i} = [[Int("t_awq{i}_%s_%s" % (m, j)) for j in range(A+1)] for m in range(M)]\n'
+        block_num_qs = ''
+        xn_qs = ''
+        f_qs = ''
+        w_qs = ''
+        aw_qs = ''
+        t_w_qs = ''
+        for i in range(0, self.__n_transactions):
+            block_num_qs += f'block_num_q{i} = Int("block_num_q{i}")\n'
+            xn_qs += f'xn_q{i} = Int("xn_q{i}")\n'
+            f_qs += f'f_q{i} = Const("f_q{i}", Proc)\n'
+            w_qs += f'w_q{i} = Int("wq{i}")\n'
+            aw_qs += f'aw_q{i} = [Int("awq{i}_%s" % j) for j in range(A+1)]\n'
+            t_w_qs += f't_w_q{i} = [Int("t_wq{i}_%s" % (m)) for m in range(M)]\n'
         functions_call = ''
         n_tabs = 0
         keys = list(self.__proc_args.keys())
@@ -131,11 +150,11 @@ M = {max_nesting}
 
 # Contract's balance
 w = [Int("w_%s" % (i)) for i in range(N+1)]
-w_q = Int("wq")
+{w_qs}
 
 # Block number
 block_num = [Int("block_num_%s" % (i)) for i in range(N+1)]
-block_num_q = Int("block_num_q")
+{block_num_qs}
 
 Proc = Datatype('Proc')
 {proc}
@@ -146,11 +165,11 @@ Proc = Proc.create()
 
 # Called procedure
 f = [Const("f_%s" % (i), Proc) for i in range(N+1)]
-f_q = Const("f_q", Proc)
+{f_qs}
 
 # users' wallets
 aw = [[Int("aw_%s_%s" % (i, j)) for j in range(A+1)] for i in range(N+1)]
-aw_q = [Int("awq_%s" % j) for j in range(A+1)]
+{aw_qs}
 
 # msg.sender
 xa = [Int("xa_%s" % (i)) for i in range(N+1)]
@@ -158,7 +177,7 @@ xa_q = Int("xa_q")
 
 # msg.value
 xn = [Int("xn_%s" % (i)) for i in range(N+1)]
-xn_q = Int("xn_q")
+{xn_qs}
 
 # functions args
 {args}
@@ -168,14 +187,13 @@ hard_coded_list = [0]
 
 # Temporary contract balance. Used inside functions to model internal states
 t_w = [[Int("t_w_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]
-t_w_q = [Int("t_wq_%s" % (m)) for m in range(M)] 
+{t_w_qs} 
 
 # Temporary users wallets
 t_aw = [[[Int("t_aw_%s_%s_%s" % (i, m, j)) for j in range(A+1)]
          for m in range(M)] for i in range(N+1)]
 
-t_aw_q = [[Int("t_awq_%s_%s" % (m, j)) for j in range(A+1)]
-         for m in range(M)]
+{t_aw_qs}
 
 s = Solver()
 
@@ -272,6 +290,13 @@ for i, q in enumerate(queries):
         proc=proc, 
         decls='\n'.join(decls), 
         args='\n'.join(args), 
+        t_aw_qs = t_aw_qs,
+        block_num_qs = block_num_qs,
+        xn_qs = xn_qs,
+        f_qs = f_qs,
+        w_qs = w_qs,
+        aw_qs = aw_qs,
+        t_w_qs = t_w_qs,
         step_trans_args=', '.join(step_trans_args)+',' if step_trans_args else '', 
         step_trans_args_i=', '.join([s+'[i]' for s in step_trans_args])+',' if step_trans_args else '',
         global_args_next_state_tx = (', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '',
@@ -656,7 +681,14 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         if right == 'tx_sender':
             self.__tx_sender = left
             return 'True'
-        return left + '==' + right
+        
+        if not self.__visit_properties_body:
+            return left + '==' + right
+        else:
+            for el in self.__prop_nested_i:
+                if el in left or el in right:
+                    return f'And([Or(j != {el}, '+f'Not({left} == {right})) for j in range(A+1)])'.replace(el, 'j')        
+            return f'Not({left} == {right})'
 
 
     # Visit a parse tree produced by TxScriptParser#notExpr.
@@ -739,23 +771,36 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     # Visit a parse tree produced by TxScriptParser#qslf.
     def visitQslf(self, ctx:TxScriptParser.QslfContext):
         agent = ctx.ag.text + '_q'
+        self.__n_transactions = int(ctx.nTrans.text)
         condition = self.visit(ctx.where)
         self.__visit_properties_body = True
         body = self.visit(ctx.body)
         self.__visit_properties_body = False
         step_trans_args = [self.__args_map[a] for a in self.__args_map if 'constructor' not in self.__args_map[a]]
-        global_args_q = (', ' + ', '.join([g.text+'_q, *t_'+g.text+'_q' for (g, _) in self.__globals])) if self.__globals else ''
-        func_args_q = (', ' + ', '.join([s+'_q' for s in step_trans_args]) if step_trans_args else '')
-        global_args_phi = (', ' + ', '.join([g.text+'[i], '+g.text+'_q, t_'+g.text+'_q' for (g, _) in self.__globals])) if self.__globals else ''
+        global_args_q = (', ' + ', '.join([g.text+'_q{i}, *t_'+g.text+'_q{i}' for (g, _) in self.__globals])) if self.__globals else ''
+        func_args_q = (', ' + ', '.join([s+'_q{i}' for s in step_trans_args]) if step_trans_args else '')
+        global_args_phi = (', ' + ', '.join([g.text+'[i]{i}, '+g.text+'_q{i}, t_'+g.text+'_q{i}' for (g, _) in self.__globals])) if self.__globals else ''
+        t_awq_lists = ''
+        step_trans = ''
+        forall_args = ''
+        for i in range(0, self.__n_transactions):
+            t_awq_lists += f't_awq_list{i} = [t_awq_m_j for t_awq_m in t_aw_q{i} for t_awq_m_j in t_awq_m]; '
+            if forall_args: forall_args += ', '
+            forall_args += f'xn_q{i}, f_q{i}, w_q{i}, *aw_q{i}, *t_w_q{i}, *t_awq_list{i}, block_num_q{i}'+func_args_q.format(i=i)+global_args_q.format(i=i)
+            if i == 0:
+                step_trans += f'Not(step_trans(f_q{i}, {self.__tx_sender}, xn_q{i}'+func_args_q.format(i=i)+f', aw[i], aw_q{i}, w[i], w_q{i}, t_aw_q{i}, t_w_q{i}, block_num[i], block_num_q{i}, i+{i}'+global_args_phi.format(i=i)+')),\n'
+            else:
+                step_trans += f'Not(step_trans(f_q{i}, {self.__tx_sender}, xn_q{i}'+func_args_q.format(i=i)+f', aw_q{i-1}, aw_q{i}, w_q{i-1}, w_q{i}, t_aw_q{i}, t_w_q{i}, block_num_q{i-1}, block_num_q{i}, i+{i}'+global_args_phi.format(i=i)+')),\n'
         return f'''
 def p(i):
-    t_awq_list = [t_awq_m_j for t_awq_m in t_aw_q for t_awq_m_j in t_awq_m]
+    {t_awq_lists}
     return And(
         Exists([{agent}], And(user_is_legit({agent}), {condition},
-            ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list, block_num_q{func_args_q}{global_args_q}],  
+            ForAll([{forall_args}],  
                 Or(
-                    Not(step_trans(f_q, {self.__tx_sender}, xn_q{func_args_q}, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, block_num[i], block_num_q, i{global_args_phi})), 
-                    {body})))))'''
+{step_trans}
+{body}
+        )))))'''
 
 
     # Visit a parse tree produced by TxScriptParser#numberConstant.
@@ -795,7 +840,7 @@ def p(i):
             return ctx.v.text
         else:
             if 'app_tx_st' in ctx.v.text:
-                i = '_q'
+                i = f'_q{self.__n_transactions-1}'
             else:
                 i = '[i]'
             if 'st.balance' in ctx.v.text and '[' in ctx.v.text and ']' in ctx.v.text:
@@ -807,7 +852,7 @@ def p(i):
             if 'st.block.number' in ctx.v.text:
                 return f'block_num{i}'
             if 'tx.msg.value' in ctx.v.text:
-                return 'xn_q'
+                return 'xn'+f'_q{self.__n_transactions-1}'
             if 'tx.msg.sender' in ctx.v.text:
                 return 'tx_sender'
             if ctx.v.text.replace('st.','') in self.__args_map:

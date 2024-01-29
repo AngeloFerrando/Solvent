@@ -12,6 +12,14 @@ contract C2 {
 }
 
 property {
-  Forall xa  
-      [true -> Exists s (s, xa) can_withdraw(balance)]
+    Forall xa
+    [
+      true
+        ->
+      Exists tx
+      [
+        tx.msg.sender==st.xa && ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance))
+      ]
+    ]
+    [5]
 }

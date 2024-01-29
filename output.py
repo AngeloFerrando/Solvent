@@ -54,49 +54,51 @@ N = 2
 A = 3
 
 # Maximum functions depth
-M = 2
+M = 1
 
 # Contract's balance
 w = [Int("w_%s" % (i)) for i in range(N+1)]
-w_q = Int("wq")
+w_q0 = Int("wq0")
+w_q1 = Int("wq1")
+w_q2 = Int("wq2")
+w_q3 = Int("wq3")
+w_q4 = Int("wq4")
+
 
 # Block number
 block_num = [Int("block_num_%s" % (i)) for i in range(N+1)]
-block_num_q = Int("block_num_q")
+block_num_q0 = Int("block_num_q0")
+block_num_q1 = Int("block_num_q1")
+block_num_q2 = Int("block_num_q2")
+block_num_q3 = Int("block_num_q3")
+block_num_q4 = Int("block_num_q4")
+
 
 Proc = Datatype('Proc')
-Proc.declare('win')
-Proc.declare('timeout')
-Proc.declare('join')
+Proc.declare('pay')
 
 Proc = Proc.create()
 
 # Contract's state variables
 
-oracle = [Int("oracle_%s" % (i)) for i in range(N+1)]
-oracle_q = Int("oracleq")
-t_oracle = [[Int("t_oracle_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]
-t_oracle_q = [Int("t_oracleq_%s" % (m)) for m in range(M)]
-deadline = [Int("deadline_%s" % (i)) for i in range(N+1)]
-deadline_q = Int("deadlineq")
-t_deadline = [[Int("t_deadline_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]
-t_deadline_q = [Int("t_deadlineq_%s" % (m)) for m in range(M)]
-p1 = [Int("p1_%s" % (i)) for i in range(N+1)]
-p1_q = Int("p1q")
-t_p1 = [[Int("t_p1_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]
-t_p1_q = [Int("t_p1q_%s" % (m)) for m in range(M)]
-p2 = [Int("p2_%s" % (i)) for i in range(N+1)]
-p2_q = Int("p2q")
-t_p2 = [[Int("t_p2_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]
-t_p2_q = [Int("t_p2q_%s" % (m)) for m in range(M)]
 
 # Called procedure
 f = [Const("f_%s" % (i), Proc) for i in range(N+1)]
-f_q = Const("f_q", Proc)
+f_q0 = Const("f_q0", Proc)
+f_q1 = Const("f_q1", Proc)
+f_q2 = Const("f_q2", Proc)
+f_q3 = Const("f_q3", Proc)
+f_q4 = Const("f_q4", Proc)
+
 
 # users' wallets
 aw = [[Int("aw_%s_%s" % (i, j)) for j in range(A+1)] for i in range(N+1)]
-aw_q = [Int("awq_%s" % j) for j in range(A+1)]
+aw_q0 = [Int("awq0_%s" % j) for j in range(A+1)]
+aw_q1 = [Int("awq1_%s" % j) for j in range(A+1)]
+aw_q2 = [Int("awq2_%s" % j) for j in range(A+1)]
+aw_q3 = [Int("awq3_%s" % j) for j in range(A+1)]
+aw_q4 = [Int("awq4_%s" % j) for j in range(A+1)]
+
 
 # msg.sender
 xa = [Int("xa_%s" % (i)) for i in range(N+1)]
@@ -104,29 +106,43 @@ xa_q = Int("xa_q")
 
 # msg.value
 xn = [Int("xn_%s" % (i)) for i in range(N+1)]
-xn_q = Int("xn_q")
+xn_q0 = Int("xn_q0")
+xn_q1 = Int("xn_q1")
+xn_q2 = Int("xn_q2")
+xn_q3 = Int("xn_q3")
+xn_q4 = Int("xn_q4")
+
 
 # functions args
-constructor_o = [Int("constructor_o_%s" % (i)) for i in range(N+1)] 
-constructor_o_q = Int("constructor_o_q")
-constructor_d = [Int("constructor_d_%s" % (i)) for i in range(N+1)] 
-constructor_d_q = Int("constructor_d_q")
-win_winner = [Int("win_winner_%s" % (i)) for i in range(N+1)] 
-win_winner_q = Int("win_winner_q")
+pay_amount = [Int("pay_amount_%s" % (i)) for i in range(N+1)]
+pay_amount_q0 = Int("pay_amount0_q")
+pay_amount_q1 = Int("pay_amount1_q")
+pay_amount_q2 = Int("pay_amount2_q")
+pay_amount_q3 = Int("pay_amount3_q")
+pay_amount_q4 = Int("pay_amount4_q")
 
 # List of ids hard coded
 hard_coded_list = [0]
 
 # Temporary contract balance. Used inside functions to model internal states
 t_w = [[Int("t_w_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]
-t_w_q = [Int("t_wq_%s" % (m)) for m in range(M)] 
+t_w_q0 = [Int("t_wq0_%s" % (m)) for m in range(M)]
+t_w_q1 = [Int("t_wq1_%s" % (m)) for m in range(M)]
+t_w_q2 = [Int("t_wq2_%s" % (m)) for m in range(M)]
+t_w_q3 = [Int("t_wq3_%s" % (m)) for m in range(M)]
+t_w_q4 = [Int("t_wq4_%s" % (m)) for m in range(M)]
+ 
 
 # Temporary users wallets
 t_aw = [[[Int("t_aw_%s_%s_%s" % (i, m, j)) for j in range(A+1)]
          for m in range(M)] for i in range(N+1)]
 
-t_aw_q = [[Int("t_awq_%s_%s" % (m, j)) for j in range(A+1)]
-         for m in range(M)]
+t_aw_q0 = [[Int("t_awq0_%s_%s" % (m, j)) for j in range(A+1)] for m in range(M)]
+t_aw_q1 = [[Int("t_awq1_%s_%s" % (m, j)) for j in range(A+1)] for m in range(M)]
+t_aw_q2 = [[Int("t_awq2_%s_%s" % (m, j)) for j in range(A+1)] for m in range(M)]
+t_aw_q3 = [[Int("t_awq3_%s_%s" % (m, j)) for j in range(A+1)] for m in range(M)]
+t_aw_q4 = [[Int("t_awq4_%s_%s" % (m, j)) for j in range(A+1)] for m in range(M)]
+
 
 s = Solver()
 
@@ -134,11 +150,11 @@ s = Solver()
 s.add(w[0] >= 0)
 # s.add(w[0] == 1)
 
-def next_state_tx(aw1, aw2, w1, w2, oracleNow, oracleNext, deadlineNow, deadlineNext, p1Now, p1Next, p2Now, p2Next):
+def next_state_tx(aw1, aw2, w1, w2):
     return And(w2 == w1,
                And([aw2[j] == aw1[j] for j in range(A+1)])
-               , oracleNow==oracleNext, deadlineNow==deadlineNext, p1Now==p1Next, p2Now==p2Next
-               , )
+               
+               )
 
 def send(sender_id, amount, w_b, w_a, aw_b, aw_a): # '_b' and '_a' mean 'before' and 'after'
     return And(w_a == w_b - amount,
@@ -147,57 +163,16 @@ def send(sender_id, amount, w_b, w_a, aw_b, aw_a): # '_b' and '_a' mean 'before'
                           aw_a[j] == aw_b[j]) for j in range(A+1)]))
 
 
-def constructor(xa1, xn1, constructor_d,constructor_o, awNow, awNext, wNow, wNext, t_aw, t_w, block_num, oracleNow, oracleNext, t_oracle, deadlineNow, deadlineNext, t_deadline, p1Now, p1Next, t_p1, p2Now, p2Next, t_p2):
-    return And(t_w[0] == wNow + xn1, 
-	And(If(
-	Not(xn1==1), 
-		next_state_tx(awNow, awNext, wNow, wNext, oracleNow, oracleNext, deadlineNow, deadlineNext, p1Now, p1Next, p2Now, p2Next), And(
-		And(
-	t_p1[0] == xa1,
-	And(
-	t_oracle[0] == constructor_o,
-	t_deadline[0] == constructor_d)))), next_state_tx(awNow, awNext, t_w[0], wNext, t_oracle[0], oracleNext, t_deadline[0], deadlineNext, t_p1[0], p1Next, p2Now, p2Next)))
+def constructor(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, block_num):
+    return If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext), 
+	And(next_state_tx(awNow, awNext, wNow, wNext), next_state_tx(awNow, awNext, wNow, wNext)))
 
-def join(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, block_num, oracleNow, oracleNext, t_oracle, deadlineNow, deadlineNext, t_deadline, p1Now, p1Next, t_p1, p2Now, p2Next, t_p2):
-    return And(t_w[0] == wNow + xn1, 
+def pay(xa1, xn1, pay_amount, awNow, awNext, wNow, wNext, t_aw, t_w, block_num):
+    return If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext), 
 	And(If(
-	Not(t_w[0]==1), 
-		next_state_tx(awNow, awNext, wNow, wNext, oracleNow, oracleNext, deadlineNow, deadlineNext, p1Now, p1Next, p2Now, p2Next), And(
-		If(
-	Not(xn1==1), 
-		next_state_tx(awNow, awNext, wNow, wNext, oracleNow, oracleNext, deadlineNow, deadlineNext, p1Now, p1Next, p2Now, p2Next), And(
-		If(
-	Not(xa1!=p1Now), 
-		next_state_tx(awNow, awNext, wNow, wNext, oracleNow, oracleNext, deadlineNow, deadlineNext, p1Now, p1Next, p2Now, p2Next), And(
-		t_p2[0] == xa1)))))), next_state_tx(awNow, awNext, t_w[0], wNext, oracleNow, oracleNext, deadlineNow, deadlineNext, p1Now, p1Next, t_p2[0], p2Next)))
-
-def win(xa1, xn1, win_winner, awNow, awNext, wNow, wNext, t_aw, t_w, block_num, oracleNow, oracleNext, t_oracle, deadlineNow, deadlineNext, t_deadline, p1Now, p1Next, t_p1, p2Now, p2Next, t_p2):
-    return If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext, oracleNow, oracleNext, deadlineNow, deadlineNext, p1Now, p1Next, p2Now, p2Next), 
-	And(If(
-	Not(wNow==2), 
-		next_state_tx(awNow, awNext, wNow, wNext, oracleNow, oracleNext, deadlineNow, deadlineNext, p1Now, p1Next, p2Now, p2Next), And(
-		If(
-	Not(xa1==oracleNow), 
-		next_state_tx(awNow, awNext, wNow, wNext, oracleNow, oracleNext, deadlineNow, deadlineNext, p1Now, p1Next, p2Now, p2Next), And(
-		If(
-	Not(block_num<deadlineNow), 
-		next_state_tx(awNow, awNext, wNow, wNext, oracleNow, oracleNext, deadlineNow, deadlineNext, p1Now, p1Next, p2Now, p2Next), And(
-		If(
-	Not(Or(win_winner==p1Now,win_winner==p2Now)), 
-		next_state_tx(awNow, awNext, wNow, wNext, oracleNow, oracleNext, deadlineNow, deadlineNext, p1Now, p1Next, p2Now, p2Next), And(
-		send(win_winner, wNow, wNow, t_w[0], awNow, t_aw[0]))))))))), next_state_tx(t_aw[0], awNext, t_w[0], wNext, oracleNow, oracleNext, deadlineNow, deadlineNext, p1Now, p1Next, p2Now, p2Next)))
-
-def timeout(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, block_num, oracleNow, oracleNext, t_oracle, deadlineNow, deadlineNext, t_deadline, p1Now, p1Next, t_p1, p2Now, p2Next, t_p2):
-    return If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext, oracleNow, oracleNext, deadlineNow, deadlineNext, p1Now, p1Next, p2Now, p2Next), 
-	And(If(
-	Not(wNow==2), 
-		next_state_tx(awNow, awNext, wNow, wNext, oracleNow, oracleNext, deadlineNow, deadlineNext, p1Now, p1Next, p2Now, p2Next), And(
-		If(
-	Not(block_num>=deadlineNow), 
-		next_state_tx(awNow, awNext, wNow, wNext, oracleNow, oracleNext, deadlineNow, deadlineNext, p1Now, p1Next, p2Now, p2Next), And(
-		And(
-	send(p1Now, 1, wNow, t_w[0], awNow, t_aw[0]),
-	send(p2Now, 1, t_w[0], t_w[1], t_aw[0], t_aw[1])))))), next_state_tx(t_aw[1], awNext, t_w[1], wNext, oracleNow, oracleNext, deadlineNow, deadlineNext, p1Now, p1Next, p2Now, p2Next)))
+	Not(pay_amount<=wNow), 
+		next_state_tx(awNow, awNext, wNow, wNext), And(
+		send(xa1, pay_amount, wNow, t_w[0], awNow, t_aw[0]))), next_state_tx(t_aw[0], awNext, t_w[0], wNext)))
 
 
 def user_is_legit(xa1):
@@ -217,23 +192,19 @@ def user_is_fresh(xa, xa1, f, i):
 
 # transition rules
 
-def step_trans(f1, xa1, xn1, win_winner, aw1, aw2, w1, w2, t_aw, t_w, block_num1, block_num2, i, oracleNow, oracleNext, t_oracle, deadlineNow, deadlineNext, t_deadline, p1Now, p1Next, t_p1, p2Now, p2Next, t_p2):
+def step_trans(f1, xa1, xn1, pay_amount, aw1, aw2, w1, w2, t_aw, t_w, block_num1, block_num2, i):
     return And(And(xa1 >= 0, xa1 <= A, xn1 >= 0),
                And([aw1[j] >= 0 for j in range(A+1)]),
                block_num2 >= block_num1,
-               If(f1 == Proc.join,
-	join(xa1, xn1, aw1, aw2, w1, w2, t_aw, t_w, block_num1, oracleNow, oracleNext, t_oracle, deadlineNow, deadlineNext, t_deadline, p1Now, p1Next, t_p1, p2Now, p2Next, t_p2),
-	If(f1 == Proc.win,
-		win(xa1, xn1, win_winner, aw1, aw2, w1, w2, t_aw, t_w, block_num1, oracleNow, oracleNext, t_oracle, deadlineNow, deadlineNext, t_deadline, p1Now, p1Next, t_p1, p2Now, p2Next, t_p2),
-			timeout(xa1, xn1, aw1, aw2, w1, w2, t_aw, t_w, block_num1, oracleNow, oracleNext, t_oracle, deadlineNow, deadlineNext, t_deadline, p1Now, p1Next, t_p1, p2Now, p2Next, t_p2))))
+               	pay(xa1, xn1, pay_amount, aw1, aw2, w1, w2, t_aw, t_w, block_num1))
 
 new_state = And(And(xa[0] >= 0, xa[0] <= A, xn[0] >= 0),
                And([aw[0][j] >= 0 for j in range(A+1)]),
-                  constructor(xa[0], xn[0], constructor_d[0],constructor_o[0],  aw[0], aw[1], w[0], w[1], t_aw[0], t_w[0], block_num[0], oracle[0], oracle[1], t_oracle[0], deadline[0], deadline[1], t_deadline[0], p1[0], p1[1], t_p1[0], p2[0], p2[1], t_p2[0]))
+                  constructor(xa[0], xn[0],  aw[0], aw[1], w[0], w[1], t_aw[0], t_w[0], block_num[0]))
 s.add(new_state)
 for i in range(1, N):
-    new_state = step_trans(f[i], xa[i], xn[i], win_winner[i], aw[i],
-                           aw[i+1], w[i], w[i+1], t_aw[i], t_w[i], block_num[i], block_num[i+1], i, oracle[i], oracle[i+1], t_oracle[i], deadline[i], deadline[i+1], t_deadline[i], p1[i], p1[i+1], t_p1[i], p2[i], p2[i+1], t_p2[i])
+    new_state = step_trans(f[i], xa[i], xn[i], pay_amount[i], aw[i],
+                           aw[i+1], w[i], w[i+1], t_aw[i], t_w[i], block_num[i], block_num[i+1], i)
     s.add(new_state)
 
 
@@ -244,18 +215,24 @@ for i in range(1, N):
 #     #print([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list ])
 #     return And(w[i] > 0,
 #                Exists([xa_q], And(user_is_legit(xa_q), user_is_fresh(xa, xa_q, f,  i),
-#                       ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list, win_winner_q, oracle_q, *t_oracle_q, deadline_q, *t_deadline_q, p1_q, *t_p1_q, p2_q, *t_p2_q ], Or(Not(step_trans(f_q, xa_q, xn_q, win_winner_q, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, i, oracle[i], oracle_q, t_oracle_q, deadline[i], deadline_q, t_deadline_q, p1[i], p1_q, t_p1_q, p2[i], p2_q, t_p2_q)), w_q > 0)))))
+#                       ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list, pay_amount_q ], Or(Not(step_trans(f_q, xa_q, xn_q, pay_amount_q, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, i)), w_q > 0)))))
 #                       #ForAll([xn_q, f_q, w_q, *aw_q ], Or(Not(step_trans(f_q, xa_q, xn_q, aw[i], aw_q, w[i], w_q, t_aw[i], t_w[i], i)), w_q > 0)))))
 
 
 def p(i):
-    t_awq_list = [t_awq_m_j for t_awq_m in t_aw_q for t_awq_m_j in t_awq_m]
+    t_awq_list0 = [t_awq_m_j for t_awq_m in t_aw_q0 for t_awq_m_j in t_awq_m]; t_awq_list1 = [t_awq_m_j for t_awq_m in t_aw_q1 for t_awq_m_j in t_awq_m]; t_awq_list2 = [t_awq_m_j for t_awq_m in t_aw_q2 for t_awq_m_j in t_awq_m]; t_awq_list3 = [t_awq_m_j for t_awq_m in t_aw_q3 for t_awq_m_j in t_awq_m]; t_awq_list4 = [t_awq_m_j for t_awq_m in t_aw_q4 for t_awq_m_j in t_awq_m]; 
     return And(
-        Exists([xa_q], And(user_is_legit(xa_q), And(block_num[i]<deadline[i],w[i]==2),
-            ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list, block_num_q, win_winner_q, oracle_q, *t_oracle_q, deadline_q, *t_deadline_q, p1_q, *t_p1_q, p2_q, *t_p2_q],  
+        Exists([xa_q], And(user_is_legit(xa_q), True,
+            ForAll([xn_q0, f_q0, w_q0, *aw_q0, *t_w_q0, *t_awq_list0, block_num_q0, pay_amount_q0, xn_q1, f_q1, w_q1, *aw_q1, *t_w_q1, *t_awq_list1, block_num_q1, pay_amount_q1, xn_q2, f_q2, w_q2, *aw_q2, *t_w_q2, *t_awq_list2, block_num_q2, pay_amount_q2, xn_q3, f_q3, w_q3, *aw_q3, *t_w_q3, *t_awq_list3, block_num_q3, pay_amount_q3, xn_q4, f_q4, w_q4, *aw_q4, *t_w_q4, *t_awq_list4, block_num_q4, pay_amount_q4],  
                 Or(
-                    Not(step_trans(f_q, oracle[i], xn_q, win_winner_q, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, block_num[i], block_num_q, i, oracle[i], oracle_q, t_oracle_q, deadline[i], deadline_q, t_deadline_q, p1[i], p1_q, t_p1_q, p2[i], p2_q, t_p2_q)), 
-                    And(True,Or(And([Or(j != p1[i], Not(aw_q[j]-aw[i][j] >= 2)) for j in range(A+1)]),And([Or(j != p2[i], Not(aw_q[j]-aw[i][j] >= 2)) for j in range(A+1)]))))))))
+Not(step_trans(f_q0, xa_q, xn_q0, pay_amount_q0, aw[i], aw_q0, w[i], w_q0, t_aw_q0, t_w_q0, block_num[i], block_num_q0, i+0)),
+Not(step_trans(f_q1, xa_q, xn_q1, pay_amount_q1, aw_q0, aw_q1, w_q0, w_q1, t_aw_q1, t_w_q1, block_num_q0, block_num_q1, i+1)),
+Not(step_trans(f_q2, xa_q, xn_q2, pay_amount_q2, aw_q1, aw_q2, w_q1, w_q2, t_aw_q2, t_w_q2, block_num_q1, block_num_q2, i+2)),
+Not(step_trans(f_q3, xa_q, xn_q3, pay_amount_q3, aw_q2, aw_q3, w_q2, w_q3, t_aw_q3, t_w_q3, block_num_q2, block_num_q3, i+3)),
+Not(step_trans(f_q4, xa_q, xn_q4, pay_amount_q4, aw_q3, aw_q4, w_q3, w_q4, t_aw_q4, t_w_q4, block_num_q3, block_num_q4, i+4)),
+
+And(True,And([Or(j != xa[i], Not(aw_q4[j] == aw[i][j]+w[i])) for j in range(A+1)]))
+        )))))
 
 queries = [p(i) for i in range(1, N)]
 
