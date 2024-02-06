@@ -1,7 +1,8 @@
 contract C2 {
-
+  address oracle
+  
   constructor () {
-    skip
+    oracle=msg.sender
   }
 
   function pay(amount) {
@@ -18,8 +19,8 @@ property {
         ->
       Exists tx
       [
-        tx.msg.sender==st.xa && ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance))
+        tx.msg.sender==st.oracle && st.balance[xa] >= 1 && ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance))
       ]
     ]
-    [5]
+    [3]
 }

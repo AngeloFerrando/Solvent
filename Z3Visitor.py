@@ -80,15 +80,19 @@ class Z3Visitor(TxScriptVisitor):
             if type(g_type) is tuple:
                 contract_globals += '''
 {g} = [[{ty}("{g}_%s_%s" % (i, j)) for j in range(A+1)] for i in range(N+1)]
-{g}_q = [{ty}("{g}q_%s" % j) for j in range(A+1)]
-t_{g} = [[[{ty}("t_{g}_%s_%s_%s" % (i, m, j)) for j in range(A+1)] for m in range(M)] for i in range(N+1)]
-t_{g}_q = [[{ty}("t_{g}q_%s_%s" % (m, j)) for j in range(A+1)] for m in range(M)]'''.format(g=g_var.text, ty=g_type[1])
+t_{g} = [[[{ty}("t_{g}_%s_%s_%s" % (i, m, j)) for j in range(A+1)] for m in range(M)] for i in range(N+1)]'''.format(g=g_var.text, ty=g_type[1])
+                for i in range(0, self.__n_transactions):
+                    contract_globals += '''
+{g}_q{i} = [{ty}("{g}q{i}_%s" % j) for j in range(A+1)]
+t_{g}_q{i} = [[{ty}("t_{g}q{i}_%s_%s" % (m, j)) for j in range(A+1)] for m in range(M)]'''.format(i=i, g=g_var.text, ty=g_type[1])
             else:
                 contract_globals += '''
 {g} = [{ty}("{g}_%s" % (i)) for i in range(N+1)]
-{g}_q = {ty}("{g}q")
-t_{g} = [[{ty}("t_{g}_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]
-t_{g}_q = [{ty}("t_{g}q_%s" % (m)) for m in range(M)]'''.format(g=g_var.text, ty=g_type)
+t_{g} = [[{ty}("t_{g}_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]'''.format(g=g_var.text, ty=g_type)
+                for i in range(0, self.__n_transactions):
+                    contract_globals += '''
+{g}_q{i} = {ty}("{g}q{i}")
+t_{g}_q{i} = [{ty}("t_{g}q{i}_%s" % (m)) for m in range(M)]'''.format(i=i, g=g_var.text, ty=g_type)
 
         res = '''
 from z3 import *
@@ -779,7 +783,8 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         step_trans_args = [self.__args_map[a] for a in self.__args_map if 'constructor' not in self.__args_map[a]]
         global_args_q = (', ' + ', '.join([g.text+'_q{i}, *t_'+g.text+'_q{i}' for (g, _) in self.__globals])) if self.__globals else ''
         func_args_q = (', ' + ', '.join([s+'_q{i}' for s in step_trans_args]) if step_trans_args else '')
-        global_args_phi = (', ' + ', '.join([g.text+'[i]{i}, '+g.text+'_q{i}, t_'+g.text+'_q{i}' for (g, _) in self.__globals])) if self.__globals else ''
+        global_args_phi0 = (', ' + ', '.join([g.text+'[i], '+g.text+'_q{i}, t_'+g.text+'_q{i}' for (g, _) in self.__globals])) if self.__globals else ''
+        global_args_phi = (', ' + ', '.join([g.text+'_q{j}, '+g.text+'_q{i}, t_'+g.text+'_q{i}' for (g, _) in self.__globals])) if self.__globals else ''
         t_awq_lists = ''
         step_trans = ''
         forall_args = ''
@@ -788,9 +793,9 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
             if forall_args: forall_args += ', '
             forall_args += f'xn_q{i}, f_q{i}, w_q{i}, *aw_q{i}, *t_w_q{i}, *t_awq_list{i}, block_num_q{i}'+func_args_q.format(i=i)+global_args_q.format(i=i)
             if i == 0:
-                step_trans += f'Not(step_trans(f_q{i}, {self.__tx_sender}, xn_q{i}'+func_args_q.format(i=i)+f', aw[i], aw_q{i}, w[i], w_q{i}, t_aw_q{i}, t_w_q{i}, block_num[i], block_num_q{i}, i+{i}'+global_args_phi.format(i=i)+')),\n'
+                step_trans += f'Not(step_trans(f_q{i}, {self.__tx_sender}, xn_q{i}'+func_args_q.format(i=i)+f', aw[i], aw_q{i}, w[i], w_q{i}, t_aw_q{i}, t_w_q{i}, block_num[i], block_num_q{i}, i+{i}'+global_args_phi0.format(i=i)+')),\n'
             else:
-                step_trans += f'Not(step_trans(f_q{i}, {self.__tx_sender}, xn_q{i}'+func_args_q.format(i=i)+f', aw_q{i-1}, aw_q{i}, w_q{i-1}, w_q{i}, t_aw_q{i}, t_w_q{i}, block_num_q{i-1}, block_num_q{i}, i+{i}'+global_args_phi.format(i=i)+')),\n'
+                step_trans += f'Not(step_trans(f_q{i}, {self.__tx_sender}, xn_q{i}'+func_args_q.format(i=i)+f', aw_q{i-1}, aw_q{i}, w_q{i-1}, w_q{i}, t_aw_q{i}, t_w_q{i}, block_num_q{i-1}, block_num_q{i}, i+{i}'+global_args_phi.format(i=i,j=i-1)+')),\n'
         return f'''
 def p(i):
     {t_awq_lists}
@@ -845,8 +850,8 @@ def p(i):
                 i = '[i]'
             if 'st.balance' in ctx.v.text and '[' in ctx.v.text and ']' in ctx.v.text:
                 ag = ctx.v.text[ctx.v.text.index('[')+1:ctx.v.text.index(']')]
-                self.__prop_nested_i.add(ag+'[i]')
-                return f'aw{i}[{ag}[i]]'
+                self.__prop_nested_i.add(ag+'_q')#(ag+'[i]')
+                return f'aw{i}[{ag}_q]'#f'aw{i}[{ag}[i]]'
             if 'st.balance' in ctx.v.text:
                 return f'w{i}'
             if 'st.block.number' in ctx.v.text:
