@@ -17,10 +17,9 @@ property {
     [
       true
         ->
-      Exists tx
+      Exists tx [3, oracle]
       [
-        tx.msg.sender==st.oracle && st.balance[xa] >= 1 && ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance))
+        ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance))
       ]
     ]
-    [3]
 }
