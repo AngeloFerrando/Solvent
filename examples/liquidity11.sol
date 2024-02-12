@@ -3,7 +3,6 @@ contract C11 {
   constructor () {
     skip
   }
-
   function pay(amount) {
     require (amount <= balance);
     if (msg.sender == 0) {
@@ -15,3 +14,17 @@ contract C11 {
   }
 
 }
+
+property {
+    Forall xa
+    [
+      xa == 0
+        ->
+      Exists tx
+      [
+        tx.msg.sender==st.xa && ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance))
+      ]
+    ]
+    [1]
+}
+
