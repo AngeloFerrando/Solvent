@@ -11,7 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["./examples/NewOracleBet.sol", "2", "3"]
+            "args": ["./examples/liquidity11.sol", "3", "2"]
         }
     ]
 }

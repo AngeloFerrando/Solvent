@@ -1,3 +1,4 @@
+import copy
 from antlr4 import *
 from TxScriptLexer import *
 from TxScriptParser import *
@@ -265,29 +266,43 @@ for i in range(1, N):
 
 {props}
 
-queries = [p(i) for i in range(1, N)]
+queries = [[{pis}] for i in range(1, N)] 
 
-# queries = [ p(0) ]
-
+timeStart = time.time()
 for i, q in enumerate(queries):
-    timeStart = time.time()
-    # print("q : ", q)
-    print("p " + str(i) + " : ", end='')
-    # sq = s
-    # sq.add(q)
-    # print("\\n\\nsq:", sq, "\\n\\n")
-    res = s.check(q)
-    if res == sat:
-        print(" sat (=> not liquid)")
-        m = s.model()
-        # print(m)
-        #printState(m)
-        # exit()
-    else:
-        print(" unsat (=> liquid)")
+    liquid = False
+    for j in range(0, len(q)):
+        qj = q[j] 
+        resj = s.check(qj)
+        if resj == unsat:
+            print("liquid [in " + str(j+1) + " steps]")
+            liquid = True
+            break
+    if liquid:
+        break
+if not liquid: print("not liquid [in {n_trans} steps]")
+timeTot = time.time() - timeStart
+print("Solving time: " + str(timeTot) + "s")
 
-    timeTot = time.time() - timeStart
-    print("Solving time: " + str(timeTot) + "s")
+# for i, q in enumerate(queries):
+#     timeStart = time.time()
+#     # print("q : ", q)
+#     print("p " + str(i) + " : ", end='')
+#     # sq = s
+#     # sq.add(q)
+#     # print("\\n\\nsq:", sq, "\\n\\n")
+#     res = s.check(q)
+#     if res == sat:
+#         print(" sat (=> not liquid)")
+#         m = s.model()
+#         # print(m)
+#         #printState(m)
+#         # exit()
+#     else:
+#         print(" unsat (=> liquid)")
+
+#     timeTot = time.time() - timeStart
+#     print("Solving time: " + str(timeTot) + "s")
                       
 '''.format(
         N=self.__N, A=self.__A, 
@@ -317,7 +332,9 @@ for i, q in enumerate(queries):
         constr_args_0 = (','.join([s+'[0]' for s in self.__proc_args['constructor']])+', ' if 'constructor' in self.__proc_args and self.__proc_args['constructor'] else ''),
         contract_globals = contract_globals, 
         max_nesting = self.__max_nesting,
-        props = props[0]
+        props = props[0],
+        pis = ','.join([f'p{i}(i)' for i in range(1, self.__n_transactions+1)]),
+        n_trans = self.__n_transactions 
     )
         return res
 
@@ -507,6 +524,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
                 t_curr_a=self.__t_curr_a, 
                 t_new_a=self.__t_new_a
             )
+        res = 'If(\n\tNot(' + self.visit(ctx.amount) + ' >= 0), \n\t\tnext_state_tx(awNow, awNext, wNow, wNext'+((', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '')+'), And(' + res + ', {subs}))'
         self.__t_curr_a = 't_aw[' + str(self.__nesting-1) + ']'
         self.__t_new_a = 't_aw[' + str(self.__nesting) + ']'
         self.__t_curr_w = 't_w[' + str(self.__nesting-1) + ']'
@@ -576,22 +594,70 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     # Visit a parse tree produced by TxScriptParser#ifelseCmd.
     def visitIfelseCmd(self, ctx:TxScriptParser.IfelseCmdContext):
         cond = self.visit(ctx.condition)
-        backup = self.__globals_index.copy()
+        # backup = self.__globals_index.copy()
         backup_add = self.__add_last_cmd
         self.__add_last_cmd = False
         backup__t_curr_a = self.__t_curr_a
         backup__t_new_a = self.__t_new_a
         backup__t_curr_w = self.__t_curr_w
         backup__t_new_w = self.__t_new_w
+        backup_nesting = self.__nesting
+        backup_global_index = copy.deepcopy(self.__globals_index)
         ifcmd = self.visit(ctx.ifcmd)
-        self.__globals_index = backup
+        # skip = 'next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
+        #     t_curr_a=self.__t_curr_a, 
+        #     t_curr_w=self.__t_curr_w, 
+        #     global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+        # )
+        if__t_curr_a = self.__t_curr_a
+        if__t_new_a = self.__t_new_a
+        if__t_curr_w = self.__t_curr_w
+        if__t_new_w = self.__t_new_w
+        if_nesting = self.__nesting
+        if_globals_index = copy.deepcopy(self.__globals_index)
         self.__t_curr_a = backup__t_curr_a
         self.__t_new_a = backup__t_new_a
         self.__t_curr_w = backup__t_curr_w
         self.__t_new_w = backup__t_new_w
+        self.__nesting = backup_nesting
+        self.__globals_index = backup_global_index
         elsecmd = self.visit(ctx.elsecmd)
+        # skip = 'next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
+        #     t_curr_a=self.__t_curr_a, 
+        #     t_curr_w=self.__t_curr_w, 
+        #     global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+        # )
+        levelling_if_cmds = 'True'
+        levelling_else_cmds = 'True'
+        if if_nesting > self.__nesting:
+            levelling_else_cmds += f', {if__t_curr_w}=={self.__t_curr_w}, {if__t_curr_a}=={self.__t_curr_a}'
+            self.__t_curr_a = if__t_curr_a
+            self.__t_new_a = if__t_new_a
+            self.__t_curr_w = if__t_curr_w
+            self.__t_new_w = if__t_new_w
+            self.__nesting = if_nesting
+        elif if_nesting < self.__nesting:
+            levelling_if_cmds += f', {if__t_curr_w}=={self.__t_curr_w}, {if__t_curr_a}=={self.__t_curr_a}'
+        for g in self.__globals_index:
+            if if_globals_index[g] > self.__globals_index[g]:
+                tg_now = f't_{g}[{self.__globals_index[g]}]' if self.__globals_index[g] > 0 else f'{g}Now'
+                levelling_else_cmds += f', t_{g}[{if_globals_index[g]-1}]=={tg_now}'
+                self.__globals_index[g] = if_globals_index[g]
+            elif if_globals_index[g] < self.__globals_index[g]:
+                tg_now = f't_{g}[{if_globals_index[g]}]' if if_globals_index[g] > 0 else f'{g}Now'
+                levelling_if_cmds += f', {tg_now}==t_{g}[{self.__globals_index[g]-1}]'
         self.__add_last_cmd = backup_add
-        self.__globals_index = backup
+        # self.__globals_index = backup
+        ifcmd_aux = ifcmd.format(subs=levelling_if_cmds)
+        if ifcmd_aux == ifcmd:
+            ifcmd += f', {levelling_if_cmds}'
+        else:
+            ifcmd = ifcmd_aux
+        elsecmd_aux = elsecmd.format(subs=levelling_else_cmds)
+        if elsecmd_aux == elsecmd:
+            elsecmd += f', {levelling_else_cmds}'
+        else:
+            elsecmd = elsecmd_aux
         return 'If({cond},{ifcmd},{elsecmd})'.format(
             cond = 'And'+'('+cond+')',
             ifcmd = 'And'+'('+ifcmd+')',
@@ -611,7 +677,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         #         global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
         #     )
         #     self.__add_last_cmd = False
-        aux = seq1.format(subs=seq2)
+        aux = seq1.format(subs='And('+seq2+',{subs})')
         if aux == seq1:
             return 'And(\n\t{seq1},\n\t{seq2})'.format(seq1=seq1, seq2=seq2)
         else:
@@ -776,6 +842,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     def visitQslf(self, ctx:TxScriptParser.QslfContext):
         agent = ctx.ag.text + '_q'
         self.__n_transactions = int(ctx.nTrans.text)
+        self.__tx_sender = 'xa_q' if ctx.sender.text == 'xa' else ctx.sender.text.replace('st.', '')+'[i]'
         condition = self.visit(ctx.where)
         self.__visit_properties_body = True
         body = self.visit(ctx.body)
@@ -785,10 +852,16 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         func_args_q = (', ' + ', '.join([s+'_q{i}' for s in step_trans_args]) if step_trans_args else '')
         global_args_phi0 = (', ' + ', '.join([g.text+'[i], '+g.text+'_q{i}, t_'+g.text+'_q{i}' for (g, _) in self.__globals])) if self.__globals else ''
         global_args_phi = (', ' + ', '.join([g.text+'_q{j}, '+g.text+'_q{i}, t_'+g.text+'_q{i}' for (g, _) in self.__globals])) if self.__globals else ''
+        pi = ''
+        for i in range(1, self.__n_transactions+1):  
+            pi += self.createPi(i, agent, condition, body, global_args_q, func_args_q, global_args_phi0, global_args_phi)
+        return pi
+
+    def createPi(self, nTrans, agent, condition, body, global_args_q, func_args_q, global_args_phi0, global_args_phi):
         t_awq_lists = ''
         step_trans = ''
         forall_args = ''
-        for i in range(0, self.__n_transactions):
+        for i in range(0, nTrans):
             t_awq_lists += f't_awq_list{i} = [t_awq_m_j for t_awq_m in t_aw_q{i} for t_awq_m_j in t_awq_m]; '
             if forall_args: forall_args += ', '
             forall_args += f'xn_q{i}, f_q{i}, w_q{i}, *aw_q{i}, *t_w_q{i}, *t_awq_list{i}, block_num_q{i}'+func_args_q.format(i=i)+global_args_q.format(i=i)
@@ -797,7 +870,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
             else:
                 step_trans += f'Not(step_trans(f_q{i}, {self.__tx_sender}, xn_q{i}'+func_args_q.format(i=i)+f', aw_q{i-1}, aw_q{i}, w_q{i-1}, w_q{i}, t_aw_q{i}, t_w_q{i}, block_num_q{i-1}, block_num_q{i}, i+{i}'+global_args_phi.format(i=i,j=i-1)+')),\n'
         return f'''
-def p(i):
+def p{nTrans}(i):
     {t_awq_lists}
     return And(
         Exists([{agent}], And(user_is_legit({agent}), {condition},

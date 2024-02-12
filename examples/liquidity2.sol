@@ -17,7 +17,7 @@ property {
     [
       true
         ->
-      Exists tx [3, oracle]
+      Exists tx [5, xa]
       [
         ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance))
       ]

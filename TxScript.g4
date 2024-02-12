@@ -57,7 +57,7 @@ expression :
 ;
 
 qslf : 
-  'Forall' ag=LABEL '[' where=expression '->' 'Exists' tx=LABEL '[' body=expression ']' ']' '[' nTrans=NUMBER ']'
+  'Forall' ag=LABEL '[' where=expression '->' 'Exists' tx=LABEL '[' nTrans=NUMBER ',' sender=LABEL ']' '[' body=expression ']' ']'
 ;
 // canWithdrawExpr : 
 //   'can_withdraw' '('ag=constantExpr ',' body=expression ')'             # baseWithdrawExpr

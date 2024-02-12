@@ -1,5 +1,5 @@
 contract C11 {
-
+  
   constructor () {
     skip
   }
@@ -20,11 +20,10 @@ property {
     [
       xa == 0
         ->
-      Exists tx
+      Exists tx [2, xa]
       [
         tx.msg.sender==st.xa && ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance))
       ]
     ]
-    [1]
 }
 
