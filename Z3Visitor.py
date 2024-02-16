@@ -275,12 +275,12 @@ for i, q in enumerate(queries):
         qj = q[j] 
         resj = s.check(qj)
         if resj == unsat:
-            print("liquid [in " + str(j+1) + " steps]")
             liquid = True
             break
-    if liquid:
+    if not liquid:
         break
 if not liquid: print("not liquid [in {n_trans} steps]")
+else: print("liquid [in {n_trans} steps]")
 timeTot = time.time() - timeStart
 print("Solving time: " + str(timeTot) + "s")
 

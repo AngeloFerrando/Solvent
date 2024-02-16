@@ -17,9 +17,9 @@ if [ "$#" -eq 2 ]; then
             python3 output.py > .tmp
             end_time=$(date +%s.%N)
             elapsed_time_verification=$(echo "$end_time - $start_time" | bc)
-            if  (grep -q '(=> liquid)' .tmp && grep -q '(=> not liquid)' .tmp); then
+            if  (grep -q 'liquid' .tmp && grep -q 'not liquid' .tmp); then
                 echo -n -e "\e[1;33m?\e[0m"
-            elif (grep -q '(=> liquid)' .tmp) then
+            elif (grep -q 'liquid' .tmp) then
                 echo -n -e "\e[32m" pass "\e[0m"
             else
                 echo -n -e "\e[31m" fail "\e[0m"
