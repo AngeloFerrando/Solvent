@@ -75,9 +75,9 @@ block_num_q4 = Int("block_num_q4")
 
 
 Proc = Datatype('Proc')
+Proc.declare('timeout')
 Proc.declare('join')
 Proc.declare('win')
-Proc.declare('timeout')
 
 Proc = Proc.create()
 
@@ -330,7 +330,7 @@ for i in range(1, N):
 #                       #ForAll([xn_q, f_q, w_q, *aw_q ], Or(Not(step_trans(f_q, xa_q, xn_q, aw[i], aw_q, w[i], w_q, t_aw[i], t_w[i], i)), w_q > 0)))))
 
 
-def p1(i):
+def p_liq1_1(i):
     t_awq_list0 = [t_awq_m_j for t_awq_m in t_aw_q0 for t_awq_m_j in t_awq_m]; 
     return And(
         Exists([xa_q], And(user_is_legit(xa_q), And(block_num[i]<deadline[i],w[i]==2),
@@ -340,7 +340,7 @@ Not(step_trans(f_q0, oracle[i], xn_q0, win_winner_q0, aw[i], aw_q0, w[i], w_q0, 
 
 Or(And([Or(j != par1[i], Not(aw_q0[j]-aw[i][j] >= 2)) for j in range(A+1)]),And([Or(j != par2[i], Not(aw_q0[j]-aw[i][j] >= 2)) for j in range(A+1)]))
         )))))
-def p2(i):
+def p_liq1_2(i):
     t_awq_list0 = [t_awq_m_j for t_awq_m in t_aw_q0 for t_awq_m_j in t_awq_m]; t_awq_list1 = [t_awq_m_j for t_awq_m in t_aw_q1 for t_awq_m_j in t_awq_m]; 
     return And(
         Exists([xa_q], And(user_is_legit(xa_q), And(block_num[i]<deadline[i],w[i]==2),
@@ -351,7 +351,7 @@ Not(step_trans(f_q1, oracle[i], xn_q1, win_winner_q1, aw_q0, aw_q1, w_q0, w_q1, 
 
 Or(And([Or(j != par1[i], Not(aw_q1[j]-aw[i][j] >= 2)) for j in range(A+1)]),And([Or(j != par2[i], Not(aw_q1[j]-aw[i][j] >= 2)) for j in range(A+1)]))
         )))))
-def p3(i):
+def p_liq1_3(i):
     t_awq_list0 = [t_awq_m_j for t_awq_m in t_aw_q0 for t_awq_m_j in t_awq_m]; t_awq_list1 = [t_awq_m_j for t_awq_m in t_aw_q1 for t_awq_m_j in t_awq_m]; t_awq_list2 = [t_awq_m_j for t_awq_m in t_aw_q2 for t_awq_m_j in t_awq_m]; 
     return And(
         Exists([xa_q], And(user_is_legit(xa_q), And(block_num[i]<deadline[i],w[i]==2),
@@ -363,7 +363,7 @@ Not(step_trans(f_q2, oracle[i], xn_q2, win_winner_q2, aw_q1, aw_q2, w_q1, w_q2, 
 
 Or(And([Or(j != par1[i], Not(aw_q2[j]-aw[i][j] >= 2)) for j in range(A+1)]),And([Or(j != par2[i], Not(aw_q2[j]-aw[i][j] >= 2)) for j in range(A+1)]))
         )))))
-def p4(i):
+def p_liq1_4(i):
     t_awq_list0 = [t_awq_m_j for t_awq_m in t_aw_q0 for t_awq_m_j in t_awq_m]; t_awq_list1 = [t_awq_m_j for t_awq_m in t_aw_q1 for t_awq_m_j in t_awq_m]; t_awq_list2 = [t_awq_m_j for t_awq_m in t_aw_q2 for t_awq_m_j in t_awq_m]; t_awq_list3 = [t_awq_m_j for t_awq_m in t_aw_q3 for t_awq_m_j in t_awq_m]; 
     return And(
         Exists([xa_q], And(user_is_legit(xa_q), And(block_num[i]<deadline[i],w[i]==2),
@@ -376,7 +376,7 @@ Not(step_trans(f_q3, oracle[i], xn_q3, win_winner_q3, aw_q2, aw_q3, w_q2, w_q3, 
 
 Or(And([Or(j != par1[i], Not(aw_q3[j]-aw[i][j] >= 2)) for j in range(A+1)]),And([Or(j != par2[i], Not(aw_q3[j]-aw[i][j] >= 2)) for j in range(A+1)]))
         )))))
-def p5(i):
+def p_liq1_5(i):
     t_awq_list0 = [t_awq_m_j for t_awq_m in t_aw_q0 for t_awq_m_j in t_awq_m]; t_awq_list1 = [t_awq_m_j for t_awq_m in t_aw_q1 for t_awq_m_j in t_awq_m]; t_awq_list2 = [t_awq_m_j for t_awq_m in t_aw_q2 for t_awq_m_j in t_awq_m]; t_awq_list3 = [t_awq_m_j for t_awq_m in t_aw_q3 for t_awq_m_j in t_awq_m]; t_awq_list4 = [t_awq_m_j for t_awq_m in t_aw_q4 for t_awq_m_j in t_awq_m]; 
     return And(
         Exists([xa_q], And(user_is_legit(xa_q), And(block_num[i]<deadline[i],w[i]==2),
@@ -391,23 +391,89 @@ Not(step_trans(f_q4, oracle[i], xn_q4, win_winner_q4, aw_q3, aw_q4, w_q3, w_q4, 
 Or(And([Or(j != par1[i], Not(aw_q4[j]-aw[i][j] >= 2)) for j in range(A+1)]),And([Or(j != par2[i], Not(aw_q4[j]-aw[i][j] >= 2)) for j in range(A+1)]))
         )))))
 
-queries = [[p1(i),p2(i),p3(i),p4(i),p5(i)] for i in range(1, N)] 
+def p_liq2_1(i):
+    t_awq_list0 = [t_awq_m_j for t_awq_m in t_aw_q0 for t_awq_m_j in t_awq_m]; 
+    return And(
+        Exists([xa_q], And(user_is_legit(xa_q), And(block_num[i]<deadline[i],w[i]==2),
+            ForAll([xn_q0, f_q0, w_q0, *aw_q0, *t_w_q0, *t_awq_list0, block_num_q0, win_winner_q0, oracle_q0, *t_oracle_q0, deadline_q0, *t_deadline_q0, par1_q0, *t_par1_q0, par2_q0, *t_par2_q0],  
+                Or(
+Not(step_trans(f_q0, oracle[i], xn_q0, win_winner_q0, aw[i], aw_q0, w[i], w_q0, t_aw_q0, t_w_q0, block_num[i], block_num_q0, i+0, oracle[i], oracle_q0, t_oracle_q0, deadline[i], deadline_q0, t_deadline_q0, par1[i], par1_q0, t_par1_q0, par2[i], par2_q0, t_par2_q0)),
+
+Or(And([Or(j != par1[i], Not(aw_q0[j]-aw[i][j] <= 2)) for j in range(A+1)]),And([Or(j != par2[i], Not(aw_q0[j]+aw[i][j] >= 2)) for j in range(A+1)]))
+        )))))
+def p_liq2_2(i):
+    t_awq_list0 = [t_awq_m_j for t_awq_m in t_aw_q0 for t_awq_m_j in t_awq_m]; t_awq_list1 = [t_awq_m_j for t_awq_m in t_aw_q1 for t_awq_m_j in t_awq_m]; 
+    return And(
+        Exists([xa_q], And(user_is_legit(xa_q), And(block_num[i]<deadline[i],w[i]==2),
+            ForAll([xn_q0, f_q0, w_q0, *aw_q0, *t_w_q0, *t_awq_list0, block_num_q0, win_winner_q0, oracle_q0, *t_oracle_q0, deadline_q0, *t_deadline_q0, par1_q0, *t_par1_q0, par2_q0, *t_par2_q0, xn_q1, f_q1, w_q1, *aw_q1, *t_w_q1, *t_awq_list1, block_num_q1, win_winner_q1, oracle_q1, *t_oracle_q1, deadline_q1, *t_deadline_q1, par1_q1, *t_par1_q1, par2_q1, *t_par2_q1],  
+                Or(
+Not(step_trans(f_q0, oracle[i], xn_q0, win_winner_q0, aw[i], aw_q0, w[i], w_q0, t_aw_q0, t_w_q0, block_num[i], block_num_q0, i+0, oracle[i], oracle_q0, t_oracle_q0, deadline[i], deadline_q0, t_deadline_q0, par1[i], par1_q0, t_par1_q0, par2[i], par2_q0, t_par2_q0)),
+Not(step_trans(f_q1, oracle[i], xn_q1, win_winner_q1, aw_q0, aw_q1, w_q0, w_q1, t_aw_q1, t_w_q1, block_num_q0, block_num_q1, i+1, oracle_q0, oracle_q1, t_oracle_q1, deadline_q0, deadline_q1, t_deadline_q1, par1_q0, par1_q1, t_par1_q1, par2_q0, par2_q1, t_par2_q1)),
+
+Or(And([Or(j != par1[i], Not(aw_q1[j]-aw[i][j] <= 2)) for j in range(A+1)]),And([Or(j != par2[i], Not(aw_q1[j]+aw[i][j] >= 2)) for j in range(A+1)]))
+        )))))
+def p_liq2_3(i):
+    t_awq_list0 = [t_awq_m_j for t_awq_m in t_aw_q0 for t_awq_m_j in t_awq_m]; t_awq_list1 = [t_awq_m_j for t_awq_m in t_aw_q1 for t_awq_m_j in t_awq_m]; t_awq_list2 = [t_awq_m_j for t_awq_m in t_aw_q2 for t_awq_m_j in t_awq_m]; 
+    return And(
+        Exists([xa_q], And(user_is_legit(xa_q), And(block_num[i]<deadline[i],w[i]==2),
+            ForAll([xn_q0, f_q0, w_q0, *aw_q0, *t_w_q0, *t_awq_list0, block_num_q0, win_winner_q0, oracle_q0, *t_oracle_q0, deadline_q0, *t_deadline_q0, par1_q0, *t_par1_q0, par2_q0, *t_par2_q0, xn_q1, f_q1, w_q1, *aw_q1, *t_w_q1, *t_awq_list1, block_num_q1, win_winner_q1, oracle_q1, *t_oracle_q1, deadline_q1, *t_deadline_q1, par1_q1, *t_par1_q1, par2_q1, *t_par2_q1, xn_q2, f_q2, w_q2, *aw_q2, *t_w_q2, *t_awq_list2, block_num_q2, win_winner_q2, oracle_q2, *t_oracle_q2, deadline_q2, *t_deadline_q2, par1_q2, *t_par1_q2, par2_q2, *t_par2_q2],  
+                Or(
+Not(step_trans(f_q0, oracle[i], xn_q0, win_winner_q0, aw[i], aw_q0, w[i], w_q0, t_aw_q0, t_w_q0, block_num[i], block_num_q0, i+0, oracle[i], oracle_q0, t_oracle_q0, deadline[i], deadline_q0, t_deadline_q0, par1[i], par1_q0, t_par1_q0, par2[i], par2_q0, t_par2_q0)),
+Not(step_trans(f_q1, oracle[i], xn_q1, win_winner_q1, aw_q0, aw_q1, w_q0, w_q1, t_aw_q1, t_w_q1, block_num_q0, block_num_q1, i+1, oracle_q0, oracle_q1, t_oracle_q1, deadline_q0, deadline_q1, t_deadline_q1, par1_q0, par1_q1, t_par1_q1, par2_q0, par2_q1, t_par2_q1)),
+Not(step_trans(f_q2, oracle[i], xn_q2, win_winner_q2, aw_q1, aw_q2, w_q1, w_q2, t_aw_q2, t_w_q2, block_num_q1, block_num_q2, i+2, oracle_q1, oracle_q2, t_oracle_q2, deadline_q1, deadline_q2, t_deadline_q2, par1_q1, par1_q2, t_par1_q2, par2_q1, par2_q2, t_par2_q2)),
+
+Or(And([Or(j != par1[i], Not(aw_q2[j]-aw[i][j] <= 2)) for j in range(A+1)]),And([Or(j != par2[i], Not(aw_q2[j]+aw[i][j] >= 2)) for j in range(A+1)]))
+        )))))
+def p_liq2_4(i):
+    t_awq_list0 = [t_awq_m_j for t_awq_m in t_aw_q0 for t_awq_m_j in t_awq_m]; t_awq_list1 = [t_awq_m_j for t_awq_m in t_aw_q1 for t_awq_m_j in t_awq_m]; t_awq_list2 = [t_awq_m_j for t_awq_m in t_aw_q2 for t_awq_m_j in t_awq_m]; t_awq_list3 = [t_awq_m_j for t_awq_m in t_aw_q3 for t_awq_m_j in t_awq_m]; 
+    return And(
+        Exists([xa_q], And(user_is_legit(xa_q), And(block_num[i]<deadline[i],w[i]==2),
+            ForAll([xn_q0, f_q0, w_q0, *aw_q0, *t_w_q0, *t_awq_list0, block_num_q0, win_winner_q0, oracle_q0, *t_oracle_q0, deadline_q0, *t_deadline_q0, par1_q0, *t_par1_q0, par2_q0, *t_par2_q0, xn_q1, f_q1, w_q1, *aw_q1, *t_w_q1, *t_awq_list1, block_num_q1, win_winner_q1, oracle_q1, *t_oracle_q1, deadline_q1, *t_deadline_q1, par1_q1, *t_par1_q1, par2_q1, *t_par2_q1, xn_q2, f_q2, w_q2, *aw_q2, *t_w_q2, *t_awq_list2, block_num_q2, win_winner_q2, oracle_q2, *t_oracle_q2, deadline_q2, *t_deadline_q2, par1_q2, *t_par1_q2, par2_q2, *t_par2_q2, xn_q3, f_q3, w_q3, *aw_q3, *t_w_q3, *t_awq_list3, block_num_q3, win_winner_q3, oracle_q3, *t_oracle_q3, deadline_q3, *t_deadline_q3, par1_q3, *t_par1_q3, par2_q3, *t_par2_q3],  
+                Or(
+Not(step_trans(f_q0, oracle[i], xn_q0, win_winner_q0, aw[i], aw_q0, w[i], w_q0, t_aw_q0, t_w_q0, block_num[i], block_num_q0, i+0, oracle[i], oracle_q0, t_oracle_q0, deadline[i], deadline_q0, t_deadline_q0, par1[i], par1_q0, t_par1_q0, par2[i], par2_q0, t_par2_q0)),
+Not(step_trans(f_q1, oracle[i], xn_q1, win_winner_q1, aw_q0, aw_q1, w_q0, w_q1, t_aw_q1, t_w_q1, block_num_q0, block_num_q1, i+1, oracle_q0, oracle_q1, t_oracle_q1, deadline_q0, deadline_q1, t_deadline_q1, par1_q0, par1_q1, t_par1_q1, par2_q0, par2_q1, t_par2_q1)),
+Not(step_trans(f_q2, oracle[i], xn_q2, win_winner_q2, aw_q1, aw_q2, w_q1, w_q2, t_aw_q2, t_w_q2, block_num_q1, block_num_q2, i+2, oracle_q1, oracle_q2, t_oracle_q2, deadline_q1, deadline_q2, t_deadline_q2, par1_q1, par1_q2, t_par1_q2, par2_q1, par2_q2, t_par2_q2)),
+Not(step_trans(f_q3, oracle[i], xn_q3, win_winner_q3, aw_q2, aw_q3, w_q2, w_q3, t_aw_q3, t_w_q3, block_num_q2, block_num_q3, i+3, oracle_q2, oracle_q3, t_oracle_q3, deadline_q2, deadline_q3, t_deadline_q3, par1_q2, par1_q3, t_par1_q3, par2_q2, par2_q3, t_par2_q3)),
+
+Or(And([Or(j != par1[i], Not(aw_q3[j]-aw[i][j] <= 2)) for j in range(A+1)]),And([Or(j != par2[i], Not(aw_q3[j]+aw[i][j] >= 2)) for j in range(A+1)]))
+        )))))
+def p_liq2_5(i):
+    t_awq_list0 = [t_awq_m_j for t_awq_m in t_aw_q0 for t_awq_m_j in t_awq_m]; t_awq_list1 = [t_awq_m_j for t_awq_m in t_aw_q1 for t_awq_m_j in t_awq_m]; t_awq_list2 = [t_awq_m_j for t_awq_m in t_aw_q2 for t_awq_m_j in t_awq_m]; t_awq_list3 = [t_awq_m_j for t_awq_m in t_aw_q3 for t_awq_m_j in t_awq_m]; t_awq_list4 = [t_awq_m_j for t_awq_m in t_aw_q4 for t_awq_m_j in t_awq_m]; 
+    return And(
+        Exists([xa_q], And(user_is_legit(xa_q), And(block_num[i]<deadline[i],w[i]==2),
+            ForAll([xn_q0, f_q0, w_q0, *aw_q0, *t_w_q0, *t_awq_list0, block_num_q0, win_winner_q0, oracle_q0, *t_oracle_q0, deadline_q0, *t_deadline_q0, par1_q0, *t_par1_q0, par2_q0, *t_par2_q0, xn_q1, f_q1, w_q1, *aw_q1, *t_w_q1, *t_awq_list1, block_num_q1, win_winner_q1, oracle_q1, *t_oracle_q1, deadline_q1, *t_deadline_q1, par1_q1, *t_par1_q1, par2_q1, *t_par2_q1, xn_q2, f_q2, w_q2, *aw_q2, *t_w_q2, *t_awq_list2, block_num_q2, win_winner_q2, oracle_q2, *t_oracle_q2, deadline_q2, *t_deadline_q2, par1_q2, *t_par1_q2, par2_q2, *t_par2_q2, xn_q3, f_q3, w_q3, *aw_q3, *t_w_q3, *t_awq_list3, block_num_q3, win_winner_q3, oracle_q3, *t_oracle_q3, deadline_q3, *t_deadline_q3, par1_q3, *t_par1_q3, par2_q3, *t_par2_q3, xn_q4, f_q4, w_q4, *aw_q4, *t_w_q4, *t_awq_list4, block_num_q4, win_winner_q4, oracle_q4, *t_oracle_q4, deadline_q4, *t_deadline_q4, par1_q4, *t_par1_q4, par2_q4, *t_par2_q4],  
+                Or(
+Not(step_trans(f_q0, oracle[i], xn_q0, win_winner_q0, aw[i], aw_q0, w[i], w_q0, t_aw_q0, t_w_q0, block_num[i], block_num_q0, i+0, oracle[i], oracle_q0, t_oracle_q0, deadline[i], deadline_q0, t_deadline_q0, par1[i], par1_q0, t_par1_q0, par2[i], par2_q0, t_par2_q0)),
+Not(step_trans(f_q1, oracle[i], xn_q1, win_winner_q1, aw_q0, aw_q1, w_q0, w_q1, t_aw_q1, t_w_q1, block_num_q0, block_num_q1, i+1, oracle_q0, oracle_q1, t_oracle_q1, deadline_q0, deadline_q1, t_deadline_q1, par1_q0, par1_q1, t_par1_q1, par2_q0, par2_q1, t_par2_q1)),
+Not(step_trans(f_q2, oracle[i], xn_q2, win_winner_q2, aw_q1, aw_q2, w_q1, w_q2, t_aw_q2, t_w_q2, block_num_q1, block_num_q2, i+2, oracle_q1, oracle_q2, t_oracle_q2, deadline_q1, deadline_q2, t_deadline_q2, par1_q1, par1_q2, t_par1_q2, par2_q1, par2_q2, t_par2_q2)),
+Not(step_trans(f_q3, oracle[i], xn_q3, win_winner_q3, aw_q2, aw_q3, w_q2, w_q3, t_aw_q3, t_w_q3, block_num_q2, block_num_q3, i+3, oracle_q2, oracle_q3, t_oracle_q3, deadline_q2, deadline_q3, t_deadline_q3, par1_q2, par1_q3, t_par1_q3, par2_q2, par2_q3, t_par2_q3)),
+Not(step_trans(f_q4, oracle[i], xn_q4, win_winner_q4, aw_q3, aw_q4, w_q3, w_q4, t_aw_q4, t_w_q4, block_num_q3, block_num_q4, i+4, oracle_q3, oracle_q4, t_oracle_q4, deadline_q3, deadline_q4, t_deadline_q4, par1_q3, par1_q4, t_par1_q4, par2_q3, par2_q4, t_par2_q4)),
+
+Or(And([Or(j != par1[i], Not(aw_q4[j]-aw[i][j] <= 2)) for j in range(A+1)]),And([Or(j != par2[i], Not(aw_q4[j]+aw[i][j] >= 2)) for j in range(A+1)]))
+        )))))
+
+queries = {}
+queries['liq1'] = [[p_liq1_1(i),p_liq1_2(i),p_liq1_3(i),p_liq1_4(i),p_liq1_5(i)] for i in range(1, N)]
+queries['liq2'] = [[p_liq2_1(i),p_liq2_2(i),p_liq2_3(i),p_liq2_4(i),p_liq2_5(i)] for i in range(1, N)]
+
 
 timeStart = time.time()
-for i, q in enumerate(queries):
-    liquid = False
-    for j in range(0, len(q)):
-        qj = q[j] 
-        resj = s.check(qj)
-        if resj == unsat:
-            liquid = True
+for prop in {'liq1','liq2'}:
+    print('Property [' + prop + ']')
+    for i, q in enumerate(queries[prop]):
+        liquid = False
+        for j in range(0, len(q)):
+            qj = q[j] 
+            resj = s.check(qj)
+            if resj == unsat:
+                liquid = True
+                break
+        if not liquid:
             break
-    if not liquid:
-        break
-if not liquid: print("not liquid [in 5 steps]")
-else: print("liquid [in 5 steps]")
-timeTot = time.time() - timeStart
-print("Solving time: " + str(timeTot) + "s")
+    if not liquid: print("not liquid [in 5 steps]")
+    else: print("liquid [in 5 steps]")
+    timeTot = time.time() - timeStart
+    print("Solving time: " + str(timeTot) + "s")
 
 # for i, q in enumerate(queries):
 #     timeStart = time.time()

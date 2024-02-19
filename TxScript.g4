@@ -4,7 +4,7 @@ contractExpr : 'contract' name=LABELUPPER '{' decl=declsExpr '}' properties=prop
 
 propertiesExpr : (propertyExpr)*;
 
-propertyExpr : 'property' '{' phi=qslf '}';
+propertyExpr : 'property' name=LABEL '{' phi=qslf '}';
 
 declsExpr : (declExpr)+;
 declExpr : 

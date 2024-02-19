@@ -22,6 +22,8 @@ class Z3Visitor(TxScriptVisitor):
         self.__prop_nested_i = set()
         self.__n_transactions = 1
         self.__pi = 1
+        self.__prop_name = ''
+        self.__prop_names = set()
         self.__maps = set()
         # N = upper bound on the length of trace
         self.__N = N
@@ -95,6 +97,11 @@ t_{g} = [[{ty}("t_{g}_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]''
                     contract_globals += '''
 {g}_q{i} = {ty}("{g}q{i}")
 t_{g}_q{i} = [{ty}("t_{g}q{i}_%s" % (m)) for m in range(M)]'''.format(i=i, g=g_var.text, ty=g_type)
+
+        prop_queries = 'queries = {}\n'
+        for n in self.__prop_names:
+            q = ','.join([f'p_{n}_{i}(i)' for i in range(1, self.__n_transactions+1)])
+            prop_queries += f'queries[\'{n}\'] = [[{q}] for i in range(1, N)]\n'
 
         res = '''
 from z3 import *
@@ -267,23 +274,25 @@ for i in range(1, N):
 
 {props}
 
-queries = [[{pis}] for i in range(1, N)] 
+{queries}
 
 timeStart = time.time()
-for i, q in enumerate(queries):
-    liquid = False
-    for j in range(0, len(q)):
-        qj = q[j] 
-        resj = s.check(qj)
-        if resj == unsat:
-            liquid = True
+for prop in {props_name}:
+    print('Property [' + prop + ']')
+    for i, q in enumerate(queries[prop]):
+        liquid = False
+        for j in range(0, len(q)):
+            qj = q[j] 
+            resj = s.check(qj)
+            if resj == unsat:
+                liquid = True
+                break
+        if not liquid:
             break
-    if not liquid:
-        break
-if not liquid: print("not liquid [in {n_trans} steps]")
-else: print("liquid [in {n_trans} steps]")
-timeTot = time.time() - timeStart
-print("Solving time: " + str(timeTot) + "s")
+    if not liquid: print("not liquid [in {n_trans} steps]")
+    else: print("liquid [in {n_trans} steps]")
+    timeTot = time.time() - timeStart
+    print("Solving time: " + str(timeTot) + "s")
 
 # for i, q in enumerate(queries):
 #     timeStart = time.time()
@@ -333,11 +342,13 @@ print("Solving time: " + str(timeTot) + "s")
         constr_args_0 = (','.join([s+'[0]' for s in self.__proc_args['constructor']])+', ' if 'constructor' in self.__proc_args and self.__proc_args['constructor'] else ''),
         contract_globals = contract_globals, 
         max_nesting = self.__max_nesting,
-        props = props[0],
-        pis = ','.join([f'p{i}(i)' for i in range(1, self.__n_transactions+1)]),
+        props = '\n'.join(props),
+        # pis = ','.join([f'p{i}(i)' for i in range(1, self.__n_transactions+1)]),
+        queries = prop_queries,
+        props_name = '{' + ','.join(['\''+n+'\'' for n in self.__prop_names]) + '}',
         n_trans = self.__n_transactions 
     )
-        return res
+        return res 
 
 
     # Visit a parse tree produced by TxScriptParser#declsExpr.
@@ -359,6 +370,8 @@ print("Solving time: " + str(timeTot) + "s")
 
     # Visit a parse tree produced by TxScriptParser#propertyExpr.
     def visitPropertyExpr(self, ctx:TxScriptParser.PropertyExprContext):
+        self.__prop_name = ctx.name.text
+        self.__prop_names.add(self.__prop_name)
         return self.visit(ctx.phi)
 
 
@@ -872,7 +885,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
             else:
                 step_trans += f'Not(step_trans(f_q{i}, {self.__tx_sender}, xn_q{i}'+func_args_q.format(i=i)+f', aw_q{i-1}, aw_q{i}, w_q{i-1}, w_q{i}, t_aw_q{i}, t_w_q{i}, block_num_q{i-1}, block_num_q{i}, i+{i}'+global_args_phi.format(i=i,j=i-1)+')),\n'
         return f'''
-def p{nTrans}(i):
+def p_{self.__prop_name}_{nTrans}(i):
     {t_awq_lists}
     return And(
         Exists([{agent}], And(user_is_legit({agent}), {condition},

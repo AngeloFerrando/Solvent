@@ -12,7 +12,7 @@ contract C2 {
   
 }
 
-property {
+property liq1 {
     Forall xa
     [
       true

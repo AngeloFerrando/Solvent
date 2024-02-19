@@ -36,7 +36,7 @@ contract OracleBet {
 
 }
 
-property {
+property liq1 {
     Forall xa
       [
         st.block.number<st.deadline && st.balance==2 
