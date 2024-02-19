@@ -925,8 +925,12 @@ def p{nTrans}(i):
                 i = '[i]'
             if 'st.balance' in ctx.v.text and '[' in ctx.v.text and ']' in ctx.v.text:
                 ag = ctx.v.text[ctx.v.text.index('[')+1:ctx.v.text.index(']')]
-                self.__prop_nested_i.add(ag+'_q')#(ag+'[i]')
-                return f'aw{i}[{ag}_q]'#f'aw{i}[{ag}[i]]'
+                if ag == 'xa':
+                    self.__prop_nested_i.add(ag+'_q')#(ag+'[i]')
+                    return f'aw{i}[{ag}_q]'#f'aw{i}[{ag}[i]]'
+                else:
+                    self.__prop_nested_i.add(ag+'[i]')#(ag+'[i]')
+                    return f'aw{i}[{ag}[i]]'#f'aw{i}[{ag}[i]]'
             if 'st.balance' in ctx.v.text:
                 return f'w{i}'
             if 'st.block.number' in ctx.v.text:
