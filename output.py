@@ -241,7 +241,7 @@ def p1(i):
                 Or(
 Not(step_trans(f_q0, xa_q, xn_q0, pay_amount_q0, aw[i], aw_q0, w[i], w_q0, t_aw_q0, t_w_q0, block_num[i], block_num_q0, i+0, oracle[i], oracle_q0, t_oracle_q0)),
 
-And([Or(j != xa_q, Not(aw_q4[j] == aw[i][j]+w[i])) for j in range(A+1)])
+And([Or(j != xa_q, Not(aw_q0[j] == aw[i][j]+w[i])) for j in range(A+1)])
         )))))
 def p2(i):
     t_awq_list0 = [t_awq_m_j for t_awq_m in t_aw_q0 for t_awq_m_j in t_awq_m]; t_awq_list1 = [t_awq_m_j for t_awq_m in t_aw_q1 for t_awq_m_j in t_awq_m]; 
@@ -252,7 +252,7 @@ def p2(i):
 Not(step_trans(f_q0, xa_q, xn_q0, pay_amount_q0, aw[i], aw_q0, w[i], w_q0, t_aw_q0, t_w_q0, block_num[i], block_num_q0, i+0, oracle[i], oracle_q0, t_oracle_q0)),
 Not(step_trans(f_q1, xa_q, xn_q1, pay_amount_q1, aw_q0, aw_q1, w_q0, w_q1, t_aw_q1, t_w_q1, block_num_q0, block_num_q1, i+1, oracle_q0, oracle_q1, t_oracle_q1)),
 
-And([Or(j != xa_q, Not(aw_q4[j] == aw[i][j]+w[i])) for j in range(A+1)])
+And([Or(j != xa_q, Not(aw_q1[j] == aw[i][j]+w[i])) for j in range(A+1)])
         )))))
 def p3(i):
     t_awq_list0 = [t_awq_m_j for t_awq_m in t_aw_q0 for t_awq_m_j in t_awq_m]; t_awq_list1 = [t_awq_m_j for t_awq_m in t_aw_q1 for t_awq_m_j in t_awq_m]; t_awq_list2 = [t_awq_m_j for t_awq_m in t_aw_q2 for t_awq_m_j in t_awq_m]; 
@@ -264,7 +264,7 @@ Not(step_trans(f_q0, xa_q, xn_q0, pay_amount_q0, aw[i], aw_q0, w[i], w_q0, t_aw_
 Not(step_trans(f_q1, xa_q, xn_q1, pay_amount_q1, aw_q0, aw_q1, w_q0, w_q1, t_aw_q1, t_w_q1, block_num_q0, block_num_q1, i+1, oracle_q0, oracle_q1, t_oracle_q1)),
 Not(step_trans(f_q2, xa_q, xn_q2, pay_amount_q2, aw_q1, aw_q2, w_q1, w_q2, t_aw_q2, t_w_q2, block_num_q1, block_num_q2, i+2, oracle_q1, oracle_q2, t_oracle_q2)),
 
-And([Or(j != xa_q, Not(aw_q4[j] == aw[i][j]+w[i])) for j in range(A+1)])
+And([Or(j != xa_q, Not(aw_q2[j] == aw[i][j]+w[i])) for j in range(A+1)])
         )))))
 def p4(i):
     t_awq_list0 = [t_awq_m_j for t_awq_m in t_aw_q0 for t_awq_m_j in t_awq_m]; t_awq_list1 = [t_awq_m_j for t_awq_m in t_aw_q1 for t_awq_m_j in t_awq_m]; t_awq_list2 = [t_awq_m_j for t_awq_m in t_aw_q2 for t_awq_m_j in t_awq_m]; t_awq_list3 = [t_awq_m_j for t_awq_m in t_aw_q3 for t_awq_m_j in t_awq_m]; 
@@ -277,7 +277,7 @@ Not(step_trans(f_q1, xa_q, xn_q1, pay_amount_q1, aw_q0, aw_q1, w_q0, w_q1, t_aw_
 Not(step_trans(f_q2, xa_q, xn_q2, pay_amount_q2, aw_q1, aw_q2, w_q1, w_q2, t_aw_q2, t_w_q2, block_num_q1, block_num_q2, i+2, oracle_q1, oracle_q2, t_oracle_q2)),
 Not(step_trans(f_q3, xa_q, xn_q3, pay_amount_q3, aw_q2, aw_q3, w_q2, w_q3, t_aw_q3, t_w_q3, block_num_q2, block_num_q3, i+3, oracle_q2, oracle_q3, t_oracle_q3)),
 
-And([Or(j != xa_q, Not(aw_q4[j] == aw[i][j]+w[i])) for j in range(A+1)])
+And([Or(j != xa_q, Not(aw_q3[j] == aw[i][j]+w[i])) for j in range(A+1)])
         )))))
 def p5(i):
     t_awq_list0 = [t_awq_m_j for t_awq_m in t_aw_q0 for t_awq_m_j in t_awq_m]; t_awq_list1 = [t_awq_m_j for t_awq_m in t_aw_q1 for t_awq_m_j in t_awq_m]; t_awq_list2 = [t_awq_m_j for t_awq_m in t_aw_q2 for t_awq_m_j in t_awq_m]; t_awq_list3 = [t_awq_m_j for t_awq_m in t_aw_q3 for t_awq_m_j in t_awq_m]; t_awq_list4 = [t_awq_m_j for t_awq_m in t_aw_q4 for t_awq_m_j in t_awq_m]; 

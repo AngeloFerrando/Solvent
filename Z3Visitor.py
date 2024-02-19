@@ -21,6 +21,7 @@ class Z3Visitor(TxScriptVisitor):
         self.__tx_sender = 'xa'
         self.__prop_nested_i = set()
         self.__n_transactions = 1
+        self.__pi = 1
         self.__maps = set()
         # N = upper bound on the length of trace
         self.__N = N
@@ -844,9 +845,6 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         self.__n_transactions = int(ctx.nTrans.text)
         self.__tx_sender = 'xa_q' if ctx.sender.text == 'xa' else ctx.sender.text.replace('st.', '')+'[i]'
         condition = self.visit(ctx.where)
-        self.__visit_properties_body = True
-        body = self.visit(ctx.body)
-        self.__visit_properties_body = False
         step_trans_args = [self.__args_map[a] for a in self.__args_map if 'constructor' not in self.__args_map[a]]
         global_args_q = (', ' + ', '.join([g.text+'_q{i}, *t_'+g.text+'_q{i}' for (g, _) in self.__globals])) if self.__globals else ''
         func_args_q = (', ' + ', '.join([s+'_q{i}' for s in step_trans_args]) if step_trans_args else '')
@@ -854,6 +852,10 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         global_args_phi = (', ' + ', '.join([g.text+'_q{j}, '+g.text+'_q{i}, t_'+g.text+'_q{i}' for (g, _) in self.__globals])) if self.__globals else ''
         pi = ''
         for i in range(1, self.__n_transactions+1):  
+            self.__pi = i
+            self.__visit_properties_body = True
+            body = self.visit(ctx.body)
+            self.__visit_properties_body = False
             pi += self.createPi(i, agent, condition, body, global_args_q, func_args_q, global_args_phi0, global_args_phi)
         return pi
 
@@ -918,7 +920,7 @@ def p{nTrans}(i):
             return ctx.v.text
         else:
             if 'app_tx_st' in ctx.v.text:
-                i = f'_q{self.__n_transactions-1}'
+                i = f'_q{self.__n_transactions-1-(self.__n_transactions-self.__pi)}'
             else:
                 i = '[i]'
             if 'st.balance' in ctx.v.text and '[' in ctx.v.text and ']' in ctx.v.text:
@@ -930,7 +932,7 @@ def p{nTrans}(i):
             if 'st.block.number' in ctx.v.text:
                 return f'block_num{i}'
             if 'tx.msg.value' in ctx.v.text:
-                return 'xn'+f'_q{self.__n_transactions-1}'
+                return 'xn'+f'_q{self.__n_transactions-1-(self.__n_transactions-self.__pi)}'
             if 'tx.msg.sender' in ctx.v.text:
                 return 'tx_sender'
             if ctx.v.text.replace('st.','') in self.__args_map:

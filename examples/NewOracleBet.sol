@@ -36,14 +36,14 @@ contract OracleBet {
 
 }
 
-property {
+property liq1 {
     Forall xa
       [
         st.block.number<st.deadline && st.balance==2 
           -> 
-        Exists tx
+        Exists tx [5, oracle]
         [
-          tx.msg.sender==st.oracle && ((app_tx_st.balance[p1] - st.balance[p1] >= 2) || (app_tx_st.balance[p2] - st.balance[p2] >= 2))
+          ((app_tx_st.balance[p1] - st.balance[p1] >= 2) || (app_tx_st.balance[p2] - st.balance[p2] >= 2))
         ]
       ]
 }
