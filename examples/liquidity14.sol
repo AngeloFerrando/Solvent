@@ -18,3 +18,59 @@ contract C14 {
   }
 
 }
+
+/*
+// not liquid
+property liquidity14a_nonliq {
+    Forall xa
+    [
+      true
+        ->
+      Exists tx [1, xa]
+      [
+        ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance))
+      ]
+    ]
+}
+
+
+// liquid
+property liquidity14b_liq {
+    Forall xa
+    [
+      st.b == true
+        ->
+      Exists tx [1, xa]
+      [
+        ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance))
+      ]
+    ]
+}
+*/
+
+
+//  liquid
+property liquidity14c_liq {
+    Forall xa
+    [
+      true
+        ->
+      Exists tx [2, xa]
+      [
+        ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance ))
+      ]
+    ]
+}
+
+//  liquid
+property liquidity14d_liq {
+    Forall xa
+    [
+      st.b==true
+        ->
+      Exists tx [2, xa]
+      [
+        ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance ))
+      ]
+    ]
+}

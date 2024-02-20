@@ -16,3 +16,16 @@ contract C15 {
   }
 
 } 
+
+// not liquid
+property liquidity15a_nonliq {
+    Forall xa
+    [
+      true
+        ->
+      Exists tx [1, xa]
+      [
+        ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance))
+      ]
+    ]
+}

@@ -4,14 +4,22 @@ contract C19 {
     skip
   }
 
-  function pay(receiver, amount) {
+  function pay(amount) {
     require (amount<=balance);
-    receiver!amount
+    msg.sender!amount
   }
   
 }
 
-property {
-  Forall xa, xb  
-      [true -> Exists s (s, xa) can_withdraw(xb, balance)]
+// liquid
+property liquidity19a_liq {
+    Forall xa
+    [
+      true
+        ->
+      Exists tx [5, xa]
+      [
+        ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance))
+      ]
+    ]
 }
