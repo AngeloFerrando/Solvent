@@ -10,7 +10,30 @@ contract C4 {
   }
 }
 
-property {
-  Forall xa 
-      [balance>1 -> Exists s (s, xa) can_withdraw(balance - 1)]
+
+// not liquid
+property liquidity4a_nonliq {
+    Forall xa
+    [
+      true
+        ->
+      Exists tx [1, xa]
+      [
+        ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance))
+      ]
+    ]
+}
+
+
+// liquid
+property liquidity4b_liq {
+    Forall xa
+    [
+      st.balance > 1
+        ->
+      Exists tx [1, xa]
+      [
+        ((app_tx_st.balance[xa] == st.balance[xa]  + (st.balance - 1)))
+      ]
+    ]
 }

@@ -12,7 +12,8 @@ contract C2 {
   
 }
 
-property liq1 {
+// liquid
+property liquidity2a_liq {
     Forall xa
     [
       true
