@@ -23,6 +23,8 @@ class Z3Visitor(TxScriptVisitor):
         self.__tx_sender = 'xa'
         self.__prop_nested_i = set()
         self.__n_transactions = 1
+        self.__max_n_transactions = 1
+        self.__prop_transactions = {}
         self.__pi = 1
         self.__prop_name = ''
         self.__prop_names = set()
@@ -51,11 +53,11 @@ class Z3Visitor(TxScriptVisitor):
             if p == 'constructor': continue
             proc += 'Proc.declare(\'{name}\')\n'.format(name=p)
         args = ['{a} = [Int("{a}_%s" % (i)) for i in range(N+1)]'.format(a=self.__args_map[a]) for a in self.__args_map]
-        for i in range(0, self.__n_transactions):
+        for i in range(0, self.__max_n_transactions):
             args += ['{a}_q{i} = Int("{a}{i}_q")'.format(i=i, a=self.__args_map[a]) for a in self.__args_map]
         step_trans_args = [self.__args_map[a] for a in self.__args_map if 'constructor' not in self.__args_map[a]]
         t_aw_qs = ''
-        for i in range(0, self.__n_transactions):
+        for i in range(0, self.__max_n_transactions):
             t_aw_qs += f't_aw_q{i} = [[Int("t_awq{i}_%s_%s" % (m, j)) for j in range(A+1)] for m in range(M)]\n'
         block_num_qs = ''
         xn_qs = ''
@@ -63,7 +65,7 @@ class Z3Visitor(TxScriptVisitor):
         w_qs = ''
         aw_qs = ''
         t_w_qs = ''
-        for i in range(0, self.__n_transactions):
+        for i in range(0, self.__max_n_transactions):
             block_num_qs += f'block_num_q{i} = Int("block_num_q{i}")\n'
             xn_qs += f'xn_q{i} = Int("xn_q{i}")\n'
             f_qs += f'f_q{i} = Const("f_q{i}", Proc)\n'
@@ -88,7 +90,7 @@ class Z3Visitor(TxScriptVisitor):
                 contract_globals += '''
 {g} = [[{ty}("{g}_%s_%s" % (i, j)) for j in range(A+1)] for i in range(N+1)]
 t_{g} = [[[{ty}("t_{g}_%s_%s_%s" % (i, m, j)) for j in range(A+1)] for m in range(M)] for i in range(N+1)]'''.format(g=g_var.text, ty=g_type[1])
-                for i in range(0, self.__n_transactions):
+                for i in range(0, self.__max_n_transactions):
                     contract_globals += '''
 {g}_q{i} = [{ty}("{g}q{i}_%s" % j) for j in range(A+1)]
 t_{g}_q{i} = [[{ty}("t_{g}q{i}_%s_%s" % (m, j)) for j in range(A+1)] for m in range(M)]'''.format(i=i, g=g_var.text, ty=g_type[1])
@@ -96,14 +98,14 @@ t_{g}_q{i} = [[{ty}("t_{g}q{i}_%s_%s" % (m, j)) for j in range(A+1)] for m in ra
                 contract_globals += '''
 {g} = [{ty}("{g}_%s" % (i)) for i in range(N+1)]
 t_{g} = [[{ty}("t_{g}_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]'''.format(g=g_var.text, ty=g_type)
-                for i in range(0, self.__n_transactions):
+                for i in range(0, self.__max_n_transactions):
                     contract_globals += '''
 {g}_q{i} = {ty}("{g}q{i}")
 t_{g}_q{i} = [{ty}("t_{g}q{i}_%s" % (m)) for m in range(M)]'''.format(i=i, g=g_var.text, ty=g_type)
 
         prop_queries = 'queries = {}\n'
         for n in self.__prop_names:
-            q = ','.join([f'p_{n}_{i}(i)' for i in range(1, self.__n_transactions+1)])
+            q = ','.join([f'p_{n}_{i}(i)' for i in range(1, self.__prop_transactions[n]+1)])
             prop_queries += f'queries[\'{n}\'] = [[{q}] for i in range(1, N)]\n'
 
         res = '''
@@ -288,13 +290,15 @@ for prop in {props_name}:
             s2.add(s.assertions())
             s2.add(qj)
             text= s2.to_smt2()
-            filename = 'out/%s/{tracestate}based/output_%s_%s.smt2'%(prop, i, j)
+            filename = 'out/%s/{tracestate}based/%s/output_%s.smt2'%(prop, i, j)
             if not os.path.exists('out/'):
                 os.makedirs('out/')
             if not os.path.exists('out/%s/'%(prop)):
                 os.makedirs('out/%s/'%(prop))
             if not os.path.exists('out/%s/{tracestate}based/'%(prop)):
                 os.makedirs('out/%s/{tracestate}based/'%(prop))
+            if not os.path.exists('out/%s/{tracestate}based/%s/'%(prop, i)):
+                os.makedirs('out/%s/{tracestate}based/%s/'%(prop, i))
             with open(filename, 'w') as my_file:
                 print(my_file.write(text))
 
@@ -350,7 +354,7 @@ for prop in {props_name}:
         # pis = ','.join([f'p{i}(i)' for i in range(1, self.__n_transactions+1)]),
         queries = prop_queries,
         props_name = '{' + ','.join(['\''+n+'\'' for n in self.__prop_names]) + '}',
-        n_trans = self.__n_transactions 
+        n_trans = self.__max_n_transactions 
     )
         return res 
 
@@ -893,7 +897,9 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     # Visit a parse tree produced by TxScriptParser#qslf.
     def visitQslf(self, ctx:TxScriptParser.QslfContext):
         agent = ctx.ag.text + '_q'
-        self.__n_transactions = int(ctx.nTrans.text)
+        self.__n_transactions  = int(ctx.nTrans.text)
+        self.__max_n_transactions  = max(int(ctx.nTrans.text), self.__max_n_transactions)
+        self.__prop_transactions[self.__prop_name] = self.__n_transactions 
         self.__tx_sender = 'xa_q' if ctx.sender.text == 'xa' else ctx.sender.text.replace('st.', '')+'[i]'
         condition = self.visit(ctx.where)
         step_trans_args = [self.__args_map[a] for a in self.__args_map if 'constructor' not in self.__args_map[a]]
