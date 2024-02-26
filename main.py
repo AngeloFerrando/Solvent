@@ -37,8 +37,12 @@ def parse(pattern):
     # parser.addErrorListener(TxScriptErrorListener())
     tree = parser.contractExpr()
 
-    visitor = Z3Visitor(int(sys.argv[2]), int(sys.argv[3]))
-    print(visitor.visit(tree))
+    visitor = Z3Visitor(int(sys.argv[2]), int(sys.argv[3]), True)
+    with open('outputTrace.py', 'w') as file:
+        file.write(visitor.visit(tree))
+    visitor = Z3Visitor(int(sys.argv[2]), int(sys.argv[3]), False)
+    with open('outputState.py', 'w') as file:
+        file.write(visitor.visit(tree))
     # except Exception as e:
     #     print(str(e))
 

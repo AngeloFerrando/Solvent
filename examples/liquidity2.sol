@@ -1,8 +1,10 @@
 contract C2 {
   address oracle
+  //(address -> int) m
   
   constructor () {
-    oracle=msg.sender
+    oracle=msg.sender//;
+    //m[msg.sender] = 1
   }
 
   function pay(amount) {

@@ -5,7 +5,7 @@ from TxScriptParser import *
 from TxScriptVisitor import *
 
 class Z3Visitor(TxScriptVisitor):
-    def __init__(self, N, A):
+    def __init__(self, N, A, Trace_Based):
         self.__proc = set()
         self.__proc_args = {}
         self.__add_last_cmd = False
@@ -15,9 +15,11 @@ class Z3Visitor(TxScriptVisitor):
         self.__max_nesting = 0
         self.__globals = []
         self.__globals_index = {}
+        self.__globals_const = {}
         self.__globals_modifier = 0
         self.__visit_properties = False
         self.__visit_properties_body = False
+        self.__const = False
         self.__tx_sender = 'xa'
         self.__prop_nested_i = set()
         self.__n_transactions = 1
@@ -29,6 +31,7 @@ class Z3Visitor(TxScriptVisitor):
         self.__N = N
         # A = upper bound on the number of actors (A+1)
         self.__A = A
+        self.__Trace_Based = Trace_Based
 
     # Visit a parse tree produced by TxScriptParser#contractExpr.
     def visitContractExpr(self, ctx:TxScriptParser.ContractExprContext):
@@ -272,50 +275,51 @@ for i in range(1, N):
 #                       ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list{func_args_q}{global_args_q} ], Or(Not(step_trans(f_q, xa_q, xn_q{func_args_q}, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, i{global_args_phi})), w_q > 0)))))
 #                       #ForAll([xn_q, f_q, w_q, *aw_q ], Or(Not(step_trans(f_q, xa_q, xn_q, aw[i], aw_q, w[i], w_q, t_aw[i], t_w[i], i)), w_q > 0)))))
 
+
 {props}
 
 {queries}
 
-timeStart = time.time()
 for prop in {props_name}:
-    print('Property [' + prop + ']')
     for i, q in enumerate(queries[prop]):
-        liquid = False
         for j in range(0, len(q)):
-            qj = q[j] 
-            resj = s.check(qj)
-            if resj == unsat:
-                liquid = True
-                break
-        if not liquid:
-            break
-    if not liquid: print("not liquid [in {n_trans} steps]")
-    else: print("liquid [in {n_trans} steps]")
-    timeTot = time.time() - timeStart
-    print("Solving time: " + str(timeTot) + "s")
+            qj = q[j]
+            s2 = Solver()
+            s2.add(s.assertions())
+            s2.add(qj)
+            text= s2.to_smt2()
+            filename = 'out/%s/{tracestate}based/output_%s_%s.smt2'%(prop, i, j)
+            if not os.path.exists('out/'):
+                os.makedirs('out/')
+            if not os.path.exists('out/%s/'%(prop)):
+                os.makedirs('out/%s/'%(prop))
+            if not os.path.exists('out/%s/{tracestate}based/'%(prop)):
+                os.makedirs('out/%s/{tracestate}based/'%(prop))
+            with open(filename, 'w') as my_file:
+                print(my_file.write(text))
 
-# for i, q in enumerate(queries):
-#     timeStart = time.time()
-#     # print("q : ", q)
-#     print("p " + str(i) + " : ", end='')
-#     # sq = s
-#     # sq.add(q)
-#     # print("\\n\\nsq:", sq, "\\n\\n")
-#     res = s.check(q)
-#     if res == sat:
-#         print(" sat (=> not liquid)")
-#         m = s.model()
-#         # print(m)
-#         #printState(m)
-#         # exit()
-#     else:
-#         print(" unsat (=> liquid)")
-
+# timeStart = time.time()
+# for prop in {props_name}:
+#     print('Property [' + prop + ']')
+#     for i, q in enumerate(queries[prop]):
+#         liquid = False
+#         for j in range(0, len(q)):
+#             qj = q[j] 
+#             resj = s.check(qj)
+#             if resj == unsat:
+#                 liquid = True
+#                 break
+#         if not liquid:
+#             break
+#     if not liquid: print("not liquid [in {n_trans} steps]")
+#     else: print("liquid [in {n_trans} steps]")
 #     timeTot = time.time() - timeStart
 #     print("Solving time: " + str(timeTot) + "s")
-                      
+               
 '''.format(
-        N=self.__N, A=self.__A, 
+        N=self.__N if self.__Trace_Based else 2, 
+        A=self.__A, 
+        tracestate='trace' if self.__Trace_Based else 'state',
         proc=proc, 
         decls='\n'.join(decls), 
         args='\n'.join(args), 
@@ -351,6 +355,13 @@ for prop in {props_name}:
         return res 
 
 
+    # Visit a parse tree produced by TxScriptParser#constFieldDecl.
+    def visitConstFieldDecl(self, ctx:TxScriptParser.ConstFieldDeclContext):
+        self.__const = True
+        self.visit(ctx.child)
+        self.__const = False
+
+
     # Visit a parse tree produced by TxScriptParser#declsExpr.
     def visitDeclsExpr(self, ctx:TxScriptParser.DeclsExprContext):
         decls = []
@@ -379,24 +390,28 @@ for prop in {props_name}:
     def visitIntDecl(self, ctx:TxScriptParser.IntDeclContext):
         self.__globals.append((ctx.var, 'Int'))
         self.__globals_index[ctx.var.text] = 0
+        self.__globals_const[ctx.var.text] = self.__const
 
 
     # Visit a parse tree produced by TxScriptParser#boolDecl.
     def visitBoolDecl(self, ctx:TxScriptParser.BoolDeclContext):
         self.__globals.append((ctx.var, 'Bool'))
         self.__globals_index[ctx.var.text] = 0
+        self.__globals_const[ctx.var.text] = self.__const
 
 
     # Visit a parse tree produced by TxScriptParser#strDecl.
     def visitStrDecl(self, ctx:TxScriptParser.StrDeclContext):
         self.__globals.append((ctx.var, 'String'))
         self.__globals_index[ctx.var.text] = 0
+        self.__globals_const[ctx.var.text] = self.__const
 
 
     # Visit a parse tree produced by TxScriptParser#addrDecl.
     def visitAddrDecl(self, ctx:TxScriptParser.AddrDeclContext):
         self.__globals.append((ctx.var, 'Int'))
         self.__globals_index[ctx.var.text] = 0
+        self.__globals_const[ctx.var.text] = self.__const
 
 
     # Visit a parse tree produced by TxScriptParser#mapAddrDecl.
@@ -404,6 +419,7 @@ for prop in {props_name}:
         self.__globals.append((ctx.var, ('MapAddr', 'Int')))
         self.__globals_index[ctx.var.text] = 0
         self.__maps.add(ctx.var.text)
+        self.__globals_const[ctx.var.text] = self.__const
 
 
     # Visit a parse tree produced by TxScriptParser#constrDecl.
@@ -477,6 +493,24 @@ for prop in {props_name}:
         args = self.visit(ctx.args)
         self.__add_last_cmd = True
         body = self.visit(ctx.cmds)
+        contract_variables = 'True'
+        if self.__prefix == 'constructor':
+            for (g, ty) in self.__globals:
+                if self.__globals_index[g.text] == 0 and (self.__Trace_Based or self.__globals_const[g.text]):
+                    self.__globals_index[g.text] = 1
+                    if ty == 'Int':
+                        default = f', t_{g.text}[0]==0'
+                    elif ty == 'Bool':
+                        default = f', t_{g.text}[0]==False'
+                    elif ty == 'String':
+                        default = f', t_{g.text}[0]==\'\''
+                    else:
+                        default = ',' + ', '.join([f't_{g.text}[0][{i}]==0' for i in range(0, self.__A+1)])
+                    contract_variables += default
+        else:
+            for g in self.__globals_const:
+                if self.__globals_const[g]:
+                    contract_variables += f', {g}Now=={g}Next'  
         self.__proc_args[self.__prefix] = args
         res ='''
 def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{global_args}):
@@ -488,9 +522,10 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '',
         # globals_update = (', \n\t\t' + ', '.join([('t_'+g.text+'['+str(self.__globals_index[g.text]-1)+']' if self.__globals_index[g.text]>0 else g.text+'Now') + ' == '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
     )
-        skip = 'next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
+        skip = '{default}, next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
             t_curr_a=self.__t_curr_a, 
             t_curr_w=self.__t_curr_w, 
+            default=contract_variables,
             global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
         )
         if res.format(subs=skip) == res:
@@ -572,6 +607,8 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         self.__globals_modifier += 1
         i = self.__globals_index[left]
         self.__globals_index[left] = i+1
+        if self.__prefix == 'constructor' and not self.__Trace_Based and not self.__globals_const[left]:
+            return 'True'
         return 't_'+left+'['+str(i)+']' + ' == ' + right
     
 
@@ -585,7 +622,8 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         i = self.__globals_index[left]
         self.__globals_index[left] = i+1
         prev_i = f'{left}Now' if i == 0 else f't_{left}[{str(i-1)}]'
-        return 'And('+ 't_'+left+'['+str(i)+']'+'['+str(index)+']' + ' == ' + right + ', ' + 'And(' + f'[t_{left}[{str(i)}][j] == {prev_i}[j] for j in range(A+1) if j != {str(index)}]' + ')' ')'
+        return 'And('+ 'And(' + f'[t_{left}[{str(i)}][j] == {right} for j in range(A+1) if j == {str(index)}]' + ')' + ', ' + 'And(' + f'[t_{left}[{str(i)}][j] == {prev_i}[j] for j in range(A+1) if j != {str(index)}]' + ')' ')'
+        # return 'And('+ 't_'+left+'['+str(i)+']'+'['+str(index)+']' + ' == ' + right + ', ' + 'And(' + f'[t_{left}[{str(i)}][j] == {prev_i}[j] for j in range(A+1) if j != {str(index)}]' + ')' ')'
 
 
     # Visit a parse tree produced by TxScriptParser#ifCmd.
@@ -904,12 +942,31 @@ def p_{self.__prop_name}_{nTrans}(i):
     # Visit a parse tree produced by TxScriptParser#mapExpr.
     def visitMapExpr(self, ctx:TxScriptParser.MapExprContext):
         index = self.visit(ctx.index)
-        if ctx.mapVar.text in self.__globals_index:
-            if self.__globals_index[ctx.mapVar.text]+self.__globals_modifier <= 0:
-                return ctx.mapVar.text + 'Now' + '['+index+']'
+        if not self.__visit_properties:
+            if ctx.mapVar.text in self.__globals_index:
+                if self.__globals_index[ctx.mapVar.text]+self.__globals_modifier <= 0:
+                    return ctx.mapVar.text + 'Now' + '['+index+']'
+                else:
+                    return 't_'+ctx.mapVar.text + '['+str(self.__globals_index[ctx.mapVar.text]+self.__globals_modifier)+']' + '['+index+']'
+            return ctx.mapVar.text + '[' + index + ']'
+        else:
+            if 'app_tx_st' in ctx.mapVar.text:
+                i = f'_q{self.__n_transactions-1-(self.__n_transactions-self.__pi)}'
             else:
-                return 't_'+ctx.mapVar.text + '['+str(self.__globals_index[ctx.mapVar.text]+self.__globals_modifier)+']' + '['+index+']'
-        return ctx.mapVar.text + '[' + index + ']'
+                i = '[i]'
+            if 'st.balance' in ctx.mapVar.text:
+                ag = index.replace('_q', '')
+                if ag == 'xa':
+                    self.__prop_nested_i.add(ag+'_q')#(ag+'[i]')
+                    return f'aw{i}[{ag}_q]'#f'aw{i}[{ag}[i]]'
+                else:
+                    self.__prop_nested_i.add(ag+'[i]')#(ag+'[i]')
+                    return f'aw{i}[{ag}[i]]'#f'aw{i}[{ag}[i]]'
+            if ctx.mapVar.text.replace('st.','') in self.__args_map:
+                return self.__args_map[ctx.v.text]  
+            if ctx.mapVar.text.replace('st.','') in self.__globals_index:              
+                return ctx.v.text.replace('st.','') + f'{i}'
+            return ctx.v.text.replace('st.', '') + '_q'
 
 
     # Visit a parse tree produced by TxScriptParser#strConstant.

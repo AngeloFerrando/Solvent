@@ -51,7 +51,7 @@ timeStart = time.time()
 N = 2
 
 # A = upper bound on the number of actors (A+1)
-A = 3
+A = 2
 
 # Maximum functions depth
 M = 1
@@ -177,7 +177,7 @@ def send(sender_id, amount, w_b, w_a, aw_b, aw_a): # '_b' and '_a' mean 'before'
 
 def constructor(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, block_num, oracleNow, oracleNext, t_oracle):
     return If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext, oracleNow, oracleNext), 
-	And(t_oracle[0] == xa1, True, next_state_tx(awNow, awNext, wNow, wNext, t_oracle[0], oracleNext)))
+	And(True, True, next_state_tx(awNow, awNext, wNow, wNext, t_oracle[0], oracleNext)))
 
 def pay(xa1, xn1, pay_amount, awNow, awNext, wNow, wNext, t_aw, t_w, block_num, oracleNow, oracleNext, t_oracle):
     return If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext, oracleNow, oracleNext), 
@@ -186,7 +186,7 @@ def pay(xa1, xn1, pay_amount, awNow, awNext, wNow, wNext, t_aw, t_w, block_num, 
 		next_state_tx(awNow, awNext, wNow, wNext, oracleNow, oracleNext), And(
 		And(If(
 	Not(pay_amount >= 0), 
-		next_state_tx(awNow, awNext, wNow, wNext, oracleNow, oracleNext), And(send(xa1, pay_amount, wNow, t_w[0], awNow, t_aw[0]), True, oracleNow==oracleNext, next_state_tx(t_aw[0], awNext, t_w[0], wNext, oracleNow, oracleNext))),True, oracleNow==oracleNext, next_state_tx(t_aw[0], awNext, t_w[0], wNext, oracleNow, oracleNext))))))
+		next_state_tx(awNow, awNext, wNow, wNext, oracleNow, oracleNext), And(send(xa1, pay_amount, wNow, t_w[0], awNow, t_aw[0]), True, next_state_tx(t_aw[0], awNext, t_w[0], wNext, oracleNow, oracleNext))),True, next_state_tx(t_aw[0], awNext, t_w[0], wNext, oracleNow, oracleNext))))))
 
 
 def user_is_legit(xa1):
@@ -231,6 +231,7 @@ for i in range(1, N):
 #                Exists([xa_q], And(user_is_legit(xa_q), user_is_fresh(xa, xa_q, f,  i),
 #                       ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list, pay_amount_q, oracle_q, *t_oracle_q ], Or(Not(step_trans(f_q, xa_q, xn_q, pay_amount_q, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, i, oracle[i], oracle_q, t_oracle_q)), w_q > 0)))))
 #                       #ForAll([xn_q, f_q, w_q, *aw_q ], Or(Not(step_trans(f_q, xa_q, xn_q, aw[i], aw_q, w[i], w_q, t_aw[i], t_w[i], i)), w_q > 0)))))
+
 
 
 def p_liquidity2a_liq_1(i):
@@ -298,42 +299,39 @@ queries = {}
 queries['liquidity2a_liq'] = [[p_liquidity2a_liq_1(i),p_liquidity2a_liq_2(i),p_liquidity2a_liq_3(i),p_liquidity2a_liq_4(i),p_liquidity2a_liq_5(i)] for i in range(1, N)]
 
 
-timeStart = time.time()
 for prop in {'liquidity2a_liq'}:
-    print('Property [' + prop + ']')
     for i, q in enumerate(queries[prop]):
-        liquid = False
         for j in range(0, len(q)):
-            qj = q[j] 
-            resj = s.check(qj)
-            if resj == unsat:
-                liquid = True
-                break
-        if not liquid:
-            break
-    if not liquid: print("not liquid [in 5 steps]")
-    else: print("liquid [in 5 steps]")
-    timeTot = time.time() - timeStart
-    print("Solving time: " + str(timeTot) + "s")
+            qj = q[j]
+            s2 = Solver()
+            s2.add(s.assertions())
+            s2.add(qj)
+            text= s2.to_smt2()
+            filename = 'out/%s/statebased/output_%s_%s.smt2'%(prop, i, j)
+            if not os.path.exists('out/'):
+                os.makedirs('out/')
+            if not os.path.exists('out/%s/'%(prop)):
+                os.makedirs('out/%s/'%(prop))
+            if not os.path.exists('out/%s/statebased/'%(prop)):
+                os.makedirs('out/%s/statebased/'%(prop))
+            with open(filename, 'w') as my_file:
+                print(my_file.write(text))
 
-# for i, q in enumerate(queries):
-#     timeStart = time.time()
-#     # print("q : ", q)
-#     print("p " + str(i) + " : ", end='')
-#     # sq = s
-#     # sq.add(q)
-#     # print("\n\nsq:", sq, "\n\n")
-#     res = s.check(q)
-#     if res == sat:
-#         print(" sat (=> not liquid)")
-#         m = s.model()
-#         # print(m)
-#         #printState(m)
-#         # exit()
-#     else:
-#         print(" unsat (=> liquid)")
-
+# timeStart = time.time()
+# for prop in {'liquidity2a_liq'}:
+#     print('Property [' + prop + ']')
+#     for i, q in enumerate(queries[prop]):
+#         liquid = False
+#         for j in range(0, len(q)):
+#             qj = q[j] 
+#             resj = s.check(qj)
+#             if resj == unsat:
+#                 liquid = True
+#                 break
+#         if not liquid:
+#             break
+#     if not liquid: print("not liquid [in 5 steps]")
+#     else: print("liquid [in 5 steps]")
 #     timeTot = time.time() - timeStart
 #     print("Solving time: " + str(timeTot) + "s")
-                      
-
+               

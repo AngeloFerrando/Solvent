@@ -29,28 +29,13 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TxScriptParser#intDecl.
-    def visitIntDecl(self, ctx:TxScriptParser.IntDeclContext):
+    # Visit a parse tree produced by TxScriptParser#fieldDecl.
+    def visitFieldDecl(self, ctx:TxScriptParser.FieldDeclContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TxScriptParser#boolDecl.
-    def visitBoolDecl(self, ctx:TxScriptParser.BoolDeclContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TxScriptParser#strDecl.
-    def visitStrDecl(self, ctx:TxScriptParser.StrDeclContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TxScriptParser#addrDecl.
-    def visitAddrDecl(self, ctx:TxScriptParser.AddrDeclContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TxScriptParser#mapAddrDeclInt.
-    def visitMapAddrDeclInt(self, ctx:TxScriptParser.MapAddrDeclIntContext):
+    # Visit a parse tree produced by TxScriptParser#constFieldDecl.
+    def visitConstFieldDecl(self, ctx:TxScriptParser.ConstFieldDeclContext):
         return self.visitChildren(ctx)
 
 
@@ -76,6 +61,31 @@ class TxScriptVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by TxScriptParser#nonPayableConstructorDecl.
     def visitNonPayableConstructorDecl(self, ctx:TxScriptParser.NonPayableConstructorDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#intDecl.
+    def visitIntDecl(self, ctx:TxScriptParser.IntDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#boolDecl.
+    def visitBoolDecl(self, ctx:TxScriptParser.BoolDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#strDecl.
+    def visitStrDecl(self, ctx:TxScriptParser.StrDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#addrDecl.
+    def visitAddrDecl(self, ctx:TxScriptParser.AddrDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#mapAddrDeclInt.
+    def visitMapAddrDeclInt(self, ctx:TxScriptParser.MapAddrDeclIntContext):
         return self.visitChildren(ctx)
 
 

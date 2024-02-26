@@ -44,48 +44,21 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#intDecl.
-    def enterIntDecl(self, ctx:TxScriptParser.IntDeclContext):
+    # Enter a parse tree produced by TxScriptParser#fieldDecl.
+    def enterFieldDecl(self, ctx:TxScriptParser.FieldDeclContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#intDecl.
-    def exitIntDecl(self, ctx:TxScriptParser.IntDeclContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#boolDecl.
-    def enterBoolDecl(self, ctx:TxScriptParser.BoolDeclContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#boolDecl.
-    def exitBoolDecl(self, ctx:TxScriptParser.BoolDeclContext):
+    # Exit a parse tree produced by TxScriptParser#fieldDecl.
+    def exitFieldDecl(self, ctx:TxScriptParser.FieldDeclContext):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#strDecl.
-    def enterStrDecl(self, ctx:TxScriptParser.StrDeclContext):
+    # Enter a parse tree produced by TxScriptParser#constFieldDecl.
+    def enterConstFieldDecl(self, ctx:TxScriptParser.ConstFieldDeclContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#strDecl.
-    def exitStrDecl(self, ctx:TxScriptParser.StrDeclContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#addrDecl.
-    def enterAddrDecl(self, ctx:TxScriptParser.AddrDeclContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#addrDecl.
-    def exitAddrDecl(self, ctx:TxScriptParser.AddrDeclContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#mapAddrDeclInt.
-    def enterMapAddrDeclInt(self, ctx:TxScriptParser.MapAddrDeclIntContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#mapAddrDeclInt.
-    def exitMapAddrDeclInt(self, ctx:TxScriptParser.MapAddrDeclIntContext):
+    # Exit a parse tree produced by TxScriptParser#constFieldDecl.
+    def exitConstFieldDecl(self, ctx:TxScriptParser.ConstFieldDeclContext):
         pass
 
 
@@ -131,6 +104,51 @@ class TxScriptListener(ParseTreeListener):
 
     # Exit a parse tree produced by TxScriptParser#nonPayableConstructorDecl.
     def exitNonPayableConstructorDecl(self, ctx:TxScriptParser.NonPayableConstructorDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#intDecl.
+    def enterIntDecl(self, ctx:TxScriptParser.IntDeclContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#intDecl.
+    def exitIntDecl(self, ctx:TxScriptParser.IntDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#boolDecl.
+    def enterBoolDecl(self, ctx:TxScriptParser.BoolDeclContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#boolDecl.
+    def exitBoolDecl(self, ctx:TxScriptParser.BoolDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#strDecl.
+    def enterStrDecl(self, ctx:TxScriptParser.StrDeclContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#strDecl.
+    def exitStrDecl(self, ctx:TxScriptParser.StrDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#addrDecl.
+    def enterAddrDecl(self, ctx:TxScriptParser.AddrDeclContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#addrDecl.
+    def exitAddrDecl(self, ctx:TxScriptParser.AddrDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#mapAddrDeclInt.
+    def enterMapAddrDeclInt(self, ctx:TxScriptParser.MapAddrDeclIntContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#mapAddrDeclInt.
+    def exitMapAddrDeclInt(self, ctx:TxScriptParser.MapAddrDeclIntContext):
         pass
 
 

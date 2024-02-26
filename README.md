@@ -18,3 +18,23 @@ antlr4 -Dlanguage=Python3 -visitor TxScript.g4
 
 ## Requirements
 antlr4-python3-runtime version 4.7.2
+
+## How to use with Make
+
+```bash
+make compile Contract=<file.sol> N_Transactions=<number of transitions> N_Participants=<number of participants>
+```
+
+```bash
+make run SMT=<smt solver>
+```
+
+## Example of use with Make
+
+```bash
+make compile Contract=./examples/liquidity2.sol N_Transactions=4 N_Participants=2
+```
+
+```bash
+make run SMT=z3
+```

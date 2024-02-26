@@ -8,16 +8,21 @@ propertyExpr : 'property' name=LABEL '{' phi=qslf '}';
 
 declsExpr : (declExpr)+;
 declExpr : 
-'int' var=LABEL                                                                                     # intDecl
-    | 'bool' var=LABEL                                                                              # boolDecl
-    | 'string' var=LABEL                                                                            # strDecl
-    | 'address' var=LABEL                                                                           # addrDecl
-    | '(' 'address' '->' 'int' ')' var=LABEL                                                        # mapAddrDeclInt 
+child=fieldExpr                                                                                     # fieldDecl
+    | 'const' child=fieldExpr                                                                       # constFieldDecl
     | 'constraint' name=LABEL '(' args=argsExpr  ')' '{' cmds=cmdExpr '}'                           # constrDecl
     | 'function' name=LABEL '(' args=argsExpr ')' 'payable' '{' cmds=cmdExpr '}'                    # payableFunDecl
     | 'function' name=LABEL '(' args=argsExpr ')' '{' cmds=cmdExpr '}'                              # nonPayableFunDecl
     | 'constructor' '(' args=argsExpr ')' 'payable'  '{' cmds=cmdExpr '}'                           # payableConstructorDecl
     | 'constructor' '(' args=argsExpr ')' '{' cmds=cmdExpr '}'                                      # nonPayableConstructorDecl
+;
+
+fieldExpr :
+'int' var=LABEL                                                                                     # intDecl
+    | 'bool' var=LABEL                                                                              # boolDecl
+    | 'string' var=LABEL                                                                            # strDecl
+    | 'address' var=LABEL                                                                           # addrDecl
+    | '(' 'address' '->' 'int' ')' var=LABEL                                                        # mapAddrDeclInt 
 ;
 
 argsExpr : (argExpr)*;
@@ -30,8 +35,8 @@ cmdExpr :
     | 'require' '(' child=expression ')'                                # requireCmd
     | 'if' '(' condition=expression ')' '{' ifcmd=cmdExpr '}' 'else' '{' elsecmd=cmdExpr '}'    # ifelseCmd
     | 'if' '(' condition=expression ')' '{' ifcmd=cmdExpr '}'           # ifCmd
-    | var=LABEL '=' child=expression                                    # assignCmd
     | var=LABEL '[' index=expression ']' '=' child=expression           # assignMapCmd
+    | var=LABEL '=' child=expression                                    # assignCmd
     | sender=LABEL '!' amount=expression                                # sendCmd
     | <assoc=right> seq1=cmdExpr ';' seq2=cmdExpr                       # seqCmd
     | '(' cmdExpr ')'                                                   # groupCmd
@@ -104,7 +109,8 @@ constantExpr :
 ;
 
 
-LABEL : [_a-z.][_a-zA-Z0-9.]*('['[_a-z.][_a-zA-Z0-9.]*']')?;
+LABEL : [_a-z.][_a-zA-Z0-9.]*;
+// LABELP : [_a-z.][_a-zA-Z0-9.]*('['[_a-z.][_a-zA-Z0-9.]*']')?;
 LABELUPPER : [_a-zA-Z][_a-zA-Z0-9]*;
 
 NUMBER : ('-')? DIGIT | ('-')? (DIGIT_NOT_ZERO DIGIT+);
