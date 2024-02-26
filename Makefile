@@ -3,43 +3,54 @@
 compile: clean
 	python3 main.py $(Contract) $(N_Transactions) $(N_Participants)
 	python3 outputTrace.py
+	@for Prop in $(wildcard out/*); do \
+		for file in $$(find $$Prop/tracebased -type f -name '*.smt2' | sort); do \
+			sed -i '1s/^/$(LOGIC)\n/' $$file; \
+		done \
+	done
 	python3 outputState.py
-
-SUBDIRS := $(wildcard out/*)
+	@for Prop in $(wildcard out/*); do \
+		for file in $$(find $$Prop/statebased -type f -name '*.smt2' | sort); do				           	sed -i '1s/^/$(LOGIC)\n/' $$file; \
+		done \
+	done	
 
 run:
-	@for Prop in $(SUBDIRS); do \
+	@for Prop in $(wildcard out/*); do \
 		echo "PROPERTY: $$Prop"; \
 		sat=false; \
 		for i in $$(find $$Prop/tracebased/ -mindepth 1 -maxdepth 1 -type d | sort); do \
-			found=false; \
+			foundSAT=false; \
+			foundUNSAT=false; \
 			for file in $$(find $$i -type f -name '*.smt2' | sort); do \
 				output=$$($$SMT $$file); \
 				if [ "$$output" = "unsat" ]; then \
-					found=true; \
+					foundUNSAT=true; \
 					break; \
+				elif [ "$$output" = "sat" ]; then \
+					foundSAT=true; \
 				fi \
 			done; \
-			if [ "$$found" = "false" ]; then \
+			if [ "$$foundUNSAT" = "false" ] && [ "$$foundSAT" = "true" ] ; then \
 				echo "STRONG SAT (=> NOT LIQUID)"; \
 				sat=true; \
 				break; \
 			fi \
 		done; \
 		if [ "$$sat" = "false" ]; then \
-			found=false; \
+			foundUNSAT=false; \
+			foundSAT=false; \
 			for file in $$(find $$Prop/statebased -type f -name '*.smt2' | sort); do \
 				output=$$($$SMT $$file); \
 				if [ "$$output" = "unsat" ]; then \
-					found=true; \
+					foundUNSAT=true; \
 					break; \
-        		elif [ "$$output" = "sat" ]; then \
-					sat=true; \
+        			elif [ "$$output" = "sat" ]; then \
+					foundSAT=true; \
 				fi \
 			done; \
-    	    if [ "$$found" = "true" ]; then \
+    	   		if [ "$$foundUNSAT" = "true" ]; then \
 				echo "STRONG UNSAT (=> LIQUID)"; \
-			elif [ "$$sat" = "true" ]; then \
+			elif [ "$$foundSAT" = "true" ]; then \
 				echo "WEAK SAT (=> NOT LIQUID?)"; \
 			else \
 				echo "UNKNOWN (=> ??)"; \

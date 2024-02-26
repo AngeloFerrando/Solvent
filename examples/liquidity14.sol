@@ -19,7 +19,7 @@ contract C14 {
 
 }
 
-
+/*
 // not liquid
 property liquidity14a_nonliq {
     Forall xa
@@ -46,7 +46,7 @@ property liquidity14b_liq {
       ]
     ]
 }
-
+*/
 
 
 //  liquid
