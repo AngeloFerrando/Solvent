@@ -31,9 +31,19 @@ make run SMT=<smt solver>
 
 ## Example of use with Make
 
+To compile a SOL file into its SMT version
+
 ```bash
-make compile Contract=./examples/liquidity2.sol N_Transactions=4 N_Participants=2 LOGIC="(set-logic LIA)"
+make compile Contract=./examples/liquidity2.sol N_Transactions=4 N_Participants=2
 ```
+
+(Optional) To set the logic to be used with the SMT solver
+
+```bash
+make set-logic LOGIC="(set-logic LIA)"
+```
+
+To run the SMT so generated (choosing in this case Z3 as solver)
 
 ```bash
 make run SMT=z3

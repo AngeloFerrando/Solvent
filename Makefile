@@ -1,27 +1,30 @@
-.PHONY: compile run clean all
+.PHONY: compile run clean set-logic all
 
 compile: clean
 	python3 main.py $(Contract) $(N_Transactions) $(N_Participants)
 	python3 outputTrace.py
+	python3 outputState.py
+		
+set-logic:
 	@for Prop in $(wildcard out/*); do \
 		for file in $$(find $$Prop/tracebased -type f -name '*.smt2' | sort); do \
 			sed -i '1s/^/$(LOGIC)\n/' $$file; \
 		done \
 	done
-	python3 outputState.py
 	@for Prop in $(wildcard out/*); do \
-		for file in $$(find $$Prop/statebased -type f -name '*.smt2' | sort); do				           	sed -i '1s/^/$(LOGIC)\n/' $$file; \
+		for file in $$(find $$Prop/statebased -type f -name '*.smt2' | sort); do \
+			sed -i '1s/^/$(LOGIC)\n/' $$file; \
 		done \
-	done	
+	done
 
 run:
 	@for Prop in $(wildcard out/*); do \
 		echo "PROPERTY: $$Prop"; \
 		sat=false; \
 		for i in $$(find $$Prop/tracebased/ -mindepth 1 -maxdepth 1 -type d | sort); do \
-			foundSAT=false; \
 			foundUNSAT=false; \
 			for file in $$(find $$i -type f -name '*.smt2' | sort); do \
+				foundSAT=false; \
 				output=$$($$SMT $$file); \
 				if [ "$$output" = "unsat" ]; then \
 					foundUNSAT=true; \

@@ -69,8 +69,8 @@ block_num_q1 = Int("block_num_q1")
 
 
 Proc = Datatype('Proc')
-Proc.declare('unlock')
 Proc.declare('pay')
+Proc.declare('unlock')
 
 Proc = Proc.create()
 
@@ -263,11 +263,11 @@ And([Or(j != xa_q, Not(aw_q1[j] == aw[i][j]+w[i])) for j in range(A+1)])
         )))))
 
 queries = {}
-queries['liquidity14d_liq'] = [[p_liquidity14d_liq_1(i),p_liquidity14d_liq_2(i)] for i in range(1, N)]
 queries['liquidity14c_liq'] = [[p_liquidity14c_liq_1(i),p_liquidity14c_liq_2(i)] for i in range(1, N)]
+queries['liquidity14d_liq'] = [[p_liquidity14d_liq_1(i),p_liquidity14d_liq_2(i)] for i in range(1, N)]
 
 
-for prop in {'liquidity14d_liq','liquidity14c_liq'}:
+for prop in {'liquidity14c_liq','liquidity14d_liq'}:
     for i, q in enumerate(queries[prop]):
         for j in range(0, len(q)):
             qj = q[j]
@@ -288,7 +288,7 @@ for prop in {'liquidity14d_liq','liquidity14c_liq'}:
                 print(my_file.write(text))
 
 # timeStart = time.time()
-# for prop in {'liquidity14d_liq','liquidity14c_liq'}:
+# for prop in {'liquidity14c_liq','liquidity14d_liq'}:
 #     print('Property [' + prop + ']')
 #     for i, q in enumerate(queries[prop]):
 #         liquid = False
