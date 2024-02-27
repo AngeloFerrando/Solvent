@@ -1,10 +1,8 @@
 contract C2 {
   address oracle
-  //(address -> int) m
   
   constructor () {
-    oracle=msg.sender//;
-    //m[msg.sender] = 1
+    oracle=msg.sender
   }
 
   function pay(amount) {
@@ -20,7 +18,7 @@ property liquidity2a_liq {
     [
       true
         ->
-      Exists tx [5, xa]
+      Exists tx [1, xa]
       [
         ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance))
       ]

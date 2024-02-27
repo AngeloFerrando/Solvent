@@ -626,7 +626,8 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         i = self.__globals_index[left]
         self.__globals_index[left] = i+1
         prev_i = f'{left}Now' if i == 0 else f't_{left}[{str(i-1)}]'
-        return 'And('+ 'And(' + f'[t_{left}[{str(i)}][j] == {right} for j in range(A+1) if j == {str(index)}]' + ')' + ', ' + 'And(' + f'[t_{left}[{str(i)}][j] == {prev_i}[j] for j in range(A+1) if j != {str(index)}]' + ')' ')'
+        return f'And(And([Or(j!={str(index)}, t_{left}[{str(i)}][j] == {right}) for j in range(A+1)]), And([Or(j=={str(index)}, t_{left}[{str(i)}][j] == {prev_i}[j]) for j in range(A+1)]))' 
+        # return 'And('+ 'And(' + f'[t_{left}[{str(i)}][j] == {right} for j in range(A+1) if j == {str(index)}]' + ')' + ', ' + 'And(' + f'[t_{left}[{str(i)}][j] == {prev_i}[j] for j in range(A+1) if j != {str(index)}]' + ')' ')'
         # return 'And('+ 't_'+left+'['+str(i)+']'+'['+str(index)+']' + ' == ' + right + ', ' + 'And(' + f'[t_{left}[{str(i)}][j] == {prev_i}[j] for j in range(A+1) if j != {str(index)}]' + ')' ')'
 
 
@@ -903,7 +904,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         self.__tx_sender = 'xa_q' if ctx.sender.text == 'xa' else ctx.sender.text.replace('st.', '')+'[i]'
         condition = self.visit(ctx.where)
         step_trans_args = [self.__args_map[a] for a in self.__args_map if 'constructor' not in self.__args_map[a]]
-        global_args_q = (', ' + ', '.join([g.text+'_q{i}, *t_'+g.text+'_q{i}' for (g, _) in self.__globals])) if self.__globals else ''
+        global_args_q = (', ' + ', '.join([(g.text+'_q{i}, *t_'+g.text+'_q{i}' if ty!=('MapAddr', 'Int') else '*'+g.text+'_q{i}, *t_'+g.text+'_q{i}_list') for (g, ty) in self.__globals])) if self.__globals else ''
         func_args_q = (', ' + ', '.join([s+'_q{i}' for s in step_trans_args]) if step_trans_args else '')
         global_args_phi0 = (', ' + ', '.join([g.text+'[i], '+g.text+'_q{i}, t_'+g.text+'_q{i}' for (g, _) in self.__globals])) if self.__globals else ''
         global_args_phi = (', ' + ', '.join([g.text+'_q{j}, '+g.text+'_q{i}, t_'+g.text+'_q{i}' for (g, _) in self.__globals])) if self.__globals else ''
@@ -922,6 +923,9 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         forall_args = ''
         for i in range(0, nTrans):
             t_awq_lists += f't_awq_list{i} = [t_awq_m_j for t_awq_m in t_aw_q{i} for t_awq_m_j in t_awq_m]; '
+            for (g,ty) in self.__globals:
+                if ty==('MapAddr', 'Int'):
+                    t_awq_lists += f't_{g.text}_q{i}_list = [t_{g.text}_q_m_j for t_{g.text}_q_m in t_{g.text}_q{i} for t_{g.text}_q_m_j in t_{g.text}_q_m]; '
             if forall_args: forall_args += ', '
             forall_args += f'xn_q{i}, f_q{i}, w_q{i}, *aw_q{i}, *t_w_q{i}, *t_awq_list{i}, block_num_q{i}'+func_args_q.format(i=i)+global_args_q.format(i=i)
             if i == 0:
