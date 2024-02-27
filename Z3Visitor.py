@@ -966,8 +966,10 @@ def p_{self.__prop_name}_{nTrans}(i):
                     self.__prop_nested_i.add(ag+'_q')#(ag+'[i]')
                     return f'aw{i}[{ag}_q]'#f'aw{i}[{ag}[i]]'
                 else:
-                    self.__prop_nested_i.add(ag+'[i]')#(ag+'[i]')
-                    return f'aw{i}[{ag}[i]]'#f'aw{i}[{ag}[i]]'
+                    if '[i]' not in ag:
+                        ag = ag+'[i]'
+                    self.__prop_nested_i.add(ag)#(ag+'[i]')
+                    return f'aw{i}[{ag}]'#f'aw{i}[{ag}[i]]'
             if ctx.mapVar.text.replace('st.','') in self.__args_map:
                 return self.__args_map[ctx.v.text]  
             if ctx.mapVar.text.replace('st.','') in self.__globals_index:              
