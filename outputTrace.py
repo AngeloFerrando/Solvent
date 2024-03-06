@@ -67,8 +67,8 @@ block_num_q0 = Int("block_num_q0")
 
 
 Proc = Datatype('Proc')
-Proc.declare('pay')
 Proc.declare('coinbase')
+Proc.declare('pay')
 
 Proc = Proc.create()
 
