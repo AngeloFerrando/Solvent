@@ -2,14 +2,18 @@
 
 # Default value
 DEFAULT_N_TRANSACTIONS := 100
+DEFAULT_Can_Transactions_Arrive_Any_time := true
 
 # If no argument is provided, use the default value
 ifndef N_Transactions
     N_Transactions := $(DEFAULT_N_TRANSACTIONS)
 endif
+ifndef Can_Transactions_Arrive_Any_time
+    Can_Transactions_Arrive_Any_time := $(DEFAULT_Can_Transactions_Arrive_Any_time)
+endif
 
 compile: clean
-	python3 main.py $(Contract) $(N_Transactions) $(N_Participants)
+	python3 main.py $(Contract) $(N_Transactions) $(N_Participants) $(Can_Transactions_Arrive_Any_time)
 	python3 outputTrace.py
 	python3 outputState.py
 		

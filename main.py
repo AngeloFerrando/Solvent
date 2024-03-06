@@ -26,8 +26,8 @@ def resetZ3Folder():
             print('Failed to delete %s. Reason: %s' % (file_path, e))
 
 def parse(pattern):
-    if len(sys.argv) != 4:
-        print('The script requires 3 parameters, as follows: <name of the SOL file> <number of transactions> <number of participants>')
+    if len(sys.argv) != 4 and len(sys.argv) != 5:
+        print('The script requires 3 parameters (plus one optional one which is True by default), as follows: <name of the SOL file> <number of transactions> <number of participants> (<accept transactions any time>)?')
         return
     # try:`
     resetZ3Folder()
@@ -37,10 +37,12 @@ def parse(pattern):
     # parser.addErrorListener(TxScriptErrorListener())
     tree = parser.contractExpr()
 
-    visitor = Z3Visitor(int(sys.argv[2]), int(sys.argv[3]), True)
+    can_transactions_arrive_any_time = (sys.argv[4]=='True' or sys.argv[4]=='true') if len(sys.argv) == 5 else True
+
+    visitor = Z3Visitor(int(sys.argv[2]), int(sys.argv[3]), True, can_transactions_arrive_any_time)
     with open('outputTrace.py', 'w') as file:
         file.write(visitor.visit(tree))
-    visitor = Z3Visitor(int(sys.argv[2]), int(sys.argv[3]), False)
+    visitor = Z3Visitor(int(sys.argv[2]), int(sys.argv[3]), False, can_transactions_arrive_any_time)
     with open('outputState.py', 'w') as file:
         file.write(visitor.visit(tree))
     # except Exception as e:

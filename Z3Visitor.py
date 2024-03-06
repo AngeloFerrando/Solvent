@@ -5,7 +5,7 @@ from TxScriptParser import *
 from TxScriptVisitor import *
 
 class Z3Visitor(TxScriptVisitor):
-    def __init__(self, N, A, Trace_Based):
+    def __init__(self, N, A, Trace_Based, can_transations_arrive_any_time):
         self.__proc = set()
         self.__proc_args = {}
         self.__add_last_cmd = False
@@ -34,6 +34,7 @@ class Z3Visitor(TxScriptVisitor):
         # A = upper bound on the number of actors (A+1)
         self.__A = A
         self.__Trace_Based = Trace_Based
+        self.__can_transations_arrive_any_time = can_transations_arrive_any_time
 
     # Visit a parse tree produced by TxScriptParser#contractExpr.
     def visitContractExpr(self, ctx:TxScriptParser.ContractExprContext):
@@ -43,11 +44,19 @@ class Z3Visitor(TxScriptVisitor):
         props = self.visit(ctx.properties)
         self.__visit_properties = False
         if not any('constructor' in decl for decl in decls):
-            decls.append('def constructor(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w{global_args}):\n\treturn next_state_tx(awNow, awNext, wNow, wNext{global_args_next_state_tx})'.format(
+            decls.append('\ndef constructor(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, block_num{global_args}):\n\treturn next_state_tx(awNow, awNext, wNow, wNext{global_args_next_state_tx})'.format(
                 global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '', 
                 # global_args_assign = (', '.join([g.text+'Next == '+g.text+'Next' for (g, _) in self.__globals]) + ', ') if self.__globals else ''), 
                 global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
             ))
+        if self.__can_transations_arrive_any_time and not any('coinbase' in decl for decl in decls):
+            decls.append('\ndef coinbase(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, block_num{global_args}):\n\treturn And(t_w[0] == wNow + xn1, next_state_tx(awNow, awNext, t_w[0], wNext{global_args_next_state_tx}))'.format(
+                global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '', 
+                # global_args_assign = (', '.join([g.text+'Next == '+g.text+'Next' for (g, _) in self.__globals]) + ', ') if self.__globals else ''), 
+                global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+            ))
+            self.__proc.add('coinbase')
+            self.__proc_args['coinbase'] = None
         proc = ''
         for p in self.__proc:
             if p == 'constructor': continue
@@ -216,7 +225,7 @@ t_aw = [[[Int("t_aw_%s_%s_%s" % (i, m, j)) for j in range(A+1)]
 s = Solver()
 
 # initial state
-s.add(w[0] >= 0)
+{initial_balance}
 # s.add(w[0] == 1)
 
 def next_state_tx(aw1, aw2, w1, w2{global_args_next_state_tx}):
@@ -323,6 +332,7 @@ for prop in {props_name}:
 '''.format(
         N=self.__N if self.__Trace_Based else 2, 
         A=self.__A, 
+        initial_balance='s.add(w[0] >= 0)' if self.__can_transations_arrive_any_time else 's.add(w[0] == 0)',
         tracestate='trace' if self.__Trace_Based else 'state',
         proc=proc, 
         decls='\n'.join(decls), 
