@@ -1,18 +1,18 @@
 contract PaymentSplitter {
-	mapping (address => uint) shares
+	mapping (address => int) shares
 	int totalShares
-    mapping (address => uint) released
+    mapping (address => int) released
 	int totalReleased 
     address owner
     int state
 
     constructor(address o) {
-        shares = emptymap;
-        released = emptymap;
+        // shares = emptymap;
+        // released = emptymap;
         owner = o;
-        totalShares = 0;
-        totalReleased = 0;
-        state = 0
+        // totalShares = 0;
+        // totalReleased = 0;
+        // state = 0
     }
 
     function addShares(p, s) {
