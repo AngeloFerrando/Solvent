@@ -1,8 +1,9 @@
-contract C2 {
-  address oracle
+/// @custom:version liquidity2
+
+contract C {
   
   constructor () {
-    oracle=msg.sender
+    skip
   }
 
   function pay(amount) {

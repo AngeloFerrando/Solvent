@@ -1,4 +1,6 @@
-contract C3 {
+/// @custom:version liquidity3
+
+contract C {
 
   constructor () {
     skip
@@ -11,7 +13,7 @@ contract C3 {
 }
 
 
-// not liquid
+/// @custom:ground_truth false
 property liquidity3a_nonliq {
     Forall xa
     [
@@ -24,7 +26,7 @@ property liquidity3a_nonliq {
     ]
 }
 
-// liquid
+// @custom:ground_truth true
 property liquidity3b_liq {
     Forall xa
     [
