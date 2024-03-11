@@ -63,8 +63,6 @@ w_q0 = Int("wq0")
 
 # Block number
 block_num = [Int("block_num_%s" % (i)) for i in range(N+1)]
-block_num_q0 = Int("block_num_q0")
-
 
 Proc = Datatype('Proc')
 Proc.declare('coinbase')
@@ -74,6 +72,10 @@ Proc = Proc.create()
 
 # Contract's state variables
 
+aux = [Int("aux_%s" % (i)) for i in range(N+1)]
+t_aux = [[Int("t_aux_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]
+aux_q0 = Int("auxq0")
+t_aux_q0 = [Int("t_auxq0_%s" % (m)) for m in range(M)]
 
 # Called procedure
 f = [Const("f_%s" % (i), Proc) for i in range(N+1)]
@@ -119,11 +121,11 @@ s = Solver()
 s.add(w[0] >= 0)
 # s.add(w[0] == 1)
 
-def next_state_tx(aw1, aw2, w1, w2):
+def next_state_tx(aw1, aw2, w1, w2, auxNow, auxNext):
     return And(w2 == w1,
                And([aw2[j] == aw1[j] for j in range(A+1)])
-               
-               )
+               , auxNow==auxNext
+               , )
 
 def send(sender_id, amount, w_b, w_a, aw_b, aw_a): # '_b' and '_a' mean 'before' and 'after'
     return And(w_a == w_b - amount,
@@ -132,23 +134,25 @@ def send(sender_id, amount, w_b, w_a, aw_b, aw_a): # '_b' and '_a' mean 'before'
                           aw_a[j] == aw_b[j]) for j in range(A+1)]))
 
 
-def constructor(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, block_num):
-    return If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext), 
-	And(next_state_tx(awNow, awNext, wNow, wNext), True, next_state_tx(awNow, awNext, wNow, wNext)))
+def constructor(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, block_num, auxNow, auxNext, t_aux):
+    return If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext, auxNow, auxNext), 
+	And(next_state_tx(awNow, awNext, wNow, wNext, auxNow, auxNext), True, next_state_tx(awNow, awNext, wNow, wNext, auxNow, auxNext)))
 
-def pay(xa1, xn1, pay_amount, awNow, awNext, wNow, wNext, t_aw, t_w, block_num):
-    return If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext), 
+def pay(xa1, xn1, pay_amount, awNow, awNext, wNow, wNext, t_aw, t_w, block_num, auxNow, auxNext, t_aux):
+    return If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext, auxNow, auxNext), 
 	And(If(
 	Not(pay_amount<=wNow), 
-		next_state_tx(awNow, awNext, wNow, wNext), And(
+		next_state_tx(awNow, awNext, wNow, wNext, auxNow, auxNext), And(
 		And(If(And(xa1==0),And(If(
 	Not(pay_amount-1 >= 0), 
-		next_state_tx(awNow, awNext, wNow, wNext), And(send(xa1, pay_amount-1, wNow, t_w[0], awNow, t_aw[0]), True))),And(If(
+		next_state_tx(awNow, awNext, wNow, wNext, auxNow, auxNext), And(send(xa1, pay_amount-1, wNow, t_w[0], awNow, t_aw[0]), And(t_aux[0] == If(
+	Not(pay_amount != 0), 
+		next_state_tx(awNow, awNext, wNow, wNext, auxNow, auxNext), And(10/pay_amount, True)),True)))),And(If(
 	Not(pay_amount >= 0), 
-		next_state_tx(awNow, awNext, wNow, wNext), And(send(xa1, pay_amount, wNow, t_w[0], awNow, t_aw[0]), True)))),True, next_state_tx(t_aw[0], awNext, t_w[0], wNext))))))
+		next_state_tx(awNow, awNext, wNow, wNext, auxNow, auxNext), And(send(xa1, pay_amount, wNow, t_w[0], awNow, t_aw[0]), True, t_aux[0]==auxNow)))),True, next_state_tx(t_aw[0], awNext, t_w[0], wNext, t_aux[0], auxNext))))))
 
-def coinbase(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, block_num):
-	return And(t_w[0] == wNow + xn1, next_state_tx(awNow, awNext, t_w[0], wNext))
+def coinbase(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, block_num, auxNow, auxNext, t_aux):
+	return And(t_w[0] == wNow + xn1, next_state_tx(awNow, awNext, t_w[0], wNext, t_aux[0], auxNext))
 
 
 def user_is_legit(xa1):
@@ -168,21 +172,21 @@ def user_is_fresh(xa, xa1, f, i):
 
 # transition rules
 
-def step_trans(f1, xa1, xn1, pay_amount, aw1, aw2, w1, w2, t_aw, t_w, block_num1, block_num2, i):
+def step_trans(f1, xa1, xn1, pay_amount, aw1, aw2, w1, w2, t_aw, t_w, block_num1, block_num2, i, auxNow, auxNext, t_aux):
     return And(And(xa1 >= 0, xa1 <= A, xn1 >= 0),
                And([aw1[j] >= 0 for j in range(A+1)]),
                block_num2 >= block_num1,
                If(f1 == Proc.pay,
-	pay(xa1, xn1, pay_amount, aw1, aw2, w1, w2, t_aw, t_w, block_num1),
-		coinbase(xa1, xn1, aw1, aw2, w1, w2, t_aw, t_w, block_num1)))
+	pay(xa1, xn1, pay_amount, aw1, aw2, w1, w2, t_aw, t_w, block_num1, auxNow, auxNext, t_aux),
+		coinbase(xa1, xn1, aw1, aw2, w1, w2, t_aw, t_w, block_num1, auxNow, auxNext, t_aux)))
 
 new_state = And(And(xa[0] >= 0, xa[0] <= A, xn[0] >= 0),
                And([aw[0][j] >= 0 for j in range(A+1)]),
-                  constructor(xa[0], xn[0],  aw[0], aw[1], w[0], w[1], t_aw[0], t_w[0], block_num[0]))
+                  constructor(xa[0], xn[0],  aw[0], aw[1], w[0], w[1], t_aw[0], t_w[0], block_num[0], aux[0], aux[1], t_aux[0]))
 s.add(new_state)
 for i in range(1, N):
     new_state = step_trans(f[i], xa[i], xn[i], pay_amount[i], aw[i],
-                           aw[i+1], w[i], w[i+1], t_aw[i], t_w[i], block_num[i], block_num[i+1], i)
+                           aw[i+1], w[i], w[i+1], t_aw[i], t_w[i], block_num[i], block_num[i+1], i, aux[i], aux[i+1], t_aux[i])
     s.add(new_state)
 
 
@@ -193,7 +197,7 @@ for i in range(1, N):
 #     #print([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list ])
 #     return And(w[i] > 0,
 #                Exists([xa_q], And(user_is_legit(xa_q), user_is_fresh(xa, xa_q, f,  i),
-#                       ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list, pay_amount_q ], Or(Not(step_trans(f_q, xa_q, xn_q, pay_amount_q, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, i)), w_q > 0)))))
+#                       ForAll([xn_q, f_q, w_q, *aw_q, *t_w_q, *t_awq_list, pay_amount_q, aux_q, *t_aux_q ], Or(Not(step_trans(f_q, xa_q, xn_q, pay_amount_q, aw[i], aw_q, w[i], w_q, t_aw_q, t_w_q, i, aux[i], aux_q, t_aux_q)), w_q > 0)))))
 #                       #ForAll([xn_q, f_q, w_q, *aw_q ], Or(Not(step_trans(f_q, xa_q, xn_q, aw[i], aw_q, w[i], w_q, t_aw[i], t_w[i], i)), w_q > 0)))))
 
 
@@ -202,9 +206,9 @@ def p_liquidity11a_nonliq_1(i):
     t_awq_list0 = [t_awq_m_j for t_awq_m in t_aw_q0 for t_awq_m_j in t_awq_m]; 
     return And(
         Exists([xa_q], And(user_is_legit(xa_q), True,
-            ForAll([xn_q0, f_q0, w_q0, *aw_q0, *t_w_q0, *t_awq_list0, block_num_q0, pay_amount_q0],  
+            ForAll([xn_q0, f_q0, w_q0, *aw_q0, *t_w_q0, *t_awq_list0, pay_amount_q0, aux_q0, *t_aux_q0],  
                 Or(
-Not(step_trans(f_q0, xa_q, xn_q0, pay_amount_q0, aw[i], aw_q0, w[i], w_q0, t_aw_q0, t_w_q0, block_num[i], block_num_q0, i+0)),
+Not(step_trans(f_q0, xa_q, xn_q0, pay_amount_q0, aw[i], aw_q0, w[i], w_q0, t_aw_q0, t_w_q0, block_num[i], block_num[i], i+0, aux[i], aux_q0, t_aux_q0)),
 
 And([Or(j != xa_q, Not(aw_q0[j] == aw[i][j]+w[i])) for j in range(A+1)])
         )))))

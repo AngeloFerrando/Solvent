@@ -12,7 +12,7 @@ contract Bet {
     require (msg.value==1);
     par1 = msg.sender;
     oracle = o;
-    deadline = d
+    deadline = d;
     state = 0  
   }
 

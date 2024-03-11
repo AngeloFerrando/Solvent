@@ -16,7 +16,7 @@ class Z3Visitor(TxScriptVisitor):
         self.__globals = []
         self.__globals_index = {}
         self.__globals_const = {}
-        self.__globals_modifier = 0
+        self.__globals_modifier = -1
         self.__visit_properties = False
         self.__visit_properties_body = False
         self.__const = False
@@ -47,13 +47,13 @@ class Z3Visitor(TxScriptVisitor):
             decls.append('\ndef constructor(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, block_num{global_args}):\n\treturn next_state_tx(awNow, awNext, wNow, wNext{global_args_next_state_tx})'.format(
                 global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '', 
                 # global_args_assign = (', '.join([g.text+'Next == '+g.text+'Next' for (g, _) in self.__globals]) + ', ') if self.__globals else ''), 
-                global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+                global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
             ))
         if self.__can_transations_arrive_any_time and not any('coinbase' in decl for decl in decls):
             decls.append('\ndef coinbase(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, block_num{global_args}):\n\treturn And(t_w[0] == wNow + xn1, next_state_tx(awNow, awNext, t_w[0], wNext{global_args_next_state_tx}))'.format(
                 global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '', 
                 # global_args_assign = (', '.join([g.text+'Next == '+g.text+'Next' for (g, _) in self.__globals]) + ', ') if self.__globals else ''), 
-                global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+                global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
             ))
             self.__proc.add('coinbase')
             self.__proc_args['coinbase'] = None
@@ -68,14 +68,14 @@ class Z3Visitor(TxScriptVisitor):
         t_aw_qs = ''
         for i in range(0, self.__max_n_transactions):
             t_aw_qs += f't_aw_q{i} = [[Int("t_awq{i}_%s_%s" % (m, j)) for j in range(A+1)] for m in range(M)]\n'
-        block_num_qs = ''
+        # block_num_qs = ''
         xn_qs = ''
         f_qs = ''
         w_qs = ''
         aw_qs = ''
         t_w_qs = ''
         for i in range(0, self.__max_n_transactions):
-            block_num_qs += f'block_num_q{i} = Int("block_num_q{i}")\n'
+            # block_num_qs += f'block_num_q{i} = Int("block_num_q{i}")\n'
             xn_qs += f'xn_q{i} = Int("xn_q{i}")\n'
             f_qs += f'f_q{i} = Const("f_q{i}", Proc)\n'
             w_qs += f'w_q{i} = Int("wq{i}")\n'
@@ -115,7 +115,7 @@ t_{g}_q{i} = [{ty}("t_{g}q{i}_%s" % (m)) for m in range(M)]'''.format(i=i, g=g_v
         prop_queries = 'queries = {}\n'
         for n in self.__prop_names:
             q = ','.join([f'p_{n}_{i}(i)' for i in range(1, self.__prop_transactions[n]+1)])
-            prop_queries += f'queries[\'{n}\'] = [[{q}] for i in range(1, N)]\n'
+            prop_queries += f'queries[\'{n}\'] = [[{q}] for i in range(1, N+1)]\n'
 
         res = '''
 from z3 import *
@@ -181,7 +181,6 @@ w = [Int("w_%s" % (i)) for i in range(N+1)]
 
 # Block number
 block_num = [Int("block_num_%s" % (i)) for i in range(N+1)]
-{block_num_qs}
 
 Proc = Datatype('Proc')
 {proc}
@@ -299,15 +298,15 @@ for prop in {props_name}:
             s2.add(s.assertions())
             s2.add(qj)
             text= s2.to_smt2()
-            filename = 'out/%s/{tracestate}based/%s/output_%s.smt2'%(prop, i, j)
-            if not os.path.exists('out/'):
-                os.makedirs('out/')
-            if not os.path.exists('out/%s/'%(prop)):
-                os.makedirs('out/%s/'%(prop))
-            if not os.path.exists('out/%s/{tracestate}based/'%(prop)):
-                os.makedirs('out/%s/{tracestate}based/'%(prop))
-            if not os.path.exists('out/%s/{tracestate}based/%s/'%(prop, i)):
-                os.makedirs('out/%s/{tracestate}based/%s/'%(prop, i))
+            filename = 'out/smt2/%s/{tracestate}based/%s/output_%s.smt2'%(prop, i, j)
+            if not os.path.exists('out/smt2/'):
+                os.makedirs('out/smt2/')
+            if not os.path.exists('out/smt2/%s/'%(prop)):
+                os.makedirs('out/smt2/%s/'%(prop))
+            if not os.path.exists('out/smt2/%s/{tracestate}based/'%(prop)):
+                os.makedirs('out/smt2/%s/{tracestate}based/'%(prop))
+            if not os.path.exists('out/smt2/%s/{tracestate}based/%s/'%(prop, i)):
+                os.makedirs('out/smt2/%s/{tracestate}based/%s/'%(prop, i))
             with open(filename, 'w') as my_file:
                 print(my_file.write(text))
 
@@ -338,7 +337,7 @@ for prop in {props_name}:
         decls='\n'.join(decls), 
         args='\n'.join(args), 
         t_aw_qs = t_aw_qs,
-        block_num_qs = block_num_qs,
+        # block_num_qs = block_num_qs,
         xn_qs = xn_qs,
         f_qs = f_qs,
         w_qs = w_qs,
@@ -347,8 +346,8 @@ for prop in {props_name}:
         step_trans_args=', '.join(step_trans_args)+',' if step_trans_args else '', 
         step_trans_args_i=', '.join([s+'[i]' for s in step_trans_args])+',' if step_trans_args else '',
         global_args_next_state_tx = (', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '',
-        global_args_next_state_tx_eval = (', ' + ', '.join([g.text+'Now=='+g.text+'Next' for (g, _) in self.__globals if g.text not in self.__maps])) if self.__globals else '',
-        global_args_next_state_tx_map_eval = (', ' + ', '.join([f'And([{g.text}Now[j] == {g.text}Next[j] for j in range(A+1)])' for (g, _) in self.__globals if g.text in self.__maps])) if self.__globals else '',
+        global_args_next_state_tx_eval = (', ' + ', '.join([g.text+'Now=='+g.text+'Next' for (g, _) in self.__globals if g.text not in self.__maps])) if [g for (g, _) in self.__globals if g.text not in self.__maps] else '',
+        global_args_next_state_tx_map_eval = (', ' + ', '.join([f'And([{g.text}Now[j] == {g.text}Next[j] for j in range(A+1)])' for (g, _) in self.__globals if g.text in self.__maps])) if [g for (g, _) in self.__globals if g.text in self.__maps] else '',
         global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '', 
         global_args_i = (', ' + ', '.join([g.text+'[i], '+g.text+'[i+1]'+', t_'+g.text+'[i]' for (g, _) in self.__globals])) if self.__globals else '', 
         global_args_0 = (', ' + ', '.join([g.text+'[0], '+g.text+'[1]'+', t_'+g.text+'[0]' for (g, _) in self.__globals])) if self.__globals else '', 
@@ -453,7 +452,7 @@ for prop in {props_name}:
         for k in self.__globals_index:
             self.__globals_index[k] = 0
         return self.visitFun(ctx, 'If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext{global_args_next_state_tx})'.format(
-            global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+            global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
         ))
     
 
@@ -498,7 +497,7 @@ for prop in {props_name}:
         for k in self.__globals_index:
             self.__globals_index[k] = 0
         return self.visitFun(ctx, 'If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext{global_args_next_state_tx})'.format(
-            global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+            global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
         ))
 
 
@@ -540,7 +539,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
             t_curr_a=self.__t_curr_a, 
             t_curr_w=self.__t_curr_w, 
             default=contract_variables,
-            global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+            global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
         )
         if res.format(subs=skip) == res:
             return res + f', {skip}))'
@@ -576,7 +575,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
             )
         else:
             if sender in self.__globals_index:
-                sender = sender + 'Now' if self.__globals_index[sender]+self.__globals_modifier <= 0 else 't_'+sender + '['+str(self.__globals_index[sender]-1+self.__globals_modifier)+']'
+                sender = sender + 'Now' if self.__globals_index[sender]+self.__globals_modifier < 0 else 't_'+sender + '['+str(self.__globals_index[sender]-1+self.__globals_modifier)+']'
             elif sender in self.__args_map:
                 sender = self.__args_map[sender]
             res = 'send({sender}, {amount}, {t_curr_w}, {t_new_w}, {t_curr_a}, {t_new_a})'.format(
@@ -604,7 +603,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         return 'next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
             t_curr_a=self.__t_curr_a, 
             t_curr_w=self.__t_curr_w, 
-            global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+            global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
         )
 
 
@@ -616,14 +615,23 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     # Visit a parse tree produced by TxScriptParser#assignCmd.
     def visitAssignCmd(self, ctx:TxScriptParser.AssignCmdContext):
         left = ctx.var.text
-        self.__globals_modifier -= 1
+        # self.__globals_modifier -= 1
         right = self.visit(ctx.child)
-        self.__globals_modifier += 1
+        # self.__globals_modifier += 1
         i = self.__globals_index[left]
         self.__globals_index[left] = i+1
         if self.__prefix == 'constructor' and not self.__Trace_Based and not self.__globals_const[left]:
             return 'True'
-        return 't_'+left+'['+str(i)+']' + ' == ' + right
+        aux = 0
+        while '[' in right[aux:] and ']' in right[aux:] and right[right.index('[', aux)+1:right.index(']', aux)].isnumeric():
+            aux = right.index(']', aux) + 1
+            if aux >= len(right): break
+        if aux != -1 and aux < len(right) and '[' in right[aux:] and ']' in right[aux:]:
+            index = right[right.index('[', aux)+1:right.index(']', aux)]
+            right = right.replace(index, 'j')
+            return f'And([Or(j!={str(index)}, t_{left}[{str(i)}] == {right}) for j in range(A+1)])' 
+        else:
+            return 't_'+left+'['+str(i)+']' + ' == ' + right
     
 
     # Visit a parse tree produced by TxScriptParser#assignMapCmd.
@@ -631,7 +639,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         left = ctx.var.text
         index = self.visit(ctx.index)
         self.__globals_modifier -= 1
-        right = self.visit(ctx.child)
+        right = self.visit(ctx.child).replace(str(index), 'j')
         self.__globals_modifier += 1
         i = self.__globals_index[left]
         self.__globals_index[left] = i+1
@@ -674,7 +682,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         # skip = 'next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
         #     t_curr_a=self.__t_curr_a, 
         #     t_curr_w=self.__t_curr_w, 
-        #     global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+        #     global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
         # )
         if__t_curr_a = self.__t_curr_a
         if__t_new_a = self.__t_new_a
@@ -692,7 +700,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         # skip = 'next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
         #     t_curr_a=self.__t_curr_a, 
         #     t_curr_w=self.__t_curr_w, 
-        #     global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+        #     global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
         # )
         levelling_if_cmds = 'True'
         levelling_else_cmds = 'True'
@@ -741,7 +749,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         #         seq2=seq2, 
         #         t_curr_a=self.__t_curr_a, 
         #         t_curr_w=self.__t_curr_w,
-        #         global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier <= 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+        #         global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]-1+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
         #     )
         #     self.__add_last_cmd = False
         aux = seq1.format(subs='And('+seq2+',{subs})')
@@ -761,6 +769,9 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
         if not self.__visit_properties_body:
+            for el in self.__prop_nested_i:
+                if el in left or el in right:
+                    return f'And([Or(j != {el}, '+f'{left} >= {right}) for j in range(A+1)])'.replace(el, 'j')
             return left + '>=' + right
         else:
             for el in self.__prop_nested_i:
@@ -775,6 +786,9 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
         if not self.__visit_properties_body:
+            for el in self.__prop_nested_i:
+                if el in left or el in right:
+                    return f'And([Or(j != {el}, '+f'{left} < {right}) for j in range(A+1)])'.replace(el, 'j')
             return left + '<' + right
         else:
             for el in self.__prop_nested_i:
@@ -800,6 +814,9 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
         if not self.__visit_properties_body:
+            for el in self.__prop_nested_i:
+                if el in left or el in right:
+                    return f'And([Or(j != {el}, '+f'{left} > {right}) for j in range(A+1)])'.replace(el, 'j')
             return left + '>' + right
         else:
             for el in self.__prop_nested_i:
@@ -838,12 +855,12 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
         if left in self.__globals_index:
-            if self.__globals_index[left]+self.__globals_modifier <= 0:
+            if self.__globals_index[left]+self.__globals_modifier < 0:
                 left = left + 'Now'
             else:
                 left = 't_'+left + '['+str(self.__globals_index[left]+self.__globals_modifier)+']'
         if right in self.__globals_index:
-            if self.__globals_index[right]+self.__globals_modifier <= 0:
+            if self.__globals_index[right]+self.__globals_modifier < 0:
                 right = right + 'Now'
             else:
                 right = 't_'+right + '['+str(self.__globals_index[right]+self.__globals_modifier)+']'
@@ -855,6 +872,9 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
         if not self.__visit_properties_body:
+            for el in self.__prop_nested_i:
+                if el in left or el in right:
+                    return f'And([Or(j != {el}, '+f'{left} <= {right}) for j in range(A+1)])'.replace(el, 'j')
             return left + '<=' + right
         else:
             for el in self.__prop_nested_i:
@@ -870,7 +890,23 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
 
     # Visit a parse tree produced by TxScriptParser#multDivEqExpr.
     def visitMultDivEqExpr(self, ctx:TxScriptParser.MultDivEqExprContext):
-        return self.visitChildren(ctx)
+        left = self.visit(ctx.left)
+        right = self.visit(ctx.right)
+        if left in self.__globals_index:
+            if self.__globals_index[left]+self.__globals_modifier < 0:
+                left = left + 'Now'
+            else:
+                left = 't_'+left + '['+str(self.__globals_index[left]+self.__globals_modifier)+']'
+        if right in self.__globals_index:
+            if self.__globals_index[right]+self.__globals_modifier < 0:
+                right = right + 'Now'
+            else:
+                right = 't_'+right + '['+str(self.__globals_index[right]+self.__globals_modifier)+']'
+        res = left + ctx.op.text + right
+        #  left out for now, it would require to keep track of the division and propagate their handling in the assign command
+        # if ctx.op.text == '/':
+        #     res = 'If(\n\tNot(' + right + ' != 0), \n\t\tnext_state_tx(awNow, awNext, wNow, wNext'+((', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '')+'), And(' + res + ', {subs}))'        
+        return res
 
 
     # Visit a parse tree produced by TxScriptParser#andExpr.
@@ -937,11 +973,11 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
                 if ty==('MapAddr', 'Int'):
                     t_awq_lists += f't_{g.text}_q{i}_list = [t_{g.text}_q_m_j for t_{g.text}_q_m in t_{g.text}_q{i} for t_{g.text}_q_m_j in t_{g.text}_q_m]; '
             if forall_args: forall_args += ', '
-            forall_args += f'xn_q{i}, f_q{i}, w_q{i}, *aw_q{i}, *t_w_q{i}, *t_awq_list{i}, block_num_q{i}'+func_args_q.format(i=i)+global_args_q.format(i=i)
+            forall_args += f'xn_q{i}, f_q{i}, w_q{i}, *aw_q{i}, *t_w_q{i}, *t_awq_list{i}'+func_args_q.format(i=i)+global_args_q.format(i=i)
             if i == 0:
-                step_trans += f'Not(step_trans(f_q{i}, {self.__tx_sender}, xn_q{i}'+func_args_q.format(i=i)+f', aw[i], aw_q{i}, w[i], w_q{i}, t_aw_q{i}, t_w_q{i}, block_num[i], block_num_q{i}, i+{i}'+global_args_phi0.format(i=i)+')),\n'
+                step_trans += f'Not(step_trans(f_q{i}, {self.__tx_sender}, xn_q{i}'+func_args_q.format(i=i)+f', aw[i], aw_q{i}, w[i], w_q{i}, t_aw_q{i}, t_w_q{i}, block_num[i], block_num[i], i+{i}'+global_args_phi0.format(i=i)+')),\n'
             else:
-                step_trans += f'Not(step_trans(f_q{i}, {self.__tx_sender}, xn_q{i}'+func_args_q.format(i=i)+f', aw_q{i-1}, aw_q{i}, w_q{i-1}, w_q{i}, t_aw_q{i}, t_w_q{i}, block_num_q{i-1}, block_num_q{i}, i+{i}'+global_args_phi.format(i=i,j=i-1)+')),\n'
+                step_trans += f'Not(step_trans(f_q{i}, {self.__tx_sender}, xn_q{i}'+func_args_q.format(i=i)+f', aw_q{i-1}, aw_q{i}, w_q{i-1}, w_q{i}, t_aw_q{i}, t_w_q{i}, block_num[i], block_num[i], i+{i}'+global_args_phi.format(i=i,j=i-1)+')),\n'
         return f'''
 def p_{self.__prop_name}_{nTrans}(i):
     {t_awq_lists}
@@ -964,7 +1000,8 @@ def p_{self.__prop_name}_{nTrans}(i):
         index = self.visit(ctx.index)
         if not self.__visit_properties:
             if ctx.mapVar.text in self.__globals_index:
-                if self.__globals_index[ctx.mapVar.text]+self.__globals_modifier <= 0:
+                self.__prop_nested_i.add(index)
+                if self.__globals_index[ctx.mapVar.text]+self.__globals_modifier < 0:
                     return ctx.mapVar.text + 'Now' + '['+index+']'
                 else:
                     return 't_'+ctx.mapVar.text + '['+str(self.__globals_index[ctx.mapVar.text]+self.__globals_modifier)+']' + '['+index+']'
@@ -986,9 +1023,17 @@ def p_{self.__prop_name}_{nTrans}(i):
                     return f'aw{i}[{ag}]'#f'aw{i}[{ag}[i]]'
             if ctx.mapVar.text.replace('st.','') in self.__args_map:
                 return self.__args_map[ctx.v.text]  
-            if ctx.mapVar.text.replace('st.','') in self.__globals_index:              
-                return ctx.v.text.replace('st.','') + f'{i}'
-            return ctx.v.text.replace('st.', '') + '_q'
+            if ctx.mapVar.text.replace('st.','') in self.__globals_index:  
+                ag = index.replace('_q', '')
+                if ag == 'xa':
+                    self.__prop_nested_i.add(ag+'_q')#(ag+'[i]')
+                    return ctx.mapVar.text.replace('st.','') + f'{i}' + '[' + ag + '_q]'
+                else:
+                    if '[i]' not in ag:
+                        ag = ag+'[i]'
+                    self.__prop_nested_i.add(ag)#(ag+'[i]')
+                    return ctx.mapVar.text.replace('st.','') + f'{i}' + '['+ag+']'
+            return ctx.mapVar.text.replace('st.', '') + '_q'
 
 
     # Visit a parse tree produced by TxScriptParser#strConstant.
@@ -1005,7 +1050,7 @@ def p_{self.__prop_name}_{nTrans}(i):
             if ctx.v.text in self.__args_map:
                 return self.__args_map[ctx.v.text]
             if ctx.v.text in self.__globals_index:
-                if self.__globals_index[ctx.v.text]+self.__globals_modifier <= 0:
+                if self.__globals_index[ctx.v.text]+self.__globals_modifier < 0:
                     return ctx.v.text + 'Now'
                 else:
                     return 't_'+ctx.v.text + '['+str(self.__globals_index[ctx.v.text]+self.__globals_modifier)+']'

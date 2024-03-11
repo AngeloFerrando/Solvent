@@ -40,10 +40,15 @@ def parse(pattern):
     can_transactions_arrive_any_time = (sys.argv[4]=='True' or sys.argv[4]=='true') if len(sys.argv) == 5 else True
 
     visitor = Z3Visitor(int(sys.argv[2]), int(sys.argv[3]), True, can_transactions_arrive_any_time)
-    with open('outputTrace.py', 'w') as file:
+
+    isExist = os.path.exists('./out')
+    if not isExist:
+        os.makedirs('./out')
+
+    with open('./out/outputTrace.py', 'w') as file:
         file.write(visitor.visit(tree))
     visitor = Z3Visitor(int(sys.argv[2]), int(sys.argv[3]), False, can_transactions_arrive_any_time)
-    with open('outputState.py', 'w') as file:
+    with open('./out/outputState.py', 'w') as file:
         file.write(visitor.visit(tree))
     # except Exception as e:
     #     print(str(e))

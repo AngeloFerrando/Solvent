@@ -1,25 +1,27 @@
 contract PaymentSplitter {
-	mapping (address => int) shares
+	(address -> int) shares
 	int totalShares
-    mapping (address => int) released
-	int totalReleased 
+    (address -> int) released
+	int totalReleased
+    int totalReceived 
+    int payment
     address owner
     int state
 
-    constructor(address o) {
+    constructor(o) {
         // shares = emptymap;
         // released = emptymap;
-        owner = o;
+        owner = o
         // totalShares = 0;
         // totalReleased = 0;
         // state = 0
     }
 
-    function addShares(p, s) {
+    function addShares(p s) {
         require(msg.sender == owner);
         require(state == 0);
-        shares[p] += s;
-        totalShares += s
+        shares[p] = shares[p] + s;
+        totalShares = totalShares + s
     }
 
     function finalizeShares() {
@@ -36,12 +38,24 @@ contract PaymentSplitter {
         require(shares[a] > 0);
         require(state == 1);
     
-        totalReceived = balance() + totalReleased;
+        totalReceived = balance + totalReleased;
         payment = (totalReceived * shares[a]) / totalShares - released[a];
         if (payment != 0) {
-            totalReleased += payment;
-                released[account] += payment;
-            a!payment;
+            totalReleased = totalReleased + payment;
+            released[a] = released[a] + payment;
+            a!payment
         }
     }
+}
+
+property liquidity11a_nonliq {
+    Forall xa
+    [
+      true
+        ->
+      Exists tx [1, xa]
+      [
+        ((app_tx_st.balance[xa] == st.balance[xa] + st.balance))
+      ]
+    ]
 }

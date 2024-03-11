@@ -11,7 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["./examples/liquidity14.sol", "3", "2"]
+            "args": ["./contracts/payment_splitter/payment_splitter.sol", "3", "2"]
         }
     ]
 }
