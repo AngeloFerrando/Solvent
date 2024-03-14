@@ -4,6 +4,3 @@ The Bank contract accepts deposits and withdrawals from any address. When a depo
 
 ## Properties
 - **liq1**: if A has a non-zero deposit in the bank, then A can withdraw the full deposit in a single transaction
- 
-## Versions
-- **v1**: compliant with the specification.
