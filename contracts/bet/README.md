@@ -5,7 +5,3 @@ The contract involves two players, each owning 1 token, and an oracle. Player 1 
 
 ## Properties
 - **liq1**: before the deadline, if the contract balance is 2 then the oracle has a 5-steps strategy to increase the balance of player 1 or player 2 of at least 2 tokens. 
-
-## Versions
-- **v1**: compliant with the specification.
-- **v2**: uses token balances (unreliable!) to infer contract state.
