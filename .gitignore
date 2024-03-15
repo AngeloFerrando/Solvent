@@ -1,3 +1,4 @@
 *~
 out/*
 venv/*
+*.smt2
