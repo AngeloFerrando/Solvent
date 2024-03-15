@@ -48,7 +48,7 @@ def printState(m):
 timeStart = time.time()
 
 # N = upper bound on the length of trace
-N = 10
+N = 100
 
 # A = upper bound on the number of actors (A+1)
 A = 2
@@ -65,10 +65,10 @@ w_q0 = Int("wq0")
 block_num = [Int("block_num_%s" % (i)) for i in range(N+1)]
 
 Proc = Datatype('Proc')
-Proc.declare('withdraw')
 Proc.declare('Bank')
-Proc.declare('deposit')
 Proc.declare('coinbase')
+Proc.declare('withdraw')
+Proc.declare('deposit')
 
 Proc = Proc.create()
 
