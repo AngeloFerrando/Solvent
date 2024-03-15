@@ -19,7 +19,7 @@ contract Bet {
   function join() payable {
     require(state==0);
     state = 1; 
-    require (msg.value==1);
+    require (msg.value==2);
 	  require (msg.sender != par1);
     par2 = msg.sender
   }
@@ -32,23 +32,14 @@ contract Bet {
 	  require(winner==par1 || winner==par2);
     winner!balance
   }
-
-  function timeout() {
-	  require(state==1);
-    state = 2;
-   	require(block.number>=deadline);
-	  par1!1;
-	  par2!1
-  }
-
 }
 
 property liq1 {
     Forall xa
       [
-        st.block.number<st.deadline && st.balance==2 
+        st.state==1 
           -> 
-        Exists tx [5, oracle]
+        Exists tx [2, xa]
         [
           ((app_tx_st.balance[par1] - st.balance[par1] >= 2) || (app_tx_st.balance[par2] - st.balance[par2] >= 2))
         ]
