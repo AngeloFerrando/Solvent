@@ -43,6 +43,16 @@ class Z3Visitor(TxScriptVisitor):
         self.__visit_properties = True
         props = self.visit(ctx.properties)
         self.__visit_properties = False
+        self.__nesting = 1
+        self.__t_curr_w = 't_w[0]'
+        self.__t_new_w = 't_w[1]'
+        self.__t_curr_a = 'awNow'
+        self.__t_new_a = 't_aw[0]'
+        self.__proc.add(ctx.name.text)
+        self.__prefix = ctx.name.text
+        for k in self.__globals_index:
+            self.__globals_index[k] = 0
+
         if not any('constructor' in decl for decl in decls):
             decls.append('\ndef constructor(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, block_num{global_args}):\n\treturn next_state_tx(awNow, awNext, wNow, wNext{global_args_next_state_tx})'.format(
                 global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '', 
@@ -595,7 +605,10 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
 
     # Visit a parse tree produced by TxScriptParser#requireCmd.
     def visitRequireCmd(self, ctx:TxScriptParser.RequireCmdContext):
-        return 'If(\n\tNot(' + self.visit(ctx.child) + '), \n\t\tnext_state_tx(awNow, awNext, wNow, wNext'+((', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '')+'), And(\n\t\t{subs}))'
+        if self.__prefix == 'constructor':
+            return self.visit(ctx.child)
+        else:
+            return 'If(\n\tNot(' + self.visit(ctx.child) + '), \n\t\tnext_state_tx(awNow, awNext, wNow, wNext'+((', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '')+'), And(\n\t\t{subs}))'
 
 
     # Visit a parse tree produced by TxScriptParser#skipCmd.
