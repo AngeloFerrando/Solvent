@@ -65,10 +65,10 @@ w_q0 = Int("wq0")
 block_num = [Int("block_num_%s" % (i)) for i in range(N+1)]
 
 Proc = Datatype('Proc')
-Proc.declare('withdraw')
 Proc.declare('Bank')
-Proc.declare('deposit')
 Proc.declare('coinbase')
+Proc.declare('withdraw')
+Proc.declare('deposit')
 
 Proc = Proc.create()
 
