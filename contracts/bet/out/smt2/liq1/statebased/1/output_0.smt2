@@ -1,6 +1,6 @@
 ; benchmark generated from python API
 (set-info :status unknown)
-(declare-datatypes ((Proc 0)) (((timeout) (Bet) (join) (coinbase) (win))))
+(declare-datatypes ((Proc 0)) (((timeout) (win) (coinbase) (Bet) (join))))
  (declare-fun w_0 () Int)
 (declare-fun state_1 () Int)
 (declare-fun t_state_0_0 () Int)

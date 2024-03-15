@@ -1,6 +1,6 @@
 ; benchmark generated from python API
 (set-info :status unknown)
-(declare-datatypes ((Proc 0)) (((Bank) (coinbase) (withdraw) (deposit))))
+(declare-datatypes ((Proc 0)) (((withdraw) (coinbase) (deposit) (Bank))))
  (declare-fun w_0 () Int)
 (declare-fun myBalances_1_2 () Int)
 (declare-fun myBalances_0_2 () Int)

@@ -70,10 +70,10 @@ block_num = [Int("block_num_%s" % (i)) for i in range(N+1)]
 
 Proc = Datatype('Proc')
 Proc.declare('timeout')
+Proc.declare('win')
+Proc.declare('coinbase')
 Proc.declare('Bet')
 Proc.declare('join')
-Proc.declare('coinbase')
-Proc.declare('win')
 
 Proc = Proc.create()
 
