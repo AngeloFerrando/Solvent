@@ -105,6 +105,8 @@ class Z3Visitor(TxScriptVisitor):
             functions_call += ')'*len(keys)
         contract_globals = ''
         for (g_var,g_type) in self.__globals:
+            if g_type == 'Address':
+                g_type = 'Int'
             if type(g_type) is tuple:
                 contract_globals += '''
 {g} = [[{ty}("{g}_%s_%s" % (i, j)) for j in range(A+1)] for i in range(N+1)]
@@ -121,6 +123,11 @@ t_{g} = [[{ty}("t_{g}_%s_%s" % (i, m)) for m in range(M)] for i in range(N+1)]''
                     contract_globals += '''
 {g}_q{i} = {ty}("{g}q{i}")
 t_{g}_q{i} = [{ty}("t_{g}q{i}_%s" % (m)) for m in range(M)]'''.format(i=i, g=g_var.text, ty=g_type)
+
+        check_ranges = ''
+        for (g_var,g_type) in self.__globals:
+            if g_type == 'Address':
+                check_ranges += f'{g_var.text}Next >= 0, {g_var.text}Next <= A, '
 
         prop_queries = 'queries = {}\n'
         for n in self.__prop_names:
@@ -233,10 +240,6 @@ t_aw = [[[Int("t_aw_%s_%s_%s" % (i, m, j)) for j in range(A+1)]
 
 s = Solver()
 
-# initial state
-{initial_balance}
-# s.add(w[0] == 1)
-
 def next_state_tx(aw1, aw2, w1, w2{global_args_next_state_tx}):
     return And(w2 == w1,
                And([aw2[j] == aw1[j] for j in range(A+1)])
@@ -270,11 +273,15 @@ def user_is_fresh(xa, xa1, f, i):
 # transition rules
 
 def step_trans(f1, xa1, xn1, {step_trans_args} aw1, aw2, w1, w2, t_aw, t_w, block_num1, block_num2, i{global_args}):
-    return And(And(xa1 >= 0, xa1 <= A, xn1 >= 0),
+    return And(And(xa1 >= 0, xa1 <= A, xn1 >= 0, w2 >= 0),
                And([aw1[j] >= 0 for j in range(A+1)]),
                block_num2 >= block_num1,
+               {check_ranges}
                {functions_call}
 
+# initial state
+{initial_balance}
+               
 new_state = And(And(xa[0] >= 0, xa[0] <= A, xn[0] >= 0),
                And([aw[0][j] >= 0 for j in range(A+1)]),
                   constructor(xa[0], xn[0], {constr_args_0} aw[0], aw[1], w[0], w[1], t_aw[0], t_w[0], block_num[0]{global_args_0}))
@@ -353,6 +360,7 @@ for prop in {props_name}:
         w_qs = w_qs,
         aw_qs = aw_qs,
         t_w_qs = t_w_qs,
+        check_ranges = check_ranges,
         step_trans_args=', '.join(step_trans_args)+',' if step_trans_args else '', 
         step_trans_args_i=', '.join([s+'[i]' for s in step_trans_args])+',' if step_trans_args else '',
         global_args_next_state_tx = (', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '',
@@ -432,7 +440,7 @@ for prop in {props_name}:
 
     # Visit a parse tree produced by TxScriptParser#addrDecl.
     def visitAddrDecl(self, ctx:TxScriptParser.AddrDeclContext):
-        self.__globals.append((ctx.var, 'Int'))
+        self.__globals.append((ctx.var, 'Address'))
         self.__globals_index[ctx.var.text] = 0
         self.__globals_const[ctx.var.text] = self.__const
 
@@ -521,7 +529,7 @@ for prop in {props_name}:
             for (g, ty) in self.__globals:
                 if self.__globals_index[g.text] == 0 and (self.__Trace_Based or self.__globals_const[g.text]):
                     self.__globals_index[g.text] = 1
-                    if ty == 'Int':
+                    if ty == 'Int' or ty == 'Address':
                         default = f', t_{g.text}[0]==0'
                     elif ty == 'Bool':
                         default = f', t_{g.text}[0]==False'
@@ -529,6 +537,10 @@ for prop in {props_name}:
                         default = f', t_{g.text}[0]==\'\''
                     else:
                         default = ',' + ', '.join([f't_{g.text}[0][{i}]==0' for i in range(0, self.__A+1)])
+                    contract_variables += default
+                elif self.__Trace_Based or self.__globals_const[g.text]:
+                    if ty == 'Address':
+                        default = f', t_{g.text}[0]>=0, t_{g.text}[0]<=A'
                     contract_variables += default
         else:
             for g in self.__globals_const:
@@ -781,16 +793,16 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     def visitGreaterEqExpr(self, ctx:TxScriptParser.GreaterEqExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        if not self.__visit_properties_body:
-            for el in self.__prop_nested_i:
-                if el in left or el in right:
-                    return f'And([Or(j != {el}, '+f'{left} >= {right}) for j in range(A+1)])'.replace(el, 'j')
-            return left + '>=' + right
-        else:
-            for el in self.__prop_nested_i:
-                if el in left or el in right:
-                    return f'And([Or(j != {el}, '+f'Not({left} >= {right})) for j in range(A+1)])'.replace(el, 'j')        
-            return f'Not({left} >= {right})'
+        # if not self.__visit_properties_body:
+        for el in self.__prop_nested_i:
+            if el in left or el in right:
+                return f'And([Or(j != {el}, '+f'{left} >= {right}) for j in range(A+1)])'.replace(el, 'j')
+        return left + '>=' + right
+        # else:
+        #     for el in self.__prop_nested_i:
+        #         if el in left or el in right:
+        #             return f'And([Or(j != {el}, '+f'{left} >= {right}) for j in range(A+1)])'.replace(el, 'j')        
+        #     return f'Not({left} >= {right})'
 
 
 
@@ -798,16 +810,16 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     def visitLessExpr(self, ctx:TxScriptParser.LessExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        if not self.__visit_properties_body:
-            for el in self.__prop_nested_i:
-                if el in left or el in right:
-                    return f'And([Or(j != {el}, '+f'{left} < {right}) for j in range(A+1)])'.replace(el, 'j')
-            return left + '<' + right
-        else:
-            for el in self.__prop_nested_i:
-                if el in left or el in right:
-                    return f'And([Or(j != {el}, '+f'Not({left} < {right})) for j in range(A+1)])'.replace(el, 'j')        
-            return f'Not({left} < {right})'
+        # if not self.__visit_properties_body:
+        for el in self.__prop_nested_i:
+            if el in left or el in right:
+                return f'And([Or(j != {el}, '+f'{left} < {right}) for j in range(A+1)])'.replace(el, 'j')
+        return left + '<' + right
+        # else:
+        #     for el in self.__prop_nested_i:
+        #         if el in left or el in right:
+        #             return f'And([Or(j != {el}, '+f'Not({left} < {right})) for j in range(A+1)])'.replace(el, 'j')        
+        #     return f'Not({left} < {right})'
 
 
     # Visit a parse tree produced by TxScriptParser#neqExpr.
@@ -826,16 +838,16 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     def visitGreaterExpr(self, ctx:TxScriptParser.GreaterExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        if not self.__visit_properties_body:
-            for el in self.__prop_nested_i:
-                if el in left or el in right:
-                    return f'And([Or(j != {el}, '+f'{left} > {right}) for j in range(A+1)])'.replace(el, 'j')
-            return left + '>' + right
-        else:
-            for el in self.__prop_nested_i:
-                if el in left or el in right:
-                    return f'And([Or(j != {el}, '+f'Not({left} > {right})) for j in range(A+1)])'.replace(el, 'j')        
-            return f'Not({left} > {right})'
+        # if not self.__visit_properties_body:
+        for el in self.__prop_nested_i:
+            if el in left or el in right:
+                return f'And([Or(j != {el}, '+f'{left} > {right}) for j in range(A+1)])'.replace(el, 'j')
+        return left + '>' + right
+        # else:
+        #     for el in self.__prop_nested_i:
+        #         if el in left or el in right:
+        #             return f'And([Or(j != {el}, '+f'Not({left} > {right})) for j in range(A+1)])'.replace(el, 'j')        
+        #     return f'Not({left} > {right})'
 
 
     # Visit a parse tree produced by TxScriptParser#eqExpr.
@@ -849,13 +861,13 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
             self.__tx_sender = left
             return 'True'
         
-        if not self.__visit_properties_body:
-            return left + '==' + right
-        else:
-            for el in self.__prop_nested_i:
-                if el in left or el in right:
-                    return f'And([Or(j != {el}, '+f'Not({left} == {right})) for j in range(A+1)])'.replace(el, 'j')        
-            return f'Not({left} == {right})'
+        # if not self.__visit_properties_body:
+        #     return left + '==' + right
+        # else:
+        for el in self.__prop_nested_i:
+            if el in left or el in right:
+                return f'And([Or(j != {el}, '+f'{left} == {right}) for j in range(A+1)])'.replace(el, 'j')        
+        return f'{left} == {right}'
 
 
     # Visit a parse tree produced by TxScriptParser#notExpr.
@@ -884,16 +896,16 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     def visitLessEqExpr(self, ctx:TxScriptParser.LessEqExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        if not self.__visit_properties_body:
-            for el in self.__prop_nested_i:
-                if el in left or el in right:
-                    return f'And([Or(j != {el}, '+f'{left} <= {right}) for j in range(A+1)])'.replace(el, 'j')
-            return left + '<=' + right
-        else:
-            for el in self.__prop_nested_i:
-                if el in left or el in right:
-                    return f'And([Or(j != {el}, '+f'Not({left} <= {right})) for j in range(A+1)])'.replace(el, 'j')        
-            return f'Not({left} <= {right})'
+        # if not self.__visit_properties_body:
+        for el in self.__prop_nested_i:
+            if el in left or el in right:
+                return f'And([Or(j != {el}, '+f'{left} <= {right}) for j in range(A+1)])'.replace(el, 'j')
+        return left + '<=' + right
+        # else:
+        #     for el in self.__prop_nested_i:
+        #         if el in left or el in right:
+        #             return f'And([Or(j != {el}, '+f'Not({left} <= {right})) for j in range(A+1)])'.replace(el, 'j')        
+        #     return f'Not({left} <= {right})'
 
 
     # Visit a parse tree produced by TxScriptParser#constExpr.
@@ -999,7 +1011,7 @@ def p_{self.__prop_name}_{nTrans}(i):
             ForAll([{forall_args}],  
                 Or(
 {step_trans}
-{body}
+Not({body})
         )))))'''
 
 

@@ -1,2 +1,5 @@
 *~
 out/*
+contracts/bank/out/
+contracts/bet/out/
+contracts/payment_splitter/out/
