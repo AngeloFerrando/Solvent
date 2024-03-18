@@ -1,7 +1,9 @@
 *~
 out/*
-contracts/bank/out/
-contracts/bet/out/
-contracts/payment_splitter/out/
-contracts/regression/out/
-vevn/
+contracts/bank/out/*
+contracts/bet/out/*
+contracts/payment_splitter/out/*
+contracts/regression/out/*
+vevn/*
+.vscode/*
+__pycache__/*
