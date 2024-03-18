@@ -325,7 +325,7 @@ for prop in {props_name}:
             if not os.path.exists('out/smt2/%s/{tracestate}based/%s/'%(prop, i)):
                 os.makedirs('out/smt2/%s/{tracestate}based/%s/'%(prop, i))
             with open(filename, 'w') as my_file:
-                print(my_file.write(text))
+                my_file.write(text)
 
 # timeStart = time.time()
 # for prop in {props_name}:
