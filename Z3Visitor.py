@@ -96,13 +96,21 @@ class Z3Visitor(TxScriptVisitor):
         keys = list(self.__proc_args.keys())
         if 'constructor' in keys: keys.remove('constructor')
         if keys:
+            aux = 1
+            if 'coinbase' in keys:
+                functions_call += '\tIf(f1 == Proc.coinbase, And(xa1 == -1, \n'
+                n_tabs += 1
+                functions_call += '\t'*n_tabs + 'coinbase' + '(xa1, xn1, ' + (','.join(self.__proc_args['coinbase'])+', ' if self.__proc_args['coinbase'] else '') + 'aw1, aw2, w1, w2, t_aw, t_w, block_num1' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + ')),\n'
+                keys.remove('coinbase')
+                aux += 1
+            functions_call += 'And(xa1 >= 0, xa1 <= A, '
             for p in keys[:-1]:
                 functions_call += '\t'*n_tabs + 'If(f1 == Proc.' + p + ',\n'
                 n_tabs += 1
                 functions_call += '\t'*n_tabs + p + '(xa1, xn1, ' + (','.join(self.__proc_args[p])+', ' if self.__proc_args[p] else '') + 'aw1, aw2, w1, w2, t_aw, t_w, block_num1' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + '),\n'
             n_tabs += 1
             functions_call += '\t'*n_tabs + keys[-1] + '(xa1, xn1, ' + (','.join(self.__proc_args[keys[-1]])+', ' if self.__proc_args[keys[-1]] else '') + 'aw1, aw2, w1, w2, t_aw, t_w, block_num1' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + ')'
-            functions_call += ')'*len(keys)
+            functions_call += ')'*(len(keys) + aux)
         contract_globals = ''
         for (g_var,g_type) in self.__globals:
             if g_type == 'Address':
@@ -273,7 +281,7 @@ def user_is_fresh(xa, xa1, f, i):
 # transition rules
 
 def step_trans(f1, xa1, xn1, {step_trans_args} aw1, aw2, w1, w2, t_aw, t_w, block_num1, block_num2, i{global_args}):
-    return And(And(xa1 >= 0, xa1 <= A, xn1 >= 0, w2 >= 0),
+    return And(And(xn1 >= 0, w2 >= 0),
                And([aw1[j] >= 0 for j in range(A+1)]),
                block_num2 >= block_num1,
                {check_ranges}
@@ -348,7 +356,7 @@ for prop in {props_name}:
 '''.format(
         N=self.__N if self.__Trace_Based else 2, 
         A=self.__A, 
-        initial_balance='s.add(w[0] >= 0)' if self.__can_transations_arrive_any_time else 's.add(w[0] == 0)',
+        initial_balance='s.add(w[0] >= 0)' if self.__can_transations_arrive_any_time or not self.__Trace_Based else 's.add(w[0] == 0)',
         tracestate='trace' if self.__Trace_Based else 'state',
         proc=proc, 
         decls='\n'.join(decls), 

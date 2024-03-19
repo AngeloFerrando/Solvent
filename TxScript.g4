@@ -27,7 +27,7 @@ fieldExpr :
 
 argsExpr : (argExpr)*;
 argExpr : 
-    var=LABEL                                                           # arg
+    var=LABEL (',')?                                                    # arg
 ;
 
 cmdExpr :
