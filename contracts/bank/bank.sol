@@ -1,6 +1,10 @@
 contract Bank {
     (address -> int) myBalances
 
+    constructor() {
+        skip
+    }
+
     function deposit() payable {
         myBalances[msg.sender] = myBalances[msg.sender] + msg.value
     }

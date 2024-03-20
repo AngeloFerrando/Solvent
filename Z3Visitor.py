@@ -53,12 +53,12 @@ class Z3Visitor(TxScriptVisitor):
         for k in self.__globals_index:
             self.__globals_index[k] = 0
 
-        if not any('constructor' in decl for decl in decls):
-            decls.append('\ndef constructor(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, block_num{global_args}):\n\treturn next_state_tx(awNow, awNext, wNow, wNext{global_args_next_state_tx})'.format(
-                global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '', 
-                # global_args_assign = (', '.join([g.text+'Next == '+g.text+'Next' for (g, _) in self.__globals]) + ', ') if self.__globals else ''), 
-                global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
-            ))
+        # if not any('constructor' in decl for decl in decls):
+        #     decls.append('\ndef constructor(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, block_num{global_args}):\n\treturn next_state_tx(awNow, awNext, wNow, wNext{global_args_next_state_tx})'.format(
+        #         global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '', 
+        #         # global_args_assign = (', '.join([g.text+'Next == '+g.text+'Next' for (g, _) in self.__globals]) + ', ') if self.__globals else ''), 
+        #         global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+        #     ))
         if self.__can_transations_arrive_any_time and not any('coinbase' in decl for decl in decls):
             decls.append('\ndef coinbase(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, block_num{global_args}):\n\treturn And(t_w[0] == wNow + xn1, next_state_tx(awNow, awNext, t_w[0], wNext{global_args_next_state_tx}))'.format(
                 global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '', 
@@ -477,9 +477,7 @@ for prop in {props_name}:
         self.__prefix = 'constructor'
         for k in self.__globals_index:
             self.__globals_index[k] = 0
-        return self.visitFun(ctx, 'If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext{global_args_next_state_tx})'.format(
-            global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
-        ))
+        return self.visitFun(ctx, 'And(xn1 == 0')
     
 
     # Visit a parse tree produced by TxScriptParser#payableConstructorDecl.
@@ -549,7 +547,7 @@ for prop in {props_name}:
                 elif self.__Trace_Based or self.__globals_const[g.text]:
                     if ty == 'Address':
                         default = f', t_{g.text}[0]>=0, t_{g.text}[0]<=A'
-                    contract_variables += default
+                        contract_variables += default
         else:
             for g in self.__globals_const:
                 if self.__globals_const[g]:

@@ -43,6 +43,12 @@ def parse(pattern):
 def parseFile(file):
     with open(file, 'r') as content_file:
         pattern = content_file.read()
+    if 'constructor' not in pattern:
+        if 'contract' in pattern and '{' in pattern and '}' in pattern:
+            if 'function' in pattern:
+                pattern = pattern[:pattern.index('function')] + '\nconstructor(){\n\tskip\n}\n' + pattern[pattern.index('function'):]
+            else:
+                pattern = pattern[:pattern.index('}')] + '\nconstructor(){\n\tskip\n}\n' + pattern[pattern.index('}'):]
     parse(pattern)
 
 def main(args):
