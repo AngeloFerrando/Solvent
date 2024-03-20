@@ -16,7 +16,8 @@ contract C12 {
 
 }
 
-
+// STRONG SAT
+// (Can_Transactions_Arrive_Any_time=False WEAK SAT WEAK UNSAT)
 // not liquid
 property liquidity12a_nonliq {
     Forall xa
@@ -31,7 +32,8 @@ property liquidity12a_nonliq {
 }
 
 
-
+// STRONG SAT
+// (Can_Transactions_Arrive_Any_time=False WEAK SAT WEAK UNSAT)
 // not  liquid
 property liquidity12b_nonliq {
     Forall xa

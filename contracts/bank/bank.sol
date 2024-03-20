@@ -14,6 +14,7 @@ contract Bank {
     }
 }  
 
+// ? WEAK UNSAT ?
 property liq1 {
     Forall xa
       [

@@ -43,6 +43,9 @@ contract Bet {
 
 }
 
+
+// STRONG SAT
+// (Can_Transactions_Arrive_Any_time=False WEAK SAT WEAK UNSAT)
 property liq1 {
     Forall xa
       [

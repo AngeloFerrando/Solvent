@@ -48,6 +48,8 @@ contract PaymentSplitter {
     }
 }
 
+// ? Can_Transactions_Arrive_Any_time=False: WEAK SAT WEAK UNSAT ?
+// ? Can_Transactions_Arrive_Any_time=True: STRONG SAT ?
 property liquidity11a_nonliq {
     Forall xa
     [

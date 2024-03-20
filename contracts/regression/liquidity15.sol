@@ -17,6 +17,8 @@ contract C15 {
 
 } 
 
+// STRONG SAT
+// (Can_Transactions_Arrive_Any_time=False WEAK SAT WEAK UNSAT)
 // not liquid
 property liquidity15a_nonliq {
     Forall xa

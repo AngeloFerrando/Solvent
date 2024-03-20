@@ -10,7 +10,8 @@ contract C4 {
   }
 }
 
-
+// (WEAK SAT - WEAK UNSAT)
+// Can_Transactions_Arrive_Any_time=True: STRONG SAT
 // not liquid
 property liquidity4a_nonliq {
     Forall xa
@@ -24,7 +25,7 @@ property liquidity4a_nonliq {
     ]
 }
 
-
+// STRONG UNSAT
 // liquid
 property liquidity4b_liq {
     Forall xa
