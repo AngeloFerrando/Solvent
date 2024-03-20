@@ -58,6 +58,34 @@ property liq1 {
       ]
 }
 
+// WEAK SAT WEAK UNSAT
+property liq2 {
+    Forall xa
+      [
+        st.block.number<st.deadline && st.state == 1 
+          -> 
+        Exists tx [5, oracle]
+        [
+          ((app_tx_st.balance[par1] - st.balance[par1] >= 2) || (app_tx_st.balance[par2] - st.balance[par2] >= 2))
+        ]
+      ]
+}
+
+
+// STRONG UNSAT
+property liq3 {
+    Forall xa
+      [
+        st.block.number<st.deadline && st.state == 1 && st.balance >=2 
+          -> 
+        Exists tx [5, oracle]
+        [
+          ((app_tx_st.balance[par1] - st.balance[par1] >= 2) || (app_tx_st.balance[par2] - st.balance[par2] >= 2))
+        ]
+      ]
+}
+
+
 /*
 property {
     Forall xa  
