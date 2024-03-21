@@ -323,15 +323,15 @@ for prop in {props_name}:
             s2.add(s.assertions())
             s2.add(qj)
             text= s2.to_smt2()
-            filename = 'out/smt2/%s/{tracestate}based/%s/output_%s.smt2'%(prop, i, j)
+            filename = 'out/smt2/%s/{tracestate}based/%s/output_%s.smt2'%(prop, str(i).zfill(len(str(len(queries[prop])))), str(j).zfill(len(str(len(q)))))
             if not os.path.exists('out/smt2/'):
                 os.makedirs('out/smt2/')
             if not os.path.exists('out/smt2/%s/'%(prop)):
                 os.makedirs('out/smt2/%s/'%(prop))
             if not os.path.exists('out/smt2/%s/{tracestate}based/'%(prop)):
                 os.makedirs('out/smt2/%s/{tracestate}based/'%(prop))
-            if not os.path.exists('out/smt2/%s/{tracestate}based/%s/'%(prop, i)):
-                os.makedirs('out/smt2/%s/{tracestate}based/%s/'%(prop, i))
+            if not os.path.exists('out/smt2/%s/{tracestate}based/%s/'%(prop, str(i).zfill(len(str(len(queries[prop])))))):
+                os.makedirs('out/smt2/%s/{tracestate}based/%s/'%(prop, str(i).zfill(len(str(len(queries[prop]))))))
             with open(filename, 'w') as my_file:
                 my_file.write(text)
 
@@ -354,7 +354,7 @@ for prop in {props_name}:
 #     print("Solving time: " + str(timeTot) + "s")
                
 '''.format(
-        N=self.__N if self.__Trace_Based else 2, 
+        N=self.__N if self.__Trace_Based else 1, 
         A=self.__A, 
         initial_balance='s.add(w[0] >= 0)' if self.__can_transations_arrive_any_time or not self.__Trace_Based else 's.add(w[0] == 0)',
         tracestate='trace' if self.__Trace_Based else 'state',
