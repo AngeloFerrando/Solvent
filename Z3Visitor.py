@@ -198,7 +198,7 @@ N = {N}
 A = {A}
 
 # Maximum functions depth
-M = {max_nesting}
+M = 1000
 
 # Contract's balance
 w = [Int("w_%s" % (i)) for i in range(N+1)]
@@ -384,7 +384,7 @@ for prop in {props_name}:
         constr_args = (','.join(self.__proc_args['constructor'])+', ' if 'constructor' in self.__proc_args and self.__proc_args['constructor'] else ''),
         constr_args_0 = (','.join([s+'[0]' for s in self.__proc_args['constructor']])+', ' if 'constructor' in self.__proc_args and self.__proc_args['constructor'] else ''),
         contract_globals = contract_globals, 
-        max_nesting = self.__max_nesting,
+        # max_nesting = self.__max_nesting,
         props = '\n'.join(props),
         # pis = ','.join([f'p{i}(i)' for i in range(1, self.__n_transactions+1)]),
         queries = prop_queries,
@@ -468,7 +468,7 @@ for prop in {props_name}:
 
     # Visit a parse tree produced by TxScriptParser#nonPayableConstructorDecl.
     def visitNonPayableConstructorDecl(self, ctx:TxScriptParser.NonPayableConstructorDeclContext):
-        self.__nesting = 0
+        self.__nesting = 1
         self.__t_curr_w = 'wNow'
         self.__t_new_w = 't_w[0]'
         self.__t_curr_a = 'awNow'
