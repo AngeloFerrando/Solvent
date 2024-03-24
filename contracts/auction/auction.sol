@@ -78,7 +78,7 @@ property sellerCanWithdraw_nonliq3 {
         ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[st.seller] > st.balance[st.seller]))
+        xa != st.seller && ((app_tx_st.balance[st.seller] > st.balance[st.seller]))
       ]
     ]
 }
@@ -91,7 +91,7 @@ property sellerCanWithdraw_nonliq4 {
         ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[xa] > st.balance[xa]))
+        xa != st.seller && ((app_tx_st.balance[xa] > st.balance[xa]))
       ]
     ]
 }
