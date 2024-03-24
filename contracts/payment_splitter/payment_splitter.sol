@@ -9,8 +9,6 @@ contract PaymentSplitter {
     int state
 
     constructor(o) {
-        // shares = emptymap;
-        // released = emptymap;
         owner = o
         // totalShares = 0;
         // totalReleased = 0;
@@ -50,7 +48,7 @@ contract PaymentSplitter {
 
 // ? Can_Transactions_Arrive_Any_time=False: WEAK SAT WEAK UNSAT ?
 // ? Can_Transactions_Arrive_Any_time=True: STRONG SAT ?
-property liquidity11a_nonliq {
+property anyUserCanWithdraw_nonliq {
     Forall xa
     [
       true
@@ -58,6 +56,19 @@ property liquidity11a_nonliq {
       Exists tx [1, xa]
       [
         ((app_tx_st.balance[xa] == st.balance[xa] + st.balance))
+      ]
+    ]
+}
+
+// STRONG SAT
+property anyUserCanWithdraw_liq {
+    Forall xa
+    [
+      released[xa]==0 && shares[xa]>0 && state==1
+        ->
+      Exists tx [1, xa]
+      [
+        ((app_tx_st.balance[xa] > st.balance[xa]))
       ]
     ]
 }
