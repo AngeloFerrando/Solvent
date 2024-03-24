@@ -19,7 +19,7 @@ contract Crowdfund {
     } // next(deposit,finalize)
 
     function finalize() {
-        require (block.number > deadline); // questo sembra rompere la liquidity
+        // require (block.number > deadline); // questo sembra rompere la liquidity
        	if (balance >= target) {
          	owner!balance
         }
@@ -28,8 +28,8 @@ contract Crowdfund {
 // vorrei poterla scrivere come segue, ma da' errore
 /*
     function withdraw() {
-       	msg.sender!myfunds[msg.sender];
-       	myfunds[msg.sender] = 0
+       	msg.sender!funds[msg.sender];
+       	funds[msg.sender] = 0
     }
 */
 
