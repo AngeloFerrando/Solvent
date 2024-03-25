@@ -26,12 +26,12 @@ compile: clean
 set-logic:
 	@for Prop in $(wildcard out/smt2/*); do \
 		for file in $$(find $$Prop/tracebased -type f -name '*.smt2' | sort); do \
-			sed -i '1s/^/$(LOGIC)\n/' $$file; \
+			sed -i '1s/.*/$(LOGIC)/' $$file; \
 		done \
 	done
 	@for Prop in $(wildcard out/smt2/*); do \
 		for file in $$(find $$Prop/statebased -type f -name '*.smt2' | sort); do \
-			sed -i '1s/^/$(LOGIC)\n/' $$file; \
+			sed -i '1s/.*/$(LOGIC)/' $$file; \
 		done \
 	done
 
