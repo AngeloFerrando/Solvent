@@ -37,7 +37,7 @@ contract Crowdfund {
 property ownerCanWithdraw_liq {
     Forall xa
     [
-      st.balance >= st.target
+      st.balance >= st.target && st.block.number > st.deadline
         ->
       Exists tx [1, st.owner]
       [
