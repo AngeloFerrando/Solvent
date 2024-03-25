@@ -11,7 +11,8 @@ class Z3Visitor(TxScriptVisitor):
         self.__add_last_cmd = False
         self.__prefix = ''
         self.__args_map = {}
-        self.__nesting = 0
+        self.__nesting_w = 0
+        self.__nesting_aw = 0
         self.__max_nesting = 0
         self.__globals = []
         self.__globals_index = {}
@@ -43,13 +44,14 @@ class Z3Visitor(TxScriptVisitor):
         self.__visit_properties = True
         props = self.visit(ctx.properties)
         self.__visit_properties = False
-        self.__nesting = 1
+        self.__nesting_w = 1
+        self.__nesting_aw = 1
         self.__t_curr_w = 't_w[0]'
         self.__t_new_w = 't_w[1]'
         self.__t_curr_a = 'awNow'
         self.__t_new_a = 't_aw[0]'
-        self.__proc.add(ctx.name.text)
-        self.__prefix = ctx.name.text
+        # self.__proc.add(ctx.name.text)
+        # self.__prefix = ctx.name.text
         for k in self.__globals_index:
             self.__globals_index[k] = 0
 
@@ -198,7 +200,7 @@ N = {N}
 A = {A}
 
 # Maximum functions depth
-M = 1000
+M = 50
 
 # Contract's balance
 w = [Int("w_%s" % (i)) for i in range(N+1)]
@@ -322,7 +324,8 @@ for prop in {props_name}:
             s2 = Solver()
             s2.add(s.assertions())
             s2.add(qj)
-            text= s2.to_smt2()
+            text = s2.to_smt2()
+            text = '(set-logic ALL)\\n' + text
             filename = 'out/smt2/%s/{tracestate}based/%s/output_%s.smt2'%(prop, str(i).zfill(len(str(len(queries[prop])))), str(j).zfill(len(str(len(q)))))
             if not os.path.exists('out/smt2/'):
                 os.makedirs('out/smt2/')
@@ -406,7 +409,8 @@ for prop in {props_name}:
         decls = []
         for decl in ctx.declExpr():
             decls.append(self.visit(decl))
-            self.__max_nesting = max(self.__nesting, self.__max_nesting)
+            self.__max_nesting = max(self.__nesting_w, self.__max_nesting)
+            self.__max_nesting = max(self.__nesting_aw, self.__max_nesting)
         return decls
     
 
@@ -468,7 +472,8 @@ for prop in {props_name}:
 
     # Visit a parse tree produced by TxScriptParser#nonPayableConstructorDecl.
     def visitNonPayableConstructorDecl(self, ctx:TxScriptParser.NonPayableConstructorDeclContext):
-        self.__nesting = 1
+        self.__nesting_w = 0
+        self.__nesting_aw = 0
         self.__t_curr_w = 'wNow'
         self.__t_new_w = 't_w[0]'
         self.__t_curr_a = 'awNow'
@@ -482,7 +487,8 @@ for prop in {props_name}:
 
     # Visit a parse tree produced by TxScriptParser#payableConstructorDecl.
     def visitPayableConstructorDecl(self, ctx:TxScriptParser.PayableConstructorDeclContext):
-        self.__nesting = 1
+        self.__nesting_w = 1
+        self.__nesting_aw = 0
         self.__t_curr_w = 't_w[0]'
         self.__t_new_w = 't_w[1]'
         self.__t_curr_a = 'awNow'
@@ -496,13 +502,14 @@ for prop in {props_name}:
 
     # Visit a parse tree produced by TxScriptParser#payableFunDecl.
     def visitPayableFunDecl(self, ctx:TxScriptParser.PayableFunDeclContext):
-        self.__nesting = 1
+        self.__nesting_w = 1
+        self.__nesting_aw = 0
         self.__t_curr_w = 't_w[0]'
         self.__t_new_w = 't_w[1]'
         self.__t_curr_a = 'awNow'
         self.__t_new_a = 't_aw[0]'
-        self.__proc.add(ctx.name.text)
-        self.__prefix = ctx.name.text
+        self.__proc.add(ctx.name.text + '_func')
+        self.__prefix = ctx.name.text + '_func'
         for k in self.__globals_index:
             self.__globals_index[k] = 0
         return self.visitFun(ctx, 'And(t_w[0] == wNow + xn1')
@@ -511,13 +518,14 @@ for prop in {props_name}:
 
     # Visit a parse tree produced by TxScriptParser#nonPayableFunDecl.
     def visitNonPayableFunDecl(self, ctx:TxScriptParser.NonPayableFunDeclContext):
-        self.__nesting = 0
+        self.__nesting_w = 0
+        self.__nesting_aw = 0
         self.__t_curr_w = 'wNow'
         self.__t_new_w = 't_w[0]'
         self.__t_curr_a = 'awNow'
         self.__t_new_a = 't_aw[0]'
-        self.__proc.add(ctx.name.text)
-        self.__prefix = ctx.name.text
+        self.__proc.add(ctx.name.text + '_func')
+        self.__prefix = ctx.name.text + '_func'
         for k in self.__globals_index:
             self.__globals_index[k] = 0
         return self.visitFun(ctx, 'If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext{global_args_next_state_tx})'.format(
@@ -592,7 +600,8 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     # Visit a parse tree produced by TxScriptParser#sendCmd.
     def visitSendCmd(self, ctx:TxScriptParser.SendCmdContext):
         sender = ctx.sender.text
-        self.__nesting += 1
+        self.__nesting_w += 1
+        self.__nesting_aw += 1
         if sender == 'sender' or sender == 'msg.sender' or sender == 'xa1':
             res = 'send(xa1, {amount}, {t_curr_w}, {t_new_w}, {t_curr_a}, {t_new_a})'.format(
                 amount=self.visit(ctx.amount), 
@@ -615,10 +624,10 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
                 t_new_a=self.__t_new_a
             )
         res = 'If(\n\tNot(' + self.visit(ctx.amount) + ' >= 0), \n\t\tnext_state_tx(awNow, awNext, wNow, wNext'+((', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '')+'), And(' + res + ', {subs}))'
-        self.__t_curr_a = 't_aw[' + str(self.__nesting-1) + ']'
-        self.__t_new_a = 't_aw[' + str(self.__nesting) + ']'
-        self.__t_curr_w = 't_w[' + str(self.__nesting-1) + ']'
-        self.__t_new_w = 't_w[' + str(self.__nesting) + ']'
+        self.__t_curr_a = 't_aw[' + str(self.__nesting_aw-1) + ']'
+        self.__t_new_a = 't_aw[' + str(self.__nesting_aw) + ']'
+        self.__t_curr_w = 't_w[' + str(self.__nesting_w-1) + ']'
+        self.__t_new_w = 't_w[' + str(self.__nesting_w) + ']'
         return res
 
     # Visit a parse tree produced by TxScriptParser#requireCmd.
@@ -707,7 +716,8 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         backup__t_new_a = self.__t_new_a
         backup__t_curr_w = self.__t_curr_w
         backup__t_new_w = self.__t_new_w
-        backup_nesting = self.__nesting
+        backup_nesting_w = self.__nesting_w
+        backup_nesting_aw = self.__nesting_aw
         backup_global_index = copy.deepcopy(self.__globals_index)
         ifcmd = self.visit(ctx.ifcmd)
         # skip = 'next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
@@ -719,13 +729,14 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         if__t_new_a = self.__t_new_a
         if__t_curr_w = self.__t_curr_w
         if__t_new_w = self.__t_new_w
-        if_nesting = self.__nesting
+        if_nesting = self.__nesting_w
         if_globals_index = copy.deepcopy(self.__globals_index)
         self.__t_curr_a = backup__t_curr_a
         self.__t_new_a = backup__t_new_a
         self.__t_curr_w = backup__t_curr_w
         self.__t_new_w = backup__t_new_w
-        self.__nesting = backup_nesting
+        self.__nesting_w = backup_nesting_w
+        self.__nesting_aw = backup_nesting_aw
         self.__globals_index = backup_global_index
         elsecmd = self.visit(ctx.elsecmd)
         # skip = 'next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
@@ -735,14 +746,14 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         # )
         levelling_if_cmds = 'True'
         levelling_else_cmds = 'True'
-        if if_nesting > self.__nesting:
+        if if_nesting > self.__nesting_w:
             levelling_else_cmds += f', {if__t_curr_w}=={self.__t_curr_w}, {if__t_curr_a}=={self.__t_curr_a}'
             self.__t_curr_a = if__t_curr_a
             self.__t_new_a = if__t_new_a
             self.__t_curr_w = if__t_curr_w
             self.__t_new_w = if__t_new_w
             self.__nesting = if_nesting
-        elif if_nesting < self.__nesting:
+        elif if_nesting < self.__nesting_w:
             levelling_if_cmds += f', {if__t_curr_w}=={self.__t_curr_w}, {if__t_curr_a}=={self.__t_curr_a}'
         for g in self.__globals_index:
             if if_globals_index[g] > self.__globals_index[g]:

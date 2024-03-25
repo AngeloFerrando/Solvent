@@ -7,3 +7,4 @@ contracts/regression/out/*
 vevn/*
 .vscode/*
 __pycache__/*
+.vscode/launch.json
