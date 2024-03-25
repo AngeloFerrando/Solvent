@@ -602,28 +602,47 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         sender = ctx.sender.text
         self.__nesting_w += 1
         self.__nesting_aw += 1
+
+        left = self.visit(ctx.amount)
+        for el in self.__prop_nested_i:
+            if el in left:
+                send_chk = f'And([Or(j != {el}, '+f'{left} >= 0) for j in range(A+1)])'.replace(el, 'j')
+                break
+        else:
+            send_chk = left + '>= 0'
+        for el in self.__prop_nested_i:
+            if el in left:
+                send = f'And([Or(j != {el}, '+'send({sender}, {amount}, {t_curr_w}, {t_new_w}, {t_curr_a}, {t_new_a})) for j in range(A+1)])'
+                break
+        else:
+            el = None
+            send = 'send({sender}, {amount}, {t_curr_w}, {t_new_w}, {t_curr_a}, {t_new_a})'
+
         if sender == 'sender' or sender == 'msg.sender' or sender == 'xa1':
-            res = 'send(xa1, {amount}, {t_curr_w}, {t_new_w}, {t_curr_a}, {t_new_a})'.format(
-                amount=self.visit(ctx.amount), 
+            res = send.format(
+                amount=left, 
                 t_curr_w=self.__t_curr_w, 
                 t_new_w=self.__t_new_w, 
                 t_curr_a=self.__t_curr_a, 
-                t_new_a=self.__t_new_a
+                t_new_a=self.__t_new_a,
+                sender= 'xa1'
             )
         else:
             if sender in self.__globals_index:
                 sender = sender + 'Now' if self.__globals_index[sender]+self.__globals_modifier < 0 else 't_'+sender + '['+str(self.__globals_index[sender]+self.__globals_modifier)+']'
             elif sender in self.__args_map:
                 sender = self.__args_map[sender]
-            res = 'send({sender}, {amount}, {t_curr_w}, {t_new_w}, {t_curr_a}, {t_new_a})'.format(
+            res = send.format(
                 sender=sender, 
-                amount=self.visit(ctx.amount), 
+                amount=left, 
                 t_curr_w=self.__t_curr_w, 
                 t_new_w=self.__t_new_w, 
                 t_curr_a=self.__t_curr_a, 
                 t_new_a=self.__t_new_a
             )
-        res = 'If(\n\tNot(' + self.visit(ctx.amount) + ' >= 0), \n\t\tnext_state_tx(awNow, awNext, wNow, wNext'+((', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '')+'), And(' + res + ', {subs}))'
+        if el:
+            res = res[:res.index('send')+4] + res[res.index('send')+4:].replace(el, 'j')
+        res = 'If(\n\tNot(' + send_chk + '), \n\t\tnext_state_tx(awNow, awNext, wNow, wNext'+((', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '')+'), And(' + res + ', {subs}))'
         self.__t_curr_a = 't_aw[' + str(self.__nesting_aw-1) + ']'
         self.__t_new_a = 't_aw[' + str(self.__nesting_aw) + ']'
         self.__t_curr_w = 't_w[' + str(self.__nesting_w-1) + ']'

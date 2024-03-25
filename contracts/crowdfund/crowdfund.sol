@@ -25,14 +25,12 @@ contract Crowdfund {
         }
     }
 
-// vorrei poterla scrivere come segue, ma da' errore
-/*
     function withdraw() {
        	msg.sender!funds[msg.sender];
        	funds[msg.sender] = 0
     }
-*/
 
+/*
     function withdraw(amount) {
         require (amount <= funds[msg.sender]); // workaround per risolvere problema di sintassi
         require (balance < target);
@@ -40,7 +38,10 @@ contract Crowdfund {
        	msg.sender!amount;
        	funds[msg.sender] = 0
     }
+*/
+
 }
+
 
 // should be true: seller can withdraw the balance after the deadline
 property ownerCanWithdraw_liq {
