@@ -1088,6 +1088,7 @@ Not({body})
             return ctx.v.text
         else:
             if 'app_tx_st' in ctx.v.text:
+                ctx.v.text = ctx.v.text.replace('app_tx_st', 'st')
                 i = f'_q{self.__n_transactions-1-(self.__n_transactions-self.__pi)}'
             else:
                 i = '[i]'
