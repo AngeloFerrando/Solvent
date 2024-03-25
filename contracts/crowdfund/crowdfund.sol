@@ -16,30 +16,20 @@ contract Crowdfund {
         require (block.number <= deadline);
         require (msg.value>=min_donation);
        	funds[msg.sender] = funds[msg.sender] + msg.value
-    } // next(deposit,finalize)
+    }
 
     function finalize() {
-        // require (block.number > deadline); // questo sembra rompere la liquidity
-       	if (balance >= target) {
-         	owner!balance
-        }
+        require (block.number > deadline);
+        require (balance >= target);
+       	owner!balance
     }
 
     function withdraw() {
+        require (block.number > deadline);
+        require (balance < target);
        	msg.sender!funds[msg.sender];
        	funds[msg.sender] = 0
     }
-
-/*
-    function withdraw(amount) {
-        require (amount <= funds[msg.sender]); // workaround per risolvere problema di sintassi
-        require (balance < target);
-        require (block.number > deadline);
-       	msg.sender!amount;
-       	funds[msg.sender] = 0
-    }
-*/
-
 }
 
 
