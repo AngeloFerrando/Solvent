@@ -40,7 +40,6 @@ run:
 		echo "PROPERTY: $$Prop"; \
 		foundUNSAT=false; \
 		for file in $$(find $$Prop/statebased -type f -name '*.smt2' | sort); do \
-			echo "$$file"; \
 			foundSAT=false; \
 			output=$$($$SMT $$file); \
 			if [ "$$output" = "unsat" ]; then \
@@ -59,7 +58,6 @@ run:
 			for i in $$(find $$Prop/tracebased/ -mindepth 1 -maxdepth 1 -type d | sort); do \
 				foundUNSAT=false; \
 				for file in $$(find $$i -type f -name '*.smt2' | sort); do \
-					echo "$$file"; \
 					foundSAT=false; \
 					output=$$($$SMT $$file); \
 					if [ "$$output" = "unsat" ]; then \

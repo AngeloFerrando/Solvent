@@ -10,7 +10,8 @@ contract C15 {
     //owner ! amount
     if (owner == msg.sender) {
       msg.sender ! amount
-    } else {
+    } 
+    else {
       skip
     }
   }

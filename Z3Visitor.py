@@ -659,11 +659,12 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
 
     # Visit a parse tree produced by TxScriptParser#skipCmd.
     def visitSkipCmd(self, ctx:TxScriptParser.SkipCmdContext):
-        return 'next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
-            t_curr_a=self.__t_curr_a, 
-            t_curr_w=self.__t_curr_w, 
-            global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
-        )
+        return 'True'
+        # return 'next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
+        #     t_curr_a=self.__t_curr_a, 
+        #     t_curr_w=self.__t_curr_w, 
+        #     global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+        # )
 
 
     # Visit a parse tree produced by TxScriptParser#groupCmd.
@@ -715,13 +716,15 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         backup_add = self.__add_last_cmd
         self.__add_last_cmd = False
         ifcmd = self.visit(ctx.ifcmd)
+        ifcmd = ifcmd.format(subs='True')
         self.__globals_index = backup
         self.__add_last_cmd = backup_add
         self.__globals_index = backup
+        levelling_else_cmds = f'wNow=={self.__t_curr_w}, awNow=={self.__t_curr_a}'
         return 'If({cond},{ifcmd},{elsecmd})'.format(
             cond = 'And'+'('+cond+')',
             ifcmd = 'And'+'('+ifcmd+')',
-            elsecmd = 'True'
+            elsecmd = 'And(' + levelling_else_cmds + ')'
         )
     
 
@@ -739,6 +742,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         backup_nesting_aw = self.__nesting_aw
         backup_global_index = copy.deepcopy(self.__globals_index)
         ifcmd = self.visit(ctx.ifcmd)
+        ifcmd = ifcmd.format(subs='True')
         # skip = 'next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
         #     t_curr_a=self.__t_curr_a, 
         #     t_curr_w=self.__t_curr_w, 
@@ -748,7 +752,8 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         if__t_new_a = self.__t_new_a
         if__t_curr_w = self.__t_curr_w
         if__t_new_w = self.__t_new_w
-        if_nesting = self.__nesting_w
+        if_nesting_w = self.__nesting_w
+        if_nesting_aw = self.__nesting_aw
         if_globals_index = copy.deepcopy(self.__globals_index)
         self.__t_curr_a = backup__t_curr_a
         self.__t_new_a = backup__t_new_a
@@ -758,6 +763,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         self.__nesting_aw = backup_nesting_aw
         self.__globals_index = backup_global_index
         elsecmd = self.visit(ctx.elsecmd)
+        elsecmd = elsecmd.format(subs='True')
         # skip = 'next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
         #     t_curr_a=self.__t_curr_a, 
         #     t_curr_w=self.__t_curr_w, 
@@ -765,14 +771,15 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         # )
         levelling_if_cmds = 'True'
         levelling_else_cmds = 'True'
-        if if_nesting > self.__nesting_w:
+        if if_nesting_w > self.__nesting_w:
             levelling_else_cmds += f', {if__t_curr_w}=={self.__t_curr_w}, {if__t_curr_a}=={self.__t_curr_a}'
             self.__t_curr_a = if__t_curr_a
             self.__t_new_a = if__t_new_a
             self.__t_curr_w = if__t_curr_w
             self.__t_new_w = if__t_new_w
-            self.__nesting = if_nesting
-        elif if_nesting < self.__nesting_w:
+            self.__nesting_w = if_nesting_w
+            self.__nesting_aw = if_nesting_aw
+        elif if_nesting_w < self.__nesting_w:
             levelling_if_cmds += f', {if__t_curr_w}=={self.__t_curr_w}, {if__t_curr_a}=={self.__t_curr_a}'
         for g in self.__globals_index:
             if if_globals_index[g] > self.__globals_index[g]:
