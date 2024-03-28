@@ -10,7 +10,6 @@ contract IfNested1 {
     if (n>5) {
         x = x+1 
     } else {
-        x = x + 0;
         if (n<5) {
             skip
         }
