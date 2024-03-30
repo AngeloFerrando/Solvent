@@ -1,8 +1,8 @@
 contract PaymentSplitter {
-	(address -> int) shares
-	int totalShares
+    (address -> int) shares
+    int totalShares
     (address -> int) released
-	int totalReleased
+    int totalReleased
     int totalReceived 
     int payment
     address owner
