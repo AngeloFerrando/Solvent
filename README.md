@@ -50,3 +50,11 @@ To run the SMT so generated (choosing in this case Z3 as solver)
 ```bash
 make run SMT=z3
 ```
+
+## How to test
+
+To run all the tests, open terminal in contracts folder, then run
+
+```bash
+python3 test.py
+```

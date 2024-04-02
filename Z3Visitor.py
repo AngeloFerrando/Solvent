@@ -932,7 +932,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
                 right = right + 'Now'
             else:
                 right = 't_'+right + '['+str(self.__globals_index[right]+self.__globals_modifier)+']'
-        return left + ctx.op.text + right
+        return '(' + left + ctx.op.text + right + ')'
 
 
     # Visit a parse tree produced by TxScriptParser#lessEqExpr.
@@ -970,7 +970,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
                 right = right + 'Now'
             else:
                 right = 't_'+right + '['+str(self.__globals_index[right]+self.__globals_modifier)+']'
-        res = left + ctx.op.text + right
+        res = '(' + left + ctx.op.text + right + ')'
         #  left out for now, it would require to keep track of the division and propagate their handling in the assign command
         # if ctx.op.text == '/':
         #     res = 'If(\n\tNot(' + right + ' != 0), \n\t\tnext_state_tx(awNow, awNext, wNow, wNext'+((', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '')+'), And(' + res + ', {subs}))'        
