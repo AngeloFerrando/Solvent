@@ -6,6 +6,9 @@ N_Transactions = 5
 Timeout = 10 # seconds
 
 def run_makefile(folder):
+    passed = 0
+    not_passed = 0
+
     # Change directory to the specified folder
     os.chdir(folder)
     
@@ -55,13 +58,17 @@ def run_makefile(folder):
                 if '_nonliq' in phi[0]:
                     if 'NOT LIQUID' in phi[-2]:
                         print_passed()
+                        passed += 1
                     else:
                         print_not_passed()
+                        not_passed += 1
                 else:
                     if 'NOT LIQUID' in phi[-2]:
                         print_not_passed()
+                        not_passed += 1
                     else:
                         print_passed()
+                        passed += 1
                 print('')
 
             print(f"Compilation time: {compilation_time} seconds; Running time: {running_time} seconds")
@@ -72,6 +79,7 @@ def run_makefile(folder):
 
     # Change back to the original directory
     os.chdir('..')
+    return passed, not_passed
 
 def print_passed():
     print("\033[92mPassed\033[0m", end='', flush=True)  # ANSI escape code for green text
@@ -85,8 +93,15 @@ directories = sorted([d for d in os.listdir('.') if os.path.isdir(d)])
 directories.remove('regression')
 directories.insert(0, 'regression')
 
+dict_res = {}
 # Run makefile for each directory
 for directory in directories:
     makefile_path = os.path.join(directory, 'Makefile')
     if os.path.exists(makefile_path):
-        run_makefile(directory)
+        passed, not_passed = run_makefile(directory)
+        dict_res[directory] = (passed, not_passed)
+
+# print wrap up
+print('Results overview:\n')
+for k in dict_res:
+    print('Contract:', k, dict_res[k][0], "\033[92mPassed\033[0m,", dict_res[k][1], "\033[91mNot Passed\033[0m")
