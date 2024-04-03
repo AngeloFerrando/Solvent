@@ -4,7 +4,7 @@ contracts/bank/out/*
 contracts/bet/out/*
 contracts/payment_splitter/out/*
 contracts/regression/out/*
-vevn/*
+venv/*
 .vscode/*
 __pycache__/*
 .vscode/launch.json

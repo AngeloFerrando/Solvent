@@ -100,12 +100,12 @@ class Z3Visitor(TxScriptVisitor):
         if keys:
             aux = 1
             if 'coinbase' in keys:
-                functions_call += '\tIf(f1 == Proc.coinbase, And(xa1 == -1, \n'
+                functions_call += '\tIf(f1 == Proc.coinbase, And(xa1 == 0, \n'
                 n_tabs += 1
                 functions_call += '\t'*n_tabs + 'coinbase' + '(xa1, xn1, ' + (','.join(self.__proc_args['coinbase'])+', ' if self.__proc_args['coinbase'] else '') + 'aw1, aw2, w1, w2, t_aw, t_w, block_num1' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + ')),\n'
                 keys.remove('coinbase')
                 aux += 1
-            functions_call += 'And(xa1 >= 0, xa1 <= A, '
+            functions_call += 'And(xa1 >= 1, xa1 <= A, '
             for p in keys[:-1]:
                 functions_call += '\t'*n_tabs + 'If(f1 == Proc.' + p + ',\n'
                 n_tabs += 1
@@ -266,7 +266,7 @@ def send(sender_id, amount, w_b, w_a, aw_b, aw_a): # '_b' and '_a' mean 'before'
 
 
 def user_is_legit(xa1):
-    return And(xa1 >= 0, xa1 <= A)
+    return And(xa1 >= 1, xa1 <= A)
 
 
 def user_has_not_already_played(xa, xa1, f, i):
@@ -543,8 +543,10 @@ for prop in {props_name}:
             for (g, ty) in self.__globals:
                 if self.__globals_index[g.text] == 0 and (self.__Trace_Based or self.__globals_const[g.text]):
                     self.__globals_index[g.text] = 1
-                    if ty == 'Int' or ty == 'Address':
+                    if ty == 'Int': 
                         default = f', t_{g.text}[0]==0'
+                    elif ty == 'Address':
+                        default = f', t_{g.text}[0]==1'
                     elif ty == 'Bool':
                         default = f', t_{g.text}[0]==False'
                     elif ty == 'String':
@@ -554,7 +556,7 @@ for prop in {props_name}:
                     contract_variables += default
                 elif self.__Trace_Based or self.__globals_const[g.text]:
                     if ty == 'Address':
-                        default = f', t_{g.text}[0]>=0, t_{g.text}[0]<=A'
+                        default = f', t_{g.text}[0]>=1, t_{g.text}[0]<=A'
                         contract_variables += default
         else:
             for g in self.__globals_const:
