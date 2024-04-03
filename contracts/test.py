@@ -102,6 +102,6 @@ for directory in directories:
         dict_res[directory] = (passed, not_passed)
 
 # print wrap up
-print('Results overview:\n')
+print('\nResults overview:\n')
 for k in dict_res:
     print('Contract:', k, dict_res[k][0], "\033[92mPassed\033[0m,", dict_res[k][1], "\033[91mNot Passed\033[0m")
