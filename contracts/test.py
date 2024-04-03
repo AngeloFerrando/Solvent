@@ -6,9 +6,6 @@ N_Transactions = 5
 Timeout = 10 # seconds
 
 def run_makefile(folder):
-    passed = 0
-    not_passed = 0
-
     # Change directory to the specified folder
     os.chdir(folder)
     
@@ -19,6 +16,9 @@ def run_makefile(folder):
     sol_files = [file for file in files if file.endswith('.sol')]
 
     for sol in sol_files:
+        passed = 0
+        not_passed = 0
+
         print('\n---------------------')
         print(f'Contract: {sol}\n')
         try:
@@ -76,10 +76,11 @@ def run_makefile(folder):
             print(f"Timeout for {sol}")
         clean_process = subprocess.Popen(['make', 'clean'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         clean_output, clean_error = clean_process.communicate()
+        dict_res[sol] = (passed, not_passed)
 
     # Change back to the original directory
     os.chdir('..')
-    return passed, not_passed
+    return dict_res
 
 def print_passed():
     print("\033[92mPassed\033[0m", end='', flush=True)  # ANSI escape code for green text
@@ -98,10 +99,14 @@ dict_res = {}
 for directory in directories:
     makefile_path = os.path.join(directory, 'Makefile')
     if os.path.exists(makefile_path):
-        passed, not_passed = run_makefile(directory)
-        dict_res[directory] = (passed, not_passed)
+        dict = run_makefile(directory)
+        dict_res.update(dict)
 
 # print wrap up
-print('\nResults overview:\n')
+print('\n\nResults overview:\n')
 for k in dict_res:
-    print('Contract:', k, dict_res[k][0], "\033[92mPassed\033[0m,", dict_res[k][1], "\033[91mNot Passed\033[0m")
+    if dict_res[k][0]+dict_res[k][1] == 0:
+        perc = 0
+    else:
+        perc = dict_res[k][0]/(dict_res[k][0]+dict_res[k][1])*100
+    print('Contract:', k, dict_res[k][0], "\033[92mPassed\033[0m,", dict_res[k][1], "\033[91mNot Passed\033[0m", '\t[', str(perc)+'%', ']')
