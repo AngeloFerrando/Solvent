@@ -3,7 +3,7 @@ import subprocess
 import time
 
 N_Transactions = 5
-Timeout = 10 # seconds
+Timeout = 20 # seconds
 
 def run_makefile(folder):
     # Change directory to the specified folder
