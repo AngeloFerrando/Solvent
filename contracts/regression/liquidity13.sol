@@ -12,7 +12,7 @@ contract C13 {
   }
 
   function lock() {
-    require(msg.sender == 0);
+    require(msg.sender == 1);
     b = true
   }
 

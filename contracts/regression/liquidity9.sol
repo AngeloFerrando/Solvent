@@ -5,7 +5,7 @@ contract C9 {
   }
 
   function pay(amount) {
-    require (amount<=balance && msg.sender!=0);
+    require (amount<=balance && msg.sender!=1);
     msg.sender!amount
   }
 
@@ -32,7 +32,7 @@ property liquidity9a_nonliq {
 property liquidity9b_liq {
     Forall xa
     [
-      xa != 0
+      xa != 1
         ->
       Exists tx [1, xa]
       [

@@ -6,7 +6,7 @@ contract C12 {
 
   function pay(amount) {
     require (amount <= balance);
-    if (msg.sender != 0) {
+    if (msg.sender != 1) {
       msg.sender ! amount - 1
     }
     else {
@@ -38,7 +38,7 @@ property liquidity12a_nonliq {
 property liquidity12b_nonliq {
     Forall xa
     [
-      xa != 0
+      xa != 1
         ->
       Exists tx [1, xa]
       [
