@@ -56,19 +56,25 @@ def run_makefile(folder):
                 phi = phi.split('\n')
                 print(f'PROPERTY: {phi[0]}')
                 if '_nonliq' in phi[0]:
-                    if 'NOT LIQUID' in phi[-2]:
+                    if 'STRONG UNSAT'  in phi[-2]:
+                        print_not_passed()
+                        not_passed += 1
+                    elif 'NOT LIQUID' in phi[-2]:
                         print_passed()
                         passed += 1
                     else:
                         print_not_passed()
                         not_passed += 1
                 else:
-                    if 'NOT LIQUID' in phi[-2]:
+                    if 'STRONG SAT'  in phi[-2]:
                         print_not_passed()
                         not_passed += 1
-                    else:
+                    elif 'UNSAT' in phi[-2]:
                         print_passed()
                         passed += 1
+                    else:
+                        print_not_passed()
+                        not_passed += 1
                 print('')
 
             print(f"Compilation time: {compilation_time} seconds; Running time: {running_time} seconds")
