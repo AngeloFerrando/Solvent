@@ -11,7 +11,7 @@ contract C14 {
     b = true
   }
 
-  function pay(amount) {
+  function pay(int amount) {
     require (amount <= balance && b);
     b = False;
     sender ! amount

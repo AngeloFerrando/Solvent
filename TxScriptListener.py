@@ -170,6 +170,15 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TxScriptParser#argMap.
+    def enterArgMap(self, ctx:TxScriptParser.ArgMapContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#argMap.
+    def exitArgMap(self, ctx:TxScriptParser.ArgMapContext):
+        pass
+
+
     # Enter a parse tree produced by TxScriptParser#sendCmd.
     def enterSendCmd(self, ctx:TxScriptParser.SendCmdContext):
         pass

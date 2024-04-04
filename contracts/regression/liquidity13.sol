@@ -6,7 +6,7 @@ contract C13 {
     skip
   }
 
-  function pay(amount) {
+  function pay(int amount) {
     require (amount <= balance && not b);
     msg.sender ! amount
   }

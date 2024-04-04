@@ -8,7 +8,7 @@ contract Bet {
   address par2
   int state // 0: join, 1: win-or-timeout, 2: end
    
-  constructor(o d) payable {
+  constructor(address o, int d) payable {
     require (msg.value==1);
     par1 = msg.sender;
     oracle = o;
@@ -24,7 +24,7 @@ contract Bet {
     par2 = msg.sender
   }
 
-  function win(winner) {
+  function win(address winner) {
 	  require(state==1);
     state = 2;
 	  require(msg.sender==oracle);

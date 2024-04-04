@@ -5,14 +5,14 @@ contract Crowdfund {
     int min_donation                    // minimum donation
     (address -> int) funds             // keeps track of the donations
 
-    constructor(d t o m) {
+    constructor(int d, int t, address o, int m) {
         owner = o;
         deadline = d; 
         target = t;
         min_donation = m
     }
 
-    function deposit(a) payable {
+    function deposit(address a) payable {
         require (block.number <= deadline);
         require (msg.value>=min_donation);
        	funds[msg.sender] = funds[msg.sender] + msg.value

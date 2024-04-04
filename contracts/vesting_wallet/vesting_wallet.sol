@@ -8,7 +8,7 @@ contract VestingWallet {
     int vested_amount
     int totalAllocation
 
-    constructor(b t d) {
+    constructor(address b, int t, int d) {
         require (d > 0);
 	    beneficiary = b;
         start = t;

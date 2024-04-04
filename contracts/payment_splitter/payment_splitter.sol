@@ -8,14 +8,14 @@ contract PaymentSplitter {
     address owner
     int state
 
-    constructor(o) {
+    constructor(address o) {
         owner = o
         // totalShares = 0;
         // totalReleased = 0;
         // state = 0
     }
 
-    function addShares(p s) {
+    function addShares(address p, int s) {
         require(msg.sender == owner);
         require(state == 0);
         shares[p] = shares[p] + s;
@@ -32,7 +32,7 @@ contract PaymentSplitter {
         skip
     } 
 
-    function release(a) { 
+    function release(address a) { 
         require(shares[a] > 0);
         require(state == 1);
     

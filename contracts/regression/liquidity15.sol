@@ -5,7 +5,7 @@ contract C15 {
     owner = msg.sender
   }
 
-  function pay(amount) {
+  function pay(int amount) {
     require (amount <= balance);
     //owner ! amount
     if (owner == msg.sender) {

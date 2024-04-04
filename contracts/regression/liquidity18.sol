@@ -6,7 +6,7 @@ contract C18 {
     skip
   }
 
-  function pay(amount) {
+  function pay(int amount) {
     require (amount <= balance); // se è falso, lo stato nuovo della blockchain è uguale a quello vecchio
     sender ! 1;
     require (amount - 1 <= balance);

@@ -6,7 +6,7 @@ contract C {
     skip
   }
 
-  function pay(amount) {
+  function pay(int amount) {
     require (amount<=balance);
     msg.sender!amount
   }

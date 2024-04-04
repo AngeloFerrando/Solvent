@@ -9,7 +9,7 @@ contract Bank {
         myBalances[msg.sender] = myBalances[msg.sender] + msg.value
     }
 
-    function withdraw(amount) {
+    function withdraw(int amount) {
         require(amount > 0);
         require(amount <= myBalances[msg.sender]);
 

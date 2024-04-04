@@ -1,4 +1,5 @@
 from Z3Visitor import *
+from TypeVisitor import *
 
 from antlr4.error.ErrorListener import ErrorListener
 import sys
@@ -15,8 +16,7 @@ def parse(pattern):
     if len(sys.argv) != 4 and len(sys.argv) != 5:
         print('The script requires 3 parameters (plus one optional one which is True by default), as follows: <name of the SOL file> <number of transactions> <number of participants> (<accept transactions any time>)?')
         return
-    # try:`
-    # resetZ3Folder()
+    
     lexer = TxScriptLexer(InputStream(pattern))
     stream = CommonTokenStream(lexer)
     parser = TxScriptParser(stream)
@@ -25,11 +25,17 @@ def parse(pattern):
 
     can_transactions_arrive_any_time = (sys.argv[4]=='True' or sys.argv[4]=='true') if len(sys.argv) == 5 else True
 
+    type_visitor = TypeVisitor()
     visitor = Z3Visitor(int(sys.argv[2]), int(sys.argv[3]), True, can_transactions_arrive_any_time)
 
     isExist = os.path.exists('./out')
     if not isExist:
         os.makedirs('./out')
+    try:
+        type_visitor.visit(tree)
+    except Exception as e:
+        print(e)
+        return
 
     with open('./out/outputTrace.py', 'w') as file:
         file.write(visitor.visit(tree))

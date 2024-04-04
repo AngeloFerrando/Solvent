@@ -4,7 +4,7 @@ contract StateChange1 {
     address owner
     int state
 
-    constructor(o) {
+    constructor(address o) {
         owner = o;
         state = 0
     }

@@ -27,7 +27,8 @@ fieldExpr :
 
 argsExpr : (argExpr)*;
 argExpr : 
-    var=LABEL (',')?                                                    # arg
+    ty=('int'|'bool'|'address'|'string') var=LABEL (',')?                                           # arg
+    | ty='(' 'address' '->' 'int' ')' var=LABEL (',')?                                              # argMap
 ;
 
 cmdExpr :

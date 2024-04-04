@@ -6,7 +6,7 @@ contract Auction {
     address seller
     bool closed
 
-    constructor(b d m) { // FIXME: if parameter a is used instead of b -> NameError: name 'constructor_a' is not defined
+    constructor(address b, int d, int m) { // FIXME: if parameter a is used instead of b -> NameError: name 'constructor_a' is not defined
         seller = b;
         deadline = d;
         min_bid = m;
@@ -14,7 +14,7 @@ contract Auction {
         closed = false
     }
      
-    function bid(a) payable {
+    function bid(address a) payable {
         //require (block.number <= deadline);   // Auction closes after deadline
         require(not closed);
         //require (msg.sender != seller);       // Can the seller bid?

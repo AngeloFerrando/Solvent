@@ -4,7 +4,7 @@ contract C4 {
     skip
   }
 
-  function pay(amount) {
+  function pay(int amount) {
     require (amount<=(balance - 1));
     sender!amount
   }

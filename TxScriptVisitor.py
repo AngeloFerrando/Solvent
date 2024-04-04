@@ -99,6 +99,11 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TxScriptParser#argMap.
+    def visitArgMap(self, ctx:TxScriptParser.ArgMapContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TxScriptParser#sendCmd.
     def visitSendCmd(self, ctx:TxScriptParser.SendCmdContext):
         return self.visitChildren(ctx)

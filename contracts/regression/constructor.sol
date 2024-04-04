@@ -4,7 +4,7 @@ contract Constructor1 {
     require(msg.value==0)
   }
 
-  function pay(amount) {
+  function pay(int amount) {
     sender!1
   }
 }

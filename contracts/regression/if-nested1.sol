@@ -6,7 +6,7 @@ contract IfNested1 {
     x = 0
   }
 
-  function pay(n) {
+  function pay(int n) {
     if (n>5) {
         x = x+1 
     } else {
