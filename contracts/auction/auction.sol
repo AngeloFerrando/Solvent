@@ -25,7 +25,7 @@ contract Auction {
         //require (msg.value > balance);     
         require (msg.value > current_bid); // EL change
         
-        //require (a != 0);
+        //require (a != 1);
 
         // the previous maximum bid is returned to the previous winner
         //winner!(balance-msg.value);
@@ -85,7 +85,7 @@ property sellerCanWithdraw_nonliq1 {
     [
       st.winner!=0 && st.balance>0 && closed ==false
         ->
-      Exists tx [2, st.seller]
+      Exists tx [1, st.seller]
       [
         ((app_tx_st.balance[st.seller] > st.balance[st.seller]))
       ]
