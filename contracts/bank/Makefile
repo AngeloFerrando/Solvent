@@ -20,8 +20,12 @@ endif
 
 compile: clean
 	python3 ../../main.py $(Contract) $(N_Transactions) $(N_Participants) $(Can_Transactions_Arrive_Any_time)
-	python3 ./out/outputTrace.py
-	python3 ./out/outputState.py
+	@if test -f ./out/outputTrace.py; then \
+		python3 ./out/outputTrace.py; \
+	fi
+	@if test -f ./out/outputState.py; then \
+		python3 ./out/outputState.py; \
+	fi
 		
 set-logic:
 	@for Prop in $(wildcard out/smt2/*); do \
@@ -50,11 +54,11 @@ run:
 			fi \
 		done; \
 		if [ "$$foundUNSAT" = "true" ]; then \
-			echo "STRONG UNSAT (=> LIQUID)"; \
+			echo "LIVE"; \
 		else \
-			if [ "$$foundSAT" = "true" ]; then \
-				echo "WEAK SAT (=> NOT LIQUID?)"; \
-			fi; \
+			# if [ "$$foundSAT" = "true" ]; then \
+			# 	echo "WEAK SAT (=> NOT LIQUID?)"; \
+			# fi; \
 			for i in $$(find $$Prop/tracebased/ -mindepth 1 -maxdepth 1 -type d | sort); do \
 				foundUNSAT=false; \
 				for file in $$(find $$i -type f -name '*.smt2' | sort); do \
@@ -62,14 +66,15 @@ run:
 					output=$$($$SMT $$file); \
 					if [ "$$output" = "unsat" ]; then \
 						foundUNSAT=true; \
-						echo "WEAK UNSAT (=> LIQUID?)"; \
+						ii=$$(echo $$i | rev | cut -d'/' -f1 | rev); \
+						echo "LIVE UP TO $$ii TRANSACTION"; \
 						break; \
 					elif [ "$$output" = "sat" ]; then \
 						foundSAT=true; \
 					fi \
 				done; \
 				if [ "$$foundUNSAT" = "false" ] && [ "$$foundSAT" = "true" ]; then \
-					echo "STRONG SAT (=> NOT LIQUID)"; \
+					echo "NOT LIVE (COUNTEREXAMPLE FOUND)"; \
 					break; \
 				fi \
 			done; \

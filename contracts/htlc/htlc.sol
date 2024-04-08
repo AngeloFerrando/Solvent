@@ -4,7 +4,7 @@ contract HTLC {
     int timeout
     address owner
     address recipient
-    int hashlock
+    hash hashlock
 
     constructor(int t, address r) payable {
         timeout = t;
@@ -13,11 +13,11 @@ contract HTLC {
     }
 
     function commit(hash h) payable {
-        require (!committed);
+        require (not committed);
         require (msg.value > 0);
-        committed = true;
-        hashlock = h;
         require (msg.sender==owner);
+        committed = true;
+        hashlock = h
     }
 
     function reveal(secret s) {
@@ -30,12 +30,11 @@ contract HTLC {
     function timeout() {
         require(committed && block.number > timeout);
         msg.sender!balance
-
     }   
 }
 
 // UNSAT
-property p1_liq { 
+property p1_live { 
     Forall xa
     [
         xa==st.owner && st.balance>0 && st.committed
@@ -47,7 +46,7 @@ property p1_liq {
     ]
 }
 
-property p2_nonliq { 
+property p2_nonlive { 
     Forall xa
     [
         xa==st.recipient && st.balance>0 && st.committed
@@ -59,7 +58,7 @@ property p2_nonliq {
     ]
 }
 
-property p3_liq { 
+property p3_live { 
     Forall xa
     [
         st.balance>0 && st.committed && st.block.number>st.timeout

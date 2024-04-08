@@ -21,7 +21,7 @@ contract C14 {
 
 /*
 // not liquid
-property liquidity14a_nonliq {
+property liquidity14a_nonlive {
     Forall xa
     [
       true
@@ -35,7 +35,7 @@ property liquidity14a_nonliq {
 
 
 // liquid
-property liquidity14b_liq {
+property liquidity14b_live {
     Forall xa
     [
       st.b == true
@@ -50,7 +50,7 @@ property liquidity14b_liq {
 
 
 //  liquid
-property liquidity14c_liq {
+property liquidity14c_live {
     Forall xa
     [
       true
@@ -63,7 +63,7 @@ property liquidity14c_liq {
 }
 
 //  liquid
-property liquidity14d_liq {
+property liquidity14d_live {
     Forall xa
     [
       st.b==true

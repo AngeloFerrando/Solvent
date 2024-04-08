@@ -143,6 +143,24 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TxScriptParser#hashDecl.
+    def enterHashDecl(self, ctx:TxScriptParser.HashDeclContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#hashDecl.
+    def exitHashDecl(self, ctx:TxScriptParser.HashDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#secretDecl.
+    def enterSecretDecl(self, ctx:TxScriptParser.SecretDeclContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#secretDecl.
+    def exitSecretDecl(self, ctx:TxScriptParser.SecretDeclContext):
+        pass
+
+
     # Enter a parse tree produced by TxScriptParser#mapAddrDeclInt.
     def enterMapAddrDeclInt(self, ctx:TxScriptParser.MapAddrDeclIntContext):
         pass
@@ -269,6 +287,15 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TxScriptParser#sha256Expr.
+    def enterSha256Expr(self, ctx:TxScriptParser.Sha256ExprContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#sha256Expr.
+    def exitSha256Expr(self, ctx:TxScriptParser.Sha256ExprContext):
+        pass
+
+
     # Enter a parse tree produced by TxScriptParser#greaterEqExpr.
     def enterGreaterEqExpr(self, ctx:TxScriptParser.GreaterEqExprContext):
         pass
@@ -314,6 +341,15 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TxScriptParser#lengthExpr.
+    def enterLengthExpr(self, ctx:TxScriptParser.LengthExprContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#lengthExpr.
+    def exitLengthExpr(self, ctx:TxScriptParser.LengthExprContext):
+        pass
+
+
     # Enter a parse tree produced by TxScriptParser#greaterExpr.
     def enterGreaterExpr(self, ctx:TxScriptParser.GreaterExprContext):
         pass
@@ -341,12 +377,21 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#sumSubEqExpr.
-    def enterSumSubEqExpr(self, ctx:TxScriptParser.SumSubEqExprContext):
+    # Enter a parse tree produced by TxScriptParser#multDivModExpr.
+    def enterMultDivModExpr(self, ctx:TxScriptParser.MultDivModExprContext):
         pass
 
-    # Exit a parse tree produced by TxScriptParser#sumSubEqExpr.
-    def exitSumSubEqExpr(self, ctx:TxScriptParser.SumSubEqExprContext):
+    # Exit a parse tree produced by TxScriptParser#multDivModExpr.
+    def exitMultDivModExpr(self, ctx:TxScriptParser.MultDivModExprContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#sumSubExpr.
+    def enterSumSubExpr(self, ctx:TxScriptParser.SumSubExprContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#sumSubExpr.
+    def exitSumSubExpr(self, ctx:TxScriptParser.SumSubExprContext):
         pass
 
 
@@ -365,15 +410,6 @@ class TxScriptListener(ParseTreeListener):
 
     # Exit a parse tree produced by TxScriptParser#constExpr.
     def exitConstExpr(self, ctx:TxScriptParser.ConstExprContext):
-        pass
-
-
-    # Enter a parse tree produced by TxScriptParser#multDivEqExpr.
-    def enterMultDivEqExpr(self, ctx:TxScriptParser.MultDivEqExprContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#multDivEqExpr.
-    def exitMultDivEqExpr(self, ctx:TxScriptParser.MultDivEqExprContext):
         pass
 
 

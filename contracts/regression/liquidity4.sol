@@ -1,5 +1,5 @@
 contract C4 {
-
+  
   constructor () {
     skip
   }
@@ -13,7 +13,7 @@ contract C4 {
 // (WEAK SAT - WEAK UNSAT)
 // Can_Transactions_Arrive_Any_time=True: STRONG SAT
 // not liquid
-property liquidity4a_nonliq {
+property liquidity4a_nonlive {
     Forall xa
     [
       true

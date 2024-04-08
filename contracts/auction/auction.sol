@@ -52,7 +52,7 @@ contract Auction {
 
 // EL: WEAK SAT WEAK UNSAT
 // should be true: seller can withdraw the balance after the deadline
-property sellerCanWithdraw_liq1 {
+property sellerCanWithdraw_live1 {
     Forall xa
     [
       st.winner!=0 && st.balance>0 && st.block.number>st.deadline && closed ==false
@@ -66,7 +66,7 @@ property sellerCanWithdraw_liq1 {
 
 // EL: WEAK SAT WEAK UNSAT
 // Deadline can be not passed, but seller can "cheat" by bidding two times (so withdrawing the first bid) 
-property sellerCanWithdraw_liq2 {
+property sellerCanWithdraw_live2 {
     Forall xa
     [
       st.winner!=0 && st.balance>0 && closed ==false
@@ -80,7 +80,7 @@ property sellerCanWithdraw_liq2 {
 
 // EL: STRONG SAT
 // Deadline can be not passed 
-property sellerCanWithdraw_nonliq1 {
+property sellerCanWithdraw_nonlive1 {
     Forall xa
     [
       st.winner!=0 && st.balance>0 && closed ==false
@@ -95,7 +95,7 @@ property sellerCanWithdraw_nonliq1 {
 
 // EL: STRONG SAT
 // Contract can be already closed
-property sellerCanWithdraw_nonliq2 {
+property sellerCanWithdraw_nonlive2 {
     Forall xa
     [
       st.winner!=0 && st.balance>0 && st.block.number>st.deadline 
@@ -109,7 +109,7 @@ property sellerCanWithdraw_nonliq2 {
 
 // EL: STRONG SAT
 // should be false?: the seller can have already fired close 
-property sellerCanWithdraw_nonliq3 {
+property sellerCanWithdraw_nonlive3 {
     Forall xa
     [
       st.winner!=0 && st.block.number>deadline && st.balance>0
@@ -124,7 +124,7 @@ property sellerCanWithdraw_nonliq3 {
 
 // EL: STRONG SAT
 // should be false: if the winner has not been set, the contract balance could be 0
-property sellerCanWithdraw_nonliq4 {
+property sellerCanWithdraw_nonlive4 {
     Forall xa
     [
       st.block.number>deadline
@@ -139,7 +139,7 @@ property sellerCanWithdraw_nonliq4 {
 
 // EL: STRONG SAT
 // should be false?: only the seller can fire the close transaction
-property sellerCanWithdraw_nonliq5 {
+property sellerCanWithdraw_nonlive5 {
     Forall xa
     [
       st.winner!=0
@@ -154,7 +154,7 @@ property sellerCanWithdraw_nonliq5 {
 
 // EL: STRONG SAT
 // should be false: only the seller can increase its balance
-property sellerCanWithdraw_nonliq6 {
+property sellerCanWithdraw_nonlive6 {
     Forall xa
     [
       st.winner!=0

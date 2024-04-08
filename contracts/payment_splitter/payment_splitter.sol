@@ -48,7 +48,7 @@ contract PaymentSplitter {
 
 // ? Can_Transactions_Arrive_Any_time=False: WEAK SAT WEAK UNSAT ?
 // ? Can_Transactions_Arrive_Any_time=True: STRONG SAT ?
-property anyUserCanWithdraw_nonliq {
+property anyUserCanWithdraw_nonlive {
     Forall xa
     [
       true
@@ -61,7 +61,7 @@ property anyUserCanWithdraw_nonliq {
 }
 
 // STRONG SAT
-property anyUserCanWithdraw_liq {
+property anyUserCanWithdraw_live {
     Forall xa
     [
       released[xa]==0 && shares[xa]>0 && state==1

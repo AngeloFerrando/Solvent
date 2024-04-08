@@ -22,7 +22,7 @@ contract IfNested1 {
 }
 
 // not liquid
-property _nonliq {
+property _nonlive {
     Forall xa
     [
       st.balance>0

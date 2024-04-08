@@ -40,7 +40,7 @@ contract VestingWallet {
     }
 }
 
-property liq1 {
+property live1 {
     Forall xa
     [
       xa==st.beneficiary && st.balance>0 && released==0 && st.block.number>st.start+st.duration
@@ -52,7 +52,7 @@ property liq1 {
     ]
 }
 
-property liq2 {
+property live2 {
     Forall xa
     [
       xa==st.beneficiary && st.balance>0 && released==0 && st.block.number>st.start

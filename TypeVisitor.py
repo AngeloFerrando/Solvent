@@ -52,6 +52,17 @@ class TypeVisitor(TxScriptVisitor):
         self.visit(ctx.phi)
 
 
+    # Visit a parse tree produced by TxScriptParser#secretDecl.
+    def visitSecretDecl(self, ctx:TxScriptParser.SecretDeclContext):
+        self.__globals.append((ctx.var.text, 'Secret'))
+        self.__globals_const[ctx.var.text] = self.__const
+
+
+    # Visit a parse tree produced by TxScriptParser#hashDecl.
+    def visitHashDecl(self, ctx:TxScriptParser.HashDeclContext):
+        self.__globals.append((ctx.var.text, 'Hash'))
+        self.__globals_const[ctx.var.text] = self.__const
+
     # Visit a parse tree produced by TxScriptParser#intDecl.
     def visitIntDecl(self, ctx:TxScriptParser.IntDeclContext):
         self.__globals.append((ctx.var.text, 'Int'))
@@ -123,7 +134,7 @@ class TypeVisitor(TxScriptVisitor):
         for arg in ctx.argExpr():
             name = self.__prefix + '_' + arg.var.text
             type = arg.ty.text
-            if type in ['int', 'bool', 'address', 'string']:
+            if type in ['int', 'bool', 'address', 'string', 'hash', 'secret']:
                 type = type.capitalize()
             else:
                 type = ('MapAddr', 'Int')
@@ -290,8 +301,8 @@ class TypeVisitor(TxScriptVisitor):
         return 'Bool'
 
 
-    # Visit a parse tree produced by TxScriptParser#sumSubEqExpr.
-    def visitSumSubEqExpr(self, ctx:TxScriptParser.SumSubEqExprContext):
+    # Visit a parse tree produced by TxScriptParser#sumSubExpr.
+    def visitSumSubExpr(self, ctx:TxScriptParser.SumSubExprContext):
         t_left = self.visit(ctx.left)
         t_right = self.visit(ctx.right)
         if t_left != 'Int' or t_right != 'Int':
@@ -308,8 +319,8 @@ class TypeVisitor(TxScriptVisitor):
         return 'Bool'
 
 
-    # Visit a parse tree produced by TxScriptParser#multDivEqExpr.
-    def visitMultDivEqExpr(self, ctx:TxScriptParser.MultDivEqExprContext):
+    # Visit a parse tree produced by TxScriptParser#multDivModExpr.
+    def visitMultDivModExpr(self, ctx:TxScriptParser.MultDivModExprContext):
         t_left = self.visit(ctx.left)
         t_right = self.visit(ctx.right)
         if t_left != 'Int' or t_right != 'Int':
@@ -334,6 +345,22 @@ class TypeVisitor(TxScriptVisitor):
             raise TypeError(ctx, f'Or operator requires both operands to be boolean ({t_left} and {t_right} are given)')
         return 'Bool'
 
+
+    # Visit a parse tree produced by TxScriptParser#lengthExpr.
+    def visitLengthExpr(self, ctx:TxScriptParser.LengthExprContext):
+        t_child = self.visit(ctx.child)
+        if t_child != 'Secret':
+            raise TypeError(ctx, f'Length operator requires a Secret operand ({t_child} is given)')
+        return 'Int'
+    
+
+    # Visit a parse tree produced by TxScriptParser#sha256Expr.
+    def visitSha256Expr(self, ctx:TxScriptParser.Sha256ExprContext):
+        t_child = self.visit(ctx.child)
+        if t_child != 'Secret':
+            raise TypeError(ctx, f'Sha256 operator requires a Secret operand ({t_child} is given)')
+        return 'Hash'
+    
 
     # Visit a parse tree produced by TxScriptParser#qslf.
     def visitQslf(self, ctx:TxScriptParser.QslfContext):

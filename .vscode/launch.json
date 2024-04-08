@@ -11,7 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["./contracts/regression/liquidity13.sol", "5", "2"]
+            "args": ["./contracts/lottery/lottery.sol", "5", "2"]
         }
     ]
 }

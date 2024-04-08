@@ -19,7 +19,7 @@ contract Bank {
 }  
 
 // ? WEAK UNSAT ?
-property liq1 {
+property live1 {
     Forall xa
       [
         st.myBalances[xa]>0 

@@ -14,7 +14,7 @@ contract C {
 
 
 /// @custom:ground_truth false
-property liquidity3a_nonliq {
+property liquidity3a_nonlive {
     Forall xa
     [
       true
@@ -27,7 +27,7 @@ property liquidity3a_nonliq {
 }
 
 // @custom:ground_truth true
-property liquidity3b_liq {
+property liquidity3b_live {
     Forall xa
     [
       xa == 1

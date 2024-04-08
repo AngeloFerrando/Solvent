@@ -34,7 +34,7 @@ contract Crowdfund {
 
 
 // should be true: seller can withdraw the balance after the deadline
-property ownerCanWithdraw_liq {
+property ownerCanWithdraw_live {
     Forall xa
     [
       st.balance >= st.target && st.block.number > st.deadline

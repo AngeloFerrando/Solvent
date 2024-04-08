@@ -5,7 +5,7 @@ DEFAULT_N_TRANSACTIONS := 100
 DEFAULT_N_PARTICIPANTS := 2
 DEFAULT_SMT := z3
 DEFAULT_Can_Transactions_Arrive_Any_time := true
-Contract := './bet.sol'
+Contract := './lottery.sol'
 
 # If no argument is provided, use the default value
 ifndef N_Transactions

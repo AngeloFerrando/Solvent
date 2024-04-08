@@ -23,7 +23,7 @@ contract StateChange1 {
 
 }
 
-property live_nonliq {
+property live_nonlive {
     Forall xa
     [
       state==0
@@ -35,7 +35,7 @@ property live_nonliq {
     ]
 }
 
-property not_live_nonliq {
+property not_live_nonlive {
     Forall xa
     [
       state==2

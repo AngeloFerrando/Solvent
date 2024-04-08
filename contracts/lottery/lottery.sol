@@ -11,7 +11,9 @@ contract Lottery {
     secret secret1
     secret secret2
 
-     
+    int state
+    hash commitment2
+
     constructor(int tc, int tr) {
         require (tc < tr);
         end_commit = tc;
@@ -19,20 +21,20 @@ contract Lottery {
         state = 0 // next = join1
     }
 
-    function join1(address a, hash h) payable {
+    function join1(address a1, hash h1) payable {
         require (state == 0);
         require (msg.value == 1);
-        player1 = a;
-        hashlock1 = h;
+        player1 = a1;
+        hashlock1 = h1;
         state = 1 // next = join2 or redeem1_nojoin
     }
 
-    function join2(address a, hash h) payable {
+    function join2(address a2, hash h2) payable {
         require (state == 1);
-        require (h != hashlock1);
+        require (h2 != hashlock1);
         require (msg.value == 1);
-        player2 = a;
-        commitment2 = h;
+        player2 = a2;
+        commitment2 = h2;
         state = 2 // next = reveal1
     }
 
@@ -46,11 +48,11 @@ contract Lottery {
     }
 
     // player1 must reveal first
-    function reveal1(secret s) {
+    function reveal1(secret s1) {
         require (state == 2);
         require (block.number >= end_commit);
-        require (sha256(s) == hashlock1);
-        secret1 = s;
+        require (sha256(s1) == hashlock1);
+        secret1 = s1;
         state = 4 // next = reveal2 or redeem2_noreveal
     }
 
@@ -58,13 +60,13 @@ contract Lottery {
     // the deadline extension +100 is needed to avoid attacks where 
     // player1 reveals close to the deadline, 
 
-    function reveal2(secret s) {
+    function reveal2(secret s2) {
         require (state == 4);
         require (block.number >= end_reveal + 100);
-        require (sha256(s) == commitment2);
-        secret2 = s;
+        require (sha256(s2) == commitment2);
+        secret2 = s2;
         state = 5 // next = win
-    } next(win)
+    }
 
     // if player1 has not revealed, player2 can redeem the pot
     function redeem2_noreveal() {
@@ -76,7 +78,7 @@ contract Lottery {
 
     function redeem1_noreveal() {
         require (state == 2);
-        require (block.number >= end_reveal+100)
+        require (block.number >= end_reveal+100);
         player1!balance;
         state = 3 // next = end
     }
@@ -84,10 +86,12 @@ contract Lottery {
     function win() {
         require (state == 5);
 
-        if ((length(secret1) + length(secret2)) % 2 == 0)
+        if ((length(secret1) + length(secret2)) % 2 == 0) {
             player1!balance
-        else
+        }
+        else {
             player2!balance
+        };
 
         state = 3 // next = end
     }

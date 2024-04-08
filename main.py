@@ -36,14 +36,14 @@ def parse(pattern):
     except Exception as e:
         print(e)
         return
-
-    with open('./out/outputTrace.py', 'w') as file:
-        file.write(visitor.visit(tree))
-    visitor = Z3Visitor(int(sys.argv[2]), int(sys.argv[3]), False, can_transactions_arrive_any_time)
-    with open('./out/outputState.py', 'w') as file:
-        file.write(visitor.visit(tree))
-    # except Exception as e:
-    #     print(str(e))
+    try:
+        with open('./out/outputTrace.py', 'w') as file:
+            file.write(visitor.visit(tree))
+        visitor = Z3Visitor(int(sys.argv[2]), int(sys.argv[3]), False, can_transactions_arrive_any_time)
+        with open('./out/outputState.py', 'w') as file:
+            file.write(visitor.visit(tree))
+    except Exception as e:
+        print(str(e))
 
 
 def parseFile(file):

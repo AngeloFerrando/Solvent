@@ -22,12 +22,14 @@ fieldExpr :
     | 'bool' var=LABEL                                                                              # boolDecl
     | 'string' var=LABEL                                                                            # strDecl
     | 'address' var=LABEL                                                                           # addrDecl
+    | 'hash' var=LABEL                                                                              # hashDecl
+    | 'secret' var=LABEL                                                                            # secretDecl
     | '(' 'address' '->' 'int' ')' var=LABEL                                                        # mapAddrDeclInt 
 ;
 
 argsExpr : (argExpr)*;
 argExpr : 
-    ty=('int'|'bool'|'address'|'string') var=LABEL (',')?                                           # arg
+    ty=('int'|'bool'|'address'|'string'|'hash'|'secret') var=LABEL (',')?                           # arg
     | ty='(' 'address' '->' 'int' ')' var=LABEL (',')?                                              # argMap
 ;
 
@@ -48,8 +50,10 @@ expression :
  | mapVar=LABEL '[' index=expression ']'                                # mapExpr
 //  | child=LABEL                                                          # variableExpr
 //  | '#' child=expression                                                 # walletExpr
- | left=expression op=('*' | '/') right=expression                      # multDivEqExpr
- | left=expression op=('+' | '-') right=expression                      # sumSubEqExpr
+ | 'sha256' '(' child=expression ')'                                    # sha256Expr
+ | ('length' | 'len') '(' child=expression ')'                          # lengthExpr
+ | left=expression op=('*' | '/' | '%') right=expression                # multDivModExpr
+ | left=expression op=('+' | '-') right=expression                      # sumSubExpr
  | left=expression ('==') right=expression                              # eqExpr
  | left=expression ('!=') right=expression                              # neqExpr
  | left=expression ('<') right=expression                               # lessExpr
@@ -117,7 +121,7 @@ LABELUPPER : [_a-zA-Z][_a-zA-Z0-9]*;
 NUMBER : ('-')? DIGIT | ('-')? (DIGIT_NOT_ZERO DIGIT+);
 REAL : NUMBER '.' (DIGIT+) | NUMBER '.' (DIGIT+);
 
-TYPE : 'int' | 'float' | 'bool' | 'address';
+TYPE : 'int' | 'float' | 'bool' | 'address' | 'hash' | 'secret';
 
 WS: [ \r\n\t]+ -> channel (HIDDEN);
 fragment DIGIT: ('0'..'9');

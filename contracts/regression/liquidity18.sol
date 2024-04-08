@@ -18,7 +18,7 @@ contract C18 {
 
 // STRONG UNSAT
 // liquid
-property liquidity18a_liq {
+property liquidity18a_live {
     Forall xa
     [
       true

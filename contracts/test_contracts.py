@@ -29,14 +29,14 @@ def run_makefile(folder):
                     if 'out/' not in phi: continue
                     phi = phi.split('\n')
 
-                    if '_nonliq' in phi[0]:
-                        if 'NOT LIQUID' not in phi[-2]:
+                    if '_nonlive' in phi[0]:
+                        if 'NOT LIVE' not in phi[-2]:
                             os.chdir('..')
                             clean_process = subprocess.Popen(['make', 'clean'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                             clean_output, clean_error = clean_process.communicate()
                             pytest.fail(f'PROPERTY: {phi[0]}')
                     else:
-                        if 'NOT LIQUID' in phi[-2]:
+                        if 'NOT LIVE' in phi[-2]:
                             os.chdir('..')
                             clean_process = subprocess.Popen(['make', 'clean'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                             clean_output, clean_error = clean_process.communicate()

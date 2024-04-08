@@ -46,7 +46,7 @@ contract Bet {
 
 // STRONG SAT
 // (Can_Transactions_Arrive_Any_time=False WEAK SAT WEAK UNSAT)
-property liq1_nonliq {
+property liq1_nonlive {
     Forall xa
       [
         st.block.number<st.deadline && st.balance==2 
@@ -59,7 +59,7 @@ property liq1_nonliq {
 }
 
 // WEAK SAT WEAK UNSAT
-property liq2 {
+property live2 {
     Forall xa
       [
         st.block.number<st.deadline && st.state == 1 

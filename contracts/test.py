@@ -55,21 +55,21 @@ def run_makefile(folder):
                 if 'out/' not in phi: continue
                 phi = phi.split('\n')
                 print(f'PROPERTY: {phi[0]}')
-                if '_nonliq' in phi[0]:
-                    if 'STRONG UNSAT'  in phi[-2]:
-                        print_not_passed()
-                        not_passed += 1
-                    elif 'NOT LIQUID' in phi[-2]:
+                if '_nonlive' in phi[0]:
+                    if 'NOT LIVE' in phi[-2]:
                         print_passed()
                         passed += 1
+                    elif 'LIVE'  in phi[-2]:
+                        print_not_passed()
+                        not_passed += 1
                     else:
                         print_not_passed()
                         not_passed += 1
                 else:
-                    if 'STRONG SAT'  in phi[-2]:
+                    if 'NOT LIVE'  in phi[-2]:
                         print_not_passed()
                         not_passed += 1
-                    elif 'UNSAT' in phi[-2]:
+                    elif 'LIVE' in phi[-2]:
                         print_passed()
                         passed += 1
                     else:

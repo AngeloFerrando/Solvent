@@ -73,10 +73,10 @@ class Z3Visitor(TxScriptVisitor):
         for p in self.__proc:
             if p == 'constructor': continue
             proc += 'Proc.declare(\'{name}\')\n'.format(name=p)
-        args = ['{a} = [Int("{a}_%s" % (i)) for i in range(N+1)]'.format(a=self.__args_map[a]) for a in self.__args_map]
+        args = ['{a} = [Int("{a}_%s" % (i)) for i in range(N+1)]'.format(a=self.__args_map[a][0]) for a in self.__args_map if self.__args_map[a][1] != 'hash']
         for i in range(0, self.__max_n_transactions):
-            args += ['{a}_q{i} = Int("{a}{i}_q")'.format(i=i, a=self.__args_map[a]) for a in self.__args_map]
-        step_trans_args = [self.__args_map[a] for a in self.__args_map if 'constructor' not in self.__args_map[a]]
+            args += ['{a}_q{i} = Int("{a}{i}_q")'.format(i=i, a=self.__args_map[a][0]) for a in self.__args_map if self.__args_map[a][1] != 'hash']
+        step_trans_args = [self.__args_map[a][0] for a in self.__args_map if 'constructor' not in self.__args_map[a][0] if self.__args_map[a][1] != 'hash']
         t_aw_qs = ''
         for i in range(0, self.__max_n_transactions):
             t_aw_qs += f't_aw_q{i} = [[Int("t_awq{i}_%s_%s" % (m, j)) for j in range(A+1)] for m in range(M)]\n'
@@ -115,7 +115,7 @@ class Z3Visitor(TxScriptVisitor):
             functions_call += ')'*(len(keys) + aux)
         contract_globals = ''
         for (g_var,g_type) in self.__globals:
-            if g_type == 'Address':
+            if g_type == 'Address' or g_type == 'Hash' or g_type == 'Secret':
                 g_type = 'Int'
             if type(g_type) is tuple:
                 contract_globals += '''
@@ -429,6 +429,20 @@ for prop in {props_name}:
         return self.visit(ctx.phi)
 
 
+    # Visit a parse tree produced by TxScriptParser#hashDecl.
+    def visitHashDecl(self, ctx:TxScriptParser.HashDeclContext):
+        self.__globals.append((ctx.var, 'Hash'))
+        self.__globals_index[ctx.var.text] = 1
+        self.__globals_const[ctx.var.text] = self.__const
+
+
+    # Visit a parse tree produced by TxScriptParser#secretDecl.
+    def visitSecretDecl(self, ctx:TxScriptParser.SecretDeclContext):
+        self.__globals.append((ctx.var, 'Secret'))
+        self.__globals_index[ctx.var.text] = 1
+        self.__globals_const[ctx.var.text] = self.__const
+
+
     # Visit a parse tree produced by TxScriptParser#intDecl.
     def visitIntDecl(self, ctx:TxScriptParser.IntDeclContext):
         self.__globals.append((ctx.var, 'Int'))
@@ -545,7 +559,7 @@ for prop in {props_name}:
                     self.__globals_index[g.text] = 1
                     if ty == 'Int': 
                         default = f', t_{g.text}[0]==0'
-                    elif ty == 'Address':
+                    elif ty == 'Address' or ty == 'Hash' or ty == 'Secret':
                         default = f', t_{g.text}[0]==1'
                     elif ty == 'Bool':
                         default = f', t_{g.text}[0]==False'
@@ -589,8 +603,12 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     def visitArgsExpr(self, ctx:TxScriptParser.ArgsExprContext):
         args = set()
         for arg in ctx.argExpr():
-            args.add(self.__prefix + '_' + arg.var.text)
-            self.__args_map[arg.var.text] = self.__prefix + '_' + arg.var.text
+            if arg.ty.text != 'hash':
+                args.add(self.__prefix + '_' + arg.var.text)
+            if arg.var.text in self.__args_map:
+                pref = self.__prefix.replace('_func', '')
+                raise Exception(f'The argument named {arg.var.text} in {pref} function is not valid (another function has already an argument called {arg.var.text})')
+            self.__args_map[arg.var.text] = (self.__prefix + '_' + arg.var.text, arg.ty.text)
         return args
 
 
@@ -633,7 +651,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
             if sender in self.__globals_index:
                 sender = sender + 'Now' if self.__globals_index[sender]+self.__globals_modifier < 0 else 't_'+sender + '['+str(self.__globals_index[sender]+self.__globals_modifier)+']'
             elif sender in self.__args_map:
-                sender = self.__args_map[sender]
+                sender = self.__args_map[sender][0]
             res = send.format(
                 sender=sender, 
                 amount=left, 
@@ -672,7 +690,18 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     # Visit a parse tree produced by TxScriptParser#groupCmd.
     def visitGroupCmd(self, ctx:TxScriptParser.GroupCmdContext):
         return self.visit(ctx.child)
+    
 
+    # Visit a parse tree produced by TxScriptParser#sha256Expr.
+    def visitSha256Expr(self, ctx:TxScriptParser.Sha256ExprContext):
+        self.visit(ctx.child)
+        return 'xa1'
+
+
+    # Visit a parse tree produced by TxScriptParser#lengthExpr.
+    def visitLengthExpr(self, ctx:TxScriptParser.LengthExprContext):
+        return self.visit(ctx.child)
+    
 
     # Visit a parse tree produced by TxScriptParser#assignCmd.
     def visitAssignCmd(self, ctx:TxScriptParser.AssignCmdContext):
@@ -920,8 +949,8 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         return 'Not('+self.visit(ctx.child)+')'
 
 
-    # Visit a parse tree produced by TxScriptParser#sumSubEqExpr.
-    def visitSumSubEqExpr(self, ctx:TxScriptParser.SumSubEqExprContext):
+    # Visit a parse tree produced by TxScriptParser#sumSubExpr.
+    def visitSumSubExpr(self, ctx:TxScriptParser.SumSubExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
         if left in self.__globals_index:
@@ -958,8 +987,8 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TxScriptParser#multDivEqExpr.
-    def visitMultDivEqExpr(self, ctx:TxScriptParser.MultDivEqExprContext):
+    # Visit a parse tree produced by TxScriptParser#multDivModExpr.
+    def visitMultDivModExpr(self, ctx:TxScriptParser.MultDivModExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
         if left in self.__globals_index:
@@ -1019,7 +1048,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         self.__prop_transactions[self.__prop_name] = self.__n_transactions 
         self.__tx_sender = 'xa_q' if ctx.sender.text == 'xa' else ctx.sender.text.replace('st.', '')+'[i]'
         condition = self.visit(ctx.where)
-        step_trans_args = [self.__args_map[a] for a in self.__args_map if 'constructor' not in self.__args_map[a]]
+        step_trans_args = [self.__args_map[a][0] for a in self.__args_map if 'constructor' not in self.__args_map[a][0] and self.__args_map[a][1] != 'hash']
         global_args_q = (', ' + ', '.join([(g.text+'_q{i}, *t_'+g.text+'_q{i}' if ty!=('MapAddr', 'Int') else '*'+g.text+'_q{i}, *t_'+g.text+'_q{i}_list') for (g, ty) in self.__globals])) if self.__globals else ''
         func_args_q = (', ' + ', '.join([s+'_q{i}' for s in step_trans_args]) if step_trans_args else '')
         global_args_phi0 = (', ' + ', '.join([g.text+'[i], '+g.text+'_q{i}, t_'+g.text+'_q{i}' for (g, _) in self.__globals])) if self.__globals else ''
@@ -1092,7 +1121,7 @@ Not({body})
                     self.__prop_nested_i.add(ag)#(ag+'[i]')
                     return f'aw{i}[{ag}]'#f'aw{i}[{ag}[i]]'
             if ctx.mapVar.text.replace('st.','') in self.__args_map:
-                return self.__args_map[ctx.v.text]  
+                return self.__args_map[ctx.v.text][0]  
             if ctx.mapVar.text.replace('st.','') in self.__globals_index:  
                 ag = index.replace('_q', '')
                 if ag == 'xa':
@@ -1118,7 +1147,10 @@ Not({body})
             if ctx.v.text == 'msg.sender' or ctx.v.text == 'sender':
                 return 'xa1'
             if ctx.v.text in self.__args_map:
-                return self.__args_map[ctx.v.text]
+                if self.__args_map[ctx.v.text][1] == 'hash':
+                    return 'xa1'
+                else:
+                    return self.__args_map[ctx.v.text][0]
             if ctx.v.text in self.__globals_index:
                 if self.__globals_index[ctx.v.text]+self.__globals_modifier < 0:
                     return ctx.v.text + 'Now'
@@ -1148,7 +1180,10 @@ Not({body})
             if 'tx.msg.sender' in ctx.v.text:
                 return 'tx_sender'
             if ctx.v.text.replace('st.','') in self.__args_map:
-                return self.__args_map[ctx.v.text]  
+                if self.__args_map[ctx.v.text][1] == 'hash':
+                    return 'xa1'
+                else:
+                    return self.__args_map[ctx.v.text][0]  
             if ctx.v.text.replace('st.','') in self.__globals_index:              
                 return ctx.v.text.replace('st.','') + f'{i}'
             return ctx.v.text.replace('st.', '') + '_q'

@@ -84,6 +84,16 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TxScriptParser#hashDecl.
+    def visitHashDecl(self, ctx:TxScriptParser.HashDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#secretDecl.
+    def visitSecretDecl(self, ctx:TxScriptParser.SecretDeclContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TxScriptParser#mapAddrDeclInt.
     def visitMapAddrDeclInt(self, ctx:TxScriptParser.MapAddrDeclIntContext):
         return self.visitChildren(ctx)
@@ -154,6 +164,11 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TxScriptParser#sha256Expr.
+    def visitSha256Expr(self, ctx:TxScriptParser.Sha256ExprContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TxScriptParser#greaterEqExpr.
     def visitGreaterEqExpr(self, ctx:TxScriptParser.GreaterEqExprContext):
         return self.visitChildren(ctx)
@@ -179,6 +194,11 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TxScriptParser#lengthExpr.
+    def visitLengthExpr(self, ctx:TxScriptParser.LengthExprContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TxScriptParser#greaterExpr.
     def visitGreaterExpr(self, ctx:TxScriptParser.GreaterExprContext):
         return self.visitChildren(ctx)
@@ -194,8 +214,13 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TxScriptParser#sumSubEqExpr.
-    def visitSumSubEqExpr(self, ctx:TxScriptParser.SumSubEqExprContext):
+    # Visit a parse tree produced by TxScriptParser#multDivModExpr.
+    def visitMultDivModExpr(self, ctx:TxScriptParser.MultDivModExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#sumSubExpr.
+    def visitSumSubExpr(self, ctx:TxScriptParser.SumSubExprContext):
         return self.visitChildren(ctx)
 
 
@@ -206,11 +231,6 @@ class TxScriptVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by TxScriptParser#constExpr.
     def visitConstExpr(self, ctx:TxScriptParser.ConstExprContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by TxScriptParser#multDivEqExpr.
-    def visitMultDivEqExpr(self, ctx:TxScriptParser.MultDivEqExprContext):
         return self.visitChildren(ctx)
 
 

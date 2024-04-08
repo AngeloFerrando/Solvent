@@ -10,3 +10,4 @@ __pycache__/*
 .vscode/launch.json
 contracts/__pycache__/test_contracts.cpython-310-pytest-6.2.5.pyc
 contracts/__pycache__/test_contracts.cpython-310-pytest-6.2.5.pyc
+contracts/__pycache__/test_contracts.cpython-310-pytest-6.2.5.pyc

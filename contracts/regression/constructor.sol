@@ -11,7 +11,7 @@ contract Constructor1 {
 
 
 // liquid
-property liquidity1_nonliq {
+property liquidity1_nonlive {
     Forall xa
     [
         true
