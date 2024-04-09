@@ -55,7 +55,7 @@ property success_live {
 property ownerCanWithdraw4_nonlive {
     Forall xa
     [
-      success && st.block.number > st.deadline
+      st.success && st.block.number > st.deadline
         ->
       Exists tx [1, st.owner]
       [
