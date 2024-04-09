@@ -1,4 +1,4 @@
-# txscript-z3
+# Solvent
 
 ```bash
 python3 main.py <file.sol> <number of transitions> <number of participants> > output.py
