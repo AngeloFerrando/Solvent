@@ -96,3 +96,39 @@ contract Lottery {
         state = 3 // next = end
     }
 }
+
+property liq1_nonlive {
+    Forall xa
+    [
+      true
+        ->
+      Exists tx [1, xa]
+      [
+        ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance ))
+      ]
+    ]
+}
+
+property liq2_nonlive {
+    Forall xa
+    [
+      xa == st.player1
+        ->
+      Exists tx [1, xa]
+      [
+        ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance ))
+      ]
+    ]
+}
+
+property liq3_live {
+    Forall xa
+    [
+      state == 5
+        ->
+      Exists tx [1, xa]
+      [
+        ((app_tx_st.balance[player1] == st.balance[player1]  + st.balance )  || (app_tx_st.balance[player2] == st.balance[player2]  + st.balance ))
+      ]
+    ]
+} 
