@@ -6,5 +6,5 @@ The constructor specifies the `owner` of the campaign, the `deadline` for receiv
 
 The contract implements the following functions:
 - `deposit`, which allows anyone to deposit any amount of T in the contract. Donations are only possible before the donation period has ended;
-- `finalize`, which allows the `owner` to redeem all the funds deposited in the contract. This is only possible if the campaign `target` has been reached;   
-- `withdraw`, which all allows donors to reclaim their donations after the donation period has ended.
+- `wdOwner`, which allows the `owner` to redeem all the funds deposited in the contract. This is only possible if the campaign `target` has been reached;   
+- `wdDonor`, which all allows donors to reclaim their donations after the donation period has ended.
