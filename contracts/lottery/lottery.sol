@@ -72,14 +72,14 @@ contract Lottery {
     function redeem2_noreveal() {
         require (state == 4);
         require (block.number >= end_reveal);
-        player2!balance;
+        player1!balance;
         state = 3 // next = end
     }
 
     function redeem1_noreveal() {
         require (state == 2);
         require (block.number >= end_reveal+100);
-        player1!balance;
+        player2!balance;
         state = 3 // next = end
     }
 

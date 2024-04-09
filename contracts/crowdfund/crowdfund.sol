@@ -45,3 +45,16 @@ property ownerCanWithdraw_live {
       ]
     ]
 }
+
+// should be true: seller can withdraw the balance after the deadline
+property donorCanWithdraw_live {
+    Forall xa
+    [
+      st.funds[xa]>0 && st.balance < st.target && st.block.number > st.deadline
+        ->
+      Exists tx [1, xa]
+      [
+        ((app_tx_st.balance[xa] == st.balance[xa] + st.funds[xa]))
+      ]
+    ]
+}
