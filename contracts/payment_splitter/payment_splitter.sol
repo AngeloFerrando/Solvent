@@ -1,7 +1,7 @@
 contract PaymentSplitter {
-    (address -> int) shares
+    mapping (address => int) shares
     int totalShares
-    (address -> int) released
+    mapping (address => int) released
     int totalReleased
     int totalReceived 
     int payment

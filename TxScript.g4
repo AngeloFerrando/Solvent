@@ -24,13 +24,13 @@ fieldExpr :
     | 'address' var=LABEL                                                                           # addrDecl
     | 'hash' var=LABEL                                                                              # hashDecl
     | 'secret' var=LABEL                                                                            # secretDecl
-    | '(' 'address' '->' 'int' ')' var=LABEL                                                        # mapAddrDeclInt 
+    | 'mapping (address => int)' var=LABEL                                                          # mapAddrDeclInt 
 ;
 
 argsExpr : (argExpr)*;
 argExpr : 
     ty=('int'|'bool'|'address'|'string'|'hash'|'secret') var=LABEL (',')?                           # arg
-    | ty='(' 'address' '->' 'int' ')' var=LABEL (',')?                                              # argMap
+    | ty='mapping (address => int)' var=LABEL (',')?                                                # argMap
 ;
 
 cmdExpr :

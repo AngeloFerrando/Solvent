@@ -1,11 +1,11 @@
 contract Crowdfund {
-    int deadline              // deadline for donations
-    int target                // the campaign is successful is this target is reaches 
-    address owner             // beneficiary of the campaign
-    int min_donation          // minimum donation
-    (address -> int) funds    // keeps track of the donations
-    int received              // total amount received (excluding coinbase/selfdestruct)
-    bool owner_withdrawn      // has the owner withdrawn the funds?
+    int deadline                      // deadline for donations
+    int target                        // the campaign is successful is this target is reaches 
+    address owner                     // beneficiary of the campaign
+    int min_donation                  // minimum donation
+    mapping (address => int) funds    // keeps track of the donations
+    int received                      // total amount received (excluding coinbase/selfdestruct)
+    bool owner_withdrawn              // has the owner withdrawn the funds?
 
     constructor(int d, int t, address o, int m) {
         owner = o;

@@ -1,5 +1,5 @@
 contract Bank {
-    (address -> int) myBalances
+    mapping (address => int) myBalances
 
     constructor() {
         skip
