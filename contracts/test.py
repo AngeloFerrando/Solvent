@@ -18,6 +18,7 @@ def run_makefile(folder):
     for sol in sol_files:
         passed = 0
         not_passed = 0
+        timeout = 0
 
         print('\n---------------------')
         print(f'Contract: {sol}\n')
@@ -79,10 +80,11 @@ def run_makefile(folder):
 
             print(f"Compilation time: {compilation_time} seconds; Running time: {running_time} seconds")
         except subprocess.TimeoutExpired:
+            timeout += 1
             print(f"Timeout for {sol}")
         clean_process = subprocess.Popen(['make', 'clean'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         clean_output, clean_error = clean_process.communicate()
-        dict_res[sol] = (passed, not_passed)
+        dict_res[sol] = (passed, not_passed, timeout)
 
     # Change back to the original directory
     os.chdir('..')
@@ -115,4 +117,4 @@ for k in dict_res:
         perc = 0
     else:
         perc = dict_res[k][0]/(dict_res[k][0]+dict_res[k][1])*100
-    print('Contract:', k, dict_res[k][0], "\033[92mPassed\033[0m,", dict_res[k][1], "\033[91mNot Passed\033[0m", '\t[', str(perc)+'%', ']')
+    print('Contract:', k, dict_res[k][0], "\033[92mPassed\033[0m,", dict_res[k][1], "\033[91mNot Passed\033[0m", dict_res[k][2], "\033[93mTimeout\033[0m", '\t[', str(perc)+'%', ']')
