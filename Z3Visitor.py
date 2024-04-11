@@ -743,15 +743,23 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     # Visit a parse tree produced by TxScriptParser#ifCmd.
     def visitIfCmd(self, ctx:TxScriptParser.IfCmdContext):
         cond = self.visit(ctx.condition)
-        backup = self.__globals_index.copy()
+        backup_globals = self.__globals_index.copy()
         backup_add = self.__add_last_cmd
         self.__add_last_cmd = False
+        backup_nesting_w = self.__nesting_w
         ifcmd = self.visit(ctx.ifcmd)
         ifcmd = ifcmd.format(subs='True')
-        self.__globals_index = backup
+        # self.__globals_index = backup
         self.__add_last_cmd = backup_add
-        self.__globals_index = backup
-        levelling_else_cmds = f'wNow=={self.__t_curr_w}, awNow=={self.__t_curr_a}'
+        levelling_else_cmds = 'True'
+        if self.__nesting_w > backup_nesting_w:
+            levelling_else_cmds += f', wNow=={self.__t_curr_w}, awNow=={self.__t_curr_a}'
+
+        for g in self.__globals_index:
+            if backup_globals[g] < self.__globals_index[g]:
+                tg_now = f't_{g}[{backup_globals[g]}]' if backup_globals[g] > 0 else f'{g}Now'
+                levelling_else_cmds += f', t_{g}[{self.__globals_index[g]-1}]=={tg_now}'
+        
         return 'If({cond},{ifcmd},{elsecmd})'.format(
             cond = 'And'+'('+cond+')',
             ifcmd = 'And'+'('+ifcmd+')',

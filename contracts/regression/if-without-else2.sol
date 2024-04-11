@@ -9,7 +9,7 @@ contract IfWithoutElse2 {
   function foo() payable {
     if (balance >= 10) {
         success = true
-    }
+    } else { skip }
   }
 }
 
