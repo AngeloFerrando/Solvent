@@ -40,16 +40,22 @@ set-logic:
 	done
 
 run:
-	@for Prop in $(wildcard out/smt2/*); do \
+	@if [ "$$SMT" = "cvc5" ]; then \
+		smt_flag="--produce-models"; \
+	else \
+		smt_flag="";\
+	fi; \
+	for Prop in $(wildcard out/smt2/*); do \
 		echo "PROPERTY: $$Prop"; \
 		foundUNSAT=false; \
 		for file in $$(find $$Prop/statebased -type f -name '*.smt2' | sort); do \
 			foundSAT=false; \
-			output=$$($$SMT $$file); \
-			if [ "$$output" = "unsat" ]; then \
+			output=$$($$SMT $$file $$smt_flag); \
+			# echo $$output; \
+			if echo "$$output" | grep -q "error"; then \
 				foundUNSAT=true; \
 				break; \
-			elif [ "$$output" = "sat" ]; then \
+			elif echo "$$output" | grep -q "sat"; then \
 				foundSAT=true; \
 			fi \
 		done; \
@@ -63,21 +69,26 @@ run:
 				foundUNSAT=false; \
 				for file in $$(find $$i -type f -name '*.smt2' | sort); do \
 					foundSAT=false; \
-					output=$$($$SMT $$file); \
-					if [ "$$output" = "unsat" ]; then \
+					output=$$($$SMT $$file $$smt_flag); \
+					# echo $$output; \
+					if echo "$$output" | grep -q "error"; then \
 						foundUNSAT=true; \
 						ii=$$(echo $$i | rev | cut -d'/' -f1 | rev); \
 						echo "LIVE UP TO $$ii TRANSACTION"; \
 						break; \
-					elif [ "$$output" = "sat" ]; then \
+					elif echo "$$output" | grep -q "sat"; then \
 						foundSAT=true; \
 					fi \
 				done; \
 				if [ "$$foundUNSAT" = "false" ] && [ "$$foundSAT" = "true" ]; then \
-					echo "NOT LIVE (COUNTEREXAMPLE FOUND)"; \
+					echo "NOT LIVE (COUNTEREXAMPLE FOUND AND STORED IN $$Prop/counterexample.txt)"; \
+					echo $$output > $$Prop/counterexample.txt; \
 					break; \
 				fi \
 			done; \
+			if [ "$$foundUNSAT" = "false" ] && [ "$$foundSAT" = "false" ]; then \
+				echo "UNKNOWN"; \
+			fi \
 		fi \
 	done
 

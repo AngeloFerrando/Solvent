@@ -325,7 +325,8 @@ for prop in {props_name}:
             s2.add(s.assertions())
             s2.add(qj)
             text = s2.to_smt2()
-            text = '(set-logic ALL)\\n' + text
+            # text = '(set-logic ALL)\\n' + text
+            text = '(set-logic ALL)\\n' + text + '\\n(get-model)' 
             filename = 'out/smt2/%s/{tracestate}based/%s/output_%s.smt2'%(prop, str(i).zfill(len(str(len(queries[prop])))), str(j).zfill(len(str(len(q)))))
             if not os.path.exists('out/smt2/'):
                 os.makedirs('out/smt2/')
