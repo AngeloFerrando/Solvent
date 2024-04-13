@@ -5,7 +5,7 @@ contract PaymentSplitter {
     int totalReleased
     int totalReceived 
     int payment
-    address owner
+    const address owner
     int state
 
     constructor(address o) {

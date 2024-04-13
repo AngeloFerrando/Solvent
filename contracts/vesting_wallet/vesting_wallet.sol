@@ -1,8 +1,8 @@
 contract VestingWallet {
     int released
-    address beneficiary
-    int start
-    int duration
+    const address beneficiary
+    const int start
+    const int duration
 
     int amount
     int vested_amount
@@ -40,6 +40,7 @@ contract VestingWallet {
     }
 }
 
+// LIVE
 property live1 {
     Forall xa
     [
