@@ -2,9 +2,9 @@
 
 contract Bet {
 
-  address oracle
-  int deadline
-  address par1
+  const address oracle
+  const int deadline
+  const address par1
   address par2
   int state // 0: join, 1: win-or-timeout, 2: end
    

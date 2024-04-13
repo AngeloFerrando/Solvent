@@ -1,9 +1,9 @@
 contract HTLC {
 
     bool committed
-    int timeout
-    address owner
-    address recipient
+    const int timeout
+    const address owner
+    const address recipient
     hash hashlock
 
     constructor(int t, address r) payable {
@@ -58,6 +58,7 @@ property p2_nonlive {
     ]
 }
 
+// LIVE
 property p3_live { 
     Forall xa
     [
