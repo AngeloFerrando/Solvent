@@ -1,6 +1,4 @@
-// States:
-// 0 = IDLE
-// 1 = REQ
+// Adapted from: https://github.com/fsainas/contracts-verification-benchmark/tree/main/contracts/vault
 
 contract Vault {
     address owner
@@ -11,7 +9,9 @@ contract Vault {
     int request_time
     int amount
     int state
-    
+    // 0 = IDLE
+    // 1 = REQ
+   
     constructor (address recovery_, int wait_time_) payable {
     	require(msg.sender != recovery_);
         owner = msg.sender;
