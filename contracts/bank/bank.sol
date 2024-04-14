@@ -1,32 +1,46 @@
+// Adapted from: https://github.com/fsainas/contracts-verification-benchmark/tree/main/contracts/bank
+
 contract Bank {
-    mapping (address => int) myBalances
+    mapping (address => int) funds
 
     constructor() {
         skip
     }
 
     function deposit() payable {
-        myBalances[msg.sender] = myBalances[msg.sender] + msg.value
+        funds[msg.sender] = funds[msg.sender] + msg.value
     }
 
     function withdraw(int amount) {
         require(amount > 0);
-        require(amount <= myBalances[msg.sender]);
+        require(amount <= funds[msg.sender]);
 
-        myBalances[msg.sender] = myBalances[msg.sender] - amount;
+        funds[msg.sender] = funds[msg.sender] - amount;
         msg.sender!amount
     }
 }  
 
-// ? WEAK UNSAT ?
-property live1 {
+property deposit_not_revert_live {
     Forall xa
       [
-        st.myBalances[xa]>0 
+        st.balance[xa]>0 
           -> 
         Exists tx [1, xa]
         [
-          (app_tx_st.balance[xa] - st.balance[xa] >= st.myBalances[xa])
+          (app_tx_st.funds[xa] == st.funds[xa] + st.balance[xa])
+        ]
+      ]
+}
+
+
+property withdraw_not_revert_live {
+    Forall xa
+      [
+        st.funds[xa]>0 
+          -> 
+        Exists tx [1, xa]
+        [
+          (app_tx_st.balance[xa] >= st.balance[xa] + st.funds[xa])
         ]
       ]
 }
