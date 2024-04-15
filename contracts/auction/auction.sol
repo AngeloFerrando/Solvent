@@ -40,7 +40,7 @@ contract Auction {
     }
 }
 
-// the seller can withdraw the bid after the deadline
+// the seller can withdraw the current bid after the deadline
 property seller_wd_live {
     Forall xa
     [
@@ -49,6 +49,19 @@ property seller_wd_live {
       Exists tx [1, st.seller]
       [
         (app_tx_st.balance[st.seller] >= st.balance[st.seller] + st.current_bid) && (st.current_bid >= 0)
+      ]
+    ]
+}
+
+// the old winner can withdraw the current bid
+property old_winner_wd_live {
+    Forall xa
+    [
+      st.winner!=0 && not closed
+        ->
+      Exists tx [1, xa]
+      [
+        (app_tx_st.balance[st.winner] == st.balance[st.winner] + st.current_bid)
       ]
     ]
 }
