@@ -13,7 +13,7 @@ contract NotPriority {
 // not should have priority over ||. 
 // Here not false || true seems to be paranthesized as not (false || true) = false, 
 // so the property is trivially true since the antecedent of the implication is false 
-property p1_live {
+property p1_notlive {
     Forall xa
     [
       not false || true
@@ -26,7 +26,7 @@ property p1_live {
 }
 
 // the property should be false, because the contract could not have enough balance to pay 
-property p2_live {
+property p2_notlive {
     Forall xa
     [
       (not false) || true
