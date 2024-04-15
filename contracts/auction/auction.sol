@@ -1,43 +1,34 @@
 contract Auction {
     int deadline
     int min_bid
-    int current_bid
-    address winner  
+    int current_bid // current maximum bit
+
     address seller
-    bool closed
+    address winner  
+
+    bool closed     // becomes true when the auction is closed
 
     constructor(address b, int d, int m) { // FIXME: if parameter a is used instead of b -> NameError: name 'constructor_a' is not defined
+        // require(b!=0 && m>0 && d>0);
         seller = b;
         deadline = d;
         min_bid = m;
-        current_bid = 0;
         closed = false
     }
      
-    function bid(address a) payable {
-        //require (block.number <= deadline);   // Auction closes after deadline
+    function bid() payable {
         require(not closed);
-        //require (msg.sender != seller);       // Can the seller bid?
         require (msg.value >= min_bid);
-
         // the current bid is greater than the previous ones 
         // this guarantees that the contract balance is strictly positive 
-        //require (msg.value > balance);     
-        require (msg.value > current_bid); // EL change
-        
-        //require (a != 1);
-
+        require (msg.value > current_bid);
+     
         // the previous maximum bid is returned to the previous winner
-        //winner!(balance-msg.value);
-        winner!current_bid; // EL change
-        
+        winner!current_bid;
         
         // the new winner is set to the current (highest) bidder
-        winner = a;
-        //winner = msg.sender;  // EL change
-
-        // update current_bid
-        current_bid = msg.value   // EL change
+        winner = msg.sender;
+        current_bid = msg.value
     }    
     
     function close() {
@@ -49,13 +40,37 @@ contract Auction {
     }
 }
 
-
-// EL: WEAK SAT WEAK UNSAT
-// should be true: seller can withdraw the balance after the deadline
-property sellerCanWithdraw_live1 {
+// the seller can withdraw the bid after the deadline
+property seller_wd_live {
     Forall xa
     [
-      st.winner!=0 && st.balance>0 && st.block.number>st.deadline && closed ==false
+      st.winner!=0 && st.balance>0 && st.block.number>st.deadline && (not closed)
+        ->
+      Exists tx [1, st.seller]
+      [
+        (app_tx_st.balance[st.seller] >= st.balance[st.seller] + st.current_bid) && (st.current_bid >= 0)
+      ]
+    ]
+}
+
+// the seller can withdraw the bid after the deadline
+property seller_wd2_live {
+    Forall xa
+    [
+      st.winner!=0 && st.balance>0 && st.block.number>st.deadline && (not closed)
+        ->
+      Exists tx [1, st.seller]
+      [
+        (app_tx_st.balance[st.seller] >= st.balance[st.seller] + st.current_bid) && (st.current_bid >= st.min_bid)
+      ]
+    ]
+}
+
+// the seller can always withdraw something (should be false before the deadline) 
+property seller_wd_early_nonlive {
+    Forall xa
+    [
+      st.winner!=0 && st.balance>0 && closed==false
         ->
       Exists tx [1, st.seller]
       [
@@ -64,38 +79,8 @@ property sellerCanWithdraw_live1 {
     ]
 }
 
-// EL: WEAK SAT WEAK UNSAT
-// Deadline can be not passed, but seller can "cheat" by bidding two times (so withdrawing the first bid) 
-property sellerCanWithdraw_live2 {
-    Forall xa
-    [
-      st.winner!=0 && st.balance>0 && closed ==false
-        ->
-      Exists tx [2, st.seller]
-      [
-        ((app_tx_st.balance[st.seller] > st.balance[st.seller]))
-      ]
-    ]
-}
-
-// EL: STRONG SAT
-// Deadline can be not passed 
-property sellerCanWithdraw_nonlive1 {
-    Forall xa
-    [
-      st.winner!=0 && st.balance>0 && closed ==false
-        ->
-      Exists tx [1, st.seller]
-      [
-        ((app_tx_st.balance[st.seller] > st.balance[st.seller]))
-      ]
-    ]
-}
-
-
-// EL: STRONG SAT
-// Contract can be already closed
-property sellerCanWithdraw_nonlive2 {
+// the seller can withdraw something in any state (should be false: the contract can be already closed)
+property seller_wd_closed_nonlive {
     Forall xa
     [
       st.winner!=0 && st.balance>0 && st.block.number>st.deadline 
@@ -107,24 +92,8 @@ property sellerCanWithdraw_nonlive2 {
     ]
 }
 
-// EL: STRONG SAT
-// should be false?: the seller can have already fired close 
-property sellerCanWithdraw_nonlive3 {
-    Forall xa
-    [
-      st.winner!=0 && st.block.number>deadline && st.balance>0
-        ->
-      Exists tx [1, st.seller]
-      [
-        ((app_tx_st.balance[st.seller] > st.balance[st.seller]))
-      ]
-    ]
-}
-
-
-// EL: STRONG SAT
-// should be false: if the winner has not been set, the contract balance could be 0
-property sellerCanWithdraw_nonlive4 {
+// the seller can withdraw something in any state (should be false: if the winner has not been set, the contract balance could be 0)
+property seller_wd_nowinner_nonlive {
     Forall xa
     [
       st.block.number>deadline
@@ -136,10 +105,8 @@ property sellerCanWithdraw_nonlive4 {
     ]
 }
 
-
-// EL: STRONG SAT
-// should be false?: only the seller can fire the close transaction
-property sellerCanWithdraw_nonlive5 {
+// only the seller can fire the close transaction
+property nonseller_wd_nonlive {
     Forall xa
     [
       st.winner!=0
@@ -151,17 +118,28 @@ property sellerCanWithdraw_nonlive5 {
     ]
 }
 
+// only the seller can increase its balance (should be false: why??)
+// property onlyseller_can_gain_nonlive {
+//     Forall xa
+//     [
+//       st.winner!=0 && st.balance>0 && st.block.number>st.deadline && (not closed)
+//         ->
+//       Exists tx [1, xa]
+//       [
+//         xa != st.seller && ((app_tx_st.balance[xa] > st.balance[xa]))
+//       ]
+//     ]
+// }
 
-// EL: STRONG SAT
-// should be false: only the seller can increase its balance
-property sellerCanWithdraw_nonlive6 {
-    Forall xa
-    [
-      st.winner!=0
-        ->
-      Exists tx [1, xa]
-      [
-        xa != st.seller && ((app_tx_st.balance[xa] > st.balance[xa]))
-      ]
-    ]
-}
+// Deadline can be not passed, but seller can "cheat" by bidding two times (so withdrawing the first bid) 
+// property sellerCanWithdraw_live2 {
+//     Forall xa
+//     [
+//       st.winner!=0 && st.balance>0 && closed ==false
+//         ->
+//       Exists tx [2, st.seller]
+//       [
+//         ((app_tx_st.balance[st.seller] > st.balance[st.seller]))
+//       ]
+//     ]
+// }
