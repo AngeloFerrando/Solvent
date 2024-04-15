@@ -1,11 +1,9 @@
 # Bet
 
 ## Specification
-The contract involves two players, each owning 1 token, and an oracle. Player 1 initiates the contract by depositing its token. Then, player 2 can deposit its token. Once both players have deposited their token, the oracle chooses the winner, which receives the 2 tokens. After a given time limit, it is only possibile for both players to take their tokens back, if any.
+The contract involves two players, each owning 1 ETH, and an oracle. Player 1 initiates the contract by depositing 1 ETH as a bet. Then, player 2 can bet 1 ETH by calling the `join` method. If player2 does not join by `deadline_join`, then player1 can redeem the bet. Once both players have joined, the oracle chooses the winner, which receives the 2 ETH. After `deadline_win`, it is only possibile for both players to take their bets back.
 
 ## Properties
-- **liq1**: before the deadline, if the contract balance is 2 then the oracle has a 5-steps strategy to increase the balance of player 1 or player 2 of at least 2 tokens. 
-
-## Versions
-- **v1**: compliant with the specification.
-- **v2**: uses token balances (unreliable!) to infer contract state.
+- **any_timeout_join**: if `deadline_join` has passed and player2 has not joined, then anyone can make player1 redeem the bet
+- **oracle_win**: once player2 has joined and before `deadline_win`, the oracle can transfer the pot to one of the players
+- **any_timeout_win**: if `deadline_win` has passed and the oracle has not chosen the winner, then anyone can make the players redeem their bets
