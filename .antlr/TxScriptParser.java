@@ -46,8 +46,8 @@ public class TxScriptParser extends Parser {
 			"'string'", "'address'", "'hash'", "'secret'", "'mapping (address => int)'", 
 			"','", "'skip'", "'require'", "'if'", "'else'", "'['", "']'", "'='", 
 			"'!'", "';'", "'sha256'", "'length'", "'len'", "'*'", "'/'", "'%'", "'+'", 
-			"'-'", "'=='", "'!='", "'<'", "'>'", "'<='", "'>='", "'and'", "'&&'", 
-			"'or'", "'||'", "'not'", "'Forall'", "'->'", "'Exists'", "'true'", "'True'", 
+			"'-'", "'=='", "'!='", "'<'", "'>'", "'<='", "'>='", "'not'", "'and'", 
+			"'&&'", "'or'", "'||'", "'Forall'", "'->'", "'Exists'", "'true'", "'True'", 
 			"'false'", "'False'"
 		};
 	}
@@ -1413,9 +1413,9 @@ public class TxScriptParser extends Parser {
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(203);
-				match(T__46);
+				match(T__42);
 				setState(204);
-				((NotExprContext)_localctx).child = expression(2);
+				((NotExprContext)_localctx).child = expression(4);
 				}
 				break;
 			case 6:
@@ -1584,10 +1584,10 @@ public class TxScriptParser extends Parser {
 						((AndExprContext)_localctx).left = _prevctx;
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(235);
-						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
+						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
 						setState(236);
 						_la = _input.LA(1);
-						if ( !(_la==T__42 || _la==T__43) ) {
+						if ( !(_la==T__43 || _la==T__44) ) {
 						_errHandler.recoverInline(this);
 						}
 						else {
@@ -1596,7 +1596,7 @@ public class TxScriptParser extends Parser {
 							consume();
 						}
 						setState(237);
-						((AndExprContext)_localctx).right = expression(5);
+						((AndExprContext)_localctx).right = expression(4);
 						}
 						break;
 					case 10:
@@ -1605,10 +1605,10 @@ public class TxScriptParser extends Parser {
 						((OrExprContext)_localctx).left = _prevctx;
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(238);
-						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
+						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
 						setState(239);
 						_la = _input.LA(1);
-						if ( !(_la==T__44 || _la==T__45) ) {
+						if ( !(_la==T__45 || _la==T__46) ) {
 						_errHandler.recoverInline(this);
 						}
 						else {
@@ -1617,7 +1617,7 @@ public class TxScriptParser extends Parser {
 							consume();
 						}
 						setState(240);
-						((OrExprContext)_localctx).right = expression(4);
+						((OrExprContext)_localctx).right = expression(3);
 						}
 						break;
 					}
@@ -1861,9 +1861,9 @@ public class TxScriptParser extends Parser {
 		case 8:
 			return precpred(_ctx, 5);
 		case 9:
-			return precpred(_ctx, 4);
-		case 10:
 			return precpred(_ctx, 3);
+		case 10:
+			return precpred(_ctx, 2);
 		}
 		return true;
 	}
@@ -1908,8 +1908,8 @@ public class TxScriptParser extends Parser {
 		"\n\u0001\n\u0001\u000b\u0001\u000b\u0001\u000b\u0001\u000b\u0003\u000b"+
 		"\u010c\b\u000b\u0001\u000b\u0000\u0002\u0010\u0012\f\u0000\u0002\u0004"+
 		"\u0006\b\n\f\u000e\u0010\u0012\u0014\u0016\u0000\b\u0001\u0000\f\u0011"+
-		"\u0001\u0000\u001e\u001f\u0001\u0000 \"\u0001\u0000#$\u0001\u0000+,\u0001"+
-		"\u0000-.\u0001\u000034\u0001\u000056\u012d\u0000\u0018\u0001\u0000\u0000"+
+		"\u0001\u0000\u001e\u001f\u0001\u0000 \"\u0001\u0000#$\u0001\u0000,-\u0001"+
+		"\u0000./\u0001\u000034\u0001\u000056\u012d\u0000\u0018\u0001\u0000\u0000"+
 		"\u0000\u0002\"\u0001\u0000\u0000\u0000\u0004%\u0001\u0000\u0000\u0000"+
 		"\u0006,\u0001\u0000\u0000\u0000\b`\u0001\u0000\u0000\u0000\np\u0001\u0000"+
 		"\u0000\u0000\fu\u0001\u0000\u0000\u0000\u000e\u0082\u0001\u0000\u0000"+
@@ -1998,8 +1998,8 @@ public class TxScriptParser extends Parser {
 		"\u0003\u0012\t\u0000\u00c4\u00c5\u0005\b\u0000\u0000\u00c5\u00d2\u0001"+
 		"\u0000\u0000\u0000\u00c6\u00c7\u0007\u0001\u0000\u0000\u00c7\u00c8\u0005"+
 		"\u0007\u0000\u0000\u00c8\u00c9\u0003\u0012\t\u0000\u00c9\u00ca\u0005\b"+
-		"\u0000\u0000\u00ca\u00d2\u0001\u0000\u0000\u0000\u00cb\u00cc\u0005/\u0000"+
-		"\u0000\u00cc\u00d2\u0003\u0012\t\u0002\u00cd\u00ce\u0005\u0007\u0000\u0000"+
+		"\u0000\u0000\u00ca\u00d2\u0001\u0000\u0000\u0000\u00cb\u00cc\u0005+\u0000"+
+		"\u0000\u00cc\u00d2\u0003\u0012\t\u0004\u00cd\u00ce\u0005\u0007\u0000\u0000"+
 		"\u00ce\u00cf\u0003\u0012\t\u0000\u00cf\u00d0\u0005\b\u0000\u0000\u00d0"+
 		"\u00d2\u0001\u0000\u0000\u0000\u00d1\u00ba\u0001\u0000\u0000\u0000\u00d1"+
 		"\u00bc\u0001\u0000\u0000\u0000\u00d1\u00c1\u0001\u0000\u0000\u0000\u00d1"+
@@ -2015,10 +2015,10 @@ public class TxScriptParser extends Parser {
 		"(\u0000\u0000\u00e4\u00f2\u0003\u0012\t\b\u00e5\u00e6\n\u0006\u0000\u0000"+
 		"\u00e6\u00e7\u0005)\u0000\u0000\u00e7\u00f2\u0003\u0012\t\u0007\u00e8"+
 		"\u00e9\n\u0005\u0000\u0000\u00e9\u00ea\u0005*\u0000\u0000\u00ea\u00f2"+
-		"\u0003\u0012\t\u0006\u00eb\u00ec\n\u0004\u0000\u0000\u00ec\u00ed\u0007"+
-		"\u0004\u0000\u0000\u00ed\u00f2\u0003\u0012\t\u0005\u00ee\u00ef\n\u0003"+
+		"\u0003\u0012\t\u0006\u00eb\u00ec\n\u0003\u0000\u0000\u00ec\u00ed\u0007"+
+		"\u0004\u0000\u0000\u00ed\u00f2\u0003\u0012\t\u0004\u00ee\u00ef\n\u0002"+
 		"\u0000\u0000\u00ef\u00f0\u0007\u0005\u0000\u0000\u00f0\u00f2\u0003\u0012"+
-		"\t\u0004\u00f1\u00d3\u0001\u0000\u0000\u0000\u00f1\u00d6\u0001\u0000\u0000"+
+		"\t\u0003\u00f1\u00d3\u0001\u0000\u0000\u0000\u00f1\u00d6\u0001\u0000\u0000"+
 		"\u0000\u00f1\u00d9\u0001\u0000\u0000\u0000\u00f1\u00dc\u0001\u0000\u0000"+
 		"\u0000\u00f1\u00df\u0001\u0000\u0000\u0000\u00f1\u00e2\u0001\u0000\u0000"+
 		"\u0000\u00f1\u00e5\u0001\u0000\u0000\u0000\u00f1\u00e8\u0001\u0000\u0000"+

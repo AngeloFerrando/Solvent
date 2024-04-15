@@ -1117,6 +1117,7 @@ Not({body})
         else:
             if 'app_tx_st' in ctx.mapVar.text:
                 i = f'_q{self.__n_transactions-1-(self.__n_transactions-self.__pi)}'
+                ctx.mapVar.text = ctx.mapVar.text.replace('app_tx_', '')
             else:
                 i = '[i]'
             if 'st.balance' in ctx.mapVar.text:
