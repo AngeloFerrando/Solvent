@@ -13,8 +13,8 @@ class TxScriptErrorListener( ErrorListener ):
         raise Exception("Syntax error: " + msg)
 
 def parse(pattern):
-    if len(sys.argv) != 4 and len(sys.argv) != 5:
-        print('The script requires 3 parameters (plus one optional one which is True by default), as follows: <name of the SOL file> <number of transactions> <number of participants> (<accept transactions any time>)?')
+    if len(sys.argv) != 4 and len(sys.argv) != 6:
+        print('The script requires 3 parameters (plus two optional ones which are True and -1 by default), as follows: <name of the SOL file> <number of transactions> <number of participants> (<accept transactions any time> <fixed_iteration>)?')
         return
     
     lexer = TxScriptLexer(InputStream(pattern))
@@ -23,10 +23,11 @@ def parse(pattern):
     parser.addErrorListener(TxScriptErrorListener())
     tree = parser.contractExpr()
 
-    can_transactions_arrive_any_time = (sys.argv[4]=='True' or sys.argv[4]=='true') if len(sys.argv) == 5 else True
+    can_transactions_arrive_any_time = (sys.argv[4]=='True' or sys.argv[4]=='true') if len(sys.argv) == 6 else True
+    fixed_iteration = int(sys.argv[5]) if len(sys.argv) == 6 and sys.argv[5] != '-1' else -1
 
     type_visitor = TypeVisitor()
-    visitor = Z3Visitor(int(sys.argv[2]), int(sys.argv[3]), True, can_transactions_arrive_any_time)
+    visitor = Z3Visitor(int(sys.argv[2]), int(sys.argv[3]), True, can_transactions_arrive_any_time, fixed_iteration)
 
     isExist = os.path.exists('./out')
     if not isExist:
@@ -39,7 +40,7 @@ def parse(pattern):
     try:
         with open('./out/outputTrace.py', 'w') as file:
             file.write(visitor.visit(tree))
-        visitor = Z3Visitor(int(sys.argv[2]), int(sys.argv[3]), False, can_transactions_arrive_any_time)
+        visitor = Z3Visitor(int(sys.argv[2]), int(sys.argv[3]), False, can_transactions_arrive_any_time, fixed_iteration)
         with open('./out/outputState.py', 'w') as file:
             file.write(visitor.visit(tree))
     except Exception as e:

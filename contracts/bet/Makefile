@@ -5,6 +5,7 @@ DEFAULT_N_TRANSACTIONS := 100
 DEFAULT_N_PARTICIPANTS := 2
 DEFAULT_SMT := z3
 DEFAULT_Can_Transactions_Arrive_Any_time := true
+DEFAULT_Fixed_Iteration := -1
 Contract := './bet.sol'
 
 # If no argument is provided, use the default value
@@ -17,9 +18,12 @@ endif
 ifndef Can_Transactions_Arrive_Any_time
     Can_Transactions_Arrive_Any_time := $(DEFAULT_Can_Transactions_Arrive_Any_time)
 endif
+ifndef Fixed_Iteration
+    Fixed_Iteration := $(DEFAULT_Fixed_Iteration)
+endif
 
 compile: clean
-	python3 ../../main.py $(Contract) $(N_Transactions) $(N_Participants) $(Can_Transactions_Arrive_Any_time)
+	python3 ../../main.py $(Contract) $(N_Transactions) $(N_Participants) $(Can_Transactions_Arrive_Any_time) $(Fixed_Iteration)
 	@if test -f ./out/outputTrace.py; then \
 		python3 ./out/outputTrace.py; \
 	fi

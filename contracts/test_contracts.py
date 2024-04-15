@@ -29,7 +29,7 @@ def run_makefile(folder):
                     if 'out/' not in phi: continue
                     phi = phi.split('\n')
 
-                    if '_nonlive' in phi[0]:
+                    if '_nonlive' in phi[0] or '_notlive' in phi[0]:
                         if 'NOT LIVE' not in phi[-2]:
                             os.chdir('..')
                             clean_process = subprocess.Popen(['make', 'clean'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)

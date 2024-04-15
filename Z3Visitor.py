@@ -5,7 +5,7 @@ from TxScriptParser import *
 from TxScriptVisitor import *
 
 class Z3Visitor(TxScriptVisitor):
-    def __init__(self, N, A, Trace_Based, can_transations_arrive_any_time):
+    def __init__(self, N, A, Trace_Based, can_transations_arrive_any_time, fixed_iteration):
         self.__proc = set()
         self.__proc_args = {}
         self.__add_last_cmd = False
@@ -36,6 +36,7 @@ class Z3Visitor(TxScriptVisitor):
         self.__A = A
         self.__Trace_Based = Trace_Based
         self.__can_transations_arrive_any_time = can_transations_arrive_any_time
+        self.__fixed_iteration = fixed_iteration
 
     # Visit a parse tree produced by TxScriptParser#contractExpr.
     def visitContractExpr(self, ctx:TxScriptParser.ContractExprContext):
@@ -142,11 +143,15 @@ t_{g}_q{i} = [{ty}("t_{g}q{i}_%s" % (m)) for m in range(M)]'''.format(i=i, g=g_v
         prop_queries = 'queries = {}\n'
         for n in self.__prop_names:
             q = ','.join([f'p_{n}_{i}(i)' for i in range(1, self.__prop_transactions[n]+1)])
-            prop_queries += f'queries[\'{n}\'] = [[{q}] for i in range(1, N+1)]\n'
+            if not self.__Trace_Based or self.__fixed_iteration == -1:
+                prop_queries += f'queries[\'{n}\'] = [[{q}] for i in range(1, N+1)]\n'
+            else:
+                prop_queries += f'queries[\'{n}\'] = [[{q}] for i in range(iteration, iteration+1)]\n'
 
         res = '''
 from z3 import *
 import time
+import sys
 
 
 def stringOfXA(m, i):
@@ -315,11 +320,14 @@ for i in range(1, N):
 
 {props}
 
+{init_iteration}
+
 {queries}
 
 for prop in {props_name}:
     for i, q in enumerate(queries[prop]):
         for j in range(0, len(q)):
+            {set_i}
             qj = q[j]
             s2 = Solver()
             s2.add(s.assertions())
@@ -392,6 +400,8 @@ for prop in {props_name}:
         props = '\n'.join(props),
         # pis = ','.join([f'p{i}(i)' for i in range(1, self.__n_transactions+1)]),
         queries = prop_queries,
+        init_iteration = '' if not self.__Trace_Based or self.__fixed_iteration == -1 else f'iteration = {self.__fixed_iteration}',
+        set_i = '' if not self.__Trace_Based or self.__fixed_iteration == -1 else 'i = iteration - 1',
         props_name = '{' + ','.join(['\''+n+'\'' for n in self.__prop_names]) + '}',
         n_trans = self.__max_n_transactions 
     )

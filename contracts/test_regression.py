@@ -56,7 +56,7 @@ def run_makefile(folder):
                 if 'out/' not in phi: continue
                 phi = phi.split('\n')
                 print(f'PROPERTY: {phi[0]}')
-                if '_nonlive' in phi[0]:
+                if '_nonlive' in phi[0] or '_notlive' in phi[0]:
                     if 'NOT LIVE' in phi[-2]:
                         print_passed()
                         passed += 1

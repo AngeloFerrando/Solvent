@@ -99,8 +99,8 @@ def print_not_passed():
 
 # List all directories in the current directory
 directories = sorted([d for d in os.listdir('.') if os.path.isdir(d)])
-directories.remove('regression')
-directories.insert(0, 'regression')
+# directories.remove('regression')
+# directories.insert(0, 'regression')
 
 dict_res = {}
 # Run makefile for each directory
