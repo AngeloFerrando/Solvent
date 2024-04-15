@@ -1,11 +1,10 @@
 contract Auction {
-    int deadline
-    int min_bid
+    const int deadline
+    const int min_bid
+    const address seller
+
+    address winner
     int current_bid // current maximum bit
-
-    address seller
-    address winner  
-
     bool closed     // becomes true when the auction is closed
 
     constructor(address b, int d, int m) { // FIXME: if parameter a is used instead of b -> NameError: name 'constructor_a' is not defined
