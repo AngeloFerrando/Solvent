@@ -16,34 +16,33 @@ contract Bet {
   }
 
   function join() payable {
-    require(state==0); // JOIN-OR-TIMEOUT
-    require(block.number<deadline);
-    require(msg.value==1);
-	  require(msg.sender != player1);
+    require(state==0); // JOIN
+    require (msg.value==1);
+    require (msg.sender != player1);
     state = 1; // WIN-OR-TIMEOUT
     player2 = msg.sender
   }
 
   function win(address winner) {
-	  require(state==1); // WIN-OR-TIMEOUT
-	  require(msg.sender==oracle);
+    require(state==1); // WIN-OR-TIMEOUT
+	require(msg.sender==oracle);
     require(block.number<deadline);
-	  require(winner==player1 || winner==player2);
+	require(winner==player1 || winner==player2);
     state = 2; // END
     winner!balance
   }
 
   function timeout() {
-    require(state==0 || state==1);
+	require(state==1); // WIN-OR-TIMEOUT
    	require(block.number>=deadline);
-	  player1!1;
-	  if (state==1) { player2!1 };
-    state = 2 // END
+    state = 2; // END
+    player1!1;
+	player2!1
   }
 }
 
-// if deadline_join has passed and player2 has not joined, then anyone can make player1 redeem the bet 
-property any_timeout_join_live {
+// if deadline has passed and player2 has not joined, then anyone can make player1 redeem the bet 
+property any_timeout_nonlive {
     Forall xa
       [
         st.block.number>=st.deadline && st.state==0 
@@ -69,7 +68,7 @@ property oracle_win_live {
       ]
 }
 
-// in state WIN-OR-TIMEOUT and before `deadline_win`, the oracle can transfer the whole pot to one of the players
+// in state WIN-OR-TIMEOUT and before `deadline`, the oracle can transfer the whole pot to one of the players
 // STRONG UNSAT
 property oracle_win_strong_live {
     Forall xa
@@ -108,36 +107,3 @@ property oracle_exact_balance_nonlive {
         ]
       ]
 }
-
-
-
-
-
-/*
-property {
-    Forall xa  
-      [block.number<deadline && balance==2 -> Exists s (s, xa) xa==oracle && can_withdraw(s,player1,2) || can_withdraw(s,player2,2)]
-}
-
-property {
-    Forall xa  
-      [block.number<deadline && balance==2 -> Exists tx . tx.msg.sender==oracle && can_withdraw(tx,player1,2) || can_withdraw(tx,player2,2)]
-}
-
-
-property {
-  Forall st (implicito: stato reachable del contratto)
-    Forall xa (non usato in questo esempio, ma in altri sì, ad es. Bank)
-      [st.block.number<st.deadline && st.balance==2 -> Exists tx . tx.fun==win && tx.msg.sender==st.oracle && (((app tx st).balance(player1) - st.balance(player1) >= 2) || ((app tx st).balance(player2) - st.balance(player1) >= 2))]
-}
-
-property {
-  Forall st (implicito: stato reachable del contratto)
-    Forall xa (non usato in questo esempio, ma in altri sì, ad es. Bank)
-      [st.block.number<st.deadline && st.balance==2 -> Exists tx . tx = oracle:win(player1) && tx.msg.sender==st.oracle && (((app tx st).balance(player1) - st.balance(player1) >= 2) || ((app tx st).balance(player2) - st.balance(player1) >= 2))]
-}*/
-
-//property {
-//	forall xa  
-//	    [block.number>timeout && balance==2 -> Exists s (s, xa) (can_withdraw(player1,1) && can_withdraw(player2,1))]
-//}
