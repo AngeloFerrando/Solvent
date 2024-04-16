@@ -2,21 +2,21 @@ contract HTLC {
 
     int timeout
     address owner
-    address recipient
+    address verifier
     address hashlock
 
     constructor(int t, address r) payable {
         require (msg.value > 0);
         timeout = t;
         owner = msg.sender;
-        recipient = r;
+        verifier = r;
         // TODO: use parameter hash h
         hashlock = msg.sender
     }
 
     function reveal() {
         if (hashlock == msg.sender) {
-            recipient!balance
+            verifier!balance
         }
     }
 
@@ -35,7 +35,7 @@ property p1_live {
         ->
         Exists tx [1, xa]
         [
-            ((app_tx_st.balance[st.recipient] >= st.balance[st.recipient] + st.balance))
+            ((app_tx_st.balance[st.verifier] >= st.balance[st.verifier] + st.balance))
         ]
     ]
 }
@@ -43,7 +43,7 @@ property p1_live {
 property p2_nonlive { 
     Forall xa
     [
-        xa==st.recipient && st.balance>0
+        xa==st.verifier && st.balance>0
         ->
         Exists tx [1, xa]
         [
