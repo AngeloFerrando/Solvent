@@ -15,7 +15,7 @@ contract Crowdfund {
         require (m < target)
     }
 
-    function deposit() payable {
+    function donate() payable {
         require (block.number <= end_donate);
         require (msg.value>=min_donation);
        	funds[msg.sender] = funds[msg.sender] + msg.value;

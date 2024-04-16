@@ -65,15 +65,15 @@ property donor_wd_live {
     ]
 }
 
-// if threshold is reached, the owner can withdraw at least the target after the deadline
+// the extra budget can always be redeemed by the owner
 property liquidity_live {
     Forall xa
     [
-      st.balance>0 && st.tot_donations==0 && st.block.number > st.end_donate
+      st.balance>st.tot_donations && st.block.number>st.end_donate
         ->
       Exists tx [1, xa]
       [
-        (app_tx_st.balance==0)
+        (app_tx_st.balance[st.owner] >= st.balance[st.owner] + (st.balance - st.tot_donations))
       ]
     ]
 }

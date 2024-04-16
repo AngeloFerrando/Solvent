@@ -33,14 +33,11 @@ contract Crowdfund {
 
 // if target is reached, the owner can withdraw at least the target after the deadline
 property owner_wd_live {
-    Forall xa
-    [
+    Forall xa [
       st.target_reached && st.balance>=st.target && st.block.number > st.end_donate
-        ->
-      Exists tx [1, st.owner]
-      [
-        ((app_tx_st.balance[st.owner] >= st.balance[st.owner] + st.target))
-      ]
+      ->
+      Exists tx [1, st.owner] 
+        [ app_tx_st.balance[st.owner] >= st.balance[st.owner] + st.target ]
     ]
 }
 
