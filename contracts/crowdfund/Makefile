@@ -6,7 +6,7 @@ DEFAULT_N_PARTICIPANTS := 2
 DEFAULT_SMT := z3
 DEFAULT_Can_Transactions_Arrive_Any_time := true
 DEFAULT_Fixed_Iteration := -1
-Contract := './crowdfund2.sol'
+Contract := './crowdfund-fix2.sol'
 
 # If no argument is provided, use the default value
 ifndef N_Transactions

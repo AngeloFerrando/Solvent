@@ -1,5 +1,5 @@
 contract Crowdfund {
-    int deadline                      // deadline for donations
+    int end_donate                    // deadline for donations
     int target                        // the campaign is successful is this target is reaches 
     address owner                     // beneficiary of the campaign
     int min_donation                  // minimum donation
@@ -9,14 +9,14 @@ contract Crowdfund {
 
     constructor(int d, int t, address o, int m) {
         owner = o;
-        deadline = d; 
+        end_donate = d; 
         target = t;
         min_donation = m;
         require (m < target)
     }
 
-    function deposit() payable {
-        require (block.number <= deadline);
+    function donate() payable {
+        require (block.number <= end_donate);
         require (msg.value>=min_donation);
        	funds[msg.sender] = funds[msg.sender] + msg.value;
         if (balance >= target) {
@@ -25,25 +25,25 @@ contract Crowdfund {
     }
 
     function wdOwner() {
-        require (block.number > deadline);
+        require (block.number > end_donate);
         require (success && not owner_withdrawn);
        	owner!balance;
         owner_withdrawn = true
     }
 
     function wdDonor() {
-        require (block.number > deadline);
+        require (block.number > end_donate);
         require (not success);
        	msg.sender!funds[msg.sender];
        	funds[msg.sender] = 0
     }
 }
 
-// should be true??: if there is donor with enough tokens, then campaign can be successful
-property success_live {
+// if there is some donor with enough tokens, then the campaign can be successful
+property can_reach_target_live {
     Forall xa
     [
-      st.balance[xa] > st.target && st.block.number <= st.deadline
+      st.balance[xa] > st.target && st.block.number <= st.end_donate
         ->
       Exists tx [1, xa]
       [
@@ -51,11 +51,12 @@ property success_live {
       ]
     ]
 }
-// should be false??: seller cannot withdraw 1000 (e.g. if target is < 1000)
-property ownerCanWithdraw4_nonlive {
+
+// the owner can withdraw 1000 (should be false: e.g., if target is < 1000)
+property owner_wd_toomuch_nonlive {
     Forall xa
     [
-      st.success && st.block.number > st.deadline
+      st.success && st.block.number > st.end_donate
         ->
       Exists tx [1, st.owner]
       [
