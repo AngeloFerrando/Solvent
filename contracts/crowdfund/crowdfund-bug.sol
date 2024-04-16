@@ -46,7 +46,7 @@ property owner_wd_live {
 property donor_wd_notlive {
     Forall xa
     [
-      st.donors[xa]>0 && (not target_reached) && st.block.number>st.end_donate
+      not target_reached && st.block.number>st.end_donate
         ->
       Exists tx [1, xa]
       [
