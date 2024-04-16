@@ -2,10 +2,10 @@
 
 // States: 
 // 0 = AGREE
-// 1 =  DISPUTE 
+// 1 = DISPUTE 
 // 2 = ARBITRATED 
 // 3 = REDEEM
-// 4 =  END
+// 4 = END
 
 contract Escrow {
   int state

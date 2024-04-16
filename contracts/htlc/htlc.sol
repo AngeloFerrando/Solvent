@@ -1,72 +1,103 @@
 contract HTLC {
-
-    bool committed
     const int timeout
     const address owner
-    const address recipient
+    const address verifier
+
+    int deposit
+    int state // 0 = INIT, 1 = COMMITTED, 2 = END
     hash hashlock
 
-    constructor(int t, address r) payable {
+    constructor(int t, address r) {
         timeout = t;
         owner = msg.sender;
-        recipient = r
+        verifier = r
     }
 
     function commit(hash h) payable {
-        require (not committed);
-        require (msg.value > 0);
         require (msg.sender==owner);
-        committed = true;
-        hashlock = h
+        require (msg.value >= 1);
+        require (state==0); // INIT
+        hashlock = h;
+        deposit = msg.value;
+        state = 1 // COMMITTED
     }
 
     function reveal(secret s) {
-        require (committed);
+        require (state==1); // COMMITTED
         if (hashlock == sha256(s)) {
-            recipient!balance
-        }
+            owner!balance
+        };
+        state = 2 // END
     }
 
     function timeout() {
-        require(committed && block.number > timeout);
-        msg.sender!balance
+        require(block.number > timeout);
+        verifier!balance;
+        state = 2 // END
     }   
 }
 
-// UNSAT
-property p1_live { 
+// the owner can withdraw the deposit before the deadline (by revealing the secret)
+property owner_wd_live { 
     Forall xa
     [
-        xa==st.owner && st.balance>0 && st.committed
+        st.state==1 && st.block.number <= st.timeout
         ->
-        Exists tx [1, xa]
+        Exists tx [1, st.owner]
         [
-            ((app_tx_st.balance[st.recipient] >= st.balance[st.recipient] + st.balance))
+            app_tx_st.balance[st.owner] >= st.balance[st.owner] + st.deposit
         ]
     ]
 }
 
-property p2_nonlive { 
+// any user different from the owner can transfer the deposit to the owner before the deadline (by revealing the secret) 
+property notowner_wd_owner_nonlive { 
     Forall xa
     [
-        xa==st.recipient && st.balance>0 && st.committed
+        st.state==1 && st.block.number <= st.timeout
         ->
         Exists tx [1, xa]
         [
-            ((app_tx_st.balance[xa] >= st.balance[xa] + st.balance))
+            app_tx_st.balance[st.owner] >= st.balance[st.owner] + st.balance
         ]
     ]
 }
 
-// LIVE
-property p3_live { 
+// the owner can transfer to any user different from the owner the deposit before the deadline (by revealing the secret) 
+property owner_wd_notowner_nonlive { 
     Forall xa
     [
-        st.balance>0 && st.committed && st.block.number>st.timeout
+        st.state==1 && st.block.number <= st.timeout
+        ->
+        Exists tx [1, st.owner]
+        [
+            app_tx_st.balance[xa] >= st.balance[xa] + st.balance
+        ]
+    ]
+}
+
+// the verifier can withdraw the deposit after the deadline
+property verifier_wd_timeout_live { 
+    Forall xa
+    [
+        st.state==1 && st.block.number>st.timeout
         ->
         Exists tx [1, xa]
         [
-            ((app_tx_st.balance[xa] >= st.balance[xa] + st.balance))
+            app_tx_st.balance[st.verifier] >= st.balance[st.verifier] + st.deposit
+        ]
+    ]
+}
+
+// the contract is liquid (its balance can always be emptied after the deadline)
+property liquidity_live { 
+    Forall xa
+    [
+        st.block.number>st.timeout
+        ->
+        Exists tx [1, xa]
+        [
+            app_tx_st.balance==0
         ]
     ]
 }
