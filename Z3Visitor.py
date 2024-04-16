@@ -764,12 +764,22 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         self.__add_last_cmd = backup_add
         levelling_else_cmds = 'True'
         if self.__nesting_w > backup_nesting_w:
-            levelling_else_cmds += f', wNow=={self.__t_curr_w}, awNow=={self.__t_curr_a}'
+            levelling_else_cmds += f', wNow=={self.__t_curr_w}, And([awNow[j] == {self.__t_curr_a}[j] for j in range(A+1)])'
+            #, awNow=={self.__t_curr_a}'
 
         for g in self.__globals_index:
-            if backup_globals[g] < self.__globals_index[g]:
-                tg_now = f't_{g}[{backup_globals[g]}]' if backup_globals[g] > 0 else f'{g}Now'
-                levelling_else_cmds += f', t_{g}[{self.__globals_index[g]-1}]=={tg_now}'
+            for (gg,gt) in self.__globals:
+                if gg.text == g:
+                    break
+            if gt == ('MapAddr', 'Int'):
+                if backup_globals[g] < self.__globals_index[g]:
+                    tg_now = f't_{g}[{backup_globals[g]}]' if backup_globals[g] > 0 else f'{g}Now'
+                    levelling_else_cmds += f', And([t_{g}[{self.__globals_index[g]-1}][j] == {tg_now}[j] for j in range(A+1)])'
+                    # levelling_else_cmds += f', t_{g}[{self.__globals_index[g]-1}]=={tg_now}'
+            else:
+                if backup_globals[g] < self.__globals_index[g]:
+                    tg_now = f't_{g}[{backup_globals[g]}]' if backup_globals[g] > 0 else f'{g}Now'
+                    levelling_else_cmds += f', t_{g}[{self.__globals_index[g]-1}]=={tg_now}'
         
         return 'If({cond},{ifcmd},{elsecmd})'.format(
             cond = 'And'+'('+cond+')',
@@ -822,7 +832,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         levelling_if_cmds = 'True'
         levelling_else_cmds = 'True'
         if if_nesting_w > self.__nesting_w:
-            levelling_else_cmds += f', {if__t_curr_w}=={self.__t_curr_w}, {if__t_curr_a}=={self.__t_curr_a}'
+            levelling_else_cmds += f', {if__t_curr_w}=={self.__t_curr_w}, And([{if__t_curr_a}[j] == {self.__t_curr_a}[j] for j in range(A+1)])'
             self.__t_curr_a = if__t_curr_a
             self.__t_new_a = if__t_new_a
             self.__t_curr_w = if__t_curr_w
@@ -830,15 +840,29 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
             self.__nesting_w = if_nesting_w
             self.__nesting_aw = if_nesting_aw
         elif if_nesting_w < self.__nesting_w:
-            levelling_if_cmds += f', {if__t_curr_w}=={self.__t_curr_w}, {if__t_curr_a}=={self.__t_curr_a}'
+            levelling_if_cmds += f', {if__t_curr_w}=={self.__t_curr_w}, And([{if__t_curr_a}[j] == {self.__t_curr_a}[j] for j in range(A+1)])'
         for g in self.__globals_index:
-            if if_globals_index[g] > self.__globals_index[g]:
-                tg_now = f't_{g}[{self.__globals_index[g]}]' if self.__globals_index[g] > 0 else f'{g}Now'
-                levelling_else_cmds += f', t_{g}[{if_globals_index[g]-1}]=={tg_now}'
-                self.__globals_index[g] = if_globals_index[g]
-            elif if_globals_index[g] < self.__globals_index[g]:
-                tg_now = f't_{g}[{if_globals_index[g]}]' if if_globals_index[g] > 0 else f'{g}Now'
-                levelling_if_cmds += f', {tg_now}==t_{g}[{self.__globals_index[g]-1}]'
+            for (gg,gt) in self.__globals:
+                if gg.text == g:
+                    break 
+            if gt == ('MapAddr', 'Int'):
+                if if_globals_index[g] > self.__globals_index[g]:
+                    tg_now = f't_{g}[{self.__globals_index[g]}]' if self.__globals_index[g] > 0 else f'{g}Now'
+                    # levelling_else_cmds += f', t_{g}[{if_globals_index[g]-1}]=={tg_now}'
+                    levelling_else_cmds += f', And([t_{g}[{if_globals_index[g]-1}][j] == {tg_now}[j] for j in range(A+1)])'
+                    self.__globals_index[g] = if_globals_index[g]
+                elif if_globals_index[g] < self.__globals_index[g]:
+                    tg_now = f't_{g}[{if_globals_index[g]}]' if if_globals_index[g] > 0 else f'{g}Now'
+                    # levelling_if_cmds += f', {tg_now}==t_{g}[{self.__globals_index[g]-1}]'
+                    levelling_if_cmds += f', And([{tg_now}[j] == t_{g}[{self.__globals_index[g]-1}][j] for j in range(A+1)])'
+            else:
+                if if_globals_index[g] > self.__globals_index[g]:
+                    tg_now = f't_{g}[{self.__globals_index[g]}]' if self.__globals_index[g] > 0 else f'{g}Now'
+                    levelling_else_cmds += f', t_{g}[{if_globals_index[g]-1}]=={tg_now}'
+                    self.__globals_index[g] = if_globals_index[g]
+                elif if_globals_index[g] < self.__globals_index[g]:
+                    tg_now = f't_{g}[{if_globals_index[g]}]' if if_globals_index[g] > 0 else f'{g}Now'
+                    levelling_if_cmds += f', {tg_now}==t_{g}[{self.__globals_index[g]-1}]'
         self.__add_last_cmd = backup_add
         # self.__globals_index = backup
         ifcmd_aux = ifcmd.format(subs=levelling_if_cmds)
