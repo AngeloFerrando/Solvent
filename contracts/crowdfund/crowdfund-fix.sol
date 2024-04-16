@@ -46,13 +46,13 @@ property owner_wd_live {
 
 // if threshold is not reached, donors can withdraw their donations after the end_donate
 property donor_wd_live {
-    Forall xa
+    Forall a
     [
-      st.donors[xa]>0 && (not target_reached) && st.block.number>st.end_donate
+      not target_reached && st.block.number>st.end_donate
         ->
-      Exists tx [1, xa]
+      Exists tx [1, a]
       [
-        ((app_tx_st.balance[xa] >= st.balance[xa]+st.donors[xa]))
+        ((app_tx_st.balance[a] >= st.balance[a]+st.donors[a]))
       ]
     ]
 }
