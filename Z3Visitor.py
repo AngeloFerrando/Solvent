@@ -37,6 +37,8 @@ class Z3Visitor(TxScriptVisitor):
         self.__Trace_Based = Trace_Based
         self.__can_transations_arrive_any_time = can_transations_arrive_any_time
         self.__fixed_iteration = fixed_iteration
+        if not self.__fixed_iteration == -1:
+            self.__N = fixed_iteration
 
     # Visit a parse tree produced by TxScriptParser#contractExpr.
     def visitContractExpr(self, ctx:TxScriptParser.ContractExprContext):
