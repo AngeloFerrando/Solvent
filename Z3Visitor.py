@@ -760,13 +760,15 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         backup_add = self.__add_last_cmd
         self.__add_last_cmd = False
         backup_nesting_w = self.__nesting_w
+        backup__t_curr_a = self.__t_curr_a
+        backup__t_curr_w = self.__t_curr_w
         ifcmd = self.visit(ctx.ifcmd)
         ifcmd = ifcmd.format(subs='True')
         # self.__globals_index = backup
         self.__add_last_cmd = backup_add
         levelling_else_cmds = 'True'
         if self.__nesting_w > backup_nesting_w:
-            levelling_else_cmds += f', wNow=={self.__t_curr_w}, And([awNow[j] == {self.__t_curr_a}[j] for j in range(A+1)])'
+            levelling_else_cmds += f', {backup__t_curr_w}=={self.__t_curr_w}, And([{backup__t_curr_a}[j] == {self.__t_curr_a}[j] for j in range(A+1)])'
             #, awNow=={self.__t_curr_a}'
 
         for g in self.__globals_index:
@@ -1087,7 +1089,7 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
 
     # Visit a parse tree produced by TxScriptParser#qslf.
     def visitQslf(self, ctx:TxScriptParser.QslfContext):
-        agent = ctx.ag.text + '_q'
+        agent = 'xa_q' # ctx.ag.text + '_q'
         self.__n_transactions  = int(ctx.nTrans.text)
         self.__max_n_transactions  = max(int(ctx.nTrans.text), self.__max_n_transactions)
         self.__prop_transactions[self.__prop_name] = self.__n_transactions 
