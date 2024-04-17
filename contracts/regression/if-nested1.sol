@@ -21,8 +21,19 @@ contract IfNested1 {
   }
 }
 
-// not liquid
-property _nonlive {
+property tx1_nonlive {
+    Forall xa
+    [
+      st.balance>0
+      ->
+      Exists tx [1, xa]
+      [
+        ((app_tx_st.balance[xa] > st.balance[xa] && app_tx_st.x >= 1))
+      ]
+    ]
+}
+
+property tx2_live {
     Forall xa
     [
       st.balance>0
