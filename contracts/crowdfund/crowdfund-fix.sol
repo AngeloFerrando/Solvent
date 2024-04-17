@@ -25,7 +25,6 @@ contract Crowdfund {
     function wdDonor() { 
         require (block.number > end_donate);
         require (not target_reached); // FIX: check target_reached
-        require (donors[msg.sender] > 0);
         msg.sender!donors[msg.sender];
         donors[msg.sender] = 0
     }
@@ -46,13 +45,13 @@ property owner_wd_live {
 
 // if threshold is not reached, donors can withdraw their donations after the end_donate
 property donor_wd_live {
-    Forall a
+    Forall xa
     [
       not target_reached && st.block.number>st.end_donate
         ->
-      Exists tx [1, a]
+      Exists tx [1, xa]
       [
-        ((app_tx_st.balance[a] >= st.balance[a]+st.donors[a]))
+        ((app_tx_st.balance[xa] >= st.balance[xa]+st.donors[xa]))
       ]
     ]
 }
