@@ -25,7 +25,6 @@ contract Crowdfund {
     function wdDonor() { 
         require (block.number > end_donate);
         require (balance < target); // BUG: should check target_reached
-        require (donors[msg.sender] > 0);
         msg.sender!donors[msg.sender];
         donors[msg.sender] = 0
     }

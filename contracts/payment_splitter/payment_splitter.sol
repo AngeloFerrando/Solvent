@@ -1,18 +1,17 @@
 contract PaymentSplitter {
-    mapping (address => int) shares
-    int totalShares
-    mapping (address => int) released
-    int totalReleased
-    int totalReceived 
-    int payment
     const address owner
-    int state
+
+    mapping (address => int) shares     // number of shares of each user
+    mapping (address => int) released   // amount of ETH released to each user
+
+    int totalShares     // total number of shares
+    int totalReleased   // total amount of ETH released
+    int totalReceived   // total amount of ETH received
+    int payment
+    int state // 0 = shares can be added, 1 = shares are finalized and funds can be released
 
     constructor(address o) {
         owner = o
-        // totalShares = 0;
-        // totalReleased = 0;
-        // state = 0
     }
 
     function addShares(address p, int s) {
@@ -25,9 +24,10 @@ contract PaymentSplitter {
     function finalizeShares() {
         require(msg.sender == owner);
         require(state == 0);
-        state = 1
+        state = 1 // shares are finalized and funds can be released
     }
 
+    // the contract can receive ETH at any time
     function receive() payable {
         skip
     } 
