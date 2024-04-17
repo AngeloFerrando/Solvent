@@ -131,7 +131,7 @@ def run_makefile(folder):
                 status = "passed"
                 passed += 1
             # TODO why compilation time is the average?
-            print(f"Compilation time: {compilation_time/iteration} seconds; Running time: {running_time/iteration} seconds")
+            print(f"Compilation time: {compilation_time} seconds; Running time: {running_time} seconds")
         except subprocess.TimeoutExpired:
             pass 
             #timeout += 1
