@@ -103,7 +103,7 @@ def run_makefile(folder):
                 print_passed()
                 print('')
                 passed += 1
-            print(f"Compilation time: {compilation_time/iteration} seconds; Running time: {running_time/iteration} seconds")
+            print(f"Compilation time: {compilation_time} seconds; Running time: {running_time} seconds")
         except subprocess.TimeoutExpired:
             timeout += 1
             print(f"Timeout for {sol}")
