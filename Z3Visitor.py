@@ -37,6 +37,7 @@ class Z3Visitor(TxScriptVisitor):
         self.__Trace_Based = Trace_Based
         self.__can_transations_arrive_any_time = can_transations_arrive_any_time
         self.__fixed_iteration = fixed_iteration
+        self.__defaultAddress = 1
         if not self.__fixed_iteration == -1:
             self.__N = fixed_iteration
 
@@ -444,14 +445,14 @@ for prop in {props_name}:
     # Visit a parse tree produced by TxScriptParser#hashDecl.
     def visitHashDecl(self, ctx:TxScriptParser.HashDeclContext):
         self.__globals.append((ctx.var, 'Hash'))
-        self.__globals_index[ctx.var.text] = 1
+        self.__globals_index[ctx.var.text] = 0
         self.__globals_const[ctx.var.text] = self.__const
 
 
     # Visit a parse tree produced by TxScriptParser#secretDecl.
     def visitSecretDecl(self, ctx:TxScriptParser.SecretDeclContext):
         self.__globals.append((ctx.var, 'Secret'))
-        self.__globals_index[ctx.var.text] = 1
+        self.__globals_index[ctx.var.text] = 0
         self.__globals_const[ctx.var.text] = self.__const
 
 
@@ -572,7 +573,7 @@ for prop in {props_name}:
                     if ty == 'Int': 
                         default = f', t_{g.text}[0]==0'
                     elif ty == 'Address' or ty == 'Hash' or ty == 'Secret':
-                        default = f', t_{g.text}[0]==1'
+                        default = f', t_{g.text}[0]=={self.__defaultAddress}'
                     elif ty == 'Bool':
                         default = f', t_{g.text}[0]==False'
                     elif ty == 'String':
@@ -581,8 +582,8 @@ for prop in {props_name}:
                         default = ',' + ', '.join([f't_{g.text}[0][{i}]==0' for i in range(0, self.__A+1)])
                     contract_variables += default
                 elif self.__Trace_Based or self.__globals_const[g.text]:
-                    if ty == 'Address':
-                        default = f', t_{g.text}[0]>=1, t_{g.text}[0]<=A'
+                    if ty == 'Address' or ty == 'Hash' or ty == 'Secret':
+                        default = f', t_{g.text}[0]>={self.__defaultAddress}, t_{g.text}[0]<=A'
                         contract_variables += default
         else:
             for g in self.__globals_const:
