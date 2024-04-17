@@ -149,7 +149,6 @@ t_{g}_q{i} = [{ty}("t_{g}q{i}_%s" % (m)) for m in range(M)]'''.format(i=i, g=g_v
                 prop_queries += f'queries[\'{n}\'] = [[{q}] for i in range(1, N+1)]\n'
             else:
                 prop_queries += f'queries[\'{n}\'] = [[{q}] for i in range(iteration, iteration+1)]\n'
-
         res = '''
 from z3 import *
 import time
@@ -1155,10 +1154,11 @@ Not({body})
         else:
             if 'app_tx_st' in ctx.mapVar.text:
                 i = f'_q{self.__n_transactions-1-(self.__n_transactions-self.__pi)}'
-                ctx.mapVar.text = ctx.mapVar.text.replace('app_tx_', '')
+                name = ctx.mapVar.text.replace('app_tx_', '')
             else:
+                name = ctx.mapVar.text
                 i = '[i]'
-            if 'st.balance' in ctx.mapVar.text:
+            if 'st.balance' in name:
                 ag = index.replace('_q', '')
                 if ag == 'xa':
                     self.__prop_nested_i.add(ag+'_q')#(ag+'[i]')
@@ -1168,19 +1168,19 @@ Not({body})
                         ag = ag+'[i]'
                     self.__prop_nested_i.add(ag)#(ag+'[i]')
                     return f'aw{i}[{ag}]'#f'aw{i}[{ag}[i]]'
-            if ctx.mapVar.text.replace('st.','') in self.__args_map:
+            if name.replace('st.','') in self.__args_map:
                 return self.__args_map[ctx.v.text][0]  
-            if ctx.mapVar.text.replace('st.','') in self.__globals_index:  
+            if name.replace('st.','') in self.__globals_index:  
                 ag = index.replace('_q', '')
                 if ag == 'xa':
                     self.__prop_nested_i.add(ag+'_q')#(ag+'[i]')
-                    return ctx.mapVar.text.replace('st.','') + f'{i}' + '[' + ag + '_q]'
+                    return name.replace('st.','') + f'{i}' + '[' + ag + '_q]'
                 else:
                     if '[i]' not in ag:
                         ag = ag+'[i]'
                     self.__prop_nested_i.add(ag)#(ag+'[i]')
-                    return ctx.mapVar.text.replace('st.','') + f'{i}' + '['+ag+']'
-            return ctx.mapVar.text.replace('st.', '') + '_q'
+                    return name.replace('st.','') + f'{i}' + '['+ag+']'
+            return name.replace('st.', '') + '_q'
 
 
     # Visit a parse tree produced by TxScriptParser#strConstant.
@@ -1207,34 +1207,35 @@ Not({body})
             return ctx.v.text
         else:
             if 'app_tx_st' in ctx.v.text:
-                ctx.v.text = ctx.v.text.replace('app_tx_st', 'st')
+                name = ctx.v.text.replace('app_tx_st', 'st')
                 i = f'_q{self.__n_transactions-1-(self.__n_transactions-self.__pi)}'
             else:
+                name = ctx.v.text
                 i = '[i]'
-            if 'st.balance' in ctx.v.text and '[' in ctx.v.text and ']' in ctx.v.text:
-                ag = ctx.v.text[ctx.v.text.index('[')+1:ctx.v.text.index(']')]
+            if 'st.balance' in name and '[' in name and ']' in name:
+                ag = name[name.index('[')+1:name.index(']')]
                 if ag == 'xa':
                     self.__prop_nested_i.add(ag+'_q')#(ag+'[i]')
                     return f'aw{i}[{ag}_q]'#f'aw{i}[{ag}[i]]'
                 else:
                     self.__prop_nested_i.add(ag+'[i]')#(ag+'[i]')
                     return f'aw{i}[{ag}[i]]'#f'aw{i}[{ag}[i]]'
-            if 'st.balance' in ctx.v.text:
+            if 'st.balance' in name:
                 return f'w{i}'
-            if 'st.block.number' in ctx.v.text:
+            if 'st.block.number' in name:
                 return f'block_num{i}'
-            if 'tx.msg.value' in ctx.v.text:
+            if 'tx.msg.value' in name:
                 return 'xn'+f'_q{self.__n_transactions-1-(self.__n_transactions-self.__pi)}'
-            if 'tx.msg.sender' in ctx.v.text:
+            if 'tx.msg.sender' in name:
                 return 'tx_sender'
-            if ctx.v.text.replace('st.','') in self.__args_map:
-                if self.__args_map[ctx.v.text][1] == 'hash':
+            if name.replace('st.','') in self.__args_map:
+                if self.__args_map[name][1] == 'hash':
                     return 'xa1'
                 else:
-                    return self.__args_map[ctx.v.text][0]  
-            if ctx.v.text.replace('st.','') in self.__globals_index:              
-                return ctx.v.text.replace('st.','') + f'{i}'
-            return ctx.v.text.replace('st.', '') + '_q'
+                    return self.__args_map[name][0]  
+            if name.replace('st.','') in self.__globals_index:              
+                return name.replace('st.','') + f'{i}'
+            return name.replace('st.', '') + '_q'
 
 
     # Visit a parse tree produced by TxScriptParser#trueConstant.

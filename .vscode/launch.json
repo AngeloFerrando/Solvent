@@ -11,7 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["./contracts/regression/mapping1.sol", "5", "2"]
+            "args": ["./contracts/payment_splitter/payment_splitter.sol", "5", "2"]
         }
     ]
 }
