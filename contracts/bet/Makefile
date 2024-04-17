@@ -6,6 +6,8 @@ DEFAULT_N_PARTICIPANTS := 2
 DEFAULT_SMT := z3
 DEFAULT_Can_Transactions_Arrive_Any_time := true
 DEFAULT_Fixed_Iteration := -1
+DEFAULT_State_Based := true
+DEFAULT_Trace_Based := true
 Contract := './bet.sol'
 
 # If no argument is provided, use the default value
@@ -21,16 +23,26 @@ endif
 ifndef Fixed_Iteration
     Fixed_Iteration := $(DEFAULT_Fixed_Iteration)
 endif
+ifndef State_Based
+    State_Based := $(DEFAULT_State_Based)
+endif
+ifndef Trace_Based
+    Trace_Based := $(DEFAULT_Trace_Based)
+endif
 
 compile: clean
 	python3 ../../main.py $(Contract) $(N_Transactions) $(N_Participants) $(Can_Transactions_Arrive_Any_time) $(Fixed_Iteration)
-	@if test -f ./out/outputTrace.py; then \
-		python3 ./out/outputTrace.py; \
+	@if $(Trace_Based); then \
+		if test -f ./out/outputTrace.py; then \
+			python3 ./out/outputTrace.py; \
+		fi \
 	fi
-	@if test -f ./out/outputState.py; then \
-		python3 ./out/outputState.py; \
-	fi
-		
+	@if $(State_Based); then \
+		if test -f ./out/outputState.py; then \
+			python3 ./out/outputState.py; \
+		fi \
+	fi	
+
 set-logic:
 	@for Prop in $(wildcard out/smt2/*); do \
 		for file in $$(find $$Prop/tracebased -type f -name '*.smt2' | sort); do \
@@ -52,49 +64,53 @@ run:
 	for Prop in $(wildcard out/smt2/*); do \
 		echo "PROPERTY: $$Prop"; \
 		foundUNSAT=false; \
-		for file in $$(find $$Prop/statebased -type f -name '*.smt2' | sort); do \
-			foundSAT=false; \
-			output=$$($$SMT $$file $$smt_flag); \
-			# echo $$output; \
-			if echo "$$output" | grep -q "error"; then \
-				foundUNSAT=true; \
-				break; \
-			elif echo "$$output" | grep -q "sat"; then \
-				foundSAT=true; \
-			fi \
-		done; \
+		if $(State_Based); then \
+			for file in $$(find $$Prop/statebased -type f -name '*.smt2' | sort); do \
+				foundSAT=false; \
+				output=$$($$SMT $$file $$smt_flag); \
+				# echo $$output; \
+				if echo "$$output" | grep -q "error"; then \
+					foundUNSAT=true; \
+					break; \
+				elif echo "$$output" | grep -q "sat"; then \
+					foundSAT=true; \
+				fi \
+			done; \
+		fi; \
 		if [ "$$foundUNSAT" = "true" ]; then \
 			echo "LIVE"; \
 		else \
 			# if [ "$$foundSAT" = "true" ]; then \
 			# 	echo "WEAK SAT (=> NOT LIQUID?)"; \
 			# fi; \
-			for i in $$(find $$Prop/tracebased/ -mindepth 1 -maxdepth 1 -type d | sort); do \
-				foundUNSAT=false; \
-				for file in $$(find $$i -type f -name '*.smt2' | sort); do \
-					foundSAT=false; \
-					output=$$($$SMT $$file $$smt_flag); \
-					# echo $$output; \
-					if echo "$$output" | grep -q "error"; then \
-						foundUNSAT=true; \
-						ii=$$(echo $$i | rev | cut -d'/' -f1 | rev); \
-						echo "LIVE UP TO $$ii TRANSACTION"; \
+			if $(Trace_Based); then \
+				for i in $$(find $$Prop/tracebased/ -mindepth 1 -maxdepth 1 -type d | sort); do \
+					foundUNSAT=false; \
+					for file in $$(find $$i -type f -name '*.smt2' | sort); do \
+						foundSAT=false; \
+						output=$$($$SMT $$file $$smt_flag); \
+						# echo $$output; \
+						if echo "$$output" | grep -q "error"; then \
+							foundUNSAT=true; \
+							ii=$$(echo $$i | rev | cut -d'/' -f1 | rev); \
+							echo "LIVE UP TO $$ii TRANSACTION"; \
+							break; \
+						elif echo "$$output" | grep -q "sat"; then \
+							foundSAT=true; \
+						fi; \
+					done; \
+					if [ "$$foundUNSAT" = "false" ] && [ "$$foundSAT" = "true" ]; then \
+						echo "NOT LIVE (COUNTEREXAMPLE FOUND AND STORED IN $$Prop/counterexample.txt)"; \
+						echo $$output > $$Prop/counterexample.txt; \
 						break; \
-					elif echo "$$output" | grep -q "sat"; then \
-						foundSAT=true; \
-					fi \
+					fi; \
 				done; \
-				if [ "$$foundUNSAT" = "false" ] && [ "$$foundSAT" = "true" ]; then \
-					echo "NOT LIVE (COUNTEREXAMPLE FOUND AND STORED IN $$Prop/counterexample.txt)"; \
-					echo $$output > $$Prop/counterexample.txt; \
-					break; \
-				fi \
-			done; \
-			if [ "$$foundUNSAT" = "false" ] && [ "$$foundSAT" = "false" ]; then \
-				echo "UNKNOWN"; \
-			fi \
-		fi \
-	done
+				if [ "$$foundUNSAT" = "false" ] && [ "$$foundSAT" = "false" ]; then \
+					echo "UNKNOWN"; \
+				fi; \
+			fi; \
+		fi; \
+	done;
 
 clean:
 	rm -rf out/*
