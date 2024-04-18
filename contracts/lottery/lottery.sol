@@ -70,16 +70,16 @@ contract Lottery {
 
     // if player1 has not revealed, player2 can redeem the pot
     function redeem2_noreveal() {
-        require (state == 4);
+        require (state == 2);
         require (block.number >= end_reveal);
-        player1!balance;
+        player2!balance;
         state = 3 // next = end
     }
 
     function redeem1_noreveal() {
-        require (state == 2);
+        require (state == 4);
         require (block.number >= end_reveal+100);
-        player2!balance;
+        player1!balance;
         state = 3 // next = end
     }
 
@@ -121,7 +121,7 @@ property liq2_nonlive {
     ]
 }
 
-property liq3_live {
+property one_player_win_live {
     Forall xa
     [
       state == 5
@@ -129,6 +129,42 @@ property liq3_live {
       Exists tx [1, xa]
       [
         ((app_tx_st.balance[player1] == st.balance[player1]  + st.balance )  || (app_tx_st.balance[player2] == st.balance[player2]  + st.balance ))
+      ]
+    ]
+} 
+
+property player1_can_redeem_nojoin_live {
+    Forall xa
+    [
+      st.state == 1 && st.block.number >= st.end_commit
+        ->
+      Exists tx [1, xa]
+      [
+        (app_tx_st.balance[player1] == st.balance[player1]  + st.balance )  
+      ]
+    ]
+} 
+
+property player1_can_redeem_noreveal_live {
+    Forall xa
+    [
+      st.state == 4 && st.block.number >= st.end_reveal+100
+        ->
+      Exists tx [1, xa]
+      [
+        (app_tx_st.balance[player1] == st.balance[player1]  + st.balance )  
+      ]
+    ]
+} 
+
+property player2_can_redeem_noreveal_live {
+    Forall xa
+    [
+      st.state == 2 && st.block.number >= st.end_reveal
+        ->
+      Exists tx [1, xa]
+      [
+        (app_tx_st.balance[player2] == st.balance[player2]  + st.balance )  
       ]
     ]
 } 
