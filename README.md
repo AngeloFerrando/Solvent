@@ -5,8 +5,8 @@ A tool to formally verify smart contracts through SMT solvers.
 ## How to install
 
 - [Step 1] Install Z3, this can be done following the documentation at https://github.com/Z3Prover/z3
-- [Optional step] Other SMT solvers can be installed as well, like cvc5 (https://cvc5.github.io/), and so on 
-- [Step 2] Install Python 3, this can be done following the documentation at https://www.python.org/
+- [Step 2] Install cvc5, this can be done following the documentation at https://cvc5.github.io/
+- [Step 3] Install Python 3, this can be done following the documentation at https://www.python.org/
 - [Step 4] Install Pip, this can be done following the documentation at https://pypi.org/project/pip/
 - [Step 5] Install through Pip all Solvent's requirements
 ```bash

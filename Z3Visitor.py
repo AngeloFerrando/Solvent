@@ -37,7 +37,7 @@ class Z3Visitor(TxScriptVisitor):
         self.__Trace_Based = Trace_Based
         self.__can_transations_arrive_any_time = can_transations_arrive_any_time
         self.__fixed_iteration = fixed_iteration
-        self.__defaultAddress = 1
+        self.__defaultAddress = 0
         if not self.__fixed_iteration == -1:
             self.__N = fixed_iteration
 
@@ -583,7 +583,7 @@ for prop in {props_name}:
                     contract_variables += default
                 elif self.__Trace_Based or self.__globals_const[g.text]:
                     if ty == 'Address' or ty == 'Hash' or ty == 'Secret':
-                        default = f', t_{g.text}[0]>={self.__defaultAddress}, t_{g.text}[0]<=A'
+                        default = f', t_{g.text}[0]>=1, t_{g.text}[0]<=A'
                         contract_variables += default
         else:
             for g in self.__globals_const:
