@@ -12,3 +12,5 @@ The contract can receive ETH at any time through the function `receive`.
 
 ## Properties
 
+- **anyone_wd_ge**: any shareholder who has releasable funds can withdraw a strictly positive amount of ETH (in 1 transaction)
+- **anyone_wd_releasable**: any shareholder can withdraw all the releasable funds (in 1 transaction)
