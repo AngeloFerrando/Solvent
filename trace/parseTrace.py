@@ -133,5 +133,5 @@ def parse_trace(text):
                 value_pr = trace_i[var]['value'].replace("_func", "")
                 print(f"\t{var} = {value_pr}")
 
-text = open("excvc5.txt","r").read()
+text = open("../contracts/crowdfund/out/smt2/donor_wd_notlive/counterexample.txt","r").read()
 parse_trace(text)
