@@ -108,36 +108,3 @@ property oracle_exact_balance_nonlive {
         ]
       ]
 }
-
-
-
-
-
-/*
-property {
-    Forall xa  
-      [block.number<deadline && balance==2 -> Exists s (s, xa) xa==oracle && can_withdraw(s,player1,2) || can_withdraw(s,player2,2)]
-}
-
-property {
-    Forall xa  
-      [block.number<deadline && balance==2 -> Exists tx . tx.msg.sender==oracle && can_withdraw(tx,player1,2) || can_withdraw(tx,player2,2)]
-}
-
-
-property {
-  Forall st (implicito: stato reachable del contratto)
-    Forall xa (non usato in questo esempio, ma in altri sì, ad es. Bank)
-      [st.block.number<st.deadline && st.balance==2 -> Exists tx . tx.fun==win && tx.msg.sender==st.oracle && (((app tx st).balance(player1) - st.balance(player1) >= 2) || ((app tx st).balance(player2) - st.balance(player1) >= 2))]
-}
-
-property {
-  Forall st (implicito: stato reachable del contratto)
-    Forall xa (non usato in questo esempio, ma in altri sì, ad es. Bank)
-      [st.block.number<st.deadline && st.balance==2 -> Exists tx . tx = oracle:win(player1) && tx.msg.sender==st.oracle && (((app tx st).balance(player1) - st.balance(player1) >= 2) || ((app tx st).balance(player2) - st.balance(player1) >= 2))]
-}*/
-
-//property {
-//	forall xa  
-//	    [block.number>timeout && balance==2 -> Exists s (s, xa) (can_withdraw(player1,1) && can_withdraw(player2,1))]
-//}
