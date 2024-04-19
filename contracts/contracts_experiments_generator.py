@@ -18,6 +18,7 @@ def main(args):
         with open('Makefile', 'r') as file_old:
             with open(f'../experiments/{directory}/Makefile', 'w') as file_new:
                 file_new.write(file_old.read().replace('../../main.py', '../../../main.py'))
+                file_new.write(file_old.read().replace('../../trace', '../../../trace'))
         # Filter '.sol' files
         sol_files = [file for file in files if file.endswith('.sol')]
         for sol in sol_files:

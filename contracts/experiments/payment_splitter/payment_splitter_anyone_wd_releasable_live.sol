@@ -51,7 +51,7 @@ contract PaymentSplitter {
 property  anyone_wd_releasable_live {
     Forall xa
     [
-      st.state==1
+      st.state==1 && st.shares[xa]>0
         ->
       Exists tx [1, xa]
       [
