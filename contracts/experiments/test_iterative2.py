@@ -3,7 +3,9 @@ import subprocess
 import time
 
 N_Transactions = 500
-Timeout = 100 # seconds
+Timeout = 20 # seconds
+solver = "cvc5"
+try_statebased_iter = 5 # Try statebased after given number of iterations
 
 def run_makefile(folder):
     # Change directory to the specified folder
@@ -29,6 +31,7 @@ def run_makefile(folder):
             
             compilation_time = 0
             running_time = 0
+            compile_and_run_time = 0
             for iteration in range(1, N_Transactions+1):
                 # Check if timeout passed
                 if Timeout < time.time() - starting_time_sol:
@@ -36,8 +39,12 @@ def run_makefile(folder):
 
                 # Start timing
                 start_time = time.time()
-
+                """
                 # Compile the code
+                #compile_process = subprocess.Popen(['make', 'compile', f'Contract={sol}', f'N_Transactions={N_Transactions}', 'Can_Transactions_Arrive_Any_time=True', f'Fixed_Iteration={iteration}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                #compile_run = compile_process.communicate(compile_process, timeout=Timeout)
+                
+
                 compile_process = subprocess.run(['make', 'compile', f'Contract={sol}', f'N_Transactions={N_Transactions}', 'Can_Transactions_Arrive_Any_time=True', f'Fixed_Iteration={iteration}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=Timeout)
                 
                 if compile_process.returncode != 0:
@@ -52,20 +59,31 @@ def run_makefile(folder):
 
                 # Run the code
                 run_process = subprocess.run(['make', 'run', 'SMT=cvc5'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=Timeout)
-                
-                if run_process.returncode != 0:
-                    print(f"Execution failed for {folder}. Error message:\n{run_process.stderr.decode()}")
+                """
+                # Start timing
+                start_time = time.time()
+
+                if iteration == try_statebased_iter:  # Try statebased
+                    compile_and_run_process = subprocess.run(f"make compile Contract={sol} N_Transactions={N_Transactions} Can_Transactions_Arrive_Any_time=True Fixed_Iteration={iteration}; echo end_compile_start_run; make run SMT={solver}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=Timeout)
+                else:
+                    compile_and_run_process = subprocess.run(f"make compile Contract={sol} N_Transactions={N_Transactions} Can_Transactions_Arrive_Any_time=True Fixed_Iteration={iteration} State_Based=false; echo end_compile_start_run; make run SMT={solver} State_Based=false", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=Timeout)
+
+
+                if compile_and_run_process.returncode != 0:
+                    print(f"Compilation or Execution failed for {folder}. Error message:\n{compile_and_run_process.stderr.decode()}")
                     return
 
                 end_time = time.time()
-                running_time += end_time - start_time
+                compile_and_run_time += end_time - start_time
 
                 # Print the output of the make run command
                 # print(f"Output for {folder}:\n")
                 stop = False
                 ok = False
-                res = run_process.stdout.decode()
-                for phi in res.split('PROPERTY:'):
+                res = compile_and_run_process.stdout.decode()
+                #print(f"{res=}")
+                res_compile, res_run = res.split("end_compile_start_run")
+                for phi in res_run.split('PROPERTY:'):
                     if 'out/' not in phi: continue
                     phi = phi.split('\n')
                     if iteration == 1: print(f'PROPERTY: {phi[0]}')
@@ -102,8 +120,8 @@ def run_makefile(folder):
                         elif 'LIVE' in phi[-2] and 'UP TO' not in phi[-2]:  # Strong unsat
                             stop = True
                             ok = True
-                            print_live(-1)
                             print_passed()
+                            print_live(-1)
                             print('')
                             status = "passed"
                             passed += 1
@@ -130,14 +148,15 @@ def run_makefile(folder):
                 print('')
                 status = "passed"
                 passed += 1
-            # TODO why compilation time is the average?
-            print(f"Compilation time: {compilation_time} seconds; Running time: {running_time} seconds")
+            
+            print(f"Time: {compile_and_run_time} seconds")
+            #print(f"Compilation time: {compilation_time} seconds; Running time: {running_time} seconds")
         except subprocess.TimeoutExpired:
             pass 
             #timeout += 1
             #print(f"Timeout for {sol}")
         if not status:
-            print(f"{live_up_to=}")
+            #print(f"{live_up_to=}")
             if live_up_to:
                 print_passed()
                 print_live(live_up_to)
