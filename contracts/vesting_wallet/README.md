@@ -15,3 +15,6 @@ The contract can receive cryptocurrency at any time through the `receive` functi
 the vesting schedule as if they were deposited from the beginning.
 
 ## Properties
+
+- **owner_wd_expired**: the owner can withdraw the whole contract balance after the scheme has expired, if the contract balance is positive and the owner has not withdrawn before 
+- **owner_wd_started**: the owner can withdraw a strictly positive amount after the scheme has started, if the contract balance is positive and the owner has not withdrawn before

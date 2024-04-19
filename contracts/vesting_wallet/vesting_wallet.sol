@@ -40,6 +40,7 @@ contract VestingWallet {
     }
 }
 
+
 property owner_wd_expired_live {
     Forall xa
     [
@@ -47,12 +48,12 @@ property owner_wd_expired_live {
         ->
       Exists tx [1, st.beneficiary]
       [
-        ((app_tx_st.balance[st.beneficiary] > st.balance[st.beneficiary]))
+        ((app_tx_st.balance[st.beneficiary] >= st.balance[st.beneficiary] + st.balance))
       ]
     ]
 }
 
-property owner_wd_afterstart_live {
+property owner_wd_started_live {
     Forall xa
     [
       st.balance>0 && st.released==0 && st.block.number>st.start
