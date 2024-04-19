@@ -12,7 +12,6 @@ contract Lottery {
     secret secret2
 
     int state
-    hash commitment2
 
     constructor(int tc, int tr) {
         require (tc < tr);
@@ -34,7 +33,7 @@ contract Lottery {
         require (h2 != hashlock1);
         require (msg.value == 1);
         player2 = a2;
-        commitment2 = h2;
+        hashlock2 = h2;
         state = 2 // next = reveal1
     }
 
@@ -63,7 +62,7 @@ contract Lottery {
     function reveal2(secret s2) {
         require (state == 4);
         require (block.number >= end_reveal + 100);
-        require (sha256(s2) == commitment2);
+        require (sha256(s2) == hashlock2);
         secret2 = s2;
         state = 5 // next = win
     }

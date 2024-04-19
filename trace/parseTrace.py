@@ -1,6 +1,7 @@
 import re, time
 import pprint
 from functools import cmp_to_key
+import sys
 
 def was_internal_var(var):
     first2letters = var[:2]
@@ -108,6 +109,7 @@ def parse_trace(text):
     trans.sort()
     #print(trans)
     for i in trans:
+        if i > transaction: break
         #print(f"{i=}")
         trace_i = trace_obj[i]
         vars = list(trace_i.keys())
@@ -133,5 +135,7 @@ def parse_trace(text):
                 value_pr = trace_i[var]['value'].replace("_func", "")
                 print(f"\t{var} = {value_pr}")
 
-text = open("../contracts/payment_splitter/out/smt2/anyone_wd_releasable_live/counterexample.txt","r").read()
+text = open(sys.argv[1],"r").read()
+transaction = int(sys.argv[2])
+
 parse_trace(text)

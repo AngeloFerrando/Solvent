@@ -8,7 +8,7 @@ contract Crowdfund {
     constructor(address owner_, int end_donate_, int target_) {
         owner = owner_;
         end_donate = end_donate_;
-	      target = target_
+	    target = target_
     }
     
     function donate() payable {

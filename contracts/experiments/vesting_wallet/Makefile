@@ -101,7 +101,9 @@ run:
 					done; \
 					if [ "$$foundUNSAT" = "false" ] && [ "$$foundSAT" = "true" ]; then \
 						echo "NOT LIVE (COUNTEREXAMPLE FOUND AND STORED IN $$Prop/counterexample.txt)"; \
-						echo $$output > $$Prop/counterexample.txt; \
+						echo $$output > $$Prop/counterexample_raw.txt; \
+						ii=$$(echo $$i | rev | cut -d'/' -f1 | rev); \
+						python3 ../../trace/parseTrace.py $$Prop/counterexample_raw.txt $$ii > $$Prop/counterexample_explained.txt; \
 						break; \
 					fi; \
 				done; \
