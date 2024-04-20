@@ -109,7 +109,6 @@ def parse_trace(text):
     trans.sort()
     #print(trans)
     for i in trans:
-        if i > transaction: break
         #print(f"{i=}")
         trace_i = trace_obj[i]
         vars = list(trace_i.keys())
@@ -129,6 +128,7 @@ def parse_trace(text):
         print(f"\n\nSTATE {i}")
         for var in state_vars:
             print(f"\t{var} = {trace_i[var]['value']}")
+        if i > transaction: break
         print(f"\n\nTRANSACTION {i} => {int(i)+1}")
         for var in trans_vars:
             if  print_trans_var(trace_i, var):
