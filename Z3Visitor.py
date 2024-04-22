@@ -38,6 +38,7 @@ class Z3Visitor(TxScriptVisitor):
         self.__can_transations_arrive_any_time = can_transations_arrive_any_time
         self.__fixed_iteration = fixed_iteration
         self.__defaultAddress = 0
+        self.__not_valid_names = ['sender', 'msg.sender', 'value', 'msg.value', 'balance']
         if not self.__fixed_iteration == -1:
             self.__N = fixed_iteration
 
@@ -444,6 +445,8 @@ for prop in {props_name}:
 
     # Visit a parse tree produced by TxScriptParser#hashDecl.
     def visitHashDecl(self, ctx:TxScriptParser.HashDeclContext):
+        if ctx.var.text in self.__not_valid_names:
+            raise Exception(f'{ctx.var.text} is not a valid name for a field, please choose a different name')
         self.__globals.append((ctx.var, 'Hash'))
         self.__globals_index[ctx.var.text] = 0
         self.__globals_const[ctx.var.text] = self.__const
@@ -451,6 +454,8 @@ for prop in {props_name}:
 
     # Visit a parse tree produced by TxScriptParser#secretDecl.
     def visitSecretDecl(self, ctx:TxScriptParser.SecretDeclContext):
+        if ctx.var.text in self.__not_valid_names:
+            raise Exception(f'{ctx.var.text} is not a valid name for a field, please choose a different name')
         self.__globals.append((ctx.var, 'Secret'))
         self.__globals_index[ctx.var.text] = 0
         self.__globals_const[ctx.var.text] = self.__const
@@ -458,6 +463,8 @@ for prop in {props_name}:
 
     # Visit a parse tree produced by TxScriptParser#intDecl.
     def visitIntDecl(self, ctx:TxScriptParser.IntDeclContext):
+        if ctx.var.text in self.__not_valid_names:
+            raise Exception(f'{ctx.var.text} is not a valid name for a field, please choose a different name')
         self.__globals.append((ctx.var, 'Int'))
         self.__globals_index[ctx.var.text] = 0
         self.__globals_const[ctx.var.text] = self.__const
@@ -465,6 +472,8 @@ for prop in {props_name}:
 
     # Visit a parse tree produced by TxScriptParser#boolDecl.
     def visitBoolDecl(self, ctx:TxScriptParser.BoolDeclContext):
+        if ctx.var.text in self.__not_valid_names:
+            raise Exception(f'{ctx.var.text} is not a valid name for a field, please choose a different name')
         self.__globals.append((ctx.var, 'Bool'))
         self.__globals_index[ctx.var.text] = 0
         self.__globals_const[ctx.var.text] = self.__const
@@ -472,6 +481,8 @@ for prop in {props_name}:
 
     # Visit a parse tree produced by TxScriptParser#strDecl.
     def visitStrDecl(self, ctx:TxScriptParser.StrDeclContext):
+        if ctx.var.text in self.__not_valid_names:
+            raise Exception(f'{ctx.var.text} is not a valid name for a field, please choose a different name')
         self.__globals.append((ctx.var, 'String'))
         self.__globals_index[ctx.var.text] = 0
         self.__globals_const[ctx.var.text] = self.__const
@@ -479,6 +490,8 @@ for prop in {props_name}:
 
     # Visit a parse tree produced by TxScriptParser#addrDecl.
     def visitAddrDecl(self, ctx:TxScriptParser.AddrDeclContext):
+        if ctx.var.text in self.__not_valid_names:
+            raise Exception(f'{ctx.var.text} is not a valid name for a field, please choose a different name')
         self.__globals.append((ctx.var, 'Address'))
         self.__globals_index[ctx.var.text] = 0
         self.__globals_const[ctx.var.text] = self.__const
@@ -486,6 +499,8 @@ for prop in {props_name}:
 
     # Visit a parse tree produced by TxScriptParser#mapAddrDecl.
     def visitMapAddrDeclInt(self, ctx:TxScriptParser.MapAddrDeclIntContext):
+        if ctx.var.text in self.__not_valid_names:
+            raise Exception(f'{ctx.var.text} is not a valid name for a field, please choose a different name')
         self.__globals.append((ctx.var, ('MapAddr', 'Int')))
         self.__globals_index[ctx.var.text] = 0
         self.__maps.add(ctx.var.text)
@@ -616,6 +631,8 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     def visitArgsExpr(self, ctx:TxScriptParser.ArgsExprContext):
         args = set()
         for arg in ctx.argExpr():
+            if arg.var.text in self.__not_valid_names:
+                raise Exception(f'{arg.var.text} is not a valid name for a function\'s argument, please choose a different name')
             if arg.ty.text != 'hash':
                 args.add(self.__prefix + '_' + arg.var.text)
             if arg.var.text in self.__args_map:

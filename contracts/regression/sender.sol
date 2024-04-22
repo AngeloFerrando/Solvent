@@ -1,5 +1,6 @@
 contract Sender {
-  address sender
+  // sender is taken as a name, so a different one has to be used
+  address sender_field
 
   function receive() payable { skip }
 
