@@ -2,8 +2,8 @@ contract Lottery {
     address player1
     address player2
 
-    const int end_commit		// last round to join
-    const int end_reveal		// last round to reveal
+    immutable int end_commit		// last round to join
+    immutable int end_reveal		// last round to reveal
 
     hash hashlock1
     hash hashlock2

@@ -24,7 +24,6 @@ python3 test_regression.py
 
 ## Verifying contracts
 
-
 To compile the smart contract, it is enough to execute the following
 
 ```bash

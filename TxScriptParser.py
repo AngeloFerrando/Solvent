@@ -139,7 +139,7 @@ class TxScriptParser ( Parser ):
     sharedContextCache = PredictionContextCache()
 
     literalNames = [ "<INVALID>", "'contract'", "'{'", "'}'", "'property'", 
-                     "'const'", "'constraint'", "'('", "')'", "'function'", 
+                     "'immutable'", "'constraint'", "'('", "')'", "'function'", 
                      "'payable'", "'constructor'", "'int'", "'bool'", "'string'", 
                      "'address'", "'hash'", "'secret'", "'mapping (address => int)'", 
                      "','", "'skip'", "'require'", "'if'", "'else'", "'['", 

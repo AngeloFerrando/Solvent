@@ -1,5 +1,5 @@
 contract PaymentSplitter {
-    const address owner
+    immutable address owner
 
     mapping (address => int) shares     // number of shares of each user
     mapping (address => int) released   // amount of ETH released to each user

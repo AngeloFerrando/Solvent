@@ -1,8 +1,8 @@
 contract Crowdfund {
-    const int end_donate              // deadline for donations
-    const int target                  // the campaign is successful is this target is reaches 
-    const address owner               // beneficiary of the campaign
-    const int min_donation            // minimum donation
+    immutable int end_donate              // deadline for donations
+    immutable int target                  // the campaign is successful is this target is reaches 
+    immutable address owner               // beneficiary of the campaign
+    immutable int min_donation            // minimum donation
     mapping (address => int) funds    // keeps track of the donations
     int received                      // total amount received (excluding coinbase/selfdestruct)
     bool owner_withdrawn              // has the owner withdrawn the funds?

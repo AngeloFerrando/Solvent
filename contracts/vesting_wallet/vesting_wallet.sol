@@ -1,7 +1,7 @@
 contract VestingWallet {
-    const address beneficiary
-    const int start
-    const int duration
+    immutable address beneficiary
+    immutable int start
+    immutable int duration
     int released        // total amount sent to the beneficiary
     int totalAllocation // total amount received
 
