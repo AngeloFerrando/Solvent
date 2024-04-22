@@ -4,7 +4,7 @@ null
 '{'
 '}'
 'property'
-'const'
+'immutable'
 'constraint'
 '('
 ')'

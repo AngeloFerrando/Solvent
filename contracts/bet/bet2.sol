@@ -1,10 +1,10 @@
 /// @custom:version compliant with the specification.
 
 contract Bet {
-  const address oracle
-  const address player1
-  const int deadline_join
-  const int deadline_win
+  immutable address oracle
+  immutable address player1
+  immutable int deadline_join
+  immutable int deadline_win
 
   address player2
   int state // 0 = JOIN-OR-TIMEOUT, 1 = WIN-OR-TIMEOUT, 2 = END

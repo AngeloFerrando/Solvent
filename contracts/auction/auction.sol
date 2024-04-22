@@ -1,7 +1,7 @@
 contract Auction {
-    const int deadline
-    const int min_bid
-    const address seller
+    immutable int deadline
+    immutable int min_bid
+    immutable address seller
 
     address winner
     int current_bid // current maximum bit

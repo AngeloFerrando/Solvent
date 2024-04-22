@@ -9,7 +9,7 @@ propertyExpr : 'property' name=LABEL '{' phi=qslf '}';
 declsExpr : (declExpr)+;
 declExpr : 
 child=fieldExpr                                                                                     # fieldDecl
-    | 'const' child=fieldExpr                                                                       # constFieldDecl
+    | 'immutable' child=fieldExpr                                                                   # constFieldDecl
     | 'constraint' name=LABEL '(' args=argsExpr  ')' '{' cmds=cmdExpr '}'                           # constrDecl
     | 'function' name=LABEL '(' args=argsExpr ')' 'payable' '{' cmds=cmdExpr '}'                    # payableFunDecl
     | 'function' name=LABEL '(' args=argsExpr ')' '{' cmds=cmdExpr '}'                              # nonPayableFunDecl
