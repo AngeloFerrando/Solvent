@@ -11,8 +11,8 @@ declExpr :
 child=fieldExpr                                                                                     # fieldDecl
     // | 'immutable' child=fieldExpr                                                                   # constFieldDecl
     | 'constraint' name=LABEL '(' args=argsExpr  ')' '{' cmds=cmdExpr '}'                           # constrDecl
-    | 'function' name=LABEL '(' args=argsExpr ')' 'payable' '{' cmds=cmdExpr '}'                    # payableFunDecl
-    | 'function' name=LABEL '(' args=argsExpr ')' '{' cmds=cmdExpr '}'                              # nonPayableFunDecl
+    | 'function' name=LABEL '(' args=argsExpr ')' 'payable' ('public')? '{' cmds=cmdExpr '}'        # payableFunDecl
+    | 'function' name=LABEL '(' args=argsExpr ')' ('public')? '{' cmds=cmdExpr '}'                  # nonPayableFunDecl
     | 'constructor' '(' args=argsExpr ')' 'payable'  '{' cmds=cmdExpr '}'                           # payableConstructorDecl
     | 'constructor' '(' args=argsExpr ')' '{' cmds=cmdExpr '}'                                      # nonPayableConstructorDecl
 ;
