@@ -1,6 +1,5 @@
 contract IfWithoutElse2 {
-
-  bool success
+  bool success;
 
   constructor() payable {
     require(msg.value>0)

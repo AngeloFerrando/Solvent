@@ -1,5 +1,5 @@
 contract Mapping1 {
-    mapping (address => int) m
+    mapping (address => int) m;
 
     function foo() {
         m[msg.sender] = m[msg.sender] + 1

@@ -1,5 +1,5 @@
 contract C14 {
-  bool b
+  bool b;
 
   constructor () {
     b = False;

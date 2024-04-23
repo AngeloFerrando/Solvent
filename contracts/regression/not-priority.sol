@@ -1,5 +1,5 @@
 contract NotPriority {
-    bool b
+    bool b;
 
     constructor() {
       skip

@@ -12,9 +12,7 @@ contract C {
   }
 }
 
-
-/// @custom:ground_truth false
-property liquidity3a_nonlive {
+property liquidity1_nonlive {
     Forall xa
     [
       true
@@ -26,8 +24,7 @@ property liquidity3a_nonlive {
     ]
 }
 
-// @custom:ground_truth true
-property liquidity3b_live {
+property liquidity2_live {
     Forall xa
     [
       xa == 1

@@ -12,7 +12,6 @@ contract C19 {
 }
 
 // STRONG UNSAT
-// liquid
 property liquidity19a_live {
     Forall xa
     [
