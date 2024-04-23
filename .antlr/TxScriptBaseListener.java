@@ -28,6 +28,30 @@ public class TxScriptBaseListener implements TxScriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterPropertiesExpr(TxScriptParser.PropertiesExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPropertiesExpr(TxScriptParser.PropertiesExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPropertyExpr(TxScriptParser.PropertyExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPropertyExpr(TxScriptParser.PropertyExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterDeclsExpr(TxScriptParser.DeclsExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -40,61 +64,25 @@ public class TxScriptBaseListener implements TxScriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIntDecl(TxScriptParser.IntDeclContext ctx) { }
+	@Override public void enterFieldDecl(TxScriptParser.FieldDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIntDecl(TxScriptParser.IntDeclContext ctx) { }
+	@Override public void exitFieldDecl(TxScriptParser.FieldDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterBoolDecl(TxScriptParser.BoolDeclContext ctx) { }
+	@Override public void enterConstFieldDecl(TxScriptParser.ConstFieldDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitBoolDecl(TxScriptParser.BoolDeclContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterStrDecl(TxScriptParser.StrDeclContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitStrDecl(TxScriptParser.StrDeclContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterAddrDecl(TxScriptParser.AddrDeclContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitAddrDecl(TxScriptParser.AddrDeclContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterMapAddrDeclInt(TxScriptParser.MapAddrDeclIntContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitMapAddrDeclInt(TxScriptParser.MapAddrDeclIntContext ctx) { }
+	@Override public void exitConstFieldDecl(TxScriptParser.ConstFieldDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -160,6 +148,90 @@ public class TxScriptBaseListener implements TxScriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterIntDecl(TxScriptParser.IntDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIntDecl(TxScriptParser.IntDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBoolDecl(TxScriptParser.BoolDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBoolDecl(TxScriptParser.BoolDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterStrDecl(TxScriptParser.StrDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitStrDecl(TxScriptParser.StrDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAddrDecl(TxScriptParser.AddrDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAddrDecl(TxScriptParser.AddrDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterHashDecl(TxScriptParser.HashDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitHashDecl(TxScriptParser.HashDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterSecretDecl(TxScriptParser.SecretDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSecretDecl(TxScriptParser.SecretDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMapAddrDeclInt(TxScriptParser.MapAddrDeclIntContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMapAddrDeclInt(TxScriptParser.MapAddrDeclIntContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterArgsExpr(TxScriptParser.ArgsExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -179,6 +251,18 @@ public class TxScriptBaseListener implements TxScriptListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitArg(TxScriptParser.ArgContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterArgMap(TxScriptParser.ArgMapContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArgMap(TxScriptParser.ArgMapContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -304,6 +388,18 @@ public class TxScriptBaseListener implements TxScriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterSha256Expr(TxScriptParser.Sha256ExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSha256Expr(TxScriptParser.Sha256ExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterGreaterEqExpr(TxScriptParser.GreaterEqExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -340,6 +436,18 @@ public class TxScriptBaseListener implements TxScriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterOrExpr(TxScriptParser.OrExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOrExpr(TxScriptParser.OrExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterNeqExpr(TxScriptParser.NeqExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -347,6 +455,18 @@ public class TxScriptBaseListener implements TxScriptListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitNeqExpr(TxScriptParser.NeqExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterLengthExpr(TxScriptParser.LengthExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLengthExpr(TxScriptParser.LengthExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -388,13 +508,25 @@ public class TxScriptBaseListener implements TxScriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSumSubEqExpr(TxScriptParser.SumSubEqExprContext ctx) { }
+	@Override public void enterMultDivModExpr(TxScriptParser.MultDivModExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitSumSubEqExpr(TxScriptParser.SumSubEqExprContext ctx) { }
+	@Override public void exitMultDivModExpr(TxScriptParser.MultDivModExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterSumSubExpr(TxScriptParser.SumSubExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSumSubExpr(TxScriptParser.SumSubExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -424,18 +556,6 @@ public class TxScriptBaseListener implements TxScriptListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMultDivEqExpr(TxScriptParser.MultDivEqExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitMultDivEqExpr(TxScriptParser.MultDivEqExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterAndExpr(TxScriptParser.AndExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -443,6 +563,18 @@ public class TxScriptBaseListener implements TxScriptListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitAndExpr(TxScriptParser.AndExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterQslf(TxScriptParser.QslfContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitQslf(TxScriptParser.QslfContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

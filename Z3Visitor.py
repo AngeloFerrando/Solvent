@@ -412,10 +412,10 @@ for prop in {props_name}:
 
 
     # Visit a parse tree produced by TxScriptParser#constFieldDecl.
-    def visitConstFieldDecl(self, ctx:TxScriptParser.ConstFieldDeclContext):
-        self.__const = True
-        self.visit(ctx.child)
-        self.__const = False
+    # def visitConstFieldDecl(self, ctx:TxScriptParser.ConstFieldDeclContext):
+    #     self.__const = True
+    #     self.visit(ctx.child)
+    #     self.__const = False
 
 
     # Visit a parse tree produced by TxScriptParser#declsExpr.
@@ -458,7 +458,7 @@ for prop in {props_name}:
             raise Exception(f'{ctx.var.text} is not a valid name for a field, please choose a different name')
         self.__globals.append((ctx.var, 'Secret'))
         self.__globals_index[ctx.var.text] = 0
-        self.__globals_const[ctx.var.text] = self.__const
+        self.__globals_const[ctx.var.text] = True if ctx.const else False #self.__const
 
 
     # Visit a parse tree produced by TxScriptParser#intDecl.
@@ -467,7 +467,7 @@ for prop in {props_name}:
             raise Exception(f'{ctx.var.text} is not a valid name for a field, please choose a different name')
         self.__globals.append((ctx.var, 'Int'))
         self.__globals_index[ctx.var.text] = 0
-        self.__globals_const[ctx.var.text] = self.__const
+        self.__globals_const[ctx.var.text] = True if ctx.const else False #self.__const
 
 
     # Visit a parse tree produced by TxScriptParser#boolDecl.
@@ -476,7 +476,7 @@ for prop in {props_name}:
             raise Exception(f'{ctx.var.text} is not a valid name for a field, please choose a different name')
         self.__globals.append((ctx.var, 'Bool'))
         self.__globals_index[ctx.var.text] = 0
-        self.__globals_const[ctx.var.text] = self.__const
+        self.__globals_const[ctx.var.text] = True if ctx.const else False #self.__const
 
 
     # Visit a parse tree produced by TxScriptParser#strDecl.
@@ -485,7 +485,7 @@ for prop in {props_name}:
             raise Exception(f'{ctx.var.text} is not a valid name for a field, please choose a different name')
         self.__globals.append((ctx.var, 'String'))
         self.__globals_index[ctx.var.text] = 0
-        self.__globals_const[ctx.var.text] = self.__const
+        self.__globals_const[ctx.var.text] = True if ctx.const else False #self.__const
 
 
     # Visit a parse tree produced by TxScriptParser#addrDecl.
@@ -494,7 +494,7 @@ for prop in {props_name}:
             raise Exception(f'{ctx.var.text} is not a valid name for a field, please choose a different name')
         self.__globals.append((ctx.var, 'Address'))
         self.__globals_index[ctx.var.text] = 0
-        self.__globals_const[ctx.var.text] = self.__const
+        self.__globals_const[ctx.var.text] = True if ctx.const else False #self.__const
 
 
     # Visit a parse tree produced by TxScriptParser#mapAddrDecl.
@@ -504,7 +504,7 @@ for prop in {props_name}:
         self.__globals.append((ctx.var, ('MapAddr', 'Int')))
         self.__globals_index[ctx.var.text] = 0
         self.__maps.add(ctx.var.text)
-        self.__globals_const[ctx.var.text] = self.__const
+        self.__globals_const[ctx.var.text] = True if ctx.const else False #self.__const
 
 
     # Visit a parse tree produced by TxScriptParser#constrDecl.

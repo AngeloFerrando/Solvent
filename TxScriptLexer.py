@@ -20,11 +20,11 @@ def serializedATN():
         buf.write("\4;\t;\4<\t<\4=\t=\4>\t>\4?\t?\4@\t@\4A\tA\3\2\3\2\3\2")
         buf.write("\3\2\3\2\3\2\3\2\3\2\3\2\3\3\3\3\3\4\3\4\3\5\3\5\3\5\3")
         buf.write("\5\3\5\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6")
-        buf.write("\3\6\3\6\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3")
-        buf.write("\b\3\b\3\t\3\t\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\13")
-        buf.write("\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\f\3\f\3\f\3\f\3")
-        buf.write("\f\3\f\3\f\3\f\3\f\3\f\3\f\3\f\3\r\3\r\3\r\3\r\3\16\3")
-        buf.write("\16\3\16\3\16\3\16\3\17\3\17\3\17\3\17\3\17\3\17\3\17")
+        buf.write("\3\6\3\6\3\6\3\7\3\7\3\b\3\b\3\t\3\t\3\t\3\t\3\t\3\t\3")
+        buf.write("\t\3\t\3\t\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\13\3\13\3")
+        buf.write("\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\13\3\f\3")
+        buf.write("\f\3\f\3\f\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\16")
+        buf.write("\3\16\3\16\3\16\3\16\3\17\3\17\3\17\3\17\3\17\3\17\3\17")
         buf.write("\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\21\3\21\3\21")
         buf.write("\3\21\3\21\3\22\3\22\3\22\3\22\3\22\3\22\3\22\3\23\3\23")
         buf.write("\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23\3\23")
@@ -70,9 +70,9 @@ def serializedATN():
         buf.write("\3\2\2\2\2q\3\2\2\2\2s\3\2\2\2\2u\3\2\2\2\2w\3\2\2\2\2")
         buf.write("y\3\2\2\2\2\177\3\2\2\2\2\u0081\3\2\2\2\3\u0083\3\2\2")
         buf.write("\2\5\u008c\3\2\2\2\7\u008e\3\2\2\2\t\u0090\3\2\2\2\13")
-        buf.write("\u0099\3\2\2\2\r\u00a3\3\2\2\2\17\u00ae\3\2\2\2\21\u00b0")
-        buf.write("\3\2\2\2\23\u00b2\3\2\2\2\25\u00bb\3\2\2\2\27\u00c3\3")
-        buf.write("\2\2\2\31\u00cf\3\2\2\2\33\u00d3\3\2\2\2\35\u00d8\3\2")
+        buf.write("\u0099\3\2\2\2\r\u00a4\3\2\2\2\17\u00a6\3\2\2\2\21\u00a8")
+        buf.write("\3\2\2\2\23\u00b1\3\2\2\2\25\u00b9\3\2\2\2\27\u00c5\3")
+        buf.write("\2\2\2\31\u00c9\3\2\2\2\33\u00d3\3\2\2\2\35\u00d8\3\2")
         buf.write("\2\2\37\u00df\3\2\2\2!\u00e7\3\2\2\2#\u00ec\3\2\2\2%\u00f3")
         buf.write("\3\2\2\2\'\u010c\3\2\2\2)\u010e\3\2\2\2+\u0113\3\2\2\2")
         buf.write("-\u011b\3\2\2\2/\u011e\3\2\2\2\61\u0123\3\2\2\2\63\u0125")
@@ -94,26 +94,26 @@ def serializedATN():
         buf.write("\7\177\2\2\u008f\b\3\2\2\2\u0090\u0091\7r\2\2\u0091\u0092")
         buf.write("\7t\2\2\u0092\u0093\7q\2\2\u0093\u0094\7r\2\2\u0094\u0095")
         buf.write("\7g\2\2\u0095\u0096\7t\2\2\u0096\u0097\7v\2\2\u0097\u0098")
-        buf.write("\7{\2\2\u0098\n\3\2\2\2\u0099\u009a\7k\2\2\u009a\u009b")
-        buf.write("\7o\2\2\u009b\u009c\7o\2\2\u009c\u009d\7w\2\2\u009d\u009e")
-        buf.write("\7v\2\2\u009e\u009f\7c\2\2\u009f\u00a0\7d\2\2\u00a0\u00a1")
-        buf.write("\7n\2\2\u00a1\u00a2\7g\2\2\u00a2\f\3\2\2\2\u00a3\u00a4")
-        buf.write("\7e\2\2\u00a4\u00a5\7q\2\2\u00a5\u00a6\7p\2\2\u00a6\u00a7")
-        buf.write("\7u\2\2\u00a7\u00a8\7v\2\2\u00a8\u00a9\7t\2\2\u00a9\u00aa")
-        buf.write("\7c\2\2\u00aa\u00ab\7k\2\2\u00ab\u00ac\7p\2\2\u00ac\u00ad")
-        buf.write("\7v\2\2\u00ad\16\3\2\2\2\u00ae\u00af\7*\2\2\u00af\20\3")
-        buf.write("\2\2\2\u00b0\u00b1\7+\2\2\u00b1\22\3\2\2\2\u00b2\u00b3")
-        buf.write("\7h\2\2\u00b3\u00b4\7w\2\2\u00b4\u00b5\7p\2\2\u00b5\u00b6")
-        buf.write("\7e\2\2\u00b6\u00b7\7v\2\2\u00b7\u00b8\7k\2\2\u00b8\u00b9")
-        buf.write("\7q\2\2\u00b9\u00ba\7p\2\2\u00ba\24\3\2\2\2\u00bb\u00bc")
-        buf.write("\7r\2\2\u00bc\u00bd\7c\2\2\u00bd\u00be\7{\2\2\u00be\u00bf")
-        buf.write("\7c\2\2\u00bf\u00c0\7d\2\2\u00c0\u00c1\7n\2\2\u00c1\u00c2")
-        buf.write("\7g\2\2\u00c2\26\3\2\2\2\u00c3\u00c4\7e\2\2\u00c4\u00c5")
-        buf.write("\7q\2\2\u00c5\u00c6\7p\2\2\u00c6\u00c7\7u\2\2\u00c7\u00c8")
-        buf.write("\7v\2\2\u00c8\u00c9\7t\2\2\u00c9\u00ca\7w\2\2\u00ca\u00cb")
-        buf.write("\7e\2\2\u00cb\u00cc\7v\2\2\u00cc\u00cd\7q\2\2\u00cd\u00ce")
-        buf.write("\7t\2\2\u00ce\30\3\2\2\2\u00cf\u00d0\7k\2\2\u00d0\u00d1")
-        buf.write("\7p\2\2\u00d1\u00d2\7v\2\2\u00d2\32\3\2\2\2\u00d3\u00d4")
+        buf.write("\7{\2\2\u0098\n\3\2\2\2\u0099\u009a\7e\2\2\u009a\u009b")
+        buf.write("\7q\2\2\u009b\u009c\7p\2\2\u009c\u009d\7u\2\2\u009d\u009e")
+        buf.write("\7v\2\2\u009e\u009f\7t\2\2\u009f\u00a0\7c\2\2\u00a0\u00a1")
+        buf.write("\7k\2\2\u00a1\u00a2\7p\2\2\u00a2\u00a3\7v\2\2\u00a3\f")
+        buf.write("\3\2\2\2\u00a4\u00a5\7*\2\2\u00a5\16\3\2\2\2\u00a6\u00a7")
+        buf.write("\7+\2\2\u00a7\20\3\2\2\2\u00a8\u00a9\7h\2\2\u00a9\u00aa")
+        buf.write("\7w\2\2\u00aa\u00ab\7p\2\2\u00ab\u00ac\7e\2\2\u00ac\u00ad")
+        buf.write("\7v\2\2\u00ad\u00ae\7k\2\2\u00ae\u00af\7q\2\2\u00af\u00b0")
+        buf.write("\7p\2\2\u00b0\22\3\2\2\2\u00b1\u00b2\7r\2\2\u00b2\u00b3")
+        buf.write("\7c\2\2\u00b3\u00b4\7{\2\2\u00b4\u00b5\7c\2\2\u00b5\u00b6")
+        buf.write("\7d\2\2\u00b6\u00b7\7n\2\2\u00b7\u00b8\7g\2\2\u00b8\24")
+        buf.write("\3\2\2\2\u00b9\u00ba\7e\2\2\u00ba\u00bb\7q\2\2\u00bb\u00bc")
+        buf.write("\7p\2\2\u00bc\u00bd\7u\2\2\u00bd\u00be\7v\2\2\u00be\u00bf")
+        buf.write("\7t\2\2\u00bf\u00c0\7w\2\2\u00c0\u00c1\7e\2\2\u00c1\u00c2")
+        buf.write("\7v\2\2\u00c2\u00c3\7q\2\2\u00c3\u00c4\7t\2\2\u00c4\26")
+        buf.write("\3\2\2\2\u00c5\u00c6\7k\2\2\u00c6\u00c7\7p\2\2\u00c7\u00c8")
+        buf.write("\7v\2\2\u00c8\30\3\2\2\2\u00c9\u00ca\7k\2\2\u00ca\u00cb")
+        buf.write("\7o\2\2\u00cb\u00cc\7o\2\2\u00cc\u00cd\7w\2\2\u00cd\u00ce")
+        buf.write("\7v\2\2\u00ce\u00cf\7c\2\2\u00cf\u00d0\7d\2\2\u00d0\u00d1")
+        buf.write("\7n\2\2\u00d1\u00d2\7g\2\2\u00d2\32\3\2\2\2\u00d3\u00d4")
         buf.write("\7d\2\2\u00d4\u00d5\7q\2\2\u00d5\u00d6\7q\2\2\u00d6\u00d7")
         buf.write("\7n\2\2\u00d7\34\3\2\2\2\u00d8\u00d9\7u\2\2\u00d9\u00da")
         buf.write("\7v\2\2\u00da\u00db\7t\2\2\u00db\u00dc\7k\2\2\u00dc\u00dd")
@@ -302,14 +302,15 @@ class TxScriptLexer(Lexer):
     modeNames = [ "DEFAULT_MODE" ]
 
     literalNames = [ "<INVALID>",
-            "'contract'", "'{'", "'}'", "'property'", "'immutable'", "'constraint'", 
-            "'('", "')'", "'function'", "'payable'", "'constructor'", "'int'", 
-            "'bool'", "'string'", "'address'", "'hash'", "'secret'", "'mapping (address => int)'", 
-            "','", "'skip'", "'require'", "'if'", "'else'", "'['", "']'", 
-            "'='", "'!'", "';'", "'sha256'", "'length'", "'len'", "'*'", 
-            "'/'", "'%'", "'+'", "'-'", "'=='", "'!='", "'<'", "'>'", "'<='", 
-            "'>='", "'not'", "'and'", "'&&'", "'or'", "'||'", "'Forall'", 
-            "'->'", "'Exists'", "'true'", "'True'", "'false'", "'False'" ]
+            "'contract'", "'{'", "'}'", "'property'", "'constraint'", "'('", 
+            "')'", "'function'", "'payable'", "'constructor'", "'int'", 
+            "'immutable'", "'bool'", "'string'", "'address'", "'hash'", 
+            "'secret'", "'mapping (address => int)'", "','", "'skip'", "'require'", 
+            "'if'", "'else'", "'['", "']'", "'='", "'!'", "';'", "'sha256'", 
+            "'length'", "'len'", "'*'", "'/'", "'%'", "'+'", "'-'", "'=='", 
+            "'!='", "'<'", "'>'", "'<='", "'>='", "'not'", "'and'", "'&&'", 
+            "'or'", "'||'", "'Forall'", "'->'", "'Exists'", "'true'", "'True'", 
+            "'false'", "'False'" ]
 
     symbolicNames = [ "<INVALID>",
             "LABEL", "LABELUPPER", "NUMBER", "REAL", "TYPE", "WS", "COMMENT", 
