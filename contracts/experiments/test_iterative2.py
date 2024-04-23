@@ -33,10 +33,6 @@ def run_makefile(folder):
             running_time = 0
             compile_and_run_time = 0
             for iteration in range(1, N_Transactions+1):
-                # Check if timeout passed
-                if Timeout < time.time() - starting_time_sol:
-                    break
-
                 # Start timing
                 start_time = time.time()
                 """
@@ -75,6 +71,12 @@ def run_makefile(folder):
 
                 end_time = time.time()
                 compile_and_run_time += end_time - start_time
+
+                # If timeout passed, don't consider last result
+                if compile_and_run_time > Timeout:
+                    #compile_and_run_time = Timeout     # TODO
+                    break
+
 
                 # Print the output of the make run command
                 # print(f"Output for {folder}:\n")
