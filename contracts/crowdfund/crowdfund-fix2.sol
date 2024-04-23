@@ -1,7 +1,7 @@
 contract Crowdfund {
-    immutable int end_donate    // last block in which users can donate
-    immutable int target        // amount of ETH that must be donated for the crowdfunding to be succesful
-    immutable address owner     // receiver of the donated funds
+    int immutable end_donate    // last block in which users can donate
+    int immutable target        // amount of ETH that must be donated for the crowdfunding to be succesful
+    address immutable owner     // receiver of the donated funds
     mapping (address => int) donors
     bool target_reached     // true when the target is reached
     int tot_donations

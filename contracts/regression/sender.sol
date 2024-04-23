@@ -8,7 +8,7 @@ contract Sender {
   function pay() { sender!balance }
 }
 
-property pay_nonlive {
+property pay_live {
     Forall xa
     [
       st.balance>0

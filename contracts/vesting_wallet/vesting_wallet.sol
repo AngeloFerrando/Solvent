@@ -1,7 +1,7 @@
 contract VestingWallet {
-    immutable address beneficiary
-    immutable int start
-    immutable int duration
+    address immutable beneficiary
+    int immutable start
+    int immutable duration
     int released        // total amount sent to the beneficiary
     int totalAllocation // total amount received
 
