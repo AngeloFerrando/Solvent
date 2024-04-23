@@ -55,7 +55,8 @@ property donor_wd_notlive {
 }
 
 // if threshold is reached, the owner can withdraw at least the target after the deadline
-property liquidity_live {
+// not live because of bug
+property liquidity_live_notlive {
     Forall xa
     [
       st.balance>0 && st.block.number > st.end_donate
