@@ -5,7 +5,7 @@ contract Constructor1 {
   }
 
   function pay(int amount) {
-    sender!1
+    msg.sender!1
   }
 }
 
@@ -16,7 +16,7 @@ property liquidity1_nonlive {
     [
         true
         ->
-      Exists tx [5, xa]
+      Exists tx [1, xa]
       [
         ((app_tx_st.balance[xa] > st.balance[xa]))
       ]
