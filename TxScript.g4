@@ -9,7 +9,7 @@ propertyExpr : 'property' name=LABEL '{' phi=qslf '}';
 declsExpr : (declExpr)+;
 declExpr : 
 child=fieldExpr                                                                                     # fieldDecl
-    | 'immutable' child=fieldExpr                                                                   # constFieldDecl
+    // | 'immutable' child=fieldExpr                                                                   # constFieldDecl
     | 'constraint' name=LABEL '(' args=argsExpr  ')' '{' cmds=cmdExpr '}'                           # constrDecl
     | 'function' name=LABEL '(' args=argsExpr ')' 'payable' '{' cmds=cmdExpr '}'                    # payableFunDecl
     | 'function' name=LABEL '(' args=argsExpr ')' '{' cmds=cmdExpr '}'                              # nonPayableFunDecl
@@ -18,13 +18,13 @@ child=fieldExpr                                                                 
 ;
 
 fieldExpr :
-'int' var=LABEL                                                                                     # intDecl
-    | 'bool' var=LABEL                                                                              # boolDecl
-    | 'string' var=LABEL                                                                            # strDecl
-    | 'address' var=LABEL                                                                           # addrDecl
-    | 'hash' var=LABEL                                                                              # hashDecl
-    | 'secret' var=LABEL                                                                            # secretDecl
-    | 'mapping (address => int)' var=LABEL                                                          # mapAddrDeclInt 
+'int' (const='immutable')? var=LABEL                                                                # intDecl
+    | 'bool' (const='immutable')? var=LABEL                                                         # boolDecl
+    | 'string' (const='immutable')? var=LABEL                                                       # strDecl
+    | 'address' (const='immutable')? var=LABEL                                                      # addrDecl
+    | 'hash' (const='immutable')? var=LABEL                                                         # hashDecl
+    | 'secret' (const='immutable')? var=LABEL                                                       # secretDecl
+    | 'mapping (address => int)' (const='immutable')? var=LABEL                                     # mapAddrDeclInt 
 ;
 
 argsExpr : (argExpr)*;

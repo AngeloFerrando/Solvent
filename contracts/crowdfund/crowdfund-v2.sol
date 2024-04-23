@@ -1,8 +1,8 @@
 contract Crowdfund {
-    immutable int end_donate              // deadline for donations
-    immutable int target                  // the campaign is successful is this target is reaches 
-    immutable address owner               // beneficiary of the campaign
-    immutable int min_donation            // minimum donation
+    int immutable end_donate              // deadline for donations
+    int immutable target                  // the campaign is successful is this target is reaches 
+    address immutable owner               // beneficiary of the campaign
+    int immutable min_donation            // minimum donation
     mapping (address => int) funds    // keeps track of the donations
     int received                      // total amount received (excluding coinbase/selfdestruct)
     bool owner_withdrawn              // has the owner withdrawn the funds?

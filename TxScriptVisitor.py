@@ -34,11 +34,6 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TxScriptParser#constFieldDecl.
-    def visitConstFieldDecl(self, ctx:TxScriptParser.ConstFieldDeclContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by TxScriptParser#constrDecl.
     def visitConstrDecl(self, ctx:TxScriptParser.ConstrDeclContext):
         return self.visitChildren(ctx)

@@ -53,15 +53,6 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by TxScriptParser#constFieldDecl.
-    def enterConstFieldDecl(self, ctx:TxScriptParser.ConstFieldDeclContext):
-        pass
-
-    # Exit a parse tree produced by TxScriptParser#constFieldDecl.
-    def exitConstFieldDecl(self, ctx:TxScriptParser.ConstFieldDeclContext):
-        pass
-
-
     # Enter a parse tree produced by TxScriptParser#constrDecl.
     def enterConstrDecl(self, ctx:TxScriptParser.ConstrDeclContext):
         pass

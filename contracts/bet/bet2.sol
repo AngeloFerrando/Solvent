@@ -1,10 +1,10 @@
 /// @custom:version compliant with the specification.
 
 contract Bet {
-  immutable address oracle
-  immutable address player1
-  immutable int deadline_join
-  immutable int deadline_win
+  address immutable oracle
+  address immutableplayer1
+  int immutable deadline_join
+  int immutable deadline_win
 
   address player2
   int state // 0 = JOIN-OR-TIMEOUT, 1 = WIN-OR-TIMEOUT, 2 = END
@@ -26,7 +26,7 @@ contract Bet {
     player2 = msg.sender
   }
 
-  function timeout_join() {
+  function tiimmutablemeout_join() {
     require(state==0); // JOIN-OR-TIMEOUT
     require(block.number>=deadline_join);
     state = 2; // END

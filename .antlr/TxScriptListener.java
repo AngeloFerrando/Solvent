@@ -17,6 +17,26 @@ public interface TxScriptListener extends ParseTreeListener {
 	 */
 	void exitContractExpr(TxScriptParser.ContractExprContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link TxScriptParser#propertiesExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterPropertiesExpr(TxScriptParser.PropertiesExprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TxScriptParser#propertiesExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitPropertiesExpr(TxScriptParser.PropertiesExprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TxScriptParser#propertyExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterPropertyExpr(TxScriptParser.PropertyExprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TxScriptParser#propertyExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitPropertyExpr(TxScriptParser.PropertyExprContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link TxScriptParser#declsExpr}.
 	 * @param ctx the parse tree
 	 */
@@ -27,65 +47,29 @@ public interface TxScriptListener extends ParseTreeListener {
 	 */
 	void exitDeclsExpr(TxScriptParser.DeclsExprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code intDecl}
+	 * Enter a parse tree produced by the {@code fieldDecl}
 	 * labeled alternative in {@link TxScriptParser#declExpr}.
 	 * @param ctx the parse tree
 	 */
-	void enterIntDecl(TxScriptParser.IntDeclContext ctx);
+	void enterFieldDecl(TxScriptParser.FieldDeclContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code intDecl}
+	 * Exit a parse tree produced by the {@code fieldDecl}
 	 * labeled alternative in {@link TxScriptParser#declExpr}.
 	 * @param ctx the parse tree
 	 */
-	void exitIntDecl(TxScriptParser.IntDeclContext ctx);
+	void exitFieldDecl(TxScriptParser.FieldDeclContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code boolDecl}
+	 * Enter a parse tree produced by the {@code constFieldDecl}
 	 * labeled alternative in {@link TxScriptParser#declExpr}.
 	 * @param ctx the parse tree
 	 */
-	void enterBoolDecl(TxScriptParser.BoolDeclContext ctx);
+	void enterConstFieldDecl(TxScriptParser.ConstFieldDeclContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code boolDecl}
+	 * Exit a parse tree produced by the {@code constFieldDecl}
 	 * labeled alternative in {@link TxScriptParser#declExpr}.
 	 * @param ctx the parse tree
 	 */
-	void exitBoolDecl(TxScriptParser.BoolDeclContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code strDecl}
-	 * labeled alternative in {@link TxScriptParser#declExpr}.
-	 * @param ctx the parse tree
-	 */
-	void enterStrDecl(TxScriptParser.StrDeclContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code strDecl}
-	 * labeled alternative in {@link TxScriptParser#declExpr}.
-	 * @param ctx the parse tree
-	 */
-	void exitStrDecl(TxScriptParser.StrDeclContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code addrDecl}
-	 * labeled alternative in {@link TxScriptParser#declExpr}.
-	 * @param ctx the parse tree
-	 */
-	void enterAddrDecl(TxScriptParser.AddrDeclContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code addrDecl}
-	 * labeled alternative in {@link TxScriptParser#declExpr}.
-	 * @param ctx the parse tree
-	 */
-	void exitAddrDecl(TxScriptParser.AddrDeclContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code mapAddrDeclInt}
-	 * labeled alternative in {@link TxScriptParser#declExpr}.
-	 * @param ctx the parse tree
-	 */
-	void enterMapAddrDeclInt(TxScriptParser.MapAddrDeclIntContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code mapAddrDeclInt}
-	 * labeled alternative in {@link TxScriptParser#declExpr}.
-	 * @param ctx the parse tree
-	 */
-	void exitMapAddrDeclInt(TxScriptParser.MapAddrDeclIntContext ctx);
+	void exitConstFieldDecl(TxScriptParser.ConstFieldDeclContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code constrDecl}
 	 * labeled alternative in {@link TxScriptParser#declExpr}.
@@ -147,6 +131,90 @@ public interface TxScriptListener extends ParseTreeListener {
 	 */
 	void exitNonPayableConstructorDecl(TxScriptParser.NonPayableConstructorDeclContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code intDecl}
+	 * labeled alternative in {@link TxScriptParser#fieldExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterIntDecl(TxScriptParser.IntDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code intDecl}
+	 * labeled alternative in {@link TxScriptParser#fieldExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitIntDecl(TxScriptParser.IntDeclContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code boolDecl}
+	 * labeled alternative in {@link TxScriptParser#fieldExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterBoolDecl(TxScriptParser.BoolDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code boolDecl}
+	 * labeled alternative in {@link TxScriptParser#fieldExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitBoolDecl(TxScriptParser.BoolDeclContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code strDecl}
+	 * labeled alternative in {@link TxScriptParser#fieldExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterStrDecl(TxScriptParser.StrDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code strDecl}
+	 * labeled alternative in {@link TxScriptParser#fieldExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitStrDecl(TxScriptParser.StrDeclContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code addrDecl}
+	 * labeled alternative in {@link TxScriptParser#fieldExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterAddrDecl(TxScriptParser.AddrDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code addrDecl}
+	 * labeled alternative in {@link TxScriptParser#fieldExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitAddrDecl(TxScriptParser.AddrDeclContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code hashDecl}
+	 * labeled alternative in {@link TxScriptParser#fieldExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterHashDecl(TxScriptParser.HashDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code hashDecl}
+	 * labeled alternative in {@link TxScriptParser#fieldExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitHashDecl(TxScriptParser.HashDeclContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code secretDecl}
+	 * labeled alternative in {@link TxScriptParser#fieldExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterSecretDecl(TxScriptParser.SecretDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code secretDecl}
+	 * labeled alternative in {@link TxScriptParser#fieldExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitSecretDecl(TxScriptParser.SecretDeclContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code mapAddrDeclInt}
+	 * labeled alternative in {@link TxScriptParser#fieldExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterMapAddrDeclInt(TxScriptParser.MapAddrDeclIntContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code mapAddrDeclInt}
+	 * labeled alternative in {@link TxScriptParser#fieldExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitMapAddrDeclInt(TxScriptParser.MapAddrDeclIntContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link TxScriptParser#argsExpr}.
 	 * @param ctx the parse tree
 	 */
@@ -168,6 +236,18 @@ public interface TxScriptListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArg(TxScriptParser.ArgContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code argMap}
+	 * labeled alternative in {@link TxScriptParser#argExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterArgMap(TxScriptParser.ArgMapContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code argMap}
+	 * labeled alternative in {@link TxScriptParser#argExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitArgMap(TxScriptParser.ArgMapContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code sendCmd}
 	 * labeled alternative in {@link TxScriptParser#cmdExpr}.
@@ -289,6 +369,18 @@ public interface TxScriptListener extends ParseTreeListener {
 	 */
 	void exitGroupExpr(TxScriptParser.GroupExprContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code sha256Expr}
+	 * labeled alternative in {@link TxScriptParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterSha256Expr(TxScriptParser.Sha256ExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code sha256Expr}
+	 * labeled alternative in {@link TxScriptParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitSha256Expr(TxScriptParser.Sha256ExprContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code greaterEqExpr}
 	 * labeled alternative in {@link TxScriptParser#expression}.
 	 * @param ctx the parse tree
@@ -325,6 +417,18 @@ public interface TxScriptListener extends ParseTreeListener {
 	 */
 	void exitLessExpr(TxScriptParser.LessExprContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code orExpr}
+	 * labeled alternative in {@link TxScriptParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterOrExpr(TxScriptParser.OrExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code orExpr}
+	 * labeled alternative in {@link TxScriptParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitOrExpr(TxScriptParser.OrExprContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code neqExpr}
 	 * labeled alternative in {@link TxScriptParser#expression}.
 	 * @param ctx the parse tree
@@ -336,6 +440,18 @@ public interface TxScriptListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitNeqExpr(TxScriptParser.NeqExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code lengthExpr}
+	 * labeled alternative in {@link TxScriptParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterLengthExpr(TxScriptParser.LengthExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code lengthExpr}
+	 * labeled alternative in {@link TxScriptParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitLengthExpr(TxScriptParser.LengthExprContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code greaterExpr}
 	 * labeled alternative in {@link TxScriptParser#expression}.
@@ -373,17 +489,29 @@ public interface TxScriptListener extends ParseTreeListener {
 	 */
 	void exitNotExpr(TxScriptParser.NotExprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code sumSubEqExpr}
+	 * Enter a parse tree produced by the {@code multDivModExpr}
 	 * labeled alternative in {@link TxScriptParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void enterSumSubEqExpr(TxScriptParser.SumSubEqExprContext ctx);
+	void enterMultDivModExpr(TxScriptParser.MultDivModExprContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code sumSubEqExpr}
+	 * Exit a parse tree produced by the {@code multDivModExpr}
 	 * labeled alternative in {@link TxScriptParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void exitSumSubEqExpr(TxScriptParser.SumSubEqExprContext ctx);
+	void exitMultDivModExpr(TxScriptParser.MultDivModExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code sumSubExpr}
+	 * labeled alternative in {@link TxScriptParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterSumSubExpr(TxScriptParser.SumSubExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code sumSubExpr}
+	 * labeled alternative in {@link TxScriptParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitSumSubExpr(TxScriptParser.SumSubExprContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code lessEqExpr}
 	 * labeled alternative in {@link TxScriptParser#expression}.
@@ -409,18 +537,6 @@ public interface TxScriptListener extends ParseTreeListener {
 	 */
 	void exitConstExpr(TxScriptParser.ConstExprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code multDivEqExpr}
-	 * labeled alternative in {@link TxScriptParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterMultDivEqExpr(TxScriptParser.MultDivEqExprContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code multDivEqExpr}
-	 * labeled alternative in {@link TxScriptParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitMultDivEqExpr(TxScriptParser.MultDivEqExprContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code andExpr}
 	 * labeled alternative in {@link TxScriptParser#expression}.
 	 * @param ctx the parse tree
@@ -432,6 +548,16 @@ public interface TxScriptListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAndExpr(TxScriptParser.AndExprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TxScriptParser#qslf}.
+	 * @param ctx the parse tree
+	 */
+	void enterQslf(TxScriptParser.QslfContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TxScriptParser#qslf}.
+	 * @param ctx the parse tree
+	 */
+	void exitQslf(TxScriptParser.QslfContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code numberConstant}
 	 * labeled alternative in {@link TxScriptParser#constantExpr}.

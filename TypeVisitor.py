@@ -28,10 +28,10 @@ class TypeVisitor(TxScriptVisitor):
 
 
     # Visit a parse tree produced by TxScriptParser#constFieldDecl.
-    def visitConstFieldDecl(self, ctx:TxScriptParser.ConstFieldDeclContext):
-        self.__const = True
-        self.visit(ctx.child)
-        self.__const = False
+    # def visitConstFieldDecl(self, ctx:TxScriptParser.ConstFieldDeclContext):
+    #     self.__const = True
+    #     self.visit(ctx.child)
+    #     self.__const = False
 
 
     # Visit a parse tree produced by TxScriptParser#declsExpr.
@@ -55,43 +55,43 @@ class TypeVisitor(TxScriptVisitor):
     # Visit a parse tree produced by TxScriptParser#secretDecl.
     def visitSecretDecl(self, ctx:TxScriptParser.SecretDeclContext):
         self.__globals.append((ctx.var.text, 'Secret'))
-        self.__globals_const[ctx.var.text] = self.__const
+        self.__globals_const[ctx.var.text] = True if ctx.const else False #self.__const
 
 
     # Visit a parse tree produced by TxScriptParser#hashDecl.
     def visitHashDecl(self, ctx:TxScriptParser.HashDeclContext):
         self.__globals.append((ctx.var.text, 'Hash'))
-        self.__globals_const[ctx.var.text] = self.__const
+        self.__globals_const[ctx.var.text] = True if ctx.const else False #self.__const
 
     # Visit a parse tree produced by TxScriptParser#intDecl.
     def visitIntDecl(self, ctx:TxScriptParser.IntDeclContext):
         self.__globals.append((ctx.var.text, 'Int'))
-        self.__globals_const[ctx.var.text] = self.__const
+        self.__globals_const[ctx.var.text] = True if ctx.const else False #self.__const
 
 
     # Visit a parse tree produced by TxScriptParser#boolDecl.
     def visitBoolDecl(self, ctx:TxScriptParser.BoolDeclContext):
         self.__globals.append((ctx.var.text, 'Bool'))
-        self.__globals_const[ctx.var.text] = self.__const
+        self.__globals_const[ctx.var.text] = True if ctx.const else False #self.__const
 
 
     # Visit a parse tree produced by TxScriptParser#strDecl.
     def visitStrDecl(self, ctx:TxScriptParser.StrDeclContext):
         self.__globals.append((ctx.var.text, 'String'))
-        self.__globals_const[ctx.var.text] = self.__const
+        self.__globals_const[ctx.var.text] = True if ctx.const else False #self.__const
 
 
     # Visit a parse tree produced by TxScriptParser#addrDecl.
     def visitAddrDecl(self, ctx:TxScriptParser.AddrDeclContext):
         self.__globals.append((ctx.var.text, 'Address'))
-        self.__globals_const[ctx.var.text] = self.__const
+        self.__globals_const[ctx.var.text] = True if ctx.const else False #self.__const
 
 
     # Visit a parse tree produced by TxScriptParser#mapAddrDecl.
     def visitMapAddrDeclInt(self, ctx:TxScriptParser.MapAddrDeclIntContext):
         self.__globals.append((ctx.var.text, ('MapAddr', 'Int')))
         self.__maps.add(ctx.var.text)
-        self.__globals_const[ctx.var.text] = self.__const
+        self.__globals_const[ctx.var.text] = True if ctx.const else False #self.__const
 
 
     # Visit a parse tree produced by TxScriptParser#constrDecl.
@@ -166,7 +166,7 @@ class TypeVisitor(TxScriptVisitor):
     def visitAssignCmd(self, ctx:TxScriptParser.AssignCmdContext):
         left = ctx.var.text
         if left in self.__globals_const and self.__globals_const[left] and self.__prefix != 'constructor':
-            raise TypeError(ctx, f'{left} is const, so values cannot be assigned to it outside the constructor')
+            raise TypeError(ctx, f'{left} is immutable, so values cannot be assigned to it outside the constructor')
         
         t_left = self.get_type(ctx, left)
         

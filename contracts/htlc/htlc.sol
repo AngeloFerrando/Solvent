@@ -1,7 +1,7 @@
 contract HTLC {
-    immutable int timeout
-    immutable address owner
-    immutable address verifier
+    int immutable timeout
+    address immutable owner
+    address immutable verifier
 
     int deposit
     int state // 0 = INIT, 1 = COMMITTED, 2 = END

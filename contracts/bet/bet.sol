@@ -1,9 +1,9 @@
 /// @custom:version compliant with the specification.
 
 contract Bet {
-  immutable address oracle
-  immutable address player1
-  immutable int deadline
+  address immutable oracle
+  address immutable player1
+  int immutable deadline
 
   address player2
   int state // 0 = JOIN, 1 = WIN-OR-TIMEOUT, 2 = END
