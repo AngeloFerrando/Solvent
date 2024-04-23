@@ -3,7 +3,7 @@ pragma solidity >= 0.8.2;
 
 contract Crowdfund {
     uint immutable end_donate;    // last block in which users can donate
-    uint immutable target;          // amount of ETH that must be donated for the crowdfunding to be succesful
+    uint immutable target;        // amount of ETH that must be donated for the crowdfunding to be succesful
     address immutable owner;      // receiver of the donated funds
     mapping(address => uint) public donors;
 
