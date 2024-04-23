@@ -1,9 +1,9 @@
 contract Crowdfund {
-    int immutable end_donate    // last block in which users can donate
-    int immutable target        // amount of ETH that must be donated for the crowdfunding to be succesful
-    address immutable owner     // receiver of the donated funds
-    mapping (address => int) donors
-    bool target_reached     // true when the target is reached
+    int immutable end_donate;  // last block in which users can donate
+    int immutable target;      // amount of ETH that must be donated for the crowdfunding to be succesful
+    address immutable owner;   // receiver of the donated funds
+    mapping (address => int) donors;
+    bool target_reached;       // true when the target is reached
 
     constructor(address owner_, int end_donate_, int target_) {
         owner = owner_;

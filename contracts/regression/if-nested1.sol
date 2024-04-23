@@ -1,5 +1,5 @@
 contract IfNested1 {
-  int x
+  int x;
 
   constructor() payable {
     require(msg.value>0);

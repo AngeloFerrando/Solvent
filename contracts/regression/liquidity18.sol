@@ -1,6 +1,6 @@
 contract C18 {
 
-  int count
+  int count;
 
   constructor() {
     skip

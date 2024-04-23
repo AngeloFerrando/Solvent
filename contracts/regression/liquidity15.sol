@@ -1,5 +1,5 @@
 contract C15 {
-  address owner
+  address immutable owner;
 
   constructor () {
     owner = msg.sender
@@ -18,9 +18,7 @@ contract C15 {
 
 } 
 
-// STRONG SAT
-// (Can_Transactions_Arrive_Any_time=False WEAK SAT WEAK UNSAT)
-// not liquid
+// STRONG SAT (Can_Transactions_Arrive_Any_time=False WEAK SAT WEAK UNSAT)
 property liquidity15a_nonlive {
     Forall xa
     [

@@ -1,6 +1,6 @@
-contract FreezableDeposit {
-  address immutable owner
-  bool frozen
+contract Freezable {
+  address immutable owner;
+  bool frozen;
 
   constructor () payable {
     owner = msg.sender

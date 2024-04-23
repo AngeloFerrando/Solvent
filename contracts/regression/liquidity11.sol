@@ -3,6 +3,7 @@ contract C11 {
   constructor () {
     skip
   }
+  
   function pay(int amount) {
     require (amount <= balance);
     if (msg.sender == 1) {
