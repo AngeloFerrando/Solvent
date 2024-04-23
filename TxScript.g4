@@ -11,20 +11,20 @@ declExpr :
 child=fieldExpr                                                                                     # fieldDecl
     // | 'immutable' child=fieldExpr                                                                   # constFieldDecl
     | 'constraint' name=LABEL '(' args=argsExpr  ')' '{' cmds=cmdExpr '}'                           # constrDecl
-    | 'function' name=LABEL '(' args=argsExpr ')' 'payable' '{' cmds=cmdExpr '}'                    # payableFunDecl
-    | 'function' name=LABEL '(' args=argsExpr ')' '{' cmds=cmdExpr '}'                              # nonPayableFunDecl
+    | 'function' name=LABEL '(' args=argsExpr ')' 'payable' ('public')? '{' cmds=cmdExpr '}'        # payableFunDecl
+    | 'function' name=LABEL '(' args=argsExpr ')' ('public')? '{' cmds=cmdExpr '}'                  # nonPayableFunDecl
     | 'constructor' '(' args=argsExpr ')' 'payable'  '{' cmds=cmdExpr '}'                           # payableConstructorDecl
     | 'constructor' '(' args=argsExpr ')' '{' cmds=cmdExpr '}'                                      # nonPayableConstructorDecl
 ;
 
 fieldExpr :
-'int' (const='immutable')? var=LABEL                                                                # intDecl
-    | 'bool' (const='immutable')? var=LABEL                                                         # boolDecl
-    | 'string' (const='immutable')? var=LABEL                                                       # strDecl
-    | 'address' (const='immutable')? var=LABEL                                                      # addrDecl
-    | 'hash' (const='immutable')? var=LABEL                                                         # hashDecl
-    | 'secret' (const='immutable')? var=LABEL                                                       # secretDecl
-    | 'mapping (address => int)' (const='immutable')? var=LABEL                                     # mapAddrDeclInt 
+'int' (const='immutable')? var=LABEL (';')?                                                         # intDecl
+    | 'bool' (const='immutable')? var=LABEL (';')?                                                  # boolDecl
+    | 'string' (const='immutable')? var=LABEL (';')?                                                # strDecl
+    | 'address' (const='immutable')? var=LABEL (';')?                                               # addrDecl
+    | 'hash' (const='immutable')? var=LABEL (';')?                                                  # hashDecl
+    | 'secret' (const='immutable')? var=LABEL (';')?                                                # secretDecl
+    | 'mapping (address => int)' (const='immutable')? var=LABEL (';')?                              # mapAddrDeclInt 
 ;
 
 argsExpr : (argExpr)*;
