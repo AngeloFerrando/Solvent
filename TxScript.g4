@@ -18,13 +18,13 @@ child=fieldExpr                                                                 
 ;
 
 fieldExpr :
-'int' (const='immutable')? var=LABEL                                                                # intDecl
-    | 'bool' (const='immutable')? var=LABEL                                                         # boolDecl
-    | 'string' (const='immutable')? var=LABEL                                                       # strDecl
-    | 'address' (const='immutable')? var=LABEL                                                      # addrDecl
-    | 'hash' (const='immutable')? var=LABEL                                                         # hashDecl
-    | 'secret' (const='immutable')? var=LABEL                                                       # secretDecl
-    | 'mapping (address => int)' (const='immutable')? var=LABEL                                     # mapAddrDeclInt 
+'int' (const='immutable')? var=LABEL (';')?                                                         # intDecl
+    | 'bool' (const='immutable')? var=LABEL (';')?                                                  # boolDecl
+    | 'string' (const='immutable')? var=LABEL (';')?                                                # strDecl
+    | 'address' (const='immutable')? var=LABEL (';')?                                               # addrDecl
+    | 'hash' (const='immutable')? var=LABEL (';')?                                                  # hashDecl
+    | 'secret' (const='immutable')? var=LABEL (';')?                                                # secretDecl
+    | 'mapping (address => int)' (const='immutable')? var=LABEL (';')?                              # mapAddrDeclInt 
 ;
 
 argsExpr : (argExpr)*;
