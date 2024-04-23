@@ -1,7 +1,7 @@
-contract Conter {
-  address immutable owner
-  int immutable maxCount
-  int count
+contract Counter {
+  address immutable owner;
+  int immutable maxCount;
+  int count;
 
   constructor() payable {
     require(msg.value>0);
