@@ -21,17 +21,14 @@ contract Lottery {
     }
 
     function join1(address a1, hash h1) payable {
-        require (state == 0);
-        require (msg.value == 1);
+        require (state==0 && msg.value==1);
         player1 = a1;
         hashlock1 = h1;
         state = 1 // next = join2 or redeem1_nojoin
     }
 
     function join2(address a2, hash h2) payable {
-        require (state == 1);
-        require (h2 != hashlock1);
-        require (msg.value == 1);
+        require (state==1 && msg.value==1);
         player2 = a2;
         hashlock2 = h2;
         state = 2 // next = reveal1
@@ -40,8 +37,7 @@ contract Lottery {
     // if, after the commit deadline, the second player has not joined,
     // then player1 can redeem the bet 
     function redeem1_nojoin() {
-        require (state == 1);
-        require (block.number >= end_commit);
+        require (state==1 && block.number>=end_commit);
         player1!balance;
         state = 3 // next = end
     }
@@ -94,6 +90,11 @@ contract Lottery {
 
         state = 3 // next = end
     }
+
+    function empty() {
+      require (state == 3);
+      msg.sender!balance
+    }
 }
 
 property liq1_nonlive {
@@ -115,22 +116,10 @@ property liq2_nonlive {
         ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance ))
+        ((app_tx_st.balance[xa] == st.balance[xa] + st.balance ))
       ]
     ]
 }
-
-property one_player_win_live {
-    Forall xa
-    [
-      state == 5
-        ->
-      Exists tx [1, xa]
-      [
-        ((app_tx_st.balance[player1] == st.balance[player1]  + st.balance )  || (app_tx_st.balance[player2] == st.balance[player2]  + st.balance ))
-      ]
-    ]
-} 
 
 property player1_can_redeem_nojoin_live {
     Forall xa
@@ -139,10 +128,10 @@ property player1_can_redeem_nojoin_live {
         ->
       Exists tx [1, xa]
       [
-        (app_tx_st.balance[player1] == st.balance[player1]  + st.balance )  
+        (app_tx_st.balance[player1] >= st.balance[player1] + 1)  
       ]
     ]
-} 
+}
 
 property player1_can_redeem_noreveal_live {
     Forall xa
@@ -151,7 +140,20 @@ property player1_can_redeem_noreveal_live {
         ->
       Exists tx [1, xa]
       [
-        (app_tx_st.balance[player1] == st.balance[player1]  + st.balance )  
+        (app_tx_st.balance[player1] >= st.balance[player1] + 2)  
+      ]
+    ]
+} 
+
+property one_player_win_live {
+    Forall xa
+    [
+      state == 5
+        ->
+      Exists tx [1, xa]
+      [
+        (app_tx_st.balance[player1] >= st.balance[player1] + 2) || 
+        (app_tx_st.balance[player2] >= st.balance[player2] + 2)
       ]
     ]
 } 
@@ -163,7 +165,31 @@ property player2_can_redeem_noreveal_live {
         ->
       Exists tx [1, xa]
       [
-        (app_tx_st.balance[player2] == st.balance[player2]  + st.balance )  
+        (app_tx_st.balance[player2] >= st.balance[player2] + 2)  
       ]
     ]
 } 
+
+property anyone_liquid3_live {
+    Forall xa
+    [
+      st.state == 3
+        ->
+      Exists tx [1, xa]
+      [
+        (app_tx_st.balance[xa] >= st.balance[xa] + st.balance)  
+      ]
+    ]
+}
+
+property from1_to2 {
+    Forall xa
+    [
+      st.state==1 && (xa==st.player2 || (xa==st.player1 && st.block.number>= st.end_commit))
+        ->
+      Exists tx [1, xa]
+      [
+        app_tx_st.state==2  
+      ]
+    ]
+}
