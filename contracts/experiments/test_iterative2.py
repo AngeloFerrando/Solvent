@@ -74,7 +74,7 @@ def run_makefile(folder):
 
                 # If timeout passed, don't consider last result
                 if compile_and_run_time > Timeout:
-                    #compile_and_run_time = Timeout     # TODO
+                    compile_and_run_time = Timeout     # TODO
                     break
 
 
@@ -163,6 +163,7 @@ def run_makefile(folder):
                 print_passed()
                 print_live(live_up_to)
                 print('')
+                print(f"Time: {compile_and_run_time} seconds")
                 status = "passed"
                 passed += 1
             else:
