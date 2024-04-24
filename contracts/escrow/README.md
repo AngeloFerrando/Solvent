@@ -16,4 +16,10 @@ In the Dispute state, the arbiter redeems the fee, and chooses whom between the 
 In the Redeem state, the chosen recipient can `redeem` the whole contract balance.
 
 ## Properties
-- **liq1**: before the deadline, if the contract balance is 2 then the oracle has a 5-steps strategy to increase the balance of player 1 or player 2 of at least 2 tokens. 
+
+- **arbiter_wd_fee**: if a dispute is open, then the arbiter can redeem the fee
+- **buyerorseller_wd_deposit**: if the arbiter has resolved the dispute, then either the buyer or the seller can redeem the deposit
+- **anyone_wd**: if the arbiter has resolved the dispute, then anyone can redeem the whole contract balance
+- **dispute_if_agree**: in the Agree state, both the buyer and the seller can open a dispute
+- **liquidity**: once one of the participants has redeemed the deposit, anyone can withdraw the whole contract balance 
+
