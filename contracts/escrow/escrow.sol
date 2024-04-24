@@ -8,13 +8,13 @@
 // 4 = END
 
 contract Escrow {
-  int state
-  address buyer
-  address seller
-  address arbiter
-  int fee
-  int deposit       // buyer's deposit
-  address recipient // recipient agreed or chosen by the arbiter
+  int state;
+  address buyer;
+  address seller;
+  address arbiter;
+  int fee;
+  int deposit;       // buyer's deposit
+  address recipient; // recipient agreed or chosen by the arbiter
  
   constructor(address seller_, address arbiter_, int fee_) payable {
     require(seller_ != 0 && arbiter_ != 0);
@@ -63,38 +63,68 @@ contract Escrow {
   }
 }
 
-property arbitrate_fee_live {
+// if a dispute is open, then the arbiter can redeem the fee
+property arbiter_wd_fee_live {
     Forall xa
       [
-        st.state==1 && xa==st.arbiter 
+        st.state==1 
           -> 
-        Exists tx [1, xa]
+        Exists tx [1, st.arbiter]
         [
-          ((app_tx_st.balance[st.arbiter] == st.balance[st.arbiter] + st.fee))
+          app_tx_st.balance[st.arbiter] == st.balance[st.arbiter] + st.fee
         ]
       ]
 }
 
-property redeem_deposit_live {
+// if the arbiter has resolved the dispute, then either the buyer or the seller can redeem the deposit
+property buyerorseller_wd_deposit_live {
     Forall xa
       [
         st.state==3 && (xa==st.buyer || xa==st.seller) 
           -> 
         Exists tx [1, xa]
         [
-          ((app_tx_st.balance[xa] >= st.balance[xa] + st.deposit))
+          app_tx_st.balance[xa] >= st.balance[xa] + st.deposit
         ]
       ]
 }
 
-property redeem_all_notlive {
+// if the arbiter has resolved the dispute, then anyone can redeem the whole contract balance
+property anyone_wd_notlive {
     Forall xa
       [
         st.state==3 
           -> 
         Exists tx [1, xa]
         [
-          ((app_tx_st.balance[xa] == st.balance[xa] + st.balance))
+          app_tx_st.balance[xa] >= st.balance[xa] + st.balance
+        ]
+      ]
+}
+
+// in the Agree state, both the buyer and the seller can open a dispute
+property dispute_if_agree_live {
+    Forall xa
+      [
+        st.state==0 && (xa==st.buyer || xa==st.seller) 
+          -> 
+        Exists tx [1, xa]
+        [
+          app_tx_st.state==1
+        ]
+      ]
+}
+// dispute_if_agree is expressible and verifiable in Certora: https://github.com/fsainas/contracts-verification-benchmark/tree/main/contracts/escrow
+
+// once one of the participants has redeemed the deposit, anyone can withdraw the whole contract balance 
+property liquidity_notlive {
+    Forall xa
+      [
+        st.state==4 && st.balance>0 
+          -> 
+        Exists tx [1, xa]
+        [
+          app_tx_st.balance[xa] == st.balance[xa] + st.balance
         ]
       ]
 }
