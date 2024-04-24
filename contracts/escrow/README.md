@@ -21,5 +21,5 @@ In the Redeem state, the chosen recipient can `redeem` the whole contract balanc
 - **buyerorseller_wd_deposit**: if the arbiter has resolved the dispute, then either the buyer or the seller can redeem the deposit
 - **anyone_wd**: if the arbiter has resolved the dispute, then anyone can redeem the whole contract balance
 - **dispute_if_agree**: in the Agree state, both the buyer and the seller can open a dispute
-- **liquidity**: in the End state, anyone can withdraw the whole contract balance 
+- **liquidity**: once one of the participants has redeemed the deposit, anyone can withdraw the whole contract balance 
 
