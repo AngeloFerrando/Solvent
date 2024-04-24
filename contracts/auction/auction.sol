@@ -130,6 +130,20 @@ property nonseller_wd_nonlive {
     ]
 }
 
+
+// the extra budget can always be redeemed by the owner
+property liquidity_nonlive {
+    Forall xa
+    [
+      closed == true
+        ->
+      Exists tx [1, xa]
+      [
+        app_tx_st.balance[st.seller] >= st.balance[st.seller] + st.balance
+      ]
+    ]
+}
+
 // only the seller can increase its balance (should be false: why??)
 // property onlyseller_can_gain_nonlive {
 //     Forall xa
