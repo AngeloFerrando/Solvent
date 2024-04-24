@@ -1,11 +1,11 @@
 contract Auction {
-    int immutable deadline
-    int immutable min_bid
-    address immutable seller
+    int immutable deadline;
+    int immutable min_bid;
+    address immutable seller;
 
-    address winner
-    int current_bid // current maximum bit
-    bool closed     // becomes true when the auction is closed
+    address winner;
+    int current_bid; // current maximum bit
+    bool closed;     // becomes true when the auction is closed
 
     constructor(address b, int d, int m) { // FIXME: if parameter a is used instead of b -> NameError: name 'constructor_a' is not defined
         // require(b!=0 && m>0 && d>0);
@@ -86,7 +86,7 @@ property seller_wd_early_nonlive {
         ->
       Exists tx [1, st.seller]
       [
-        ((app_tx_st.balance[st.seller] > st.balance[st.seller]))
+        (app_tx_st.balance[st.seller] > st.balance[st.seller])
       ]
     ]
 }
@@ -99,7 +99,7 @@ property seller_wd_closed_nonlive {
         ->
       Exists tx [1, st.seller]
       [
-        ((app_tx_st.balance[st.seller] > st.balance[st.seller]))
+        (app_tx_st.balance[st.seller] > st.balance[st.seller])
       ]
     ]
 }
@@ -112,12 +112,12 @@ property seller_wd_nowinner_nonlive {
         ->
       Exists tx [1, st.seller]
       [
-        ((app_tx_st.balance[st.seller] > st.balance[st.seller]))
+        (app_tx_st.balance[st.seller] > st.balance[st.seller])
       ]
     ]
 }
 
-// only the seller can fire the close transaction
+// the close transaction can be fired by someone who is not the seller (should be false) 
 property nonseller_wd_nonlive {
     Forall xa
     [
@@ -125,17 +125,16 @@ property nonseller_wd_nonlive {
         ->
       Exists tx [1, xa]
       [
-        xa != st.seller && ((app_tx_st.balance[st.seller] > st.balance[st.seller]))
+        xa != st.seller && (app_tx_st.balance[st.seller] > st.balance[st.seller])
       ]
     ]
 }
 
-
-// the extra budget can always be redeemed by the owner
+// the extra budget can always be redeemed by the seller
 property liquidity_nonlive {
     Forall xa
     [
-      closed == true
+      closed
         ->
       Exists tx [1, xa]
       [
