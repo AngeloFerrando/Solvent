@@ -1,12 +1,12 @@
 /// @custom:version compliant with the specification.
 
 contract Bet {
-  address immutable oracle
-  address immutable player1
-  int immutable deadline
+  address immutable oracle;
+  address immutable player1;
+  int immutable deadline;
 
-  address player2
-  int state // 0 = JOIN, 1 = WIN-OR-TIMEOUT, 2 = END
+  address player2;
+  int state; // 0 = JOIN-OR-TIMEOUT, 1 = WIN-OR-TIMEOUT, 2 = END
   
   constructor(address o, int d) payable {
     require (msg.value==1);
@@ -50,35 +50,7 @@ property any_timeout_join_live {
           -> 
         Exists tx [1, xa]
         [
-          (app_tx_st.balance[player1] - st.balance[player1] >= 1)
-        ]
-      ]
-}
-
-// once player2 has joiuned and before the deadline, the oracle can transfer the bet to one of the players
-// WEAK UNSAT
-property oracle_win_live {
-    Forall xa
-      [
-        st.block.number<st.deadline && st.state==1 
-          -> 
-        Exists tx [1, oracle]
-        [
-          ((app_tx_st.balance[player1] - st.balance[player1] >= 2) || (app_tx_st.balance[player2] - st.balance[player2] >= 2))
-        ]
-      ]
-}
-
-// in state WIN-OR-TIMEOUT and before `deadline_win`, the oracle can transfer the whole pot to one of the players
-// STRONG UNSAT
-property oracle_win_strong_live {
-    Forall xa
-      [
-        st.block.number<st.deadline && st.state==1 && st.balance >=2 
-          -> 
-        Exists tx [1, oracle]
-        [
-          ((app_tx_st.balance[player1] - st.balance[player1] >= 2) || (app_tx_st.balance[player2] - st.balance[player2] >= 2))
+          app_tx_st.balance[player1] >= st.balance[player1] + 1
         ]
       ]
 }
@@ -91,7 +63,36 @@ property any_timeout_win_live {
           -> 
         Exists tx [1, xa]
         [
-          ((app_tx_st.balance[player1] - st.balance[player1] >= 1) && (app_tx_st.balance[player2] - st.balance[player2] >= 1))
+          (app_tx_st.balance[player1] >= st.balance[player1] + 1) && 
+          (app_tx_st.balance[player2] >= st.balance[player2] + 1)
+        ]
+      ]
+}
+
+// once player2 has joined and before the deadline, the oracle can transfer the whole bet to one of the players
+property oracle_win_live {
+    Forall xa
+      [
+        st.block.number<st.deadline && st.state==1 
+          -> 
+        Exists tx [1, oracle]
+        [
+          (app_tx_st.balance[player1] >= st.balance[player1] + 2) || 
+          (app_tx_st.balance[player2] >= st.balance[player2] + 2)
+        ]
+      ]
+}
+
+// once player2 has joined and before the deadline, if the contract has at least 2 ETH then the oracle can transfer the whole bet to one of the players
+property oracle_win_strong_live {
+    Forall xa
+      [
+        st.block.number<st.deadline && st.state==1 && st.balance>=2 
+          -> 
+        Exists tx [1, oracle]
+        [
+          (app_tx_st.balance[player1] >= st.balance[player1] + 2) || 
+          (app_tx_st.balance[player2] >= st.balance[player2] + 2)
         ]
       ]
 }
@@ -104,7 +105,21 @@ property oracle_exact_balance_nonlive {
           -> 
         Exists tx [1, oracle]
         [
-          ((app_tx_st.balance[player1] - st.balance[player1] >= 2) || (app_tx_st.balance[player2] - st.balance[player2] >= 2))
+          (app_tx_st.balance[player1] >= st.balance[player1] + 2) || 
+          (app_tx_st.balance[player2] >= st.balance[player2] + 2)
+        ]
+      ]
+}
+
+// once the players have redeemed their bets, the contract is liquid, namely any participant can withdraw the whole contract balance
+property liquidity_notlive {
+    Forall xa
+      [
+        st.state==2
+          -> 
+        Exists tx [1, xa]
+        [
+          app_tx_st.balance == 0
         ]
       ]
 }
