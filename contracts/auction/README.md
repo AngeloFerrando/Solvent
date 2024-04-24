@@ -13,5 +13,14 @@ After creation, the following actions are possible:
 
 ## Properties
 
-- **seller_wd**: the seller can withdraw the current bid after the deadline
+- **seller_wd**: the seller can withdraw the current bid (greater than 0) after the deadline
 - **old_winner_wd**: the old winner can withdraw the current bid
+- **seller_wd2**: the seller can withdraw the bid (greater than the minimum bid) after the deadline
+- **seller_wd_early**: the seller can always withdraw something (should be false before the deadline) 
+- **seller_wd_closed**: the seller can withdraw something in any state (should be false: the contract can be already closed)
+- **seller_wd_nowinner**: the seller can withdraw something in any state (should be false: if the winner has not been set, the contract balance could be 0)
+- **nonseller_wd**: the `close` transaction can be fired by someone who is not the seller (should be false)
+- **liquidity**: the extra budget can always be redeemed by the seller
+
+
+
