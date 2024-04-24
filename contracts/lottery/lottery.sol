@@ -97,31 +97,34 @@ contract Lottery {
     }
 }
 
-property liq1_nonlive {
+// in any state, any user can withdraw the whole contract balance (should be false)
+property anyone_anystate_wd_nonlive {
     Forall xa
     [
       true
         ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance ))
+        (app_tx_st.balance[xa] == st.balance[xa] + st.balance)
       ]
     ]
 }
 
-property liq2_nonlive {
+// in any state, player1 can withdraw the whole contract balance (should be false)
+property p1_anystate_wd_nonlive {
     Forall xa
     [
       xa == st.player1
         ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[xa] == st.balance[xa] + st.balance ))
+        (app_tx_st.balance[xa] == st.balance[xa] + st.balance)
       ]
     ]
 }
 
-property player1_can_redeem_nojoin_live {
+// in state 1, player1 can redeem at least her bet after the block end_commit
+property p1_redeem_nojoin_live {
     Forall xa
     [
       st.state == 1 && st.block.number >= st.end_commit
@@ -133,7 +136,8 @@ property player1_can_redeem_nojoin_live {
     ]
 }
 
-property player1_can_redeem_noreveal_live {
+// in state 4, player1 can redeem at least both players' bets after the block end_reveal
+property player1_redeem_noreveal_live {
     Forall xa
     [
       st.state == 4 && st.block.number >= st.end_reveal+100
@@ -145,6 +149,7 @@ property player1_can_redeem_noreveal_live {
     ]
 } 
 
+// in state 5, either player1 or player2 can redeem at least both players' bets
 property one_player_win_live {
     Forall xa
     [
@@ -158,7 +163,8 @@ property one_player_win_live {
     ]
 } 
 
-property player2_can_redeem_noreveal_live {
+// in state 2, player2 can redeem at least both players' bets after the block end_reveal
+property p2_redeem_noreveal_live {
     Forall xa
     [
       st.state == 2 && st.block.number >= st.end_reveal
@@ -170,6 +176,7 @@ property player2_can_redeem_noreveal_live {
     ]
 } 
 
+// in state 3, anyone can withdraw the whole contract balance
 property anyone_liquid3_live {
     Forall xa
     [
@@ -182,6 +189,7 @@ property anyone_liquid3_live {
     ]
 }
 
+// player1 or player2 can make the contract take a transition from state 1 to state 2
 property from1_to2 {
     Forall xa
     [
