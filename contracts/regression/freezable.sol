@@ -13,7 +13,7 @@ contract Freezable {
 
   function pay(int v) {
     require (!frozen);
-    msg.sender!v
+    msg.sender.transfer(v)
   }
 }
 

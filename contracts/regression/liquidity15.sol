@@ -9,7 +9,7 @@ contract C15 {
     require (amount <= balance);
     //owner ! amount
     if (owner == msg.sender) {
-      msg.sender ! amount
+      msg.sender.transfer(amount)
     } 
     else {
       skip

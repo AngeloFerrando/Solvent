@@ -53,13 +53,13 @@ contract Escrow {
     recipient = dst;
     state = 3; // REDEEM
     deposit = deposit - fee;
-    arbiter!fee
+    arbiter.transfer(fee)
   }
 
   function redeem() {
     require(state==3); // REDEEM
     state = 4; // END
-    recipient!deposit
+    recipient.transfer(deposit)
   }
 }
 

@@ -38,7 +38,7 @@ contract Lottery {
     // then player1 can redeem the bet 
     function redeem1_nojoin() {
         require (state==1 && block.number>=end_commit);
-        player1!balance;
+        player1.transfer(balance);
         state = 3 // next = end
     }
 
@@ -67,14 +67,14 @@ contract Lottery {
     function redeem2_noreveal() {
         require (state == 2);
         require (block.number >= end_reveal);
-        player2!balance;
+        player2.transfer(balance);
         state = 3 // next = end
     }
 
     function redeem1_noreveal() {
         require (state == 4);
         require (block.number >= end_reveal+100);
-        player1!balance;
+        player1.transfer(balance);
         state = 3 // next = end
     }
 

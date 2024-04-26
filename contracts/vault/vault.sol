@@ -39,7 +39,7 @@ contract Vault {
         require(msg.sender == owner);
 
         state = 0; // IDLE	
-        receiver!amount
+        receiver.transfer(amount)
     }
 
     function cancel() {

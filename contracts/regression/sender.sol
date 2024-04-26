@@ -5,7 +5,7 @@ contract Sender {
   function receive() payable { skip }
 
   // error: it should be msg.sender
-  function pay() { sender!balance }
+  function pay() { sender.transfer(balance) }
 }
 
 property pay_live {

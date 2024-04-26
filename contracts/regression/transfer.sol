@@ -6,7 +6,7 @@ contract Transfer {
   }
   function withdraw(int v) {
     require(v<=balance);
-    rcv!v
+    rcv.transfer(v)
   }
 }
 

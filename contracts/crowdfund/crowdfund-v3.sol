@@ -27,14 +27,14 @@ contract Crowdfund {
     function wdOwner() {
         require (block.number > end_donate);
         require (success && not owner_withdrawn);
-       	owner!balance;
+       	owner.transfer(balance);
         owner_withdrawn = true
     }
 
     function wdDonor() {
         require (block.number > end_donate);
         require (not success);
-       	msg.sender!funds[msg.sender];
+       	msg.sender.transfer(funds[msg.sender]);
        	funds[msg.sender] = 0
     }
 }

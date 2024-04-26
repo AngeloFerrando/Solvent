@@ -16,7 +16,7 @@ contract Bank {
         require(amount <= funds[msg.sender]);
 
         funds[msg.sender] = funds[msg.sender] - amount;
-        msg.sender!amount
+        msg.sender.transfer(amount)
     }
 }  
 

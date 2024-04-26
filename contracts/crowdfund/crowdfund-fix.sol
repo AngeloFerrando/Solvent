@@ -8,7 +8,7 @@ contract Crowdfund {
     constructor(address owner_, int end_donate_, int target_) {
         owner = owner_;
         end_donate = end_donate_;
-	    target = target_
+	      target = target_
     }
     
     function donate() payable {
@@ -19,13 +19,13 @@ contract Crowdfund {
 
     function wdOwner() {
         require (target_reached && block.number > end_donate);
-        owner!balance
+        owner.transfer(balance)
     }
 
     function wdDonor() { 
         require (block.number > end_donate);
         require (not target_reached); // FIX: check target_reached
-        msg.sender!donors[msg.sender];
+        msg.sender.transfer(donors[msg.sender]);
         donors[msg.sender] = 0
     }
 }

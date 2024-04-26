@@ -5,7 +5,7 @@ contract Constructor1 {
   }
 
   function pay(int amount) {
-    msg.sender!1
+    msg.sender.transfer(1)
   }
 }
 

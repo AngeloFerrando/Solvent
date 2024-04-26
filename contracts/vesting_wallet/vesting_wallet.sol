@@ -36,7 +36,7 @@ contract VestingWallet {
 
         amount = vested_amount - released;
         released = released + amount;
-        beneficiary!amount
+        beneficiary.transfer(amount)
     }
 }
 

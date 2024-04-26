@@ -6,7 +6,7 @@ contract NotPriority {
     }
 
     function pay() {
-      msg.sender!1
+      msg.sender.transfer(1)
     }
 }
 

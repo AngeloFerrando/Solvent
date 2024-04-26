@@ -42,7 +42,7 @@ contract PaymentSplitter {
         if (payment > 0) {
             totalReleased = totalReleased + payment;
             released[a] = released[a] + payment;
-            a!payment
+            a.transfer(payment)
         }
     }
 }

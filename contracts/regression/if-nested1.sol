@@ -15,7 +15,7 @@ contract IfNested1 {
         }
         else {
             require(x>=1);
-            sender!1
+            sender.transfer(1)
         }
     }
   }

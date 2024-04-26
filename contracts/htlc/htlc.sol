@@ -25,14 +25,14 @@ contract HTLC {
     function reveal(secret s) {
         require (state==1); // COMMITTED
         if (hashlock == sha256(s)) {
-            owner!balance
+            owner.transfer(balance)
         };
         state = 2 // END
     }
 
     function timeout() {
         require(block.number > timeout);
-        verifier!balance;
+        verifier.transfer(balance);
         state = 2 // END
     }   
 }

@@ -7,7 +7,7 @@ contract Blacklist {
 
   function pay(int amount) {
     require (amount<=balance && msg.sender!=1);
-    msg.sender!amount
+    msg.sender.transfer(amount)
   }
 
 }

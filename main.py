@@ -4,6 +4,7 @@ from TypeVisitor import *
 from antlr4.error.ErrorListener import ErrorListener
 import sys
 import os
+import re
 
 class TxScriptErrorListener( ErrorListener ):
     def __init__(self):
@@ -56,6 +57,7 @@ def parseFile(file):
                 pattern = pattern[:pattern.index('function')] + '\nconstructor(){\n\tskip\n}\n' + pattern[pattern.index('function'):]
             else:
                 pattern = pattern[:pattern.index('}')] + '\nconstructor(){\n\tskip\n}\n' + pattern[pattern.index('}'):]
+    pattern = re.sub(r'\.transfer\((.*?)\)', r'!\1', pattern)
     parse(pattern)
 
 def main(args):

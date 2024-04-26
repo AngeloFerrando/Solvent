@@ -7,7 +7,7 @@ contract Whitelist {
 
   function pay(int amount) {
     require (amount<=balance && msg.sender==0);
-    msg.sender!amount
+    msg.sender.transfer(amount)
   }
 }
 

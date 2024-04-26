@@ -13,7 +13,7 @@ contract C14 {
   function pay(int amount) {
     require (amount <= balance && b);
     b = false;
-    sender!amount
+    sender.transfer(amount)
   }
 
 }

@@ -6,7 +6,7 @@ contract C4 {
 
   function pay(int amount) {
     require (amount<=(balance - 1));
-    sender!amount
+    sender.transfer(amount)
   }
 }
 

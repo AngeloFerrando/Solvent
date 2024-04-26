@@ -6,7 +6,7 @@ contract IfWithoutElse {
 
   function pay() {
     if (false) {
-        sender!1
+        sender.transfer(1)
     }
   }
 }

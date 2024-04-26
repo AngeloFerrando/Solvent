@@ -6,7 +6,7 @@ contract C {
 
   function pay(int amount) {
     require (amount<=balance);
-    msg.sender!amount
+    msg.sender.transfer(amount)
   }
   
 }

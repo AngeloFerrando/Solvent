@@ -17,7 +17,7 @@ contract Counter {
     }
     else { 
         count = count;
-        msg.sender!balance 
+        msg.sender.transfer(balance) 
     }
   }
 }

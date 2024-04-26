@@ -16,14 +16,14 @@ contract Auction {
     }
      
     function bid() payable {
-        require(not closed);
+        require(!closed);
         require (msg.value >= min_bid);
         // the current bid is greater than the previous ones 
         // this guarantees that the contract balance is strictly positive 
         require (msg.value > current_bid);
      
         // the previous maximum bid is returned to the previous winner
-        winner!current_bid;
+        winner.transfer(current_bid);
         
         // the new winner is set to the current (highest) bidder
         winner = msg.sender;
@@ -31,11 +31,11 @@ contract Auction {
     }    
     
     function close() {
-        require (not closed);
+        require (!closed);
         require (msg.sender == seller);
         require (block.number > deadline);
         closed = true;
-        seller!balance
+        seller.transfer(balance)
     }
 }
 

@@ -7,10 +7,10 @@ contract C11 {
   function pay(int amount) {
     require (amount <= balance);
     if (msg.sender == 1) {
-      msg.sender ! amount - 1
+      msg.sender.transfer(amount - 1)
     }
     else {
-      msg.sender ! amount
+      msg.sender.transfer(amount)
     }
   }
 

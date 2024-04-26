@@ -16,13 +16,13 @@ contract HTLC {
 
     function reveal() {
         if (hashlock == msg.sender) {
-            verifier!balance
+            verifier.transfer(balance)
         }
     }
 
     function timeout() {
         require(block.number > timeout);
-        msg.sender!balance
+        msg.sender.transfer(balance)
 
     }   
 }

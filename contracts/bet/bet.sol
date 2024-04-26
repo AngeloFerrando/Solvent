@@ -30,13 +30,13 @@ contract Bet {
     require(block.number<deadline);
 	  require(winner==player1 || winner==player2);
     state = 2; // END
-    winner!balance
+    winner.transfer(balance)
   }
 
   function timeout() {
     require(state==0 || state==1);
    	require(block.number>=deadline);
-	  player1!1;
+	  player1.transfer(1);
 	  if (state==1) { player2!1 };
     state = 2 // END
   }

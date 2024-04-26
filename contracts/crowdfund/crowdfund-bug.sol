@@ -19,13 +19,13 @@ contract Crowdfund {
 
     function wdOwner() {
         require (target_reached && block.number > end_donate);
-        owner!balance
+        owner.transfer(balance)
     }
 
     function wdDonor() { 
         require (block.number > end_donate);
         require (balance < target); // BUG: should check target_reached
-        msg.sender!donors[msg.sender];
+        msg.sender.transfer(donors[msg.sender]);
         donors[msg.sender] = 0
     }
 }
