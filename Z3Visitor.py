@@ -1182,7 +1182,7 @@ Not({body})
             else:
                 name = ctx.mapVar.text
                 i = '[i]'
-            if 'st.balance' in name:
+            if 'balance' in name:
                 ag = index.replace('_q', '')
                 if ag == 'xa':
                     self.__prop_nested_i.add(ag+'_q')#(ag+'[i]')
@@ -1236,7 +1236,7 @@ Not({body})
             else:
                 name = ctx.v.text
                 i = '[i]'
-            if 'st.balance' in name and '[' in name and ']' in name:
+            if 'balance' in name and '[' in name and ']' in name:
                 ag = name[name.index('[')+1:name.index(']')]
                 if ag == 'xa':
                     self.__prop_nested_i.add(ag+'_q')#(ag+'[i]')
@@ -1244,9 +1244,9 @@ Not({body})
                 else:
                     self.__prop_nested_i.add(ag+'[i]')#(ag+'[i]')
                     return f'aw{i}[{ag}[i]]'#f'aw{i}[{ag}[i]]'
-            if 'st.balance' in name:
+            if 'balance' in name:
                 return f'w{i}'
-            if 'st.block.number' in name:
+            if 'block.number' in name:
                 return f'block_num{i}'
             if 'tx.msg.value' in name:
                 return 'xn'+f'_q{self.__n_transactions-1-(self.__n_transactions-self.__pi)}'

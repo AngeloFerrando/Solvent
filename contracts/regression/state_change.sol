@@ -28,7 +28,7 @@ property live_nonlive {
     [
       state==0
         ->
-      Exists tx [1, st.owner]
+      Exists tx [1, owner]
       [
         state==1
       ]
@@ -40,7 +40,7 @@ property not_live_nonlive {
     [
       state==2
         ->
-      Exists tx [1, st.owner]
+      Exists tx [1, owner]
       [
         state==1
       ]

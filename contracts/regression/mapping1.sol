@@ -13,7 +13,7 @@ property live1 {
           -> 
         Exists tx [1, xa]
         [
-          (app_tx_st.m[xa] == st.m[xa] + 1)
+          (app_tx_st.m[xa] == m[xa] + 1)
         ]
       ]
 }

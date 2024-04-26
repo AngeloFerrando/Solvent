@@ -15,7 +15,7 @@ contract IfWithoutElse2 {
 property _live {
     Forall xa
     [
-      st.balance>0
+      balance>0
       ->
       Exists tx [1, xa]
       [

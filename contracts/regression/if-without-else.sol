@@ -20,7 +20,7 @@ property _nonlive {
       ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[xa] > st.balance[xa]))
+        ((app_tx_st.balance[xa] > balance[xa]))
       ]
     ]
 }
