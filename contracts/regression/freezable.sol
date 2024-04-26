@@ -12,7 +12,7 @@ contract Freezable {
   }
 
   function pay(int v) {
-    require (not frozen);
+    require (!frozen);
     msg.sender!v
   }
 }
@@ -32,7 +32,7 @@ property liquidity1_nonlive {
 property liquidity2_live {
     Forall xa
     [
-      not st.frozen
+      !st.frozen
       ->
       Exists tx [1, xa]
       [
