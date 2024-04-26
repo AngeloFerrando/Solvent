@@ -41,11 +41,11 @@ contract Crowdfund {
 property owner_wd_live {
     Forall xa
     [
-      st.received>=st.target && (not st.owner_withdrawn) && st.block.number > st.end_donate
+      received>=target && (not owner_withdrawn) && block.number > end_donate
         ->
-      Exists tx [1, st.owner]
+      Exists tx [1, owner]
       [
-        ((app_tx_st.balance[st.owner] >= st.balance[st.owner] + st.target))
+        ((<tx>balance[owner] >= balance[owner] + target))
       ]
     ]
 }
@@ -54,11 +54,11 @@ property owner_wd_live {
 property donor_wd_live {
     Forall xa
     [
-      st.funds[xa]>0 && st.received<st.target && st.block.number>st.end_donate
+      funds[xa]>0 && received<target && block.number>end_donate
         ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[xa] >= st.balance[xa]+st.funds[xa]))
+        ((<tx>balance[xa] >= balance[xa]+funds[xa]))
       ]
     ]
 }
@@ -67,11 +67,11 @@ property donor_wd_live {
 property owner_wd_twice_nonlive {
     Forall xa
     [
-      st.received>=st.target && st.block.number > st.end_donate
+      received>=target && block.number > end_donate
         ->
-      Exists tx [1, st.owner]
+      Exists tx [1, owner]
       [
-        ((app_tx_st.balance[st.owner] >= st.balance[st.owner] + st.target))
+        ((<tx>balance[owner] >= balance[owner] + target))
       ]
     ]
 }
@@ -80,11 +80,11 @@ property owner_wd_twice_nonlive {
 property owner_wd_balance_geq_nonlive {
     Forall xa
     [
-      st.balance >= st.target && st.block.number > st.end_donate
+      balance >= target && block.number > end_donate
         ->
-      Exists tx [1, st.owner]
+      Exists tx [1, owner]
       [
-        ((app_tx_st.balance[st.owner] >= st.balance[st.owner] + st.target))
+        ((<tx>balance[owner] >= balance[owner] + target))
       ]
     ]
 }
@@ -93,11 +93,11 @@ property owner_wd_balance_geq_nonlive {
 property can_reach_target_live {
     Forall xa
     [
-      st.balance[xa] >= st.target && st.block.number <= st.end_donate
+      balance[xa] >= target && block.number <= end_donate
         ->
       Exists tx [1, xa]
       [
-        (app_tx_st.received>=st.target)
+        (<tx>received>=target)
       ]
     ]
 }
@@ -106,11 +106,11 @@ property can_reach_target_live {
 property owner_wd_toomuch_nonlive {
     Forall xa
     [
-      st.received>=st.target && st.block.number > st.end_donate
+      received>=target && block.number > end_donate
         ->
-      Exists tx [1, st.owner]
+      Exists tx [1, owner]
       [
-        ((app_tx_st.balance[st.owner] >= 1000))
+        ((<tx>balance[owner] >= 1000))
       ]
     ]
 }
@@ -119,11 +119,11 @@ property owner_wd_toomuch_nonlive {
 property donor_wd_after_owner_nonlive {
     Forall xa
     [
-      st.funds[xa]>0 && st.balance<st.target && st.block.number>st.end_donate
+      funds[xa]>0 && balance<target && block.number>end_donate
         ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[xa] >= st.balance[xa] + st.funds[xa]))
+        ((<tx>balance[xa] >= balance[xa] + funds[xa]))
       ]
     ]
 }

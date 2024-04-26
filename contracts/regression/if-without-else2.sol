@@ -19,7 +19,7 @@ property _live {
       ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.success))
+        ((<tx>success))
       ]
     ]
 }

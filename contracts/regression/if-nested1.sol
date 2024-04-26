@@ -28,7 +28,7 @@ property tx1_nonlive {
       ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[xa] > balance[xa] && app_tx_st.x >= 1))
+        ((<tx>balance[xa] > balance[xa] && <tx>x >= 1))
       ]
     ]
 }
@@ -40,7 +40,7 @@ property tx2_live {
       ->
       Exists tx [2, xa]
       [
-        ((app_tx_st.balance[xa] > balance[xa] && app_tx_st.x >= 1))
+        ((<tx>balance[xa] > balance[xa] && <tx>x >= 1))
       ]
     ]
 }

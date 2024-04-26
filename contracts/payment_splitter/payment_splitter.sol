@@ -51,11 +51,11 @@ contract PaymentSplitter {
 property anyone_wd_ge_live {
     Forall xa
     [
-      (((st.balance + st.totalReleased) * st.shares[xa]) > (st.released[xa] * st.totalShares)) && st.state==1
+      (((balance + totalReleased) * shares[xa]) > (released[xa] * totalShares)) && state==1
         ->
       Exists tx [1, xa]
       [
-        (app_tx_st.balance[xa] > st.balance[xa])
+        (<tx>balance[xa] > balance[xa])
       ]
     ]
 }
@@ -64,11 +64,11 @@ property anyone_wd_ge_live {
 property anyone_wd_releasable_live {
     Forall xa
     [
-      st.state==1 && st.shares[xa]>0
+      state==1 && shares[xa]>0
         ->
       Exists tx [1, xa]
       [
-        (app_tx_st.balance[xa] >= st.balance[xa] + (((st.balance + st.totalReleased) * st.shares[xa]) / st.totalShares) - st.released[xa])
+        (<tx>balance[xa] >= balance[xa] + (((balance + totalReleased) * shares[xa]) / totalShares) - released[xa])
       ]
     ]
 }
@@ -83,7 +83,7 @@ property anyone_wd_nonlive {
         ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[xa] == st.balance[xa] + st.balance))
+        ((<tx>balance[xa] == balance[xa] + balance))
       ]
     ]
 }

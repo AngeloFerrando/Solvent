@@ -26,7 +26,7 @@ property liquidity11a_nonlive {
         ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[xa] == balance[xa] + balance))
+        ((<tx>balance[xa] == balance[xa] + balance))
       ]
     ]
 }
@@ -41,7 +41,7 @@ property liquidity11b_liq {
         ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance ))
+        ((<tx>balance[xa] == st.balance[xa]  + st.balance ))
       ]
     ]
 }

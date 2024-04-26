@@ -34,11 +34,11 @@ contract Crowdfund {
 property owner_wd_live {
     Forall xa
     [
-      st.target_reached && st.balance>=st.target && st.block.number > st.end_donate
+      target_reached && balance>=target && block.number > end_donate
         ->
-      Exists tx [1, st.owner]
+      Exists tx [1, owner]
       [
-        ((app_tx_st.balance[st.owner] >= st.balance[st.owner] + st.target))
+        ((<tx>balance[owner] >= balance[owner] + target))
       ]
     ]
 }
@@ -47,11 +47,11 @@ property owner_wd_live {
 property donor_wd_live {
     Forall xa
     [
-      not target_reached && st.block.number>st.end_donate
+      not target_reached && block.number>end_donate
         ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[xa] >= st.balance[xa]+st.donors[xa]))
+        ((<tx>balance[xa] >= balance[xa]+donors[xa]))
       ]
     ]
 }
@@ -61,11 +61,11 @@ property donor_wd_live {
 property liquidity_live_notlive {
     Forall xa
     [
-      st.balance>0 && st.block.number > st.end_donate
+      balance>0 && block.number > end_donate
         ->
       Exists tx [1, xa]
       [
-        (app_tx_st.balance==0)
+        (<tx>balance==0)
       ]
     ]
 }
@@ -74,11 +74,11 @@ property liquidity_live_notlive {
 property can_reach_target_live {
     Forall xa
     [
-      st.balance[xa] > st.target && st.block.number <= st.end_donate
+      balance[xa] > target && block.number <= end_donate
         ->
       Exists tx [1, xa]
       [
-        (app_tx_st.balance >= app_tx_st.target)
+        (<tx>balance >= <tx>target)
       ]
     ]
 }

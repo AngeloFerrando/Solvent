@@ -53,11 +53,11 @@ contract Vault {
 property fin_owner_live {
     Forall xa
       [
-        st.state==1 && st.block.number >= st.request_time + st.wait_time
+        state==1 && block.number >= request_time + wait_time
           -> 
-        Exists tx [1, st.owner]
+        Exists tx [1, owner]
         [
-          ((app_tx_st.balance[st.receiver] >= st.balance[st.receiver] + st.amount))
+          ((<tx>balance[receiver] >= balance[receiver] + amount))
         ]
       ]
 }
@@ -65,11 +65,11 @@ property fin_owner_live {
 property canc_recovery_live {
     Forall xa
       [
-        st.state==1 && st.block.number < st.request_time + st.wait_time
+        state==1 && block.number < request_time + wait_time
           -> 
-        Exists tx [1, st.recovery]
+        Exists tx [1, recovery]
         [
-          (app_tx_st.state == 0)
+          (<tx>state == 0)
         ]
       ]
 }
@@ -78,11 +78,11 @@ property canc_recovery_live {
 property wd_fin_owner_notlive {
     Forall xa
       [
-        st.state==0 
+        state==0 
           -> 
-        Exists tx [2, st.owner]
+        Exists tx [2, owner]
         [
-          ((app_tx_st.balance[xa] >= st.balance[xa] + st.balance))
+          ((<tx>balance[xa] >= balance[xa] + balance))
         ]
       ]
 }

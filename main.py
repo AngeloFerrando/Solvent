@@ -58,6 +58,7 @@ def parseFile(file):
             else:
                 pattern = pattern[:pattern.index('}')] + '\nconstructor(){\n\tskip\n}\n' + pattern[pattern.index('}'):]
     pattern = re.sub(r'\.transfer\((.*?)\)', r'!\1', pattern)
+    pattern = pattern.replace('<tx> ', '<tx>').replace('<tx>', 'app_tx_st.')
     parse(pattern)
 
 def main(args):

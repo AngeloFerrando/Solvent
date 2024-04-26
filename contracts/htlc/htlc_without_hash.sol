@@ -31,11 +31,11 @@ contract HTLC {
 property p1_live { 
     Forall xa
     [
-        xa==st.owner && st.balance>0
+        xa==owner && balance>0
         ->
         Exists tx [1, xa]
         [
-            ((app_tx_st.balance[st.verifier] >= st.balance[st.verifier] + st.balance))
+            ((<tx>balance[verifier] >= balance[verifier] + balance))
         ]
     ]
 }
@@ -43,11 +43,11 @@ property p1_live {
 property p2_nonlive { 
     Forall xa
     [
-        xa==st.verifier && st.balance>0
+        xa==verifier && balance>0
         ->
         Exists tx [1, xa]
         [
-            ((app_tx_st.balance[xa] >= st.balance[xa] + st.balance))
+            ((<tx>balance[xa] >= balance[xa] + balance))
         ]
     ]
 }
@@ -55,11 +55,11 @@ property p2_nonlive {
 property p3_live { 
     Forall xa
     [
-        st.balance>0 && st.block.number>st.timeout
+        balance>0 && block.number>timeout
         ->
         Exists tx [1, xa]
         [
-            ((app_tx_st.balance[xa] >= st.balance[xa] + st.balance))
+            ((<tx>balance[xa] >= balance[xa] + balance))
         ]
     ]
 }

@@ -41,11 +41,11 @@ contract HTLC {
 property owner_wd_live { 
     Forall xa
     [
-        st.state==1 && st.block.number <= st.timeout
+        state==1 && block.number <= timeout
         ->
-        Exists tx [1, st.owner]
+        Exists tx [1, owner]
         [
-            app_tx_st.balance[st.owner] >= st.balance[st.owner] + st.deposit
+            <tx>balance[owner] >= balance[owner] + deposit
         ]
     ]
 }
@@ -54,11 +54,11 @@ property owner_wd_live {
 property notowner_wd_owner_nonlive { 
     Forall xa
     [
-        st.state==1 && st.block.number <= st.timeout
+        state==1 && block.number <= timeout
         ->
         Exists tx [1, xa]
         [
-            app_tx_st.balance[st.owner] >= st.balance[st.owner] + st.balance
+            <tx>balance[owner] >= balance[owner] + balance
         ]
     ]
 }
@@ -67,11 +67,11 @@ property notowner_wd_owner_nonlive {
 property owner_wd_notowner_nonlive { 
     Forall xa
     [
-        st.state==1 && st.block.number <= st.timeout
+        state==1 && block.number <= timeout
         ->
-        Exists tx [1, st.owner]
+        Exists tx [1, owner]
         [
-            app_tx_st.balance[xa] >= st.balance[xa] + st.balance
+            <tx>balance[xa] >= balance[xa] + balance
         ]
     ]
 }
@@ -80,11 +80,11 @@ property owner_wd_notowner_nonlive {
 property verifier_wd_timeout_live { 
     Forall xa
     [
-        st.state==1 && st.block.number>st.timeout
+        state==1 && block.number>timeout
         ->
         Exists tx [1, xa]
         [
-            app_tx_st.balance[st.verifier] >= st.balance[st.verifier] + st.deposit
+            <tx>balance[verifier] >= balance[verifier] + deposit
         ]
     ]
 }
@@ -93,11 +93,11 @@ property verifier_wd_timeout_live {
 property liquidity_live { 
     Forall xa
     [
-        st.block.number>st.timeout
+        block.number>timeout
         ->
         Exists tx [1, xa]
         [
-            app_tx_st.balance==0
+            <tx>balance==0
         ]
     ]
 }

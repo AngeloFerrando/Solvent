@@ -43,11 +43,11 @@ contract Auction {
 property seller_wd_live {
     Forall xa
     [
-      st.winner!=0 && st.balance>0 && st.block.number>st.deadline && (not closed)
+      winner!=0 && balance>0 && block.number>deadline && (not closed)
         ->
-      Exists tx [1, st.seller]
+      Exists tx [1, seller]
       [
-        (app_tx_st.balance[st.seller] >= st.balance[st.seller] + st.current_bid) && (st.current_bid >= 0)
+        (<tx>balance[seller] >= balance[seller] + current_bid) && (current_bid >= 0)
       ]
     ]
 }
@@ -56,11 +56,11 @@ property seller_wd_live {
 property old_winner_wd_live {
     Forall xa
     [
-      st.winner!=0 && not closed
+      winner!=0 && not closed
         ->
       Exists tx [1, xa]
       [
-        (app_tx_st.balance[st.winner] == st.balance[st.winner] + st.current_bid)
+        (<tx>balance[winner] == balance[winner] + current_bid)
       ]
     ]
 }
@@ -69,11 +69,11 @@ property old_winner_wd_live {
 property seller_wd2_live {
     Forall xa
     [
-      st.winner!=0 && st.balance>0 && st.block.number>st.deadline && (not closed)
+      winner!=0 && balance>0 && block.number>deadline && (not closed)
         ->
-      Exists tx [1, st.seller]
+      Exists tx [1, seller]
       [
-        (app_tx_st.balance[st.seller] >= st.balance[st.seller] + st.current_bid) && (st.current_bid >= st.min_bid)
+        (<tx>balance[seller] >= balance[seller] + current_bid) && (current_bid >= min_bid)
       ]
     ]
 }
@@ -82,11 +82,11 @@ property seller_wd2_live {
 property seller_wd_early_nonlive {
     Forall xa
     [
-      st.winner!=0 && st.balance>0 && closed==false
+      winner!=0 && balance>0 && closed==false
         ->
-      Exists tx [1, st.seller]
+      Exists tx [1, seller]
       [
-        (app_tx_st.balance[st.seller] > st.balance[st.seller])
+        (<tx>balance[seller] > balance[seller])
       ]
     ]
 }
@@ -95,11 +95,11 @@ property seller_wd_early_nonlive {
 property seller_wd_closed_nonlive {
     Forall xa
     [
-      st.winner!=0 && st.balance>0 && st.block.number>st.deadline 
+      winner!=0 && balance>0 && block.number>deadline 
         ->
-      Exists tx [1, st.seller]
+      Exists tx [1, seller]
       [
-        (app_tx_st.balance[st.seller] > st.balance[st.seller])
+        (<tx>balance[seller] > balance[seller])
       ]
     ]
 }
@@ -108,11 +108,11 @@ property seller_wd_closed_nonlive {
 property seller_wd_nowinner_nonlive {
     Forall xa
     [
-      st.block.number>deadline
+      block.number>deadline
         ->
-      Exists tx [1, st.seller]
+      Exists tx [1, seller]
       [
-        (app_tx_st.balance[st.seller] > st.balance[st.seller])
+        (<tx>balance[seller] > balance[seller])
       ]
     ]
 }
@@ -121,11 +121,11 @@ property seller_wd_nowinner_nonlive {
 property nonseller_wd_nonlive {
     Forall xa
     [
-      st.winner!=0
+      winner!=0
         ->
       Exists tx [1, xa]
       [
-        xa != st.seller && (app_tx_st.balance[st.seller] > st.balance[st.seller])
+        xa != seller && (<tx>balance[seller] > balance[seller])
       ]
     ]
 }
@@ -138,7 +138,7 @@ property liquidity_nonlive {
         ->
       Exists tx [1, xa]
       [
-        app_tx_st.balance[st.seller] >= st.balance[st.seller] + st.balance
+        <tx>balance[seller] >= balance[seller] + balance
       ]
     ]
 }
@@ -147,11 +147,11 @@ property liquidity_nonlive {
 // property onlyseller_can_gain_nonlive {
 //     Forall xa
 //     [
-//       st.winner!=0 && st.balance>0 && st.block.number>st.deadline && (not closed)
+//       winner!=0 && balance>0 && block.number>deadline && (not closed)
 //         ->
 //       Exists tx [1, xa]
 //       [
-//         xa != st.seller && ((app_tx_st.balance[xa] > st.balance[xa]))
+//         xa != seller && ((<tx>balance[xa] > balance[xa]))
 //       ]
 //     ]
 // }
@@ -160,11 +160,11 @@ property liquidity_nonlive {
 // property sellerCanWithdraw_live2 {
 //     Forall xa
 //     [
-//       st.winner!=0 && st.balance>0 && closed ==false
+//       winner!=0 && balance>0 && closed ==false
 //         ->
-//       Exists tx [2, st.seller]
+//       Exists tx [2, seller]
 //       [
-//         ((app_tx_st.balance[st.seller] > st.balance[st.seller]))
+//         ((<tx>balance[seller] > balance[seller]))
 //       ]
 //     ]
 // }

@@ -20,7 +20,7 @@ property p1_notlive {
         ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[xa] == balance[xa] + 1000))
+        ((<tx>balance[xa] == balance[xa] + 1000))
       ]
     ]
 }
@@ -33,7 +33,7 @@ property p2_notlive {
         ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[xa] == balance[xa] + 1000))
+        ((<tx>balance[xa] == balance[xa] + 1000))
       ]
     ]
 }
@@ -46,7 +46,7 @@ property p3_live {
         ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[xa] == balance[xa] + 1000))
+        ((<tx>balance[xa] == balance[xa] + 1000))
       ]
     ]
 }

@@ -67,11 +67,11 @@ contract Escrow {
 property arbiter_wd_fee_live {
     Forall xa
       [
-        st.state==1 
+        state==1 
           -> 
-        Exists tx [1, st.arbiter]
+        Exists tx [1, arbiter]
         [
-          app_tx_st.balance[st.arbiter] == st.balance[st.arbiter] + st.fee
+          <tx>balance[arbiter] == balance[arbiter] + fee
         ]
       ]
 }
@@ -80,11 +80,11 @@ property arbiter_wd_fee_live {
 property buyerorseller_wd_deposit_live {
     Forall xa
       [
-        st.state==3 && (xa==st.buyer || xa==st.seller) 
+        state==3 && (xa==buyer || xa==seller) 
           -> 
         Exists tx [1, xa]
         [
-          app_tx_st.balance[xa] >= st.balance[xa] + st.deposit
+          <tx>balance[xa] >= balance[xa] + deposit
         ]
       ]
 }
@@ -93,11 +93,11 @@ property buyerorseller_wd_deposit_live {
 property anyone_wd_notlive {
     Forall xa
       [
-        st.state==3 
+        state==3 
           -> 
         Exists tx [1, xa]
         [
-          app_tx_st.balance[xa] >= st.balance[xa] + st.balance
+          <tx>balance[xa] >= balance[xa] + balance
         ]
       ]
 }
@@ -106,11 +106,11 @@ property anyone_wd_notlive {
 property dispute_if_agree_live {
     Forall xa
       [
-        st.state==0 && (xa==st.buyer || xa==st.seller) 
+        state==0 && (xa==buyer || xa==seller) 
           -> 
         Exists tx [1, xa]
         [
-          app_tx_st.state==1
+          <tx>state==1
         ]
       ]
 }
@@ -120,11 +120,11 @@ property dispute_if_agree_live {
 property liquidity_notlive {
     Forall xa
       [
-        st.state==4 && st.balance>0 
+        state==4 && balance>0 
           -> 
         Exists tx [1, xa]
         [
-          app_tx_st.balance[xa] == st.balance[xa] + st.balance
+          <tx>balance[xa] == balance[xa] + balance
         ]
       ]
 }

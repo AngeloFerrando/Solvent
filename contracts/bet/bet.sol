@@ -46,11 +46,11 @@ contract Bet {
 property any_timeout_join_live {
     Forall xa
       [
-        st.block.number>=st.deadline && st.state==0 
+        block.number>=deadline && state==0 
           -> 
         Exists tx [1, xa]
         [
-          app_tx_st.balance[player1] >= st.balance[player1] + 1
+          <tx>balance[player1] >= balance[player1] + 1
         ]
       ]
 }
@@ -59,12 +59,12 @@ property any_timeout_join_live {
 property any_timeout_win_live {
     Forall xa
       [
-        st.block.number>=st.deadline && st.state==1 && st.balance >=2 
+        block.number>=deadline && state==1 && balance >=2 
           -> 
         Exists tx [1, xa]
         [
-          (app_tx_st.balance[player1] >= st.balance[player1] + 1) && 
-          (app_tx_st.balance[player2] >= st.balance[player2] + 1)
+          (<tx>balance[player1] >= balance[player1] + 1) && 
+          (<tx>balance[player2] >= balance[player2] + 1)
         ]
       ]
 }
@@ -73,12 +73,12 @@ property any_timeout_win_live {
 property oracle_win_live {
     Forall xa
       [
-        st.block.number<st.deadline && st.state==1 
+        block.number<deadline && state==1 
           -> 
         Exists tx [1, oracle]
         [
-          (app_tx_st.balance[player1] >= st.balance[player1] + 2) || 
-          (app_tx_st.balance[player2] >= st.balance[player2] + 2)
+          (<tx>balance[player1] >= balance[player1] + 2) || 
+          (<tx>balance[player2] >= balance[player2] + 2)
         ]
       ]
 }
@@ -87,12 +87,12 @@ property oracle_win_live {
 property oracle_win_strong_live {
     Forall xa
       [
-        st.block.number<st.deadline && st.state==1 && st.balance>=2 
+        block.number<deadline && state==1 && balance>=2 
           -> 
         Exists tx [1, oracle]
         [
-          (app_tx_st.balance[player1] >= st.balance[player1] + 2) || 
-          (app_tx_st.balance[player2] >= st.balance[player2] + 2)
+          (<tx>balance[player1] >= balance[player1] + 2) || 
+          (<tx>balance[player2] >= balance[player2] + 2)
         ]
       ]
 }
@@ -101,12 +101,12 @@ property oracle_win_strong_live {
 property oracle_exact_balance_nonlive {
     Forall xa
       [
-        st.block.number<st.deadline && st.balance==2 
+        block.number<deadline && balance==2 
           -> 
         Exists tx [1, oracle]
         [
-          (app_tx_st.balance[player1] >= st.balance[player1] + 2) || 
-          (app_tx_st.balance[player2] >= st.balance[player2] + 2)
+          (<tx>balance[player1] >= balance[player1] + 2) || 
+          (<tx>balance[player2] >= balance[player2] + 2)
         ]
       ]
 }
@@ -115,11 +115,11 @@ property oracle_exact_balance_nonlive {
 property liquidity_notlive {
     Forall xa
       [
-        st.state==2
+        state==2
           -> 
         Exists tx [1, xa]
         [
-          app_tx_st.balance == 0
+          <tx>balance == 0
         ]
       ]
 }

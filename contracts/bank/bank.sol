@@ -23,11 +23,11 @@ contract Bank {
 property deposit_not_revert_live {
     Forall xa
       [
-        st.balance[xa]>0 
+        balance[xa]>0 
           -> 
         Exists tx [1, xa]
         [
-          (app_tx_st.funds[xa] == st.funds[xa] + st.balance[xa])
+          (<tx>funds[xa] == funds[xa] + balance[xa])
         ]
       ]
 }
@@ -36,11 +36,11 @@ property deposit_not_revert_live {
 property withdraw_not_revert_live {
     Forall xa
       [
-        st.funds[xa]>0 
+        funds[xa]>0 
           -> 
         Exists tx [1, xa]
         [
-          (app_tx_st.balance[xa] >= st.balance[xa] + st.funds[xa])
+          (<tx>balance[xa] >= balance[xa] + funds[xa])
         ]
       ]
 }

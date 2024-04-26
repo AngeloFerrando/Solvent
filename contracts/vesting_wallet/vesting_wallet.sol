@@ -44,11 +44,11 @@ contract VestingWallet {
 property owner_wd_expired_live {
     Forall xa
     [
-      st.balance>0 && st.released==0 && st.block.number>st.start+st.duration
+      balance>0 && released==0 && block.number>start+duration
         ->
-      Exists tx [1, st.beneficiary]
+      Exists tx [1, beneficiary]
       [
-        ((app_tx_st.balance[st.beneficiary] >= st.balance[st.beneficiary] + st.balance))
+        ((<tx>balance[beneficiary] >= balance[beneficiary] + balance))
       ]
     ]
 }
@@ -56,11 +56,11 @@ property owner_wd_expired_live {
 property owner_wd_started_live {
     Forall xa
     [
-      st.balance>0 && st.released==0 && st.block.number>st.start
+      balance>0 && released==0 && block.number>start
         ->
-      Exists tx [1, st.beneficiary]
+      Exists tx [1, beneficiary]
       [
-        ((app_tx_st.balance[st.beneficiary] > st.balance[st.beneficiary]))
+        ((<tx>balance[beneficiary] > balance[beneficiary]))
       ]
     ]
 }
@@ -70,9 +70,9 @@ property owner_wd_uncond_notlive {
     [
       true 
         ->
-      Exists tx [1, st.beneficiary]
+      Exists tx [1, beneficiary]
       [
-        ((app_tx_st.balance[st.beneficiary] > st.balance[st.beneficiary]))
+        ((<tx>balance[beneficiary] > balance[beneficiary]))
       ]
     ]
 }
@@ -80,11 +80,11 @@ property owner_wd_uncond_notlive {
 property owner_wd_beforestart_notlive {
     Forall xa
     [
-      st.balance>0 && st.released==0 
+      balance>0 && released==0 
         ->
-      Exists tx [1, st.beneficiary]
+      Exists tx [1, beneficiary]
       [
-        ((app_tx_st.balance[st.beneficiary] > st.balance[st.beneficiary]))
+        ((<tx>balance[beneficiary] > balance[beneficiary]))
       ]
     ]
 }
@@ -92,11 +92,11 @@ property owner_wd_beforestart_notlive {
 property owner_wd_empty_notlive {
     Forall xa
     [
-      st.released==0 && st.block.number>st.start
+      released==0 && block.number>start
         ->
-      Exists tx [1, st.beneficiary]
+      Exists tx [1, beneficiary]
       [
-        ((app_tx_st.balance[st.beneficiary] > st.balance[st.beneficiary]))
+        ((<tx>balance[beneficiary] > balance[beneficiary]))
       ]
     ]
 }
@@ -104,11 +104,11 @@ property owner_wd_empty_notlive {
 property owner_wd_released_notlive {
     Forall xa
     [
-      st.balance>0 && st.block.number>st.start
+      balance>0 && block.number>start
         ->
-      Exists tx [1, st.beneficiary]
+      Exists tx [1, beneficiary]
       [
-        ((app_tx_st.balance[st.beneficiary] > st.balance[st.beneficiary]))
+        ((<tx>balance[beneficiary] > balance[beneficiary]))
       ]
     ]
 }

@@ -19,7 +19,7 @@ property liquidity19a_live {
         ->
       Exists tx [5, xa]
       [
-        ((app_tx_st.balance[xa] == balance[xa]  + balance))
+        ((<tx>balance[xa] == balance[xa]  + balance))
       ]
     ]
 }

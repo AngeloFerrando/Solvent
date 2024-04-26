@@ -105,7 +105,7 @@ property anyone_anystate_wd_nonlive {
         ->
       Exists tx [1, xa]
       [
-        (app_tx_st.balance[xa] == st.balance[xa] + st.balance)
+        (<tx>balance[xa] == balance[xa] + balance)
       ]
     ]
 }
@@ -114,11 +114,11 @@ property anyone_anystate_wd_nonlive {
 property p1_anystate_wd_nonlive {
     Forall xa
     [
-      xa == st.player1
+      xa == player1
         ->
       Exists tx [1, xa]
       [
-        (app_tx_st.balance[xa] == st.balance[xa] + st.balance)
+        (<tx>balance[xa] == balance[xa] + balance)
       ]
     ]
 }
@@ -127,11 +127,11 @@ property p1_anystate_wd_nonlive {
 property p1_redeem_nojoin_live {
     Forall xa
     [
-      st.state == 1 && st.block.number >= st.end_commit
+      state == 1 && block.number >= end_commit
         ->
       Exists tx [1, xa]
       [
-        (app_tx_st.balance[player1] >= st.balance[player1] + 1)  
+        (<tx>balance[player1] >= balance[player1] + 1)  
       ]
     ]
 }
@@ -140,11 +140,11 @@ property p1_redeem_nojoin_live {
 property player1_redeem_noreveal_live {
     Forall xa
     [
-      st.state == 4 && st.block.number >= st.end_reveal+100
+      state == 4 && block.number >= end_reveal+100
         ->
       Exists tx [1, xa]
       [
-        (app_tx_st.balance[player1] >= st.balance[player1] + 2)  
+        (<tx>balance[player1] >= balance[player1] + 2)  
       ]
     ]
 } 
@@ -157,8 +157,8 @@ property one_player_win_live {
         ->
       Exists tx [1, xa]
       [
-        (app_tx_st.balance[player1] >= st.balance[player1] + 2) || 
-        (app_tx_st.balance[player2] >= st.balance[player2] + 2)
+        (<tx>balance[player1] >= balance[player1] + 2) || 
+        (<tx>balance[player2] >= balance[player2] + 2)
       ]
     ]
 } 
@@ -167,11 +167,11 @@ property one_player_win_live {
 property p2_redeem_noreveal_live {
     Forall xa
     [
-      st.state == 2 && st.block.number >= st.end_reveal
+      state == 2 && block.number >= end_reveal
         ->
       Exists tx [1, xa]
       [
-        (app_tx_st.balance[player2] >= st.balance[player2] + 2)  
+        (<tx>balance[player2] >= balance[player2] + 2)  
       ]
     ]
 } 
@@ -180,11 +180,11 @@ property p2_redeem_noreveal_live {
 property anyone_liquid3_live {
     Forall xa
     [
-      st.state == 3
+      state == 3
         ->
       Exists tx [1, xa]
       [
-        (app_tx_st.balance[xa] >= st.balance[xa] + st.balance)  
+        (<tx>balance[xa] >= balance[xa] + balance)  
       ]
     ]
 }
@@ -193,11 +193,11 @@ property anyone_liquid3_live {
 property from1_to2 {
     Forall xa
     [
-      st.state==1 && (xa==st.player2 || (xa==st.player1 && st.block.number>= st.end_commit))
+      state==1 && (xa==player2 || (xa==player1 && block.number>= end_commit))
         ->
       Exists tx [1, xa]
       [
-        app_tx_st.state==2  
+        <tx>state==2  
       ]
     ]
 }
