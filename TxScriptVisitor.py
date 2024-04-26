@@ -214,6 +214,11 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TxScriptParser#payableExpr.
+    def visitPayableExpr(self, ctx:TxScriptParser.PayableExprContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TxScriptParser#sumSubExpr.
     def visitSumSubExpr(self, ctx:TxScriptParser.SumSubExprContext):
         return self.visitChildren(ctx)

@@ -40,7 +40,7 @@ cmdExpr :
     | 'if' '(' condition=expression ')' '{' ifcmd=cmdExpr '}'           # ifCmd
     | var=LABEL '[' index=expression ']' '=' child=expression           # assignMapCmd
     | var=LABEL '=' child=expression                                    # assignCmd
-    | sender=LABEL '!' amount=expression                                # sendCmd
+    | sender=expression '!' amount=expression                                # sendCmd
     | <assoc=right> seq1=cmdExpr ';' seq2=cmdExpr                       # seqCmd
     | '(' cmdExpr ')'                                                   # groupCmd
 ;
@@ -52,6 +52,7 @@ expression :
 //  | '#' child=expression                                                 # walletExpr
  | 'sha256' '(' child=expression ')'                                    # sha256Expr
  | ('length' | 'len') '(' child=expression ')'                          # lengthExpr
+ | 'payable' '(' child=expression ')'                                   # payableExpr
  | left=expression op=('*' | '/' | '%') right=expression                # multDivModExpr
  | left=expression op=('+' | '-') right=expression                      # sumSubExpr
  | left=expression ('==') right=expression                              # eqExpr

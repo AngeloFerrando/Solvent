@@ -649,7 +649,8 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
 
     # Visit a parse tree produced by TxScriptParser#sendCmd.
     def visitSendCmd(self, ctx:TxScriptParser.SendCmdContext):
-        sender = ctx.sender.text
+        # sender = ctx.sender.text
+        sender = self.visit(ctx.sender)
         self.__nesting_w += 1
         self.__nesting_aw += 1
 
@@ -726,6 +727,11 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
     def visitSha256Expr(self, ctx:TxScriptParser.Sha256ExprContext):
         self.visit(ctx.child)
         return 'xa1'
+
+
+    # Visit a parse tree produced by TxScriptParser#payableExpr.
+    def visitPayableExpr(self, ctx:TxScriptParser.PayableExprContext):
+        return self.visit(ctx.child)
 
 
     # Visit a parse tree produced by TxScriptParser#lengthExpr.

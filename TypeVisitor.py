@@ -143,8 +143,9 @@ class TypeVisitor(TxScriptVisitor):
 
     # Visit a parse tree produced by TxScriptParser#sendCmd.
     def visitSendCmd(self, ctx:TxScriptParser.SendCmdContext):
-        sender = ctx.sender.text
-
+        # sender = ctx.sender.text
+        sender = self.visit(ctx.sender)
+        
         if sender != 'sender' and sender != 'msg.sender' and sender != 'xa1':
             for (v, t) in self.__globals:
                 if sender == v and t != 'Address':
@@ -350,7 +351,7 @@ class TypeVisitor(TxScriptVisitor):
     def visitLengthExpr(self, ctx:TxScriptParser.LengthExprContext):
         t_child = self.visit(ctx.child)
         if t_child != 'Secret':
-            raise TypeError(ctx, f'Length operator requires a Secret operand ({t_child} is given)')
+            raise TypeError(ctx, f'Length function requires a Secret operand ({t_child} is given)')
         return 'Int'
     
 
@@ -358,7 +359,15 @@ class TypeVisitor(TxScriptVisitor):
     def visitSha256Expr(self, ctx:TxScriptParser.Sha256ExprContext):
         t_child = self.visit(ctx.child)
         if t_child != 'Secret':
-            raise TypeError(ctx, f'Sha256 operator requires a Secret operand ({t_child} is given)')
+            raise TypeError(ctx, f'Sha256 function requires a Secret operand ({t_child} is given)')
+        return 'Hash'
+    
+
+        # Visit a parse tree produced by TxScriptParser#payableExpr.
+    def visitPayableExpr(self, ctx:TxScriptParser.PayableExprContext):
+        t_child = self.visit(ctx.child)
+        if t_child != 'Address':
+            raise TypeError(ctx, f'payable function requires an Address operand ({t_child} is given)')
         return 'Hash'
     
 

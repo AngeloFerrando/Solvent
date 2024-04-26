@@ -377,6 +377,15 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TxScriptParser#payableExpr.
+    def enterPayableExpr(self, ctx:TxScriptParser.PayableExprContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#payableExpr.
+    def exitPayableExpr(self, ctx:TxScriptParser.PayableExprContext):
+        pass
+
+
     # Enter a parse tree produced by TxScriptParser#sumSubExpr.
     def enterSumSubExpr(self, ctx:TxScriptParser.SumSubExprContext):
         pass
