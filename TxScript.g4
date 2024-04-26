@@ -60,7 +60,7 @@ expression :
  | left=expression ('>') right=expression                               # greaterExpr
  | left=expression ('<=') right=expression                              # lessEqExpr
  | left=expression ('>=') right=expression                              # greaterEqExpr
- | 'not' child=expression                                               # notExpr
+ | ('not'|'!') child=expression                                         # notExpr
  | left=expression ('and' | '&&') right=expression                      # andExpr
  | left=expression ('or' | '||') right=expression                       # orExpr
  | '(' child=expression ')'                                             # groupExpr
