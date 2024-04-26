@@ -2,75 +2,55 @@ contract C14 {
   bool b;
 
   constructor () {
-    b = False;
-    skip
+    b = false
   }
 
   function unlock() {
-    require(not b); 
+    require(!b); 
     b = true
   }
 
   function pay(int amount) {
     require (amount <= balance && b);
-    b = False;
-    sender ! amount
+    b = false;
+    sender!amount
   }
 
 }
 
-/*
-// not liquid
-property liquidity14a_nonlive {
+property liquidity1_notlive {
     Forall xa
     [
       true
         ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance))
+        ((app_tx_st.balance[xa] == st.balance[xa] + st.balance))
       ]
     ]
 }
 
-
-// liquid
-property liquidity14b_live {
+property liquidity2_live {
     Forall xa
     [
       st.b == true
         ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance))
+        ((app_tx_st.balance[xa] == st.balance[xa] + st.balance))
       ]
     ]
 }
-*/
 
-
-//  liquid
-property liquidity14c_live {
+property liquidity3_live {
     Forall xa
     [
       true
         ->
       Exists tx [2, xa]
       [
-        ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance ))
+        ((app_tx_st.balance[xa] == st.balance[xa] + st.balance ))
       ]
     ]
 }
 
-//  liquid
-property liquidity14d_live {
-    Forall xa
-    [
-      st.b==true
-        ->
-      Exists tx [2, xa]
-      [
-        ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance ))
-      ]
-    ]
-}

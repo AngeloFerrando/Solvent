@@ -16,7 +16,7 @@ contract NotPriority {
 property p1_notlive {
     Forall xa
     [
-      not false || true
+      !false || true
         ->
       Exists tx [1, xa]
       [
@@ -29,7 +29,20 @@ property p1_notlive {
 property p2_notlive {
     Forall xa
     [
-      (not false) || true
+      (!false) || true
+        ->
+      Exists tx [1, xa]
+      [
+        ((app_tx_st.balance[xa] == st.balance[xa] + 1000))
+      ]
+    ]
+}
+
+// the property should be false, because the contract could not have enough balance to pay 
+property p3_live {
+    Forall xa
+    [
+      !true
         ->
       Exists tx [1, xa]
       [
