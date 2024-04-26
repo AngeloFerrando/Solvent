@@ -1,0 +1,625 @@
+
+---------------------
+Contract: auction_seller_wd_nowinner_nonlive.sol
+
+PROPERTY:  out/smt2/seller_wd_nowinner_nonlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 1 step)[0m
+
+Time: 0.9361193180084229 seconds
+
+---------------------
+Contract: auction_old_winner_wd_live.sol
+
+PROPERTY:  out/smt2/old_winner_wd_live
+[92mPassed[0m	 - 	[93mLIVE (up to 12)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: auction_seller_wd2_live.sol
+
+PROPERTY:  out/smt2/seller_wd2_live
+[92mPassed[0m	 - 	[93mLIVE (up to 12)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: auction_seller_wd_closed_nonlive.sol
+
+PROPERTY:  out/smt2/seller_wd_closed_nonlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 4 steps)[0m
+
+Time: 51.60355472564697 seconds
+
+---------------------
+Contract: auction_liquidity_nonlive.sol
+
+PROPERTY:  out/smt2/liquidity_nonlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 3 steps)[0m
+
+Time: 2.5913212299346924 seconds
+
+---------------------
+Contract: auction_seller_wd_live.sol
+
+PROPERTY:  out/smt2/seller_wd_live
+[92mPassed[0m	 - 	[93mLIVE (up to 12)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: auction_seller_wd_early_nonlive.sol
+
+PROPERTY:  out/smt2/seller_wd_early_nonlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 2 steps)[0m
+
+Time: 1.8304526805877686 seconds
+
+---------------------
+Contract: auction_nonseller_wd_nonlive.sol
+
+PROPERTY:  out/smt2/nonseller_wd_nonlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 2 steps)[0m
+
+Time: 1.8231627941131592 seconds
+
+---------------------
+Contract: bank_withdraw_not_revert_live.sol
+
+PROPERTY:  out/smt2/withdraw_not_revert_live
+[92mPassed[0m	 - 	[93mLIVE (up to 9)[0m
+
+Time: 803.1002397537231 seconds
+
+---------------------
+Contract: bank_deposit_not_revert_live.sol
+
+PROPERTY:  out/smt2/deposit_not_revert_live
+[92mPassed[0m	 - 	[93mLIVE[0m
+
+Time: 23.34867525100708 seconds
+
+---------------------
+Contract: bet_liquidity_notlive.sol
+
+PROPERTY:  out/smt2/liquidity_notlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 2 steps)[0m
+
+Time: 2.005821466445923 seconds
+
+---------------------
+Contract: bet_any_timeout_win_live.sol
+
+PROPERTY:  out/smt2/any_timeout_win_live
+[92mPassed[0m	 - 	[93mLIVE (up to 20)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: bet_any_timeout_join_live.sol
+
+PROPERTY:  out/smt2/any_timeout_join_live
+[92mPassed[0m	 - 	[93mLIVE (up to 34)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: bet_oracle_exact_balance_nonlive.sol
+
+PROPERTY:  out/smt2/oracle_exact_balance_nonlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 1 step)[0m
+
+Time: 0.979874849319458 seconds
+
+---------------------
+Contract: bet_oracle_win_live.sol
+
+PROPERTY:  out/smt2/oracle_win_live
+[92mPassed[0m	 - 	[93mLIVE (up to 16)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: bet_oracle_win_strong_live.sol
+
+PROPERTY:  out/smt2/oracle_win_strong_live
+[92mPassed[0m	 - 	[93mLIVE (up to 19)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: crowdfund-fix2_owner_wd_live.sol
+
+PROPERTY:  out/smt2/owner_wd_live
+[92mPassed[0m	 - 	[93mLIVE[0m
+
+Time: 21.14440107345581 seconds
+
+---------------------
+Contract: crowdfund-fix_donor_wd_live.sol
+
+PROPERTY:  out/smt2/donor_wd_live
+[92mPassed[0m	 - 	[93mLIVE (up to 12)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: crowdfund-bug_can_reach_target_live.sol
+
+PROPERTY:  out/smt2/can_reach_target_live
+[92mPassed[0m	 - 	[93mLIVE[0m
+
+Time: 61.568015575408936 seconds
+
+---------------------
+Contract: crowdfund-fix_liquidity_live_notlive.sol
+
+PROPERTY:  out/smt2/liquidity_live_notlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 1 step)[0m
+
+Time: 0.9416482448577881 seconds
+
+---------------------
+Contract: crowdfund-bug_owner_wd_live.sol
+
+PROPERTY:  out/smt2/owner_wd_live
+[92mPassed[0m	 - 	[93mLIVE[0m
+
+Time: 22.96747636795044 seconds
+
+---------------------
+Contract: crowdfund-v2_owner_wd_balance_geq_nonlive.sol
+
+PROPERTY:  out/smt2/owner_wd_balance_geq_nonlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 1 step)[0m
+
+Time: 0.9845430850982666 seconds
+
+---------------------
+Contract: crowdfund-fix_can_reach_target_live.sol
+
+PROPERTY:  out/smt2/can_reach_target_live
+[92mPassed[0m	 - 	[93mLIVE[0m
+
+Time: 36.23947739601135 seconds
+
+---------------------
+Contract: crowdfund-v2_owner_wd_toomuch_nonlive.sol
+
+PROPERTY:  out/smt2/owner_wd_toomuch_nonlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 1 step)[0m
+
+Time: 0.984492301940918 seconds
+
+---------------------
+Contract: crowdfund-v2_donor_wd_live.sol
+
+PROPERTY:  out/smt2/donor_wd_live
+[92mPassed[0m	 - 	[93mLIVE (up to 13)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: crowdfund-fix2_can_reach_target_live.sol
+
+PROPERTY:  out/smt2/can_reach_target_live
+[92mPassed[0m	 - 	[93mLIVE[0m
+
+Time: 54.30041193962097 seconds
+
+---------------------
+Contract: crowdfund-bug_donor_wd_notlive.sol
+
+PROPERTY:  out/smt2/donor_wd_notlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 5 steps)[0m
+
+Time: 42.7956657409668 seconds
+
+---------------------
+Contract: crowdfund-v2_owner_wd_live.sol
+
+PROPERTY:  out/smt2/owner_wd_live
+[92mPassed[0m	 - 	[93mLIVE (up to 13)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: crowdfund-bug_liquidity_live_notlive.sol
+
+PROPERTY:  out/smt2/liquidity_live_notlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 1 step)[0m
+
+Time: 0.9031593799591064 seconds
+
+---------------------
+Contract: crowdfund-fix_owner_wd_live.sol
+
+PROPERTY:  out/smt2/owner_wd_live
+[92mPassed[0m	 - 	[93mLIVE[0m
+
+Time: 25.668529272079468 seconds
+
+---------------------
+Contract: crowdfund-fix2_liquidity_live.sol
+
+PROPERTY:  out/smt2/liquidity_live
+[92mPassed[0m	 - 	[93mLIVE (up to 10)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: crowdfund-v2_can_reach_target_live.sol
+
+PROPERTY:  out/smt2/can_reach_target_live
+[92mPassed[0m	 - 	[93mLIVE[0m
+
+Time: 36.7377724647522 seconds
+
+---------------------
+Contract: crowdfund-v2_donor_wd_after_owner_nonlive.sol
+
+PROPERTY:  out/smt2/donor_wd_after_owner_nonlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 3 steps)[0m
+
+Time: 14.8076913356781 seconds
+
+---------------------
+Contract: crowdfund-v3_owner_wd_toomuch_nonlive.sol
+
+PROPERTY:  out/smt2/owner_wd_toomuch_nonlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 2 steps)[0m
+
+Time: 1.7606475353240967 seconds
+
+---------------------
+Contract: crowdfund-v2_owner_wd_twice_nonlive.sol
+
+PROPERTY:  out/smt2/owner_wd_twice_nonlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 4 steps)[0m
+
+Time: 16.947720766067505 seconds
+
+---------------------
+Contract: crowdfund-fix2_donor_wd_live.sol
+
+PROPERTY:  out/smt2/donor_wd_live
+[92mPassed[0m	 - 	[93mLIVE (up to 9)[0m
+
+Time: 996.0520741939545 seconds
+
+---------------------
+Contract: crowdfund-v3_can_reach_target_live.sol
+
+PROPERTY:  out/smt2/can_reach_target_live
+[92mPassed[0m	 - 	[93mLIVE (up to 17)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: escrow_dispute_if_agree_live.sol
+
+PROPERTY:  out/smt2/dispute_if_agree_live
+[92mPassed[0m	 - 	[93mLIVE (up to 101)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: escrow_liquidity_notlive.sol
+
+PROPERTY:  out/smt2/liquidity_notlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 3 steps)[0m
+
+Time: 2.7504308223724365 seconds
+
+---------------------
+Contract: escrow_arbiter_wd_fee_live.sol
+
+PROPERTY:  out/smt2/arbiter_wd_fee_live
+[92mPassed[0m	 - 	[93mLIVE (up to 22)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: escrow_buyerorseller_wd_deposit_live.sol
+
+PROPERTY:  out/smt2/buyerorseller_wd_deposit_live
+[92mPassed[0m	 - 	[93mLIVE (up to 87)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: escrow_anyone_wd_notlive.sol
+
+PROPERTY:  out/smt2/anyone_wd_notlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 2 steps)[0m
+
+Time: 1.9600379467010498 seconds
+
+---------------------
+Contract: htlc_owner_wd_live.sol
+
+PROPERTY:  out/smt2/owner_wd_live
+[92mPassed[0m	 - 	[93mLIVE (up to 21)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: htlc_owner_wd_notowner_nonlive.sol
+
+PROPERTY:  out/smt2/owner_wd_notowner_nonlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 2 steps)[0m
+
+Time: 1.8530287742614746 seconds
+
+---------------------
+Contract: htlc_without_hash_p1_live.sol
+
+PROPERTY:  out/smt2/p1_live
+[92mPassed[0m	 - 	[93mLIVE (up to 28)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: htlc_liquidity_live.sol
+
+PROPERTY:  out/smt2/liquidity_live
+[92mPassed[0m	 - 	[93mLIVE[0m
+
+Time: 29.41658878326416 seconds
+
+---------------------
+Contract: htlc_notowner_wd_owner_nonlive.sol
+
+PROPERTY:  out/smt2/notowner_wd_owner_nonlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 2 steps)[0m
+
+Time: 1.8404510021209717 seconds
+
+---------------------
+Contract: htlc_without_hash_p3_live.sol
+
+PROPERTY:  out/smt2/p3_live
+[92mPassed[0m	 - 	[93mLIVE (up to 26)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: htlc_verifier_wd_timeout_live.sol
+
+PROPERTY:  out/smt2/verifier_wd_timeout_live
+[92mPassed[0m	 - 	[93mLIVE (up to 21)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: htlc_without_hash_p2_nonlive.sol
+
+PROPERTY:  out/smt2/p2_nonlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 1 step)[0m
+
+Time: 0.9128503799438477 seconds
+
+---------------------
+Contract: lottery_from1_to2.sol
+
+PROPERTY:  out/smt2/from1_to2
+[92mPassed[0m	 - 	[93mLIVE (up to 19)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: lottery_anyone_anystate_wd_nonlive.sol
+
+PROPERTY:  out/smt2/anyone_anystate_wd_nonlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 1 step)[0m
+
+Time: 0.808833122253418 seconds
+
+---------------------
+Contract: lottery_player1_redeem_noreveal_live.sol
+
+PROPERTY:  out/smt2/player1_redeem_noreveal_live
+[92mPassed[0m	 - 	[93mLIVE (up to 17)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: lottery_p1_anystate_wd_nonlive.sol
+
+PROPERTY:  out/smt2/p1_anystate_wd_nonlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 2 steps)[0m
+
+Time: 2.2543911933898926 seconds
+
+---------------------
+Contract: lottery_anyone_liquid3_live.sol
+
+PROPERTY:  out/smt2/anyone_liquid3_live
+[92mPassed[0m	 - 	[93mLIVE (up to 17)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: lottery_p2_redeem_noreveal_live.sol
+
+PROPERTY:  out/smt2/p2_redeem_noreveal_live
+[92mPassed[0m	 - 	[93mLIVE (up to 21)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: lottery_p1_redeem_nojoin_live.sol
+
+PROPERTY:  out/smt2/p1_redeem_nojoin_live
+[92mPassed[0m	 - 	[93mLIVE (up to 28)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: lottery_one_player_win_live.sol
+
+PROPERTY:  out/smt2/one_player_win_live
+[92mPassed[0m	 - 	[93mLIVE (up to 15)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: payment_splitter_anyone_wd_nonlive.sol
+
+PROPERTY:  out/smt2/anyone_wd_nonlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 1 step)[0m
+
+Time: 0.8444271087646484 seconds
+
+---------------------
+Contract: payment_splitter_anyone_wd_ge_live.sol
+
+PROPERTY:  out/smt2/anyone_wd_ge_live
+[92mPassed[0m	 - 	[93mLIVE (up to 1)[0m
+
+Time: 1.844287633895874 seconds
+
+---------------------
+Contract: payment_splitter_anyone_wd_releasable_live.sol
+
+PROPERTY:  out/smt2/anyone_wd_releasable_live
+[92mPassed[0m	 - 	[93mLIVE (up to 1)[0m
+
+Time: 1.7002296447753906 seconds
+
+---------------------
+Contract: vault_canc_recovery_live.sol
+
+PROPERTY:  out/smt2/canc_recovery_live
+[92mPassed[0m	 - 	[93mLIVE (up to 21)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: vault_wd_fin_owner_notlive.sol
+
+PROPERTY:  out/smt2/wd_fin_owner_notlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 1 step)[0m
+
+Time: 1.1767232418060303 seconds
+
+---------------------
+Contract: vault_fin_owner_live.sol
+
+PROPERTY:  out/smt2/fin_owner_live
+[92mPassed[0m	 - 	[93mLIVE (up to 19)[0m
+
+Time: 1000 seconds
+
+---------------------
+Contract: vesting_wallet_owner_wd_beforestart_notlive.sol
+
+PROPERTY:  out/smt2/owner_wd_beforestart_notlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 1 step)[0m
+
+Time: 0.9604325294494629 seconds
+
+---------------------
+Contract: vesting_wallet_owner_wd_released_notlive.sol
+
+Timeout for vesting_wallet_owner_wd_released_notlive.sol
+
+---------------------
+Contract: vesting_wallet_owner_wd_expired_live.sol
+
+Timeout for vesting_wallet_owner_wd_expired_live.sol
+
+---------------------
+Contract: vesting_wallet_owner_wd_started_live.sol
+
+Timeout for vesting_wallet_owner_wd_started_live.sol
+
+---------------------
+Contract: vesting_wallet_owner_wd_uncond_notlive.sol
+
+PROPERTY:  out/smt2/owner_wd_uncond_notlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 1 step)[0m
+
+Time: 1.144287109375 seconds
+
+---------------------
+Contract: vesting_wallet_owner_wd_empty_notlive.sol
+
+PROPERTY:  out/smt2/owner_wd_empty_notlive
+[92mPassed[0m	 - 	[94mNOT LIVE (counterexample found in 1 step)[0m
+
+Time: 0.9557569026947021 seconds
+
+
+Results overview:
+
+Contract: auction_seller_wd_nowinner_nonlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: auction_old_winner_wd_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: auction_seller_wd2_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: auction_seller_wd_closed_nonlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: auction_liquidity_nonlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: auction_seller_wd_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: auction_seller_wd_early_nonlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: auction_nonseller_wd_nonlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: bank_withdraw_not_revert_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: bank_deposit_not_revert_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: bet_liquidity_notlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: bet_any_timeout_win_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: bet_any_timeout_join_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: bet_oracle_exact_balance_nonlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: bet_oracle_win_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: bet_oracle_win_strong_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-fix2_owner_wd_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-fix_donor_wd_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-bug_can_reach_target_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-fix_liquidity_live_notlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-bug_owner_wd_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-v2_owner_wd_balance_geq_nonlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-fix_can_reach_target_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-v2_owner_wd_toomuch_nonlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-v2_donor_wd_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-fix2_can_reach_target_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-bug_donor_wd_notlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-v2_owner_wd_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-bug_liquidity_live_notlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-fix_owner_wd_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-fix2_liquidity_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-v2_can_reach_target_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-v2_donor_wd_after_owner_nonlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-v3_owner_wd_toomuch_nonlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-v2_owner_wd_twice_nonlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-fix2_donor_wd_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: crowdfund-v3_can_reach_target_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: escrow_dispute_if_agree_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: escrow_liquidity_notlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: escrow_arbiter_wd_fee_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: escrow_buyerorseller_wd_deposit_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: escrow_anyone_wd_notlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: htlc_owner_wd_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: htlc_owner_wd_notowner_nonlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: htlc_without_hash_p1_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: htlc_liquidity_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: htlc_notowner_wd_owner_nonlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: htlc_without_hash_p3_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: htlc_verifier_wd_timeout_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: htlc_without_hash_p2_nonlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: lottery_from1_to2.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: lottery_anyone_anystate_wd_nonlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: lottery_player1_redeem_noreveal_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: lottery_p1_anystate_wd_nonlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: lottery_anyone_liquid3_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: lottery_p2_redeem_noreveal_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: lottery_p1_redeem_nojoin_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: lottery_one_player_win_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: payment_splitter_anyone_wd_nonlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: payment_splitter_anyone_wd_ge_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: payment_splitter_anyone_wd_releasable_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: vault_canc_recovery_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: vault_wd_fin_owner_notlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: vault_fin_owner_live.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: vesting_wallet_owner_wd_beforestart_notlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: vesting_wallet_owner_wd_released_notlive.sol 0 [92mPassed[0m, 0 [91mNot Passed[0m 1 [93mTimeout[0m 	[ 0% ]
+Contract: vesting_wallet_owner_wd_expired_live.sol 0 [92mPassed[0m, 0 [91mNot Passed[0m 1 [93mTimeout[0m 	[ 0% ]
+Contract: vesting_wallet_owner_wd_started_live.sol 0 [92mPassed[0m, 0 [91mNot Passed[0m 1 [93mTimeout[0m 	[ 0% ]
+Contract: vesting_wallet_owner_wd_uncond_notlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: vesting_wallet_owner_wd_empty_notlive.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
