@@ -117,7 +117,7 @@ property dispute_if_agree_live {
 // dispute_if_agree is expressible and verifiable in Certora: https://github.com/fsainas/contracts-verification-benchmark/tree/main/contracts/escrow
 
 // once one of the participants has redeemed the deposit, anyone can withdraw the whole contract balance 
-property liquidity_notlive {
+property no_frozen_funds_notlive {
     Forall xa
       [
         state==4 && balance>0 

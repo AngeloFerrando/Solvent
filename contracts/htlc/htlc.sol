@@ -90,7 +90,7 @@ property verifier_wd_timeout_live {
 }
 
 // the contract is liquid (its balance can always be emptied after the deadline)
-property liquidity_live { 
+property no_frozen_funds_live { 
     Forall xa
     [
         block.number>timeout
