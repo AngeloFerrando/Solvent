@@ -11,7 +11,7 @@ contract NotPriority {
 }
 
 // not should have priority over ||. 
-// Here not false || true seems to be paranthesized as not (false || true) = false, 
+// Here not false || true seems to be parenthesized as not (false || true) = false, 
 // so the property is trivially true since the antecedent of the implication is false 
 property p1_notlive {
     Forall xa

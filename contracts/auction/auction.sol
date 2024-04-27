@@ -131,7 +131,7 @@ property nonseller_wd_nonlive {
 }
 
 // the extra budget can always be redeemed by the seller
-property liquidity_nonlive {
+property no_frozen_funds_nonlive {
     Forall xa
     [
       closed

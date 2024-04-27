@@ -65,7 +65,7 @@ property donor_wd_live {
 }
 
 // the extra budget can always be redeemed by the owner
-property liquidity_live {
+property no_frozen_funds_live {
     Forall xa
     [
       balance>tot_donations && block.number>end_donate
