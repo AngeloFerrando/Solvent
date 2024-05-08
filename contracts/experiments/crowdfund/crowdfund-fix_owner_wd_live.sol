@@ -1,14 +1,14 @@
 contract Crowdfund {
-    const int end_donate    // last block in which users can donate
-    const int target        // amount of ETH that must be donated for the crowdfunding to be succesful
-    const address owner     // receiver of the donated funds
-    mapping (address => int) donors
-    bool target_reached     // true when the target is reached
+    int immutable end_donate;  // last block in which users can donate
+    int immutable target;      // amount of ETH that must be donated for the crowdfunding to be succesful
+    address immutable owner;   // receiver of the donated funds
+    mapping (address => int) donors;
+    bool target_reached;       // true when the target is reached
 
     constructor(address owner_, int end_donate_, int target_) {
         owner = owner_;
         end_donate = end_donate_;
-	    target = target_
+	      target = target_
     }
     
     function donate() payable {
@@ -19,13 +19,13 @@ contract Crowdfund {
 
     function wdOwner() {
         require (target_reached && block.number > end_donate);
-        owner!balance
+        owner.transfer(balance)
     }
 
     function wdDonor() { 
         require (block.number > end_donate);
         require (not target_reached); // FIX: check target_reached
-        msg.sender!donors[msg.sender];
+        msg.sender.transfer(donors[msg.sender]);
         donors[msg.sender] = 0
     }
 }
@@ -34,11 +34,11 @@ contract Crowdfund {
 property  owner_wd_live {
     Forall xa
     [
-      st.target_reached && st.balance>=st.target && st.block.number > st.end_donate
+      target_reached && balance>=target && block.number > end_donate
         ->
-      Exists tx [1, st.owner]
+      Exists tx [1, owner]
       [
-        ((app_tx_st.balance[st.owner] >= st.balance[st.owner] + st.target))
+        ((<tx>balance[owner] >= balance[owner] + target))
       ]
     ]
 }

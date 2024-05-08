@@ -24,6 +24,22 @@ python3 test_regression.py
 
 ## Verifying contracts
 
+## Using Solvent script
+
+Open the terminal and run the follwing
+
+```bash
+python3 solvent.py <file.sol> <number of transactions> <solver> <timeout>?
+```
+
+where:
+- file.sol is the smart contract
+- number of transactions is the number of transactions to consider in the verification of the smart contract
+- solver is the solver to use (eg., z3 or cvc5)
+- timeout (optional) is the maximum number of seconds the SMT solver can take to complete the verification
+
+## Using the Makefile
+
 To compile the smart contract, it is enough to execute the following
 
 ```bash

@@ -98,17 +98,16 @@ contract Lottery {
 }
 
 // in any state, any user can withdraw the whole contract balance (should be false)
-property  one_player_win_live {
+property  p1_anystate_wd_nonlive {
     Forall xa
     [
-      state == 5
+      xa == player1
         ->
       Exists tx [1, xa]
       [
-        (<tx>balance[player1] >= balance[player1] + 2) || 
-        (<tx>balance[player2] >= balance[player2] + 2)
+        (<tx>balance[xa] == balance[xa] + balance)
       ]
     ]
-} 
+}
 
-// in state 2, player2 can redeem at least both players' bets after the block end_reveal
+// in state 1, player1 can redeem at least her bet after the block end_commit

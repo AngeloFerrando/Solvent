@@ -3,7 +3,7 @@ import subprocess
 import time
 
 N_Transactions = 500
-Timeout = 20 # seconds
+Timeout = 5 # seconds
 solver = "cvc5"
 try_statebased_iter = 5 # Try statebased after given number of iterations
 

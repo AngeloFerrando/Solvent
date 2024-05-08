@@ -39,7 +39,7 @@ contract Vault {
         require(msg.sender == owner);
 
         state = 0; // IDLE	
-        receiver!amount
+        receiver.transfer(amount)
     }
 
     function cancel() {
@@ -53,11 +53,11 @@ contract Vault {
 property  wd_fin_owner_notlive {
     Forall xa
       [
-        st.state==0 
+        state==0 
           -> 
-        Exists tx [2, st.owner]
+        Exists tx [2, owner]
         [
-          ((app_tx_st.balance[xa] >= st.balance[xa] + st.balance))
+          ((<tx>balance[xa] >= balance[xa] + balance))
         ]
       ]
 }

@@ -1,7 +1,7 @@
 contract HTLC {
-    const int timeout
-    const address owner
-    const address verifier
+    int immutable timeout
+    address immutable owner
+    address immutable verifier
 
     int deposit
     int state // 0 = INIT, 1 = COMMITTED, 2 = END
@@ -25,27 +25,27 @@ contract HTLC {
     function reveal(secret s) {
         require (state==1); // COMMITTED
         if (hashlock == sha256(s)) {
-            owner!balance
+            owner.transfer(balance)
         };
         state = 2 // END
     }
 
     function timeout() {
         require(block.number > timeout);
-        verifier!balance;
+        verifier.transfer(balance);
         state = 2 // END
     }   
 }
 
 // the owner can withdraw the deposit before the deadline (by revealing the secret)
-property  liquidity_live { 
+property  no_frozen_funds_live { 
     Forall xa
     [
-        st.block.number>st.timeout
+        block.number>timeout
         ->
         Exists tx [1, xa]
         [
-            app_tx_st.balance==0
+            <tx>balance==0
         ]
     ]
 }

@@ -142,29 +142,3 @@ property no_frozen_funds_nonlive {
       ]
     ]
 }
-
-// only the seller can increase its balance (should be false: why??)
-// property onlyseller_can_gain_nonlive {
-//     Forall xa
-//     [
-//       winner!=0 && balance>0 && block.number>deadline && (not closed)
-//         ->
-//       Exists tx [1, xa]
-//       [
-//         xa != seller && ((<tx>balance[xa] > balance[xa]))
-//       ]
-//     ]
-// }
-
-// Deadline can be not passed, but seller can "cheat" by bidding two times (so withdrawing the first bid) 
-// property sellerCanWithdraw_live2 {
-//     Forall xa
-//     [
-//       winner!=0 && balance>0 && closed ==false
-//         ->
-//       Exists tx [2, seller]
-//       [
-//         ((<tx>balance[seller] > balance[seller]))
-//       ]
-//     ]
-// }

@@ -8,13 +8,13 @@
 // 4 = END
 
 contract Escrow {
-  int state
-  address buyer
-  address seller
-  address arbiter
-  int fee
-  int deposit       // buyer's deposit
-  address recipient // recipient agreed or chosen by the arbiter
+  int state;
+  address buyer;
+  address seller;
+  address arbiter;
+  int fee;
+  int deposit;       // buyer's deposit
+  address recipient; // recipient agreed or chosen by the arbiter
  
   constructor(address seller_, address arbiter_, int fee_) payable {
     require(seller_ != 0 && arbiter_ != 0);
@@ -53,25 +53,27 @@ contract Escrow {
     recipient = dst;
     state = 3; // REDEEM
     deposit = deposit - fee;
-    arbiter!fee
+    arbiter.transfer(fee)
   }
 
   function redeem() {
     require(state==3); // REDEEM
     state = 4; // END
-    recipient!deposit
+    recipient.transfer(deposit)
   }
 }
 
-property  arbitrate_fee_live {
+// if a dispute is open, then the arbiter can redeem the fee
+property  buyerorseller_wd_deposit_live {
     Forall xa
       [
-        st.state==1 && xa==st.arbiter 
+        state==3 && (xa==buyer || xa==seller) 
           -> 
         Exists tx [1, xa]
         [
-          ((app_tx_st.balance[st.arbiter] == st.balance[st.arbiter] + st.fee))
+          <tx>balance[xa] >= balance[xa] + deposit
         ]
       ]
 }
 
+// if the arbiter has resolved the dispute, then anyone can redeem the whole contract balance

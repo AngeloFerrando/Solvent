@@ -1,12 +1,12 @@
 /// @custom:version compliant with the specification.
 
 contract Bet {
-  const address oracle
-  const address player1
-  const int deadline
+  address immutable oracle;
+  address immutable player1;
+  int immutable deadline;
 
-  address player2
-  int state // 0 = JOIN, 1 = WIN-OR-TIMEOUT, 2 = END
+  address player2;
+  int state; // 0 = JOIN-OR-TIMEOUT, 1 = WIN-OR-TIMEOUT, 2 = END
   
   constructor(address o, int d) payable {
     require (msg.value==1);
@@ -30,13 +30,13 @@ contract Bet {
     require(block.number<deadline);
 	  require(winner==player1 || winner==player2);
     state = 2; // END
-    winner!balance
+    winner.transfer(balance)
   }
 
   function timeout() {
     require(state==0 || state==1);
    	require(block.number>=deadline);
-	  player1!1;
+	  player1.transfer(1);
 	  if (state==1) { player2!1 };
     state = 2 // END
   }
@@ -46,14 +46,14 @@ contract Bet {
 property  oracle_win_live {
     Forall xa
       [
-        st.block.number<st.deadline && st.state==1 
+        block.number<deadline && state==1 
           -> 
         Exists tx [1, oracle]
         [
-          ((app_tx_st.balance[player1] - st.balance[player1] >= 2) || (app_tx_st.balance[player2] - st.balance[player2] >= 2))
+          (<tx>balance[player1] >= balance[player1] + 2) || 
+          (<tx>balance[player2] >= balance[player2] + 2)
         ]
       ]
 }
 
-// in state WIN-OR-TIMEOUT and before `deadline_win`, the oracle can transfer the whole pot to one of the players
-// STRONG UNSAT
+// once player2 has joined and before the deadline, if the contract has at least 2 ETH then the oracle can transfer the whole bet to one of the players

@@ -1,5 +1,5 @@
 contract PaymentSplitter {
-    const address owner
+    address immutable owner
 
     mapping (address => int) shares     // number of shares of each user
     mapping (address => int) released   // amount of ETH released to each user
@@ -42,7 +42,7 @@ contract PaymentSplitter {
         if (payment > 0) {
             totalReleased = totalReleased + payment;
             released[a] = released[a] + payment;
-            a!payment
+            a.transfer(payment)
         }
     }
 }
@@ -51,11 +51,11 @@ contract PaymentSplitter {
 property  anyone_wd_releasable_live {
     Forall xa
     [
-      st.state==1 && st.shares[xa]>0
+      state==1 && shares[xa]>0
         ->
       Exists tx [1, xa]
       [
-        (app_tx_st.balance[xa] >= st.balance[xa] + (((st.balance + st.totalReleased) * st.shares[xa]) / st.totalShares) - st.released[xa])
+        (<tx>balance[xa] >= balance[xa] + (((balance + totalReleased) * shares[xa]) / totalShares) - released[xa])
       ]
     ]
 }

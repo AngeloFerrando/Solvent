@@ -27,14 +27,14 @@ contract Crowdfund {
     function wdOwner() {
         require (block.number > end_donate);
         require (success && not owner_withdrawn);
-       	owner!balance;
+       	owner.transfer(balance);
         owner_withdrawn = true
     }
 
     function wdDonor() {
         require (block.number > end_donate);
         require (not success);
-       	msg.sender!funds[msg.sender];
+       	msg.sender.transfer(funds[msg.sender]);
        	funds[msg.sender] = 0
     }
 }
@@ -43,11 +43,11 @@ contract Crowdfund {
 property  owner_wd_toomuch_nonlive {
     Forall xa
     [
-      st.success && st.block.number > st.end_donate
+      success && block.number > end_donate
         ->
-      Exists tx [1, st.owner]
+      Exists tx [1, owner]
       [
-        ((app_tx_st.balance[st.owner] >= 1000))
+        ((<tx>balance[owner] >= 1000))
       ]
     ]
 }

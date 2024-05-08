@@ -16,13 +16,13 @@ contract HTLC {
 
     function reveal() {
         if (hashlock == msg.sender) {
-            verifier!balance
+            verifier.transfer(balance)
         }
     }
 
     function timeout() {
         require(block.number > timeout);
-        msg.sender!balance
+        msg.sender.transfer(balance)
 
     }   
 }
@@ -31,11 +31,11 @@ contract HTLC {
 property  p1_live { 
     Forall xa
     [
-        xa==st.owner && st.balance>0
+        xa==owner && balance>0
         ->
         Exists tx [1, xa]
         [
-            ((app_tx_st.balance[st.verifier] >= st.balance[st.verifier] + st.balance))
+            ((<tx>balance[verifier] >= balance[verifier] + balance))
         ]
     ]
 }

@@ -2,8 +2,8 @@ contract Lottery {
     address player1
     address player2
 
-    const int end_commit		// last round to join
-    const int end_reveal		// last round to reveal
+    int immutable end_commit		// last round to join
+    int immutable end_reveal		// last round to reveal
 
     hash hashlock1
     hash hashlock2
@@ -21,17 +21,14 @@ contract Lottery {
     }
 
     function join1(address a1, hash h1) payable {
-        require (state == 0);
-        require (msg.value == 1);
+        require (state==0 && msg.value==1);
         player1 = a1;
         hashlock1 = h1;
         state = 1 // next = join2 or redeem1_nojoin
     }
 
     function join2(address a2, hash h2) payable {
-        require (state == 1);
-        require (h2 != hashlock1);
-        require (msg.value == 1);
+        require (state==1 && msg.value==1);
         player2 = a2;
         hashlock2 = h2;
         state = 2 // next = reveal1
@@ -40,9 +37,8 @@ contract Lottery {
     // if, after the commit deadline, the second player has not joined,
     // then player1 can redeem the bet 
     function redeem1_nojoin() {
-        require (state == 1);
-        require (block.number >= end_commit);
-        player1!balance;
+        require (state==1 && block.number>=end_commit);
+        player1.transfer(balance);
         state = 3 // next = end
     }
 
@@ -71,14 +67,14 @@ contract Lottery {
     function redeem2_noreveal() {
         require (state == 2);
         require (block.number >= end_reveal);
-        player2!balance;
+        player2.transfer(balance);
         state = 3 // next = end
     }
 
     function redeem1_noreveal() {
         require (state == 4);
         require (block.number >= end_reveal+100);
-        player1!balance;
+        player1.transfer(balance);
         state = 3 // next = end
     }
 
@@ -94,17 +90,24 @@ contract Lottery {
 
         state = 3 // next = end
     }
+
+    function empty() {
+      require (state == 3);
+      msg.sender!balance
+    }
 }
 
-property  liq2_nonlive {
+// in any state, any user can withdraw the whole contract balance (should be false)
+property  player1_redeem_noreveal_live {
     Forall xa
     [
-      xa == st.player1
+      state == 4 && block.number >= end_reveal+100
         ->
       Exists tx [1, xa]
       [
-        ((app_tx_st.balance[xa] == st.balance[xa]  + st.balance ))
+        (<tx>balance[player1] >= balance[player1] + 2)  
       ]
     ]
-}
+} 
 
+// in state 5, either player1 or player2 can redeem at least both players' bets

@@ -16,18 +16,18 @@ contract Bank {
         require(amount <= funds[msg.sender]);
 
         funds[msg.sender] = funds[msg.sender] - amount;
-        msg.sender!amount
+        msg.sender.transfer(amount)
     }
 }  
 
 property  deposit_not_revert_live {
     Forall xa
       [
-        st.balance[xa]>0 
+        balance[xa]>0 
           -> 
         Exists tx [1, xa]
         [
-          (app_tx_st.funds[xa] == st.funds[xa] + st.balance[xa])
+          (<tx>funds[xa] == funds[xa] + balance[xa])
         ]
       ]
 }

@@ -98,17 +98,16 @@ contract Lottery {
 }
 
 // in any state, any user can withdraw the whole contract balance (should be false)
-property  one_player_win_live {
+property  anyone_liquid3_live {
     Forall xa
     [
-      state == 5
+      state == 3
         ->
       Exists tx [1, xa]
       [
-        (<tx>balance[player1] >= balance[player1] + 2) || 
-        (<tx>balance[player2] >= balance[player2] + 2)
+        (<tx>balance[xa] >= balance[xa] + balance)  
       ]
     ]
-} 
+}
 
-// in state 2, player2 can redeem at least both players' bets after the block end_reveal
+// player1 or player2 can make the contract take a transition from state 1 to state 2

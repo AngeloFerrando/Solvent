@@ -40,16 +40,14 @@ contract Auction {
 }
 
 // the seller can withdraw the current bid after the deadline
-property  old_winner_wd_live {
+property  no_frozen_funds_nonlive {
     Forall xa
     [
-      winner!=0 && not closed
+      closed
         ->
       Exists tx [1, xa]
       [
-        (<tx>balance[winner] == balance[winner] + current_bid)
+        <tx>balance[seller] >= balance[seller] + balance
       ]
     ]
 }
-
-// the seller can withdraw the bid after the deadline

@@ -1,7 +1,7 @@
 contract VestingWallet {
-    const address beneficiary
-    const int start
-    const int duration
+    address immutable beneficiary
+    int immutable start
+    int immutable duration
     int released        // total amount sent to the beneficiary
     int totalAllocation // total amount received
 
@@ -36,7 +36,7 @@ contract VestingWallet {
 
         amount = vested_amount - released;
         released = released + amount;
-        beneficiary!amount
+        beneficiary.transfer(amount)
     }
 }
 
@@ -44,11 +44,11 @@ contract VestingWallet {
 property  owner_wd_expired_live {
     Forall xa
     [
-      st.balance>0 && st.released==0 && st.block.number>st.start+st.duration
+      balance>0 && released==0 && block.number>start+duration
         ->
-      Exists tx [1, st.beneficiary]
+      Exists tx [1, beneficiary]
       [
-        ((app_tx_st.balance[st.beneficiary] >= st.balance[st.beneficiary] + st.balance))
+        ((<tx>balance[beneficiary] >= balance[beneficiary] + balance))
       ]
     ]
 }

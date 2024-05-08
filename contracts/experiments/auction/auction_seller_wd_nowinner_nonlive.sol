@@ -1,11 +1,11 @@
 contract Auction {
-    const int deadline
-    const int min_bid
-    const address seller
+    int immutable deadline;
+    int immutable min_bid;
+    address immutable seller;
 
-    address winner
-    int current_bid // current maximum bit
-    bool closed     // becomes true when the auction is closed
+    address winner;
+    int current_bid; // current maximum bit
+    bool closed;     // becomes true when the auction is closed
 
     constructor(address b, int d, int m) { // FIXME: if parameter a is used instead of b -> NameError: name 'constructor_a' is not defined
         // require(b!=0 && m>0 && d>0);
@@ -16,14 +16,14 @@ contract Auction {
     }
      
     function bid() payable {
-        require(not closed);
+        require(!closed);
         require (msg.value >= min_bid);
         // the current bid is greater than the previous ones 
         // this guarantees that the contract balance is strictly positive 
         require (msg.value > current_bid);
      
         // the previous maximum bid is returned to the previous winner
-        winner!current_bid;
+        winner.transfer(current_bid);
         
         // the new winner is set to the current (highest) bidder
         winner = msg.sender;
@@ -31,11 +31,11 @@ contract Auction {
     }    
     
     function close() {
-        require (not closed);
+        require (!closed);
         require (msg.sender == seller);
         require (block.number > deadline);
         closed = true;
-        seller!balance
+        seller.transfer(balance)
     }
 }
 
@@ -43,13 +43,13 @@ contract Auction {
 property  seller_wd_nowinner_nonlive {
     Forall xa
     [
-      st.block.number>deadline
+      block.number>deadline
         ->
-      Exists tx [1, st.seller]
+      Exists tx [1, seller]
       [
-        ((app_tx_st.balance[st.seller] > st.balance[st.seller]))
+        (<tx>balance[seller] > balance[seller])
       ]
     ]
 }
 
-// only the seller can fire the close transaction
+// the close transaction can be fired by someone who is not the seller (should be false) 

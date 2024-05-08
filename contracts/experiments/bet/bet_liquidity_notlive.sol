@@ -43,16 +43,14 @@ contract Bet {
 }
 
 // if deadline_join has passed and player2 has not joined, then anyone can make player1 redeem the bet 
-property  any_timeout_join_live {
+property  liquidity_notlive {
     Forall xa
       [
-        block.number>=deadline && state==0 
+        state==2
           -> 
         Exists tx [1, xa]
         [
-          <tx>balance[player1] >= balance[player1] + 1
+          <tx>balance == 0
         ]
       ]
 }
-
-// if deadline_win has passed and the oracle has not chosen the winner, then anyone can make the players redeem their bets
