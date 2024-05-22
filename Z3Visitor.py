@@ -20,6 +20,7 @@ class Z3Visitor(TxScriptVisitor):
         self.__globals_modifier = -1
         self.__visit_properties = False
         self.__visit_properties_body = False
+        self.__requires = set()
         self.__const = False
         self.__tx_sender = 'xa'
         self.__prop_nested_i = set()
@@ -67,7 +68,7 @@ class Z3Visitor(TxScriptVisitor):
         #         global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
         #     ))
         if self.__can_transations_arrive_any_time and not any('coinbase' in decl for decl in decls):
-            decls.append('\ndef coinbase(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, block_num{global_args}):\n\treturn And(t_w[0] == wNow + xn1, next_state_tx(awNow, awNext, t_w[0], wNext{global_args_next_state_tx}))'.format(
+            decls.append('\ndef coinbase(xa1, xn1, awNow, awNext, wNow, wNext, t_aw, t_w, block_num{global_args}, err):\n\treturn And(err == False, t_w[0] == wNow + xn1, next_state_tx(awNow, awNext, t_w[0], wNext{global_args_next_state_tx}))'.format(
                 global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '', 
                 # global_args_assign = (', '.join([g.text+'Next == '+g.text+'Next' for (g, _) in self.__globals]) + ', ') if self.__globals else ''), 
                 global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
@@ -91,6 +92,7 @@ class Z3Visitor(TxScriptVisitor):
         w_qs = ''
         aw_qs = ''
         t_w_qs = ''
+        err_qs = ''
         for i in range(0, self.__max_n_transactions):
             # block_num_qs += f'block_num_q{i} = Int("block_num_q{i}")\n'
             xn_qs += f'xn_q{i} = Int("xn_q{i}")\n'
@@ -98,6 +100,7 @@ class Z3Visitor(TxScriptVisitor):
             w_qs += f'w_q{i} = Int("wq{i}")\n'
             aw_qs += f'aw_q{i} = [Int("awq{i}_%s" % j) for j in range(A+1)]\n'
             t_w_qs += f't_w_q{i} = [Int("t_wq{i}_%s" % (m)) for m in range(M)]\n'
+            err_qs += f'err_q{i} = Bool("err_q{i}")\n'
         functions_call = ''
         n_tabs = 0
         keys = list(self.__proc_args.keys())
@@ -107,16 +110,16 @@ class Z3Visitor(TxScriptVisitor):
             if 'coinbase' in keys:
                 functions_call += '\tIf(f1 == Proc.coinbase, And(xa1 == 0, \n'
                 n_tabs += 1
-                functions_call += '\t'*n_tabs + 'coinbase' + '(xa1, xn1, ' + (','.join(self.__proc_args['coinbase'])+', ' if self.__proc_args['coinbase'] else '') + 'aw1, aw2, w1, w2, t_aw, t_w, block_num1' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + ')),\n'
+                functions_call += '\t'*n_tabs + 'coinbase' + '(xa1, xn1, ' + (','.join(self.__proc_args['coinbase'])+', ' if self.__proc_args['coinbase'] else '') + 'aw1, aw2, w1, w2, t_aw, t_w, block_num1' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + ', err)),\n'
                 keys.remove('coinbase')
                 aux += 1
             functions_call += 'And(xa1 >= 1, xa1 <= A, '
             for p in keys[:-1]:
                 functions_call += '\t'*n_tabs + 'If(f1 == Proc.' + p + ',\n'
                 n_tabs += 1
-                functions_call += '\t'*n_tabs + p + '(xa1, xn1, ' + (','.join(self.__proc_args[p])+', ' if self.__proc_args[p] else '') + 'aw1, aw2, w1, w2, t_aw, t_w, block_num1' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + '),\n'
+                functions_call += '\t'*n_tabs + p + '(xa1, xn1, ' + (','.join(self.__proc_args[p])+', ' if self.__proc_args[p] else '') + 'aw1, aw2, w1, w2, t_aw, t_w, block_num1' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + ', err),\n'
             n_tabs += 1
-            functions_call += '\t'*n_tabs + keys[-1] + '(xa1, xn1, ' + (','.join(self.__proc_args[keys[-1]])+', ' if self.__proc_args[keys[-1]] else '') + 'aw1, aw2, w1, w2, t_aw, t_w, block_num1' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + ')'
+            functions_call += '\t'*n_tabs + keys[-1] + '(xa1, xn1, ' + (','.join(self.__proc_args[keys[-1]])+', ' if self.__proc_args[keys[-1]] else '') + 'aw1, aw2, w1, w2, t_aw, t_w, block_num1' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + ', err)'
             functions_call += ')'*(len(keys) + aux)
         contract_globals = ''
         for (g_var,g_type) in self.__globals:
@@ -216,6 +219,8 @@ w = [Int("w_%s" % (i)) for i in range(N+1)]
 
 # Block number
 block_num = [Int("block_num_%s" % (i)) for i in range(N+1)]
+err = [Bool("err_%s" % (i)) for i in range(N+1)]
+{err_qs}
 
 Proc = Datatype('Proc')
 {proc}
@@ -290,7 +295,7 @@ def user_is_fresh(xa, xa1, f, i):
 
 # transition rules
 
-def step_trans(f1, xa1, xn1, {step_trans_args} aw1, aw2, w1, w2, t_aw, t_w, block_num1, block_num2, i{global_args}):
+def step_trans(f1, xa1, xn1, {step_trans_args} aw1, aw2, w1, w2, t_aw, t_w, block_num1, block_num2, i{global_args}, err):
     return And(And(xn1 >= 0, w2 >= 0),
                And([aw1[j] >= 0 for j in range(A+1)]),
                block_num2 >= block_num1,
@@ -302,11 +307,11 @@ def step_trans(f1, xa1, xn1, {step_trans_args} aw1, aw2, w1, w2, t_aw, t_w, bloc
                
 new_state = And(And(xa[0] >= 0, xa[0] <= A, xn[0] >= 0),
                And([aw[0][j] >= 0 for j in range(A+1)]),
-                  constructor(xa[0], xn[0], {constr_args_0} aw[0], aw[1], w[0], w[1], t_aw[0], t_w[0], block_num[0]{global_args_0}))
+                  constructor(xa[0], xn[0], {constr_args_0} aw[0], aw[1], w[0], w[1], t_aw[0], t_w[0], block_num[0]{global_args_0}, err[1]))
 s.add(new_state)
 for i in range(1, N):
     new_state = step_trans(f[i], xa[i], xn[i], {step_trans_args_i} aw[i],
-                           aw[i+1], w[i], w[i+1], t_aw[i], t_w[i], block_num[i], block_num[i+1], i{global_args_i})
+                           aw[i+1], w[i], w[i+1], t_aw[i], t_w[i], block_num[i], block_num[i+1], i{global_args_i}, err[i+1])
     s.add(new_state)
 
 
@@ -383,6 +388,7 @@ for prop in {props_name}:
         w_qs = w_qs,
         aw_qs = aw_qs,
         t_w_qs = t_w_qs,
+        err_qs = err_qs,
         check_ranges = check_ranges,
         step_trans_args=', '.join(step_trans_args)+',' if step_trans_args else '', 
         step_trans_args_i=', '.join([s+'[i]' for s in step_trans_args])+',' if step_trans_args else '',
@@ -524,6 +530,7 @@ for prop in {props_name}:
         self.__prefix = 'constructor'
         for k in self.__globals_index:
             self.__globals_index[k] = 0
+        self.__requires = set()
         return self.visitFun(ctx, 'And(xn1 == 0')
     
 
@@ -539,6 +546,7 @@ for prop in {props_name}:
         self.__prefix = 'constructor'
         for k in self.__globals_index:
             self.__globals_index[k] = 0
+        self.__requires = set()
         return self.visitFun(ctx, 'And(t_w[0] == wNow + xn1')
 
 
@@ -554,6 +562,7 @@ for prop in {props_name}:
         self.__prefix = ctx.name.text + '_func'
         for k in self.__globals_index:
             self.__globals_index[k] = 0
+        self.__requires = set()
         return self.visitFun(ctx, 'And(t_w[0] == wNow + xn1')
         # return self.visitFun(ctx, 'And(t_w[0] == wNow + xn1, t_aw[0][xa1] == awNow - xn1, for (...)')
 
@@ -570,9 +579,12 @@ for prop in {props_name}:
         self.__prefix = ctx.name.text + '_func'
         for k in self.__globals_index:
             self.__globals_index[k] = 0
-        return self.visitFun(ctx, 'If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext{global_args_next_state_tx})'.format(
-            global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
-        ))
+        self.__requires = set()
+        self.__requires.add('xn1==0')
+        return self.visitFun(ctx, 'And(True')
+        # return self.visitFun(ctx, 'If(Not(xn1==0), next_state_tx(awNow, awNext, wNow, wNext{global_args_next_state_tx})'.format(
+        #     global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+        # ))
 
 
     # Visit a parse tree produced by TxScriptParser#funDecl.
@@ -606,7 +618,7 @@ for prop in {props_name}:
                     contract_variables += f', {g}Now=={g}Next'  
         self.__proc_args[self.__prefix] = args
         res ='''
-def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{global_args}):
+def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{global_args}, err):
     return {reqs}, \n\tAnd({body}'''.format(
         name=self.__prefix, 
         args=(','.join(args)+', ' if args else ''), 
@@ -614,13 +626,32 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         reqs=reqs,
         global_args = (', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '',
         # globals_update = (', \n\t\t' + ', '.join([('t_'+g.text+'['+str(self.__globals_index[g.text]-1)+']' if self.__globals_index[g.text]>0 else g.text+'Now') + ' == '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
-    )
-        skip = '{default}, next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
-            t_curr_a=self.__t_curr_a, 
-            t_curr_w=self.__t_curr_w, 
-            default=contract_variables,
-            global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
-        )
+    ) 
+        # skip = '{default}, next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
+        #     t_curr_a=self.__t_curr_a, 
+        #     t_curr_w=self.__t_curr_w, 
+        #     default=contract_variables,
+        #     global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+        # )
+        if self.__requires:
+            err = ', err == Or(False'
+            for req in self.__requires:
+                err += f', Not({req})'
+            err += ')'
+            res += err
+            skip = 'next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
+                t_curr_a=self.__t_curr_a, 
+                t_curr_w=self.__t_curr_w,
+                global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+            )
+            skip = f'{contract_variables}, Or(And(err==True, next_state_tx(awNow, awNext, wNow, wNext'+((', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '')+f')), And(err==False, {skip}))'
+        else:
+            skip = 'err==False, {default}, next_state_tx({t_curr_a}, awNext, {t_curr_w}, wNext{global_args_next_state_tx})'.format(
+                t_curr_a=self.__t_curr_a, 
+                t_curr_w=self.__t_curr_w, 
+                default=contract_variables,
+                global_args_next_state_tx = (', ' + ', '.join([(g.text + 'Now' if self.__globals_index[g.text]+self.__globals_modifier < 0 else 't_'+g.text + '['+str(self.__globals_index[g.text]+self.__globals_modifier)+']')+', '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else ''
+            )
         if res.format(subs=skip) == res:
             return res + f', {skip}))'
         else:
@@ -693,7 +724,9 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
             )
         if el:
             res = res[:res.index('send')+4] + res[res.index('send')+4:].replace(el, 'j')
-        res = 'If(\n\tNot(' + send_chk + '), \n\t\tnext_state_tx(awNow, awNext, wNow, wNext'+((', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '')+'), And(' + res + ', {subs}))'
+        #  this was needed when requires were translated into if
+        # res = 'If(\n\tNot(' + send_chk + '), \n\t\tnext_state_tx(awNow, awNext, wNow, wNext'+((', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '')+'), And(' + res + ', {subs}))'
+        self.__requires.add(send_chk)
         self.__t_curr_a = 't_aw[' + str(self.__nesting_aw-1) + ']'
         self.__t_new_a = 't_aw[' + str(self.__nesting_aw) + ']'
         self.__t_curr_w = 't_w[' + str(self.__nesting_w-1) + ']'
@@ -705,8 +738,10 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
         if self.__prefix == 'constructor':
             return self.visit(ctx.child)
         else:
-            return 'If(\n\tNot(' + self.visit(ctx.child) + '), \n\t\tnext_state_tx(awNow, awNext, wNow, wNext'+((', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '')+'), And(\n\t\t{subs}))'
-
+            # return 'If(\n\tNot(' + self.visit(ctx.child) + '), \n\t\tnext_state_tx(awNow, awNext, wNow, wNext'+((', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '')+'), And(\n\t\t{subs}))'
+            # return f'Or(err==True, err==({self.visit(ctx.child)})'
+            self.__requires.add(f'{self.visit(ctx.child)}')
+            return 'True'
 
     # Visit a parse tree produced by TxScriptParser#skipCmd.
     def visitSkipCmd(self, ctx:TxScriptParser.SkipCmdContext):
@@ -1142,11 +1177,11 @@ def {name}(xa1, xn1, {args}awNow, awNext, wNow, wNext, t_aw, t_w, block_num{glob
                 if ty==('MapAddr', 'Int'):
                     t_awq_lists += f't_{g.text}_q{i}_list = [t_{g.text}_q_m_j for t_{g.text}_q_m in t_{g.text}_q{i} for t_{g.text}_q_m_j in t_{g.text}_q_m]; '
             if forall_args: forall_args += ', '
-            forall_args += f'xn_q{i}, f_q{i}, w_q{i}, *aw_q{i}, *t_w_q{i}, *t_awq_list{i}'+func_args_q.format(i=i)+global_args_q.format(i=i)
+            forall_args += f'xn_q{i}, f_q{i}, w_q{i}, *aw_q{i}, *t_w_q{i}, *t_awq_list{i}, err_q{i}'+func_args_q.format(i=i)+global_args_q.format(i=i)
             if i == 0:
-                step_trans += f'Not(step_trans(f_q{i}, {self.__tx_sender}, xn_q{i}'+func_args_q.format(i=i)+f', aw[i], aw_q{i}, w[i], w_q{i}, t_aw_q{i}, t_w_q{i}, block_num[i], block_num[i], i+{i}'+global_args_phi0.format(i=i)+')),\n'
+                step_trans += f'Not(step_trans(f_q{i}, {self.__tx_sender}, xn_q{i}'+func_args_q.format(i=i)+f', aw[i], aw_q{i}, w[i], w_q{i}, t_aw_q{i}, t_w_q{i}, block_num[i], block_num[i], i+{i}'+global_args_phi0.format(i=i)+f', err_q{i})),\n'
             else:
-                step_trans += f'Not(step_trans(f_q{i}, {self.__tx_sender}, xn_q{i}'+func_args_q.format(i=i)+f', aw_q{i-1}, aw_q{i}, w_q{i-1}, w_q{i}, t_aw_q{i}, t_w_q{i}, block_num[i], block_num[i], i+{i}'+global_args_phi.format(i=i,j=i-1)+')),\n'
+                step_trans += f'Not(step_trans(f_q{i}, {self.__tx_sender}, xn_q{i}'+func_args_q.format(i=i)+f', aw_q{i-1}, aw_q{i}, w_q{i-1}, w_q{i}, t_aw_q{i}, t_w_q{i}, block_num[i], block_num[i], i+{i}'+global_args_phi.format(i=i,j=i-1)+f', err_q{i})),\n'
         return f'''
 def p_{self.__prop_name}_{nTrans}(i):
     {t_awq_lists}

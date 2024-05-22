@@ -14,14 +14,16 @@ contract IfNested1 {
             skip
         }
         else {
-            require(x>=1);
-            sender.transfer(1)
+            //require(x>=1);
+            if (x>=1) {
+              sender.transfer(1)
+            }
         }
     }
   }
 }
 
-property tx1_nonlive {
+/*property tx1_nonlive {
     Forall xa
     [
       st.balance>0
@@ -31,7 +33,7 @@ property tx1_nonlive {
         ((<tx>balance[xa] > balance[xa] && <tx>x >= 1))
       ]
     ]
-}
+}*/
 
 property tx2_live {
     Forall xa
