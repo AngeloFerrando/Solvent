@@ -178,6 +178,16 @@ class TypeVisitor(TxScriptVisitor):
 
     def get_type(self, ctx, var):
         var = var.replace('app_tx_st.', '').replace('st.', '')
+        var = var.replace('<tx>st.', '').replace('st.', '')
+        if '.balance' in var:
+            ag = var[:var.index('.balance')]
+            for (v, t) in self.__globals:
+                if ag == v and t == 'Address':
+                    break
+            else:
+                if ag != 'xa':
+                    raise TypeError(ctx, f'{ag} has not been defined in the contract or is not an address and used as such')
+            var = var.replace(ag + '.', '')
         t_var = None
         for (v, t) in self.__globals:
             if var == v:
@@ -186,7 +196,7 @@ class TypeVisitor(TxScriptVisitor):
         else:
             if self.__prefix+'_'+var in self.__args_map:
                 t_var = self.__args_map[self.__prefix+'_'+var]
-            elif var == 'app_tx_st.balance' or var == 'st.balance' or var == 'balance':
+            elif var == 'app_tx_st.balance' or var == '<tx>st.balance' or var == 'st.balance' or var == 'balance':
                 t_var = 'Int'
             elif var == 'block.number':
                 return 'Int'

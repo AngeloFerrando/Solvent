@@ -1279,6 +1279,14 @@ Not({body})
                 else:
                     self.__prop_nested_i.add(ag+'[i]')#(ag+'[i]')
                     return f'aw{i}[{ag}[i]]'#f'aw{i}[{ag}[i]]'
+            if '.balance' in name and name != 'st.balance':
+                ag = name[:name.index('.balance')].replace('st.', '')
+                if ag == 'xa':
+                    self.__prop_nested_i.add(ag+'_q')#(ag+'[i]')
+                    return f'aw{i}[{ag}_q]'#f'aw{i}[{ag}[i]]'
+                else:
+                    self.__prop_nested_i.add(ag+'[i]')#(ag+'[i]')
+                    return f'aw{i}[{ag}[i]]'#f'aw{i}[{ag}[i]]'
             if 'balance' in name:
                 return f'w{i}'
             if 'block.number' in name:
