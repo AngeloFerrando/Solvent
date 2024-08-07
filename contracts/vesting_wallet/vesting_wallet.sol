@@ -41,7 +41,7 @@ contract VestingWallet {
 }
 
 
-property owner_wd_expired_live {
+property owner_wd_expired_liquid {
     Forall xa
     [
       balance>0 && released==0 && block.number>start+duration
@@ -53,7 +53,7 @@ property owner_wd_expired_live {
     ]
 }
 
-property owner_wd_started_live {
+property owner_wd_started_liquid {
     Forall xa
     [
       balance>0 && released==0 && block.number>start
@@ -65,7 +65,7 @@ property owner_wd_started_live {
     ]
 }
 
-property owner_wd_uncond_notlive {
+property owner_wd_uncond_notliquid {
     Forall xa
     [
       true 
@@ -77,7 +77,7 @@ property owner_wd_uncond_notlive {
     ]
 }
 
-property owner_wd_beforestart_notlive {
+property owner_wd_beforestart_notliquid {
     Forall xa
     [
       balance>0 && released==0 
@@ -89,7 +89,7 @@ property owner_wd_beforestart_notlive {
     ]
 }
 
-property owner_wd_empty_notlive {
+property owner_wd_empty_notliquid {
     Forall xa
     [
       released==0 && block.number>start
@@ -101,7 +101,7 @@ property owner_wd_empty_notlive {
     ]
 }
 
-property owner_wd_released_notlive {
+property owner_wd_released_notliquid {
     Forall xa
     [
       balance>0 && block.number>start

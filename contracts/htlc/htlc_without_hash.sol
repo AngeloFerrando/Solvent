@@ -28,7 +28,7 @@ contract HTLC {
 }
 
 // UNSAT
-property p1_live { 
+property p1_liquid { 
     Forall xa
     [
         xa==owner && balance>0
@@ -40,7 +40,7 @@ property p1_live {
     ]
 }
 
-property p2_nonlive { 
+property p2_nonliquid { 
     Forall xa
     [
         xa==verifier && balance>0
@@ -52,7 +52,7 @@ property p2_nonlive {
     ]
 }
 
-property p3_live { 
+property p3_liquid { 
     Forall xa
     [
         balance>0 && block.number>timeout

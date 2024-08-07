@@ -39,7 +39,7 @@ contract Crowdfund {
 }
 
 // if target is reached, the owner can withdraw at least the target after the deadline
-property  can_reach_target_live {
+property  can_reach_target_liquid {
     Forall xa
     [
       balance[xa] > target && block.number <= end_donate

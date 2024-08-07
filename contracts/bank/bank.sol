@@ -20,7 +20,7 @@ contract Bank {
     }
 }  
 
-property deposit_not_revert_live {
+property deposit_not_revert_liquid {
     Forall xa
       [
         balance[xa]>0 
@@ -33,7 +33,7 @@ property deposit_not_revert_live {
 }
 
 
-property withdraw_not_revert_live {
+property withdraw_not_revert_liquid {
     Forall xa
       [
         funds[xa]>0 

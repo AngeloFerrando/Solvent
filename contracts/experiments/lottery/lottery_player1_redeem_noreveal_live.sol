@@ -98,7 +98,7 @@ contract Lottery {
 }
 
 // in any state, any user can withdraw the whole contract balance (should be false)
-property  player1_redeem_noreveal_live {
+property  player1_redeem_noreveal_liquid {
     Forall xa
     [
       state == 4 && block.number >= end_reveal+100

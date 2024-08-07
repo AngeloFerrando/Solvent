@@ -40,7 +40,7 @@ contract Auction {
 }
 
 // the seller can withdraw the current bid after the deadline
-property seller_wd_live {
+property seller_wd_liquid {
     Forall xa
     [
       winner!=0 && balance>0 && block.number>deadline && (not closed)
@@ -53,7 +53,7 @@ property seller_wd_live {
 }
 
 // the old winner can withdraw the current bid
-property old_winner_wd_live {
+property old_winner_wd_liquid {
     Forall xa
     [
       winner!=0 && not closed
@@ -66,7 +66,7 @@ property old_winner_wd_live {
 }
 
 // the seller can withdraw the bid after the deadline
-property seller_wd2_live {
+property seller_wd2_liquid {
     Forall xa
     [
       winner!=0 && balance>0 && block.number>deadline && (not closed)
@@ -79,7 +79,7 @@ property seller_wd2_live {
 }
 
 // the seller can always withdraw something (should be false before the deadline) 
-property seller_wd_early_nonlive {
+property seller_wd_early_nonliquid {
     Forall xa
     [
       winner!=0 && balance>0 && closed==false
@@ -92,7 +92,7 @@ property seller_wd_early_nonlive {
 }
 
 // the seller can withdraw something in any state (should be false: the contract can be already closed)
-property seller_wd_closed_nonlive {
+property seller_wd_closed_nonliquid {
     Forall xa
     [
       winner!=0 && balance>0 && block.number>deadline 
@@ -105,7 +105,7 @@ property seller_wd_closed_nonlive {
 }
 
 // the seller can withdraw something in any state (should be false: if the winner has not been set, the contract balance could be 0)
-property seller_wd_nowinner_nonlive {
+property seller_wd_nowinner_nonliquid {
     Forall xa
     [
       block.number>deadline
@@ -118,7 +118,7 @@ property seller_wd_nowinner_nonlive {
 }
 
 // the close transaction can be fired by someone who is not the seller (should be false) 
-property nonseller_wd_nonlive {
+property nonseller_wd_nonliquid {
     Forall xa
     [
       winner!=0
@@ -131,7 +131,7 @@ property nonseller_wd_nonlive {
 }
 
 // the extra budget can always be redeemed by the seller
-property no_frozen_funds_nonlive {
+property no_frozen_funds_nonliquid {
     Forall xa
     [
       closed

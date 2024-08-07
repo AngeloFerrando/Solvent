@@ -28,7 +28,7 @@ contract HTLC {
 }
 
 // UNSAT
-property  p2_nonlive { 
+property  p2_nonliquid { 
     Forall xa
     [
         xa==verifier && balance>0

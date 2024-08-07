@@ -98,7 +98,7 @@ contract Lottery {
 }
 
 // in any state, any user can withdraw the whole contract balance (should be false)
-property  anyone_liquid3_live {
+property  anyone_liquid3_liquid {
     Forall xa
     [
       state == 3

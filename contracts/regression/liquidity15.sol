@@ -19,7 +19,7 @@ contract C15 {
 } 
 
 // STRONG SAT (Can_Transactions_Arrive_Any_time=False WEAK SAT WEAK UNSAT)
-property liquidity15a_nonlive {
+property liquidity15a_nonliquid {
     Forall xa
     [
       true

@@ -43,7 +43,7 @@ contract Bet {
 }
 
 // if deadline_join has passed and player2 has not joined, then anyone can make player1 redeem the bet 
-property  any_timeout_join_live {
+property  any_timeout_join_liquid {
     Forall xa
       [
         block.number>=deadline && state==0 

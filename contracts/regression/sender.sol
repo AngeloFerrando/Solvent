@@ -8,7 +8,7 @@ contract Sender {
   function pay() { sender.transfer(balance) }
 }
 
-property pay_live {
+property pay_liquid {
     Forall xa
     [
       st.balance>0

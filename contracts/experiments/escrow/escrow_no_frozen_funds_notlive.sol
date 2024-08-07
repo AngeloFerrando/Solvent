@@ -64,7 +64,7 @@ contract Escrow {
 }
 
 // if a dispute is open, then the arbiter can redeem the fee
-property  no_frozen_funds_notlive {
+property  no_frozen_funds_notliquid {
     Forall xa
       [
         state==4 && balance>0 

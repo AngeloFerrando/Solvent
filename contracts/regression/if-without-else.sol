@@ -13,7 +13,7 @@ contract IfWithoutElse {
 
 
 // not liquid
-property _nonlive {
+property _nonliquid {
     Forall xa
     [
       st.balance>0

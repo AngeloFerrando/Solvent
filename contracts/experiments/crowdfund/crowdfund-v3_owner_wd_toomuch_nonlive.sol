@@ -40,7 +40,7 @@ contract Crowdfund {
 }
 
 // if there is some donor with enough tokens, then the campaign can be successful
-property  owner_wd_toomuch_nonlive {
+property  owner_wd_toomuch_nonliquid {
     Forall xa
     [
       success && block.number > end_donate

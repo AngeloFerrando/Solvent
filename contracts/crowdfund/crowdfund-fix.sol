@@ -31,7 +31,7 @@ contract Crowdfund {
 }
 
 // if target is reached, the owner can withdraw at least the target after the deadline
-property owner_wd_live {
+property owner_wd_liquid {
     Forall xa
     [
       target_reached && balance>=target && block.number > end_donate
@@ -44,7 +44,7 @@ property owner_wd_live {
 }
 
 // if threshold is not reached, donors can withdraw their donations after the end_donate
-property donor_wd_live {
+property donor_wd_liquid {
     Forall xa
     [
       not target_reached && block.number>end_donate
@@ -57,8 +57,8 @@ property donor_wd_live {
 }
 
 // if threshold is reached, the owner can withdraw at least the target after the deadline
-// not live because of bug
-property no_frozen_funds_live_notlive {
+// not liquid because of bug
+property no_frozen_funds_liquid_notliquid {
     Forall xa
     [
       balance>0 && block.number > end_donate
@@ -71,7 +71,7 @@ property no_frozen_funds_live_notlive {
 }
 
 // if there is some donor with enough tokens, then the campaign can be successful
-property can_reach_target_live {
+property can_reach_target_liquid {
     Forall xa
     [
       balance[xa] > target && block.number <= end_donate

@@ -48,7 +48,7 @@ contract PaymentSplitter {
 }
 
 // anyone can withdraw the corresponding releasable funds after the finalization of shares
-property  anyone_wd_ge_live {
+property  anyone_wd_ge_liquid {
     Forall xa
     [
       (((balance + totalReleased) * shares[xa]) > (released[xa] * totalShares)) && state==1

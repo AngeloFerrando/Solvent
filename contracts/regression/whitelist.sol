@@ -11,7 +11,7 @@ contract Whitelist {
   }
 }
 
-property liquidity1_notlive {
+property liquidity1_notliquid {
     Forall xa
     [
       st.balance>0
@@ -23,7 +23,7 @@ property liquidity1_notlive {
     ]
 }
 
-property liquidity2_live {
+property liquidity2_liquid {
     Forall xa
     [
       st.balance>0 && xa==0

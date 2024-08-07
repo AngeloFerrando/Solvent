@@ -17,7 +17,7 @@ contract Freezable {
   }
 }
 
-property liquidity1_nonlive {
+property liquidity1_nonliquid {
     Forall xa
     [
       true
@@ -29,7 +29,7 @@ property liquidity1_nonlive {
     ]
 }
 
-property liquidity2_live {
+property liquidity2_liquid {
     Forall xa
     [
       !st.frozen

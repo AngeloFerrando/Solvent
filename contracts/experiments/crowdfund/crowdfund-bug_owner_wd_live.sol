@@ -31,7 +31,7 @@ contract Crowdfund {
 }
 
 // if target is reached, the owner can withdraw at least the target after the deadline
-property  owner_wd_live {
+property  owner_wd_liquid {
     Forall xa [
       target_reached && balance>=target && block.number > end_donate
       ->

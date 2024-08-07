@@ -23,7 +23,7 @@ contract IfNested1 {
   }
 }
 
-/*property tx1_nonlive {
+/*property tx1_nonliquid {
     Forall xa
     [
       st.balance>0
@@ -35,7 +35,7 @@ contract IfNested1 {
     ]
 }*/
 
-property tx2_live {
+property tx2_liquid {
     Forall xa
     [
       st.balance>0

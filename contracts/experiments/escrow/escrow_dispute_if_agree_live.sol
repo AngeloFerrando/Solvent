@@ -64,7 +64,7 @@ contract Escrow {
 }
 
 // if a dispute is open, then the arbiter can redeem the fee
-property  dispute_if_agree_live {
+property  dispute_if_agree_liquid {
     Forall xa
       [
         state==0 && (xa==buyer || xa==seller) 

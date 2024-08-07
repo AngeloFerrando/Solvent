@@ -43,7 +43,7 @@ contract Bet {
 }
 
 // if deadline_join has passed and player2 has not joined, then anyone can make player1 redeem the bet 
-property  liquidity_notlive {
+property  liquidity_notliquid {
     Forall xa
       [
         state==2

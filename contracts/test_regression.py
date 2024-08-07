@@ -56,21 +56,21 @@ def run_makefile(folder):
                 if 'out/' not in phi: continue
                 phi = phi.split('\n')
                 print(f'PROPERTY: {phi[0]}')
-                if '_nonlive' in phi[0] or '_notlive' in phi[0]:
-                    if 'NOT LIVE' in phi[-2]:
+                if '_nonliquid' in phi[0] or '_notliquid' in phi[0]:
+                    if 'NOT LIQUID' in phi[-2]:
                         print_passed()
                         passed += 1
-                    elif 'LIVE'  in phi[-2]:
+                    elif 'LIQUID'  in phi[-2]:
                         print_not_passed()
                         not_passed += 1
                     else:
                         print_not_passed()
                         not_passed += 1
                 else:
-                    if 'NOT LIVE'  in phi[-2]:
+                    if 'NOT LIQUID'  in phi[-2]:
                         print_not_passed()
                         not_passed += 1
-                    elif 'LIVE' in phi[-2]:
+                    elif 'LIQUID' in phi[-2]:
                         print_passed()
                         passed += 1
                     else:

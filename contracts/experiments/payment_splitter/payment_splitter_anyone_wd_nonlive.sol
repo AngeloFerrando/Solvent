@@ -48,7 +48,7 @@ contract PaymentSplitter {
 }
 
 // anyone can withdraw the corresponding releasable funds after the finalization of shares
-property  anyone_wd_nonlive {
+property  anyone_wd_nonliquid {
     Forall xa
     [
       true

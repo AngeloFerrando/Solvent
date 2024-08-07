@@ -13,7 +13,7 @@ contract Blacklist {
 }
 
 // STRONG SAT (Can_Transactions_Arrive_Any_time=False WEAK SAT WEAK UNSAT)
-property liquidity1_nonlive {
+property liquidity1_nonliquid {
     Forall xa
     [
       true
@@ -26,7 +26,7 @@ property liquidity1_nonlive {
 }
 
 // STRONG UNSAT
-property liquidity2_live {
+property liquidity2_liquid {
     Forall xa
     [
       xa != 1

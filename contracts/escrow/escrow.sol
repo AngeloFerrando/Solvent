@@ -64,7 +64,7 @@ contract Escrow {
 }
 
 // if a dispute is open, then the arbiter can redeem the fee
-property arbiter_wd_fee_live {
+property arbiter_wd_fee_liquid {
     Forall xa
       [
         state==1 
@@ -77,7 +77,7 @@ property arbiter_wd_fee_live {
 }
 
 // if the arbiter has resolved the dispute, then either the buyer or the seller can redeem the deposit
-property buyerorseller_wd_deposit_live {
+property buyerorseller_wd_deposit_liquid {
     Forall xa
       [
         state==3 && (xa==buyer || xa==seller) 
@@ -90,7 +90,7 @@ property buyerorseller_wd_deposit_live {
 }
 
 // if the arbiter has resolved the dispute, then anyone can redeem the whole contract balance
-property anyone_wd_notlive {
+property anyone_wd_notliquid {
     Forall xa
       [
         state==3 
@@ -103,7 +103,7 @@ property anyone_wd_notlive {
 }
 
 // in the Agree state, both the buyer and the seller can open a dispute
-property dispute_if_agree_live {
+property dispute_if_agree_liquid {
     Forall xa
       [
         state==0 && (xa==buyer || xa==seller) 
@@ -117,7 +117,7 @@ property dispute_if_agree_live {
 // dispute_if_agree is expressible and verifiable in Certora: https://github.com/fsainas/contracts-verification-benchmark/tree/main/contracts/escrow
 
 // once one of the participants has redeemed the deposit, anyone can withdraw the whole contract balance 
-property no_frozen_funds_notlive {
+property no_frozen_funds_notliquid {
     Forall xa
       [
         state==4 && balance>0 

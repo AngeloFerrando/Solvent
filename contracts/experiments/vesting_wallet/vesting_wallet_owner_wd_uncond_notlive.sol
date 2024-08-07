@@ -41,7 +41,7 @@ contract VestingWallet {
 }
 
 
-property  owner_wd_uncond_notlive {
+property  owner_wd_uncond_notliquid {
     Forall xa
     [
       true 

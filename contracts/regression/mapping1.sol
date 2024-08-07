@@ -6,7 +6,7 @@ contract Mapping1 {
     }
 }  
 
-property live1 {
+property liquid1 {
     Forall xa
       [
         true 

@@ -10,7 +10,7 @@ contract Transfer {
   }
 }
 
-property liquidity_live {
+property liquidity_liquid {
     Forall xa
     [
       true

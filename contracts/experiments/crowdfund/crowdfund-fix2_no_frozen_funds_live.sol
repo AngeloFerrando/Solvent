@@ -39,7 +39,7 @@ contract Crowdfund {
 }
 
 // if target is reached, the owner can withdraw at least the target after the deadline
-property  no_frozen_funds_live {
+property  no_frozen_funds_liquid {
     Forall xa
     [
       balance>tot_donations && block.number>end_donate

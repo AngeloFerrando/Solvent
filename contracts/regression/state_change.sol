@@ -23,7 +23,7 @@ contract StateChange1 {
 
 }
 
-property live_nonlive {
+property liquid_nonliquid {
     Forall xa
     [
       state==0
@@ -35,7 +35,7 @@ property live_nonlive {
     ]
 }
 
-property not_live_nonlive {
+property not_liquid_nonliquid {
     Forall xa
     [
       state==2

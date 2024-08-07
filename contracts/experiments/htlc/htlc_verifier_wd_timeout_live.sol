@@ -38,7 +38,7 @@ contract HTLC {
 }
 
 // the owner can withdraw the deposit before the deadline (by revealing the secret)
-property  verifier_wd_timeout_live { 
+property  verifier_wd_timeout_liquid { 
     Forall xa
     [
         state==1 && block.number>timeout

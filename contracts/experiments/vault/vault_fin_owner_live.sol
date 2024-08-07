@@ -49,8 +49,8 @@ contract Vault {
     }
 }
 
-// live after the deadline has passed
-property  fin_owner_live {
+// liquid after the deadline has passed
+property  fin_owner_liquid {
     Forall xa
       [
         state==1 && block.number >= request_time + wait_time

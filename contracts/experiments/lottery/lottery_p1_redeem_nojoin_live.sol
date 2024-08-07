@@ -98,7 +98,7 @@ contract Lottery {
 }
 
 // in any state, any user can withdraw the whole contract balance (should be false)
-property  p1_redeem_nojoin_live {
+property  p1_redeem_nojoin_liquid {
     Forall xa
     [
       state == 1 && block.number >= end_commit

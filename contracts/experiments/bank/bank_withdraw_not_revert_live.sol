@@ -20,7 +20,7 @@ contract Bank {
     }
 }  
 
-property  withdraw_not_revert_live {
+property  withdraw_not_revert_liquid {
     Forall xa
       [
         funds[xa]>0 

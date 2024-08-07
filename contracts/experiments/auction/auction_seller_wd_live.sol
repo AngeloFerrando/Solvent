@@ -40,7 +40,7 @@ contract Auction {
 }
 
 // the seller can withdraw the current bid after the deadline
-property  seller_wd_live {
+property  seller_wd_liquid {
     Forall xa
     [
       winner!=0 && balance>0 && block.number>deadline && (not closed)

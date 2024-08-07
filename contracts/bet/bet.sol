@@ -43,7 +43,7 @@ contract Bet {
 }
 
 // if deadline_join has passed and player2 has not joined, then anyone can make player1 redeem the bet 
-property any_timeout_join_live {
+property any_timeout_join_liquid {
     Forall xa
       [
         block.number>=deadline && state==0 
@@ -56,7 +56,7 @@ property any_timeout_join_live {
 }
 
 // if deadline_win has passed and the oracle has not chosen the winner, then anyone can make the players redeem their bets
-property any_timeout_win_live {
+property any_timeout_win_liquid {
     Forall xa
       [
         block.number>=deadline && state==1 && balance >=2 
@@ -70,7 +70,7 @@ property any_timeout_win_live {
 }
 
 // once player2 has joined and before the deadline, the oracle can transfer the whole bet to one of the players
-property oracle_win_live {
+property oracle_win_liquid {
     Forall xa
       [
         block.number<deadline && state==1 
@@ -84,7 +84,7 @@ property oracle_win_live {
 }
 
 // once player2 has joined and before the deadline, if the contract has at least 2 ETH then the oracle can transfer the whole bet to one of the players
-property oracle_win_strong_live {
+property oracle_win_strong_liquid {
     Forall xa
       [
         block.number<deadline && state==1 && balance>=2 
@@ -98,7 +98,7 @@ property oracle_win_strong_live {
 }
 
 // (Can_Transactions_Arrive_Any_time=False WEAK SAT WEAK UNSAT)
-property oracle_exact_balance_nonlive {
+property oracle_exact_balance_nonliquid {
     Forall xa
       [
         block.number<deadline && balance==2 
@@ -112,7 +112,7 @@ property oracle_exact_balance_nonlive {
 }
 
 // once the players have redeemed their bets, the contract is liquid, namely any participant can withdraw the whole contract balance
-property liquidity_notlive {
+property liquidity_notliquid {
     Forall xa
       [
         state==2

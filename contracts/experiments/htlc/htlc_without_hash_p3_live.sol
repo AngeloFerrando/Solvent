@@ -28,7 +28,7 @@ contract HTLC {
 }
 
 // UNSAT
-property  p3_live { 
+property  p3_liquid { 
     Forall xa
     [
         balance>0 && block.number>timeout

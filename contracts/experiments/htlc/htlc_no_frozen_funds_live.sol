@@ -38,7 +38,7 @@ contract HTLC {
 }
 
 // the owner can withdraw the deposit before the deadline (by revealing the secret)
-property  no_frozen_funds_live { 
+property  no_frozen_funds_liquid { 
     Forall xa
     [
         block.number>timeout

@@ -49,8 +49,8 @@ contract Vault {
     }
 }
 
-// live after the deadline has passed
-property  wd_fin_owner_notlive {
+// liquid after the deadline has passed
+property  wd_fin_owner_notliquid {
     Forall xa
       [
         state==0 

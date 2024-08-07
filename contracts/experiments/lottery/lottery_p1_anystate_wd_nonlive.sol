@@ -98,7 +98,7 @@ contract Lottery {
 }
 
 // in any state, any user can withdraw the whole contract balance (should be false)
-property  p1_anystate_wd_nonlive {
+property  p1_anystate_wd_nonliquid {
     Forall xa
     [
       xa == player1

@@ -98,7 +98,7 @@ contract Lottery {
 }
 
 // in any state, any user can withdraw the whole contract balance (should be false)
-property anyone_anystate_wd_nonlive {
+property anyone_anystate_wd_nonliquid {
     Forall xa
     [
       true
@@ -111,7 +111,7 @@ property anyone_anystate_wd_nonlive {
 }
 
 // in any state, player1 can withdraw the whole contract balance (should be false)
-property p1_anystate_wd_nonlive {
+property p1_anystate_wd_nonliquid {
     Forall xa
     [
       xa == player1
@@ -124,7 +124,7 @@ property p1_anystate_wd_nonlive {
 }
 
 // in state 1, player1 can redeem at least her bet after the block end_commit
-property p1_redeem_nojoin_live {
+property p1_redeem_nojoin_liquid {
     Forall xa
     [
       state == 1 && block.number >= end_commit
@@ -137,7 +137,7 @@ property p1_redeem_nojoin_live {
 }
 
 // in state 4, player1 can redeem at least both players' bets after the block end_reveal
-property player1_redeem_noreveal_live {
+property player1_redeem_noreveal_liquid {
     Forall xa
     [
       state == 4 && block.number >= end_reveal+100
@@ -150,7 +150,7 @@ property player1_redeem_noreveal_live {
 } 
 
 // in state 5, either player1 or player2 can redeem at least both players' bets
-property one_player_win_live {
+property one_player_win_liquid {
     Forall xa
     [
       state == 5
@@ -164,7 +164,7 @@ property one_player_win_live {
 } 
 
 // in state 2, player2 can redeem at least both players' bets after the block end_reveal
-property p2_redeem_noreveal_live {
+property p2_redeem_noreveal_liquid {
     Forall xa
     [
       state == 2 && block.number >= end_reveal
@@ -177,7 +177,7 @@ property p2_redeem_noreveal_live {
 } 
 
 // in state 3, anyone can withdraw the whole contract balance
-property anyone_liquid3_live {
+property anyone_liquid3_liquid {
     Forall xa
     [
       state == 3

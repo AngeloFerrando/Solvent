@@ -38,7 +38,7 @@ contract HTLC {
 }
 
 // the owner can withdraw the deposit before the deadline (by revealing the secret)
-property  owner_wd_notowner_nonlive { 
+property  owner_wd_notowner_nonliquid { 
     Forall xa
     [
         state==1 && block.number <= timeout

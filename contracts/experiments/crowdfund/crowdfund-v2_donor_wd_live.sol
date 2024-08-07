@@ -38,7 +38,7 @@ contract Crowdfund {
 }
 
 // if threshold is reached, the owner can withdraw at least the target after the deadline
-property  donor_wd_live {
+property  donor_wd_liquid {
     Forall xa
     [
       funds[xa]>0 && received<target && block.number>end_donate

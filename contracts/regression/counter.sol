@@ -22,7 +22,7 @@ contract Counter {
   }
 }
 
-property liquidity1_live {
+property liquidity1_liquid {
     Forall xa
     [
       st.balance>0 && st.count<st.maxCount && st.owner!=xa
@@ -34,7 +34,7 @@ property liquidity1_live {
     ]
 }
 
-property liquidity2_notlive {
+property liquidity2_notliquid {
     Forall xa
     [
       st.balance>0 && st.count<st.maxCount
@@ -46,7 +46,7 @@ property liquidity2_notlive {
     ]
 }
 
-property liquidity3_notlive {
+property liquidity3_notliquid {
     Forall xa
     [
       st.balance>0 && st.owner!=xa

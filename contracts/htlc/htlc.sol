@@ -38,7 +38,7 @@ contract HTLC {
 }
 
 // the owner can withdraw the deposit before the deadline (by revealing the secret)
-property owner_wd_live { 
+property owner_wd_liquid { 
     Forall xa
     [
         state==1 && block.number <= timeout
@@ -51,7 +51,7 @@ property owner_wd_live {
 }
 
 // any user different from the owner can transfer the deposit to the owner before the deadline (by revealing the secret) 
-property notowner_wd_owner_nonlive { 
+property notowner_wd_owner_nonliquid { 
     Forall xa
     [
         state==1 && block.number <= timeout
@@ -64,7 +64,7 @@ property notowner_wd_owner_nonlive {
 }
 
 // the owner can transfer to any user different from the owner the deposit before the deadline (by revealing the secret) 
-property owner_wd_notowner_nonlive { 
+property owner_wd_notowner_nonliquid { 
     Forall xa
     [
         state==1 && block.number <= timeout
@@ -77,7 +77,7 @@ property owner_wd_notowner_nonlive {
 }
 
 // the verifier can withdraw the deposit after the deadline
-property verifier_wd_timeout_live { 
+property verifier_wd_timeout_liquid { 
     Forall xa
     [
         state==1 && block.number>timeout
@@ -90,7 +90,7 @@ property verifier_wd_timeout_live {
 }
 
 // the contract is liquid (its balance can always be emptied after the deadline)
-property no_frozen_funds_live { 
+property no_frozen_funds_liquid { 
     Forall xa
     [
         block.number>timeout

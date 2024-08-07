@@ -38,7 +38,7 @@ contract Crowdfund {
 }
 
 // if threshold is reached, the owner can withdraw at least the target after the deadline
-property owner_wd_live {
+property owner_wd_liquid {
     Forall xa
     [
       received>=target && (not owner_withdrawn) && block.number > end_donate
@@ -51,7 +51,7 @@ property owner_wd_live {
 }
 
 // if threshold is not reached, donors can withdraw their donations after the end_donate
-property donor_wd_live {
+property donor_wd_liquid {
     Forall xa
     [
       funds[xa]>0 && received<target && block.number>end_donate
@@ -64,7 +64,7 @@ property donor_wd_live {
 }
 
 // the owner can withdraw twice (should be false)
-property owner_wd_twice_nonlive {
+property owner_wd_twice_nonliquid {
     Forall xa
     [
       received>=target && block.number > end_donate
@@ -77,7 +77,7 @@ property owner_wd_twice_nonlive {
 }
 
 // the owner can withdraw if the contract balance exceeds the target (should be false: a coinbase tx can increase the contract balance)
-property owner_wd_balance_geq_nonlive {
+property owner_wd_balance_geq_nonliquid {
     Forall xa
     [
       balance >= target && block.number > end_donate
@@ -90,7 +90,7 @@ property owner_wd_balance_geq_nonlive {
 }
 
 // if there is some donor with enough tokens, then the campaign can be successful
-property can_reach_target_live {
+property can_reach_target_liquid {
     Forall xa
     [
       balance[xa] >= target && block.number <= end_donate
@@ -103,7 +103,7 @@ property can_reach_target_live {
 }
 
 // should be false: seller cannot withdraw 1000 (e.g. if target is < 1000)
-property owner_wd_toomuch_nonlive {
+property owner_wd_toomuch_nonliquid {
     Forall xa
     [
       received>=target && block.number > end_donate
@@ -116,7 +116,7 @@ property owner_wd_toomuch_nonlive {
 }
 
 // after the owner withdraws, donors can redeem their donations (should be false: e.g., balance is zero)
-property donor_wd_after_owner_nonlive {
+property donor_wd_after_owner_nonliquid {
     Forall xa
     [
       funds[xa]>0 && balance<target && block.number>end_donate

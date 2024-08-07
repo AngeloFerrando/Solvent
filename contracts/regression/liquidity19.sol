@@ -12,7 +12,7 @@ contract C19 {
 }
 
 // STRONG UNSAT
-property liquidity19a_live {
+property liquidity19a_liquid {
     Forall xa
     [
       true

@@ -12,7 +12,7 @@ contract IfWithoutElse2 {
   }
 }
 
-property _live {
+property _liquid {
     Forall xa
     [
       balance>0

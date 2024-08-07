@@ -48,7 +48,7 @@ contract PaymentSplitter {
 }
 
 // anyone can withdraw the corresponding releasable funds after the finalization of shares
-property anyone_wd_ge_live {
+property anyone_wd_ge_liquid {
     Forall xa
     [
       (((balance + totalReleased) * shares[xa]) > (released[xa] * totalShares)) && state==1
@@ -61,7 +61,7 @@ property anyone_wd_ge_live {
 }
 
 // anyone can withdraw the corresponding releasable funds after the finalization of shares
-property anyone_wd_releasable_live {
+property anyone_wd_releasable_liquid {
     Forall xa
     [
       state==1 && shares[xa]>0
@@ -76,7 +76,7 @@ property anyone_wd_releasable_live {
 // at any time, any user can withdraw the whole contract balance (should be false)
 // ? Can_Transactions_Arrive_Any_time=False: WEAK SAT WEAK UNSAT ?
 // ? Can_Transactions_Arrive_Any_time=True: STRONG SAT ?
-property anyone_wd_nonlive {
+property anyone_wd_nonliquid {
     Forall xa
     [
       true

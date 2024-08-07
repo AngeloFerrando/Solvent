@@ -78,7 +78,7 @@ run:
 			done; \
 		fi; \
 		if [ "$$foundUNSAT" = "true" ]; then \
-			echo "LIVE"; \
+			echo "LIQUID"; \
 		else \
 			# if [ "$$foundSAT" = "true" ]; then \
 			# 	echo "WEAK SAT (=> NOT LIQUID?)"; \
@@ -93,14 +93,14 @@ run:
 						if echo "$$output" | grep -q "error"; then \
 							foundUNSAT=true; \
 							ii=$$(echo $$i | rev | cut -d'/' -f1 | rev); \
-							echo "LIVE UP TO $$ii TRANSACTION"; \
+							echo "LIQUID UP TO $$ii TRANSACTION"; \
 							break; \
 						elif echo "$$output" | grep -q "sat"; then \
 							foundSAT=true; \
 						fi; \
 					done; \
 					if [ "$$foundUNSAT" = "false" ] && [ "$$foundSAT" = "true" ]; then \
-						echo "NOT LIVE (COUNTEREXAMPLE FOUND AND STORED IN ./$$Prop.counterexample)"; \
+						echo "NOT LIQUID (COUNTEREXAMPLE FOUND AND STORED IN ./$$Prop.counterexample)"; \
 						echo $$output > ./$$Prop.raw; \
 						ii=$$(echo $$i | rev | cut -d'/' -f1 | rev); \
 						python3 ./trace/parseTrace.py ./$$Prop.raw $$ii > ./$$Prop.counterexample; \

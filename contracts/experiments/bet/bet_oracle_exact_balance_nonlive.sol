@@ -43,7 +43,7 @@ contract Bet {
 }
 
 // if deadline_join has passed and player2 has not joined, then anyone can make player1 redeem the bet 
-property  oracle_exact_balance_nonlive {
+property  oracle_exact_balance_nonliquid {
     Forall xa
       [
         block.number<deadline && balance==2 

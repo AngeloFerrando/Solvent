@@ -40,7 +40,7 @@ contract Crowdfund {
 }
 
 // if there is some donor with enough tokens, then the campaign can be successful
-property can_reach_target_live {
+property can_reach_target_liquid {
     Forall xa
     [
       balance[xa] > target && block.number <= end_donate
@@ -53,7 +53,7 @@ property can_reach_target_live {
 }
 
 // the owner can withdraw 1000 (should be false: e.g., if target is < 1000)
-property owner_wd_toomuch_nonlive {
+property owner_wd_toomuch_nonliquid {
     Forall xa
     [
       success && block.number > end_donate

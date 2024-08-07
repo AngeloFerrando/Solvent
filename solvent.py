@@ -39,7 +39,7 @@ def run_makefile(Contract, N_Transactions, Solver, Timeout):
     clean_process = subprocess.Popen(['make', 'clean'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     clean_output, clean_error = clean_process.communicate()
     
-    live_up_to = None
+    liquid_up_to = None
     status = None
 
     print('\n---------------------')
@@ -91,19 +91,19 @@ def run_makefile(Contract, N_Transactions, Solver, Timeout):
                     if 'out/' not in phi: continue
                     phi = phi.split('\n')
                     if iteration == 1: print(f'PROPERTY: {phi[0]}')
-                    if '_nonlive' in phi[0] or '_notlive' in phi[0]:
-                        if 'NOT LIVE' in phi[-2]:
-                            print_not_live(iteration)
+                    if '_nonliquid' in phi[0] or '_notliquid' in phi[0]:
+                        if 'NOT LIQUID' in phi[-2]:
+                            print_not_liquid(iteration)
                             print('')
                             status = "passed"
                             stop = True
                             ok = True
-                        elif 'LIVE'  in phi[-2]  and not 'UP TO' in phi[-2]:        # Strong unsat
-                            print_live(-1)
+                        elif 'LIQUID'  in phi[-2]  and not 'UP TO' in phi[-2]:        # Strong unsat
+                            print_liquid(-1)
                             status = "not passed"
                             stop = True
                             pass
-                        elif 'LIVE'  in phi[-2]  and 'UP TO' in phi[-2]:    # Weak unsat
+                        elif 'LIQUID'  in phi[-2]  and 'UP TO' in phi[-2]:    # Weak unsat
                             pass
                             # print_not_passed()
                             # not_passed += 1
@@ -113,21 +113,21 @@ def run_makefile(Contract, N_Transactions, Solver, Timeout):
                             # not_passed += 1
                     else:
                         #print(f"{phi[-2]=}")
-                        if 'NOT LIVE'  in phi[-2]:
+                        if 'NOT LIQUID'  in phi[-2]:
                             ok = False
                             stop = True
                             # print_not_passed()
                             # not_passed += 1
-                        elif 'LIVE' in phi[-2] and 'UP TO' not in phi[-2]:  # Strong unsat
+                        elif 'LIQUID' in phi[-2] and 'UP TO' not in phi[-2]:  # Strong unsat
                             stop = True
                             ok = True
-                            print_live(-1)
+                            print_liquid(-1)
                             print('')
                             status = "passed"
-                        elif 'LIVE' in phi[-2]:
+                        elif 'LIQUID' in phi[-2]:
                             ok = True
-                            live_up_to = iteration
-                            #print(f"{live_up_to=}")
+                            liquid_up_to = iteration
+                            #print(f"{liquid_up_to=}")
                             # print_not_passed()
                             # not_passed += 1
                         else:
@@ -137,11 +137,11 @@ def run_makefile(Contract, N_Transactions, Solver, Timeout):
                 if stop:
                     break
             if not ok:
-                print_not_live(iteration)
+                print_not_liquid(iteration)
                 print('')
                 status = "not passed"
             elif not stop and ok:
-                print_live(iteration)
+                print_liquid(iteration)
                 print('')
                 status = "passed"
                 
@@ -152,9 +152,9 @@ def run_makefile(Contract, N_Transactions, Solver, Timeout):
             #timeout += 1
             #print(f"Timeout for {sol}")
         if not status:
-            #print(f"{live_up_to=}")
-            if live_up_to:
-                print_live(live_up_to)
+            #print(f"{liquid_up_to=}")
+            if liquid_up_to:
+                print_liquid(liquid_up_to)
                 print('')
                 print(f"Time: {compile_and_run_time} seconds")
                 status = "passed"
@@ -164,17 +164,17 @@ def run_makefile(Contract, N_Transactions, Solver, Timeout):
 
     remove_files_and_folder('./split')
 
-def print_not_live(i):
+def print_not_liquid(i):
     if i == 1:
-        print(f"\t - \t\033[94mNOT LIVE (counterexample found in {i} step)\033[0m\n", end='', flush=True)  # ANSI escape code for blue text
+        print(f"\t - \t\033[94mNOT LIQUID (counterexample found in {i} step)\033[0m\n", end='', flush=True)  # ANSI escape code for blue text
     else:
-        print(f"\t - \t\033[94mNOT LIVE (counterexample found in {i} steps)\033[0m\n", end='', flush=True)  # ANSI escape code for blue text
+        print(f"\t - \t\033[94mNOT LIQUID (counterexample found in {i} steps)\033[0m\n", end='', flush=True)  # ANSI escape code for blue text
 
-def print_live(i = None):
-    if i == -1:         # LIVE
-        print(f"\t - \t\033[93mLIVE\033[0m\n", end='', flush=True)  # ANSI escape code for blue text
-    elif i >= 0:        # LIVE up to i
-        print(f"\t - \t\033[93mLIVE (up to {i-1})\033[0m\n", end='', flush=True)  # ANSI escape code for blue text
+def print_liquid(i = None):
+    if i == -1:         # LIQUID
+        print(f"\t - \t\033[93mLIQUID\033[0m\n", end='', flush=True)  # ANSI escape code for blue text
+    elif i >= 0:        # LIQUID up to i
+        print(f"\t - \t\033[93mLIQUID (up to {i-1})\033[0m\n", end='', flush=True)  # ANSI escape code for blue text
     # else -> unknown, don't print anything
 
 if __name__ == "__main__":

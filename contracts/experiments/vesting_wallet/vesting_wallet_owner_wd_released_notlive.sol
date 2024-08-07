@@ -41,7 +41,7 @@ contract VestingWallet {
 }
 
 
-property  owner_wd_released_notlive {
+property  owner_wd_released_notliquid {
     Forall xa
     [
       balance>0 && block.number>start

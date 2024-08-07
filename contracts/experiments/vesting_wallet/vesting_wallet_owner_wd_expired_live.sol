@@ -41,7 +41,7 @@ contract VestingWallet {
 }
 
 
-property  owner_wd_expired_live {
+property  owner_wd_expired_liquid {
     Forall xa
     [
       balance>0 && released==0 && block.number>start+duration

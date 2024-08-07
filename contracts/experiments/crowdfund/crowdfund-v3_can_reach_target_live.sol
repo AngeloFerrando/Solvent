@@ -40,7 +40,7 @@ contract Crowdfund {
 }
 
 // if there is some donor with enough tokens, then the campaign can be successful
-property  can_reach_target_live {
+property  can_reach_target_liquid {
     Forall xa
     [
       balance[xa] > target && block.number <= end_donate

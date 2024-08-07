@@ -40,7 +40,7 @@ contract Auction {
 }
 
 // the seller can withdraw the current bid after the deadline
-property  no_frozen_funds_nonlive {
+property  no_frozen_funds_nonliquid {
     Forall xa
     [
       closed

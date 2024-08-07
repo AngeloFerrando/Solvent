@@ -64,7 +64,7 @@ contract Escrow {
 }
 
 // if a dispute is open, then the arbiter can redeem the fee
-property  anyone_wd_notlive {
+property  anyone_wd_notliquid {
     Forall xa
       [
         state==3 

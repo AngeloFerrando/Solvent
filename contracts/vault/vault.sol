@@ -49,8 +49,8 @@ contract Vault {
     }
 }
 
-// live after the deadline has passed
-property fin_owner_live {
+// liquid after the deadline has passed
+property fin_owner_liquid {
     Forall xa
       [
         state==1 && block.number >= request_time + wait_time
@@ -62,7 +62,7 @@ property fin_owner_live {
       ]
 }
 
-property canc_recovery_live {
+property canc_recovery_liquid {
     Forall xa
       [
         state==1 && block.number < request_time + wait_time
@@ -74,8 +74,8 @@ property canc_recovery_live {
       ]
 }
 
-// notlive because all the transactions in tx must be in the same block
-property wd_fin_owner_notlive {
+// notliquid because all the transactions in tx must be in the same block
+property wd_fin_owner_notliquid {
     Forall xa
       [
         state==0 

@@ -28,7 +28,7 @@ contract HTLC {
 }
 
 // UNSAT
-property  p1_live { 
+property  p1_liquid { 
     Forall xa
     [
         xa==owner && balance>0
