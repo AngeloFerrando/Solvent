@@ -22,6 +22,13 @@ cd contracts
 python3 test_regression.py
 ```
 
+### Docker image
+
+A Docker image is also available on DockerHub with Solvent and all its dependencies installed in it.
+```bash
+docker pull angeloferrando/solvent:latest
+```
+
 ## Verifying contracts
 
 ## Using Solvent script
