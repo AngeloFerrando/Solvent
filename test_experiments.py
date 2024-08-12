@@ -16,6 +16,7 @@ def run_makefile(folder, dict_res):
 
     # Filter '.sol' files
     sol_files = [file for file in files if file.endswith('.sol')]
+    sol_files.sort()
 
     for sol in sol_files:
         #print(f"{sol=}")
@@ -179,7 +180,7 @@ def run_makefile(folder, dict_res):
 
     # Change back to the original directory
     os.chdir(orig_dir)
-    return dict_res
+    return dict_res, not_passed
 
 def print_passed():
     print("\033[92mPassed\033[0m", end='', flush=True)  # ANSI escape code for green text
@@ -235,13 +236,15 @@ def main(sys_argv):
     #print(f"{directories=}")
     dict_res = {}
     # Run makefile for each directory
+    not_passed_total = 0
     for directory in directories:
         os.chdir('.')
         makefile_path = os.path.join(f"{directory}", 'Makefile')
         #print(f"{makefile_path=}")
         if os.path.exists(makefile_path):
-            dict = run_makefile(directory, dict_res)
+            dict, not_passed = run_makefile(directory, dict_res)
             dict_res.update(dict)
+            not_passed_total += not_passed
         else:
             raise Exception(f"makefile_path not found: {makefile_path}")
 
@@ -253,6 +256,11 @@ def main(sys_argv):
         else:
             perc = dict_res[k][0]/(dict_res[k][0]+dict_res[k][1])*100
         print('Contract:', k, dict_res[k][0], "\033[92mPassed\033[0m,", dict_res[k][1], "\033[91mNot Passed\033[0m", dict_res[k][2], "\033[93mTimeout\033[0m", '\t[', str(perc)+'%', ']')
+
+    if not_passed>0:
+        print("\n\nSome experiments were not successful.")
+    else:
+        print("\n\nAll experiments were successful.")
 
 
 
