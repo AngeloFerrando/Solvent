@@ -8,7 +8,7 @@ DEFAULT_Can_Transactions_Arrive_Any_time := true
 DEFAULT_Fixed_Iteration := -1
 DEFAULT_State_Based := true
 DEFAULT_Trace_Based := true
-# Contract := './bank.sol'
+Contract := './auction.sol'
 
 # If no argument is provided, use the default value
 ifndef N_Transactions
@@ -30,8 +30,8 @@ ifndef Trace_Based
     Trace_Based := $(DEFAULT_Trace_Based)
 endif
 
-compile: clean
-	python3 ../../main.py $(Contract) $(N_Transactions) $(N_Participants) $(Can_Transactions_Arrive_Any_time) $(Fixed_Iteration)
+compile: 
+	python3 ./main.py $(Contract) $(N_Transactions) $(N_Participants) $(Can_Transactions_Arrive_Any_time) $(Fixed_Iteration)
 	@if $(Trace_Based); then \
 		if test -f ./out/outputTrace.py; then \
 			python3 ./out/outputTrace.py; \
@@ -100,10 +100,10 @@ run:
 						fi; \
 					done; \
 					if [ "$$foundUNSAT" = "false" ] && [ "$$foundSAT" = "true" ]; then \
-						echo "NOT LIQUID (COUNTEREXAMPLE FOUND AND STORED IN $$Prop/counterexample.txt)"; \
-						echo $$output > $$Prop/counterexample_raw.txt; \
+						echo "NOT LIQUID (COUNTEREXAMPLE FOUND AND STORED IN ./$$Prop.counterexample)"; \
+						echo $$output > ./$$Prop.raw; \
 						ii=$$(echo $$i | rev | cut -d'/' -f1 | rev); \
-						python3 ../../trace/parseTrace.py $$Prop/counterexample_raw.txt $$ii > $$Prop/counterexample_explained.txt; \
+						python3 ./trace/parseTrace.py ./$$Prop.raw $$ii > ./$$Prop.counterexample; \
 						break; \
 					fi; \
 				done; \

@@ -49,6 +49,7 @@ def parse(pattern):
 
 
 def parseFile(file):
+    #print(f"... -- {os.getcwd()=}")
     with open(file, 'r') as content_file:
         pattern = content_file.read()
     if 'constructor' not in pattern:
