@@ -1,14 +1,14 @@
 import os
 import subprocess
 import time
+import sys
+import argparse
 
-N_Transactions = 500
-Timeout = 5 # seconds
-solver = "cvc5"
-try_statebased_iter = 5 # Try statebased after given number of iterations
 
-def run_makefile(folder):
+def run_makefile(folder, dict_res):
     # Change directory to the specified folder
+    orig_dir = os.getcwd()
+
     os.chdir(folder)
     
     # List all files in the current directory
@@ -18,6 +18,7 @@ def run_makefile(folder):
     sol_files = [file for file in files if file.endswith('.sol')]
 
     for sol in sol_files:
+        #print(f"{sol=}")
         passed = 0
         not_passed = 0
         timeout = 0
@@ -177,7 +178,7 @@ def run_makefile(folder):
         dict_res[sol] = (passed, not_passed, timeout)
 
     # Change back to the original directory
-    os.chdir('..')
+    os.chdir(orig_dir)
     return dict_res
 
 def print_passed():
@@ -201,22 +202,61 @@ def print_liquid(i = None):
     # else -> unknown, don't print anything
 
 
-# List all directories in the current directory
-directories = sorted([d for d in os.listdir('.') if os.path.isdir(d)])
+def main(sys_argv):
 
-dict_res = {}
-# Run makefile for each directory
-for directory in directories:
-    makefile_path = os.path.join(directory, 'Makefile')
-    if os.path.exists(makefile_path):
-        dict = run_makefile(directory)
-        dict_res.update(dict)
+    parser = argparse.ArgumentParser(prog='')
+    parser.add_argument ('--N_Transactions', help='', action='store', required=False, type=int, default=500)
+    parser.add_argument ('--Timeout', help='', action='store', required=False, type=int, default=1000)
+    parser.add_argument ('--solver', help='', action='store', required=True, type=str)
+    parser.add_argument ('--try_statebased_iter', help='', action='store', required=False, type=int, default=5)
+    parser.add_argument ('--no_regression', help="don't run regression tests", action='store', required=False, type=bool, default=True)
+    parser.add_argument ('--only_regression', help='run only regression tests', action='store_true')
+    parser.set_defaults(only_regression=False)
 
-# print wrap up
-print('\n\nResults overview:\n')
-for k in dict_res:
-    if dict_res[k][0]+dict_res[k][1] == 0:
-        perc = 0
+    args= parser.parse_args()   
+    global N_Transactions, Timeout, solver, try_statebased_iter
+
+    N_Transactions = args.N_Transactions
+    Timeout = args.Timeout  # seconds
+    solver = args.solver
+    try_statebased_iter = args.try_statebased_iter  # Try statebased after given number of iterations
+    only_regression = args.only_regression
+    no_regression = args.no_regression
+
+    # List all directories in the current directory
+
+    if only_regression:
+        directories = sorted([f"./experiments/contracts/{d}" for d in os.listdir('./contracts') if "regression" in d])
     else:
-        perc = dict_res[k][0]/(dict_res[k][0]+dict_res[k][1])*100
-    print('Contract:', k, dict_res[k][0], "\033[92mPassed\033[0m,", dict_res[k][1], "\033[91mNot Passed\033[0m", dict_res[k][2], "\033[93mTimeout\033[0m", '\t[', str(perc)+'%', ']')
+        if no_regression:
+            directories = sorted([f"./experiments/contracts/{d}" for d in os.listdir('./contracts') if "regression" not in d])
+        else:
+            directories = sorted([f"./experiments/contracts/{d}" for d in os.listdir('./contracts')])
+    #print(f"{directories=}")
+    dict_res = {}
+    # Run makefile for each directory
+    for directory in directories:
+        os.chdir('.')
+        makefile_path = os.path.join(f"{directory}", 'Makefile')
+        #print(f"{makefile_path=}")
+        if os.path.exists(makefile_path):
+            dict = run_makefile(directory, dict_res)
+            dict_res.update(dict)
+        else:
+            raise Exception(f"makefile_path not found: {makefile_path}")
+
+    # print wrap up
+    print('\n\nResults overview:\n')
+    for k in dict_res:
+        if dict_res[k][0]+dict_res[k][1] == 0:
+            perc = 0
+        else:
+            perc = dict_res[k][0]/(dict_res[k][0]+dict_res[k][1])*100
+        print('Contract:', k, dict_res[k][0], "\033[92mPassed\033[0m,", dict_res[k][1], "\033[91mNot Passed\033[0m", dict_res[k][2], "\033[93mTimeout\033[0m", '\t[', str(perc)+'%', ']')
+
+
+
+if __name__ == '__main__':
+
+    # os.chdir('./contracts')
+    main(sys.argv)
