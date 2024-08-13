@@ -209,7 +209,7 @@ def print_liquid(i = None):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Solvent: a formal verification tool to verify Smart Contracts.")
     parser.add_argument("contract", type=str, help="Path to the smart contract file (.sol)")
-    parser.add_argument("num_transactions", type=int, help="Number of transactions")
+    parser.add_argument("num_transactions", type=int, help='Max number of transactions of the bounded model checking problem.')
     parser.add_argument("solver", type=str, help="Name of the SMT solver (e.g., z3 or cvc5)")
     parser.add_argument("-t", "--timeout", type=int, help="Timeout for the verification process (optional)")
 

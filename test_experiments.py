@@ -206,12 +206,12 @@ def print_liquid(i = None):
 def main(sys_argv):
 
     parser = argparse.ArgumentParser(prog='')
-    parser.add_argument ('--N_Transactions', help='', action='store', required=False, type=int, default=500)
-    parser.add_argument ('--Timeout', help='', action='store', required=False, type=int, default=1000)
-    parser.add_argument ('--solver', help='', action='store', required=True, type=str)
-    parser.add_argument ('--try_statebased_iter', help='', action='store', required=False, type=int, default=5)
-    parser.add_argument ('--no_regression', help="don't run regression tests", action='store', required=False, type=bool, default=True)
-    parser.add_argument ('--only_regression', help='run only regression tests', action='store_true')
+    parser.add_argument ('--N_Transactions', help='Max number of transactions of the bounded model checking problem.', action='store', required=False, type=int, default=500)
+    parser.add_argument ('--Timeout', help='Timeout for each verification task.', action='store', required=False, type=int, default=1000)
+    parser.add_argument ('--solver', help='Name of the SMT solver (e.g., z3 or cvc5)', action='store', required=True, type=str)
+    parser.add_argument ('--try_statebased_iter', help='Try to use predicate abstraction after *n* successfull steps of bmc.', action='store', required=False, type=int, default=5)
+    parser.add_argument ('--no_regression', help="If 'True' (default), does not run regression tests; if 'False', it runs also regression tests.", action='store', required=False, type=bool, default=True)
+    parser.add_argument ('--only_regression', help='Run only regression tests', action='store_true')
     parser.set_defaults(only_regression=False)
 
     args= parser.parse_args()   
