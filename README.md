@@ -47,7 +47,7 @@ pip3 install -r requirements.txt
 
 To check that everything is ok, clone the repository and run the regression tests:
 ```bash
-python3 evaluate.py --solver cvc5 --only_regression
+python3 evaluate.py --solver cvc5 --only_regression --Timeout 5
 ```
 
 # Reproducing the experiments

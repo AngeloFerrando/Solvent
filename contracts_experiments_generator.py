@@ -24,8 +24,7 @@ def main(args):
         with open('./src/Makefile', 'r') as file_old:
             with open(f'experiments/{directory}/Makefile', 'w+') as file_new:
                 #file_new.write(file_old.read().replace("Contract := './auction.sol'", f"Contract := './../../../{directory}/crowdfund-bug.sol'"))
-                file_new.write(file_old.read().replace('./main.py', '../../../src/main.py'))
-                file_new.write(file_old.read().replace('./trace/parseTrace.py', '../../../src/parseTrace.py'))
+                file_new.write(file_old.read().replace('./main.py', '../../../src/main.py').replace('./trace/parseTrace.py', '../../../src/parseTrace.py'))
         # Filter '.sol' files
         sol_files = [file for file in files if file.endswith('.sol')]
         #print(f"{sol_files=}")

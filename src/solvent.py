@@ -2,11 +2,16 @@ import os
 import subprocess
 import time
 import argparse
+import shutil
 
 try_statebased_iter = 5 # Try statebased after given number of iterations
 
+def remove_folder(folder_path):
+    shutil.rmtree(folder_path)
+
 def remove_files_and_folder(folder_path):
     # Remove all files in the folder
+    #print(f"{ os.listdir(folder_path)=}")
     for filename in os.listdir(folder_path):
         file_path = os.path.join(folder_path, filename)
         try:
@@ -22,8 +27,10 @@ def remove_files_and_folder(folder_path):
         print(f"Error while deleting folder {folder_path}: {e}")
 
 def split_properties(Contract):
-    if not os.path.exists('./split'):
-        os.makedirs('./split')
+
+    if os.path.exists('./split'):
+        shutil.rmtree('./split')
+    os.makedirs('./split')
     with open(Contract, 'r') as f_sol:
         content = f_sol.read()
     content = content.replace('// property', '// ')
@@ -36,6 +43,9 @@ def split_properties(Contract):
                 f_sol.write(property)
 
 def run_makefile(Contract, N_Transactions, Solver, Timeout):
+    # Get current directory
+    orig_dir = os.getcwd()
+    
     clean_process = subprocess.Popen(['make', 'clean'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     clean_output, clean_error = clean_process.communicate()
     
@@ -50,8 +60,22 @@ def run_makefile(Contract, N_Transactions, Solver, Timeout):
     # List all files in the current directory
     files = os.listdir('./split/')
 
+    if not os.path.exists('./counterexamples'):
+        os.makedirs('./counterexamples')
+
+    with open('./src/Makefile', 'r') as file_old:
+        with open(f'./split/Makefile', 'w+') as file_new:
+            #file_new.write(file_old.read().replace("Contract := './auction.sol'", f"Contract := './../../../{directory}/crowdfund-bug.sol'"))
+            file_new.write(file_old.read()
+                           .replace('./main.py', '../src/main.py')
+                           .replace('./trace/parseTrace.py', '../src/parseTrace.py')
+                           .replace('./$$Prop.counterexample', '../counterexamples/$${Prop#"out/smt2/"}.counterexample')
+                           )
+
     # Filter '.sol' files
     sol_files = [file for file in files if file.endswith('.sol')]
+
+    os.chdir('./split/')
 
     for sol in sol_files:
         try:
@@ -61,13 +85,14 @@ def run_makefile(Contract, N_Transactions, Solver, Timeout):
                 start_time = time.time()
 
                 if iteration == try_statebased_iter:  # Try statebased
-                    compile_and_run_process = subprocess.run(f"make compile Contract=./split/{sol} N_Transactions={N_Transactions} Can_Transactions_Arrive_Any_time=True Fixed_Iteration={iteration}; echo end_compile_start_run; make run SMT={Solver}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=Timeout)
+                    compile_and_run_process = subprocess.run(f"make compile Contract={sol} N_Transactions={N_Transactions} Can_Transactions_Arrive_Any_time=True Fixed_Iteration={iteration}; echo end_compile_start_run; make run SMT={Solver}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=Timeout)
                 else:
-                    compile_and_run_process = subprocess.run(f"make compile Contract=./split/{sol} N_Transactions={N_Transactions} Can_Transactions_Arrive_Any_time=True Fixed_Iteration={iteration} State_Based=false; echo end_compile_start_run; make run SMT={Solver} State_Based=false", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=Timeout)
+                    compile_and_run_process = subprocess.run(f"make compile Contract={sol} N_Transactions={N_Transactions} Can_Transactions_Arrive_Any_time=True Fixed_Iteration={iteration} State_Based=false; echo end_compile_start_run; make run SMT={Solver} State_Based=false", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=Timeout)
 
 
                 if compile_and_run_process.returncode != 0:
                     print(f"Compilation or Execution failed for {sol}. Error message:\n{compile_and_run_process.stderr.decode()}")
+                    remove_folder('./split')
                     return
 
                 end_time = time.time()
@@ -86,7 +111,11 @@ def run_makefile(Contract, N_Transactions, Solver, Timeout):
                 res = compile_and_run_process.stdout.decode()
                 #print(f"{res=}")
                 res_compile, res_run = res.split("end_compile_start_run")
-                print(res_run)
+                #print(f"{res_compile=}")
+                #print(f"{res_run=}")
+                #time.sleep(2)
+
+                #print(res_run)
                 for phi in res_run.split('PROPERTY:'):
                     if 'out/' not in phi: continue
                     phi = phi.split('\n')
@@ -161,8 +190,8 @@ def run_makefile(Contract, N_Transactions, Solver, Timeout):
             else:
                 status = "timeout"  
                 print(f"Timeout for {sol}")
-
-    remove_files_and_folder('./split')
+        clean_process = subprocess.Popen(['make', 'clean'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    remove_folder('../split')
 
 def print_not_liquid(i):
     if i == 1:
