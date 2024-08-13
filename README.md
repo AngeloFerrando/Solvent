@@ -47,7 +47,6 @@ pip3 install -r requirements.txt
 
 To check that everything is ok, clone the repository and run the regression tests:
 ```bash
-cd contracts
 python3 evaluate.py --solver cvc5 --only_regression
 ```
 
