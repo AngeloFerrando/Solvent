@@ -4,7 +4,97 @@ Solvent is a tool to formally verify liquidity properties of Solidity smart cont
 
 Liquidity expresses the ideal behaviour of contracts in terms of the exchange of crypto-assets: users want to be guaranteed that, whenever certain states are reached, they can always perform some actions that lead to a desirable asset transfer. While several real-world attacks to smart contracts exploited liquidity vulnerabilities, detecting such vulnerabilities is beyond the reach of current verification tools for Solidity. 
 
-Details on Solvent and on the underlying verification technique in the following research paper:
+As a toy example, consider the following contract:
+```solidity
+contract Freezable {
+  address immutable owner;
+  bool frozen;
+
+  constructor () payable {
+    owner = msg.sender
+  }
+  
+  function freeze() {
+    require (msg.sender == owner);
+    frozen = true
+  }
+
+  function pay(int v) {
+    require (!frozen);
+    msg.sender.transfer(v)
+  }
+}
+```
+Note that the contract allows the owner to set the `frozen` flag, making the funds within the contract actually stuck. 
+
+We can detect this undesirable behaviour by querying Solvent with the following property:
+```solidity
+property liquidity1_nonliquid {
+    Forall xa
+    [
+      true
+      ->
+      Exists tx [1, xa]
+      [
+        <tx>balance[xa] == balance[xa] + balance
+      ]
+    ]
+}
+```
+Literally, this query asks whether any user `xa` can fire a transaction `tx` (composed up to 1 method call) whose effect is to increase the ETH balance of `xa` by the whole contract balance.
+
+Solvent answers negatively to this query, by finding an execution trace that violates the property:
+```python
+Contract: freezable_liquidity1_nonliquid.sol
+
+PROPERTY:  out/smt2/liquidity1_nonliquid
+Passed	 - 	NOT LIQUID (counterexample found in 2 steps)
+
+Time: 0.6299567222595215 seconds
+```
+
+The violating trace provided as a counterexample is made of two transactions.
+The first transaction is the invocation of the contract constructor (setting the owner to the value 2).
+The second transaction is the invocation of the `freeze` method by the owner.
+In the state resulting from the execution of these transactions, it is not true that any user can fire a transaction whose effect is to withdraw the whole contract balance.
+```python
+STATE 0
+	balance = 1
+	user_balance[0] = 2
+	user_balance[1] = 2
+	user_balance[2] = 1
+
+TRANSACTION 0 => 1
+	msg.sender = 2
+	msg.value = 1
+
+STATE 1
+	balance = 2
+	block.number = 0
+	err = false
+	frozen = false
+	owner = 2
+	user_balance[0] = 2
+	user_balance[1] = 2
+	user_balance[2] = 1
+
+TRANSACTION 1 => 2
+	f = freeze
+	msg.sender = 2
+	msg.value = 0
+
+STATE 2
+	balance = 2
+	block.number = 0
+	err = false
+	frozen = true
+	owner = 2
+	user_balance[0] = 2
+	user_balance[1] = 2
+	user_balance[2] = 1
+```
+
+Details on Solvent and on the underlying verification technique are in the following research paper:
 - M. Bartoletti, A. Ferrando, E. Lipparini, V. Malvone: [Solvent: liquidity verification of smart contracts](https://arxiv.org/abs/2404.17864). iFM, 2024 
  
 ## Structure
