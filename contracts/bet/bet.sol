@@ -112,7 +112,7 @@ property oracle_exact_balance_nonliquid {
 }
 
 // once the players have redeemed their bets, the contract is liquid, namely any participant can withdraw the whole contract balance
-property liquidity_notliquid {
+property no_frozen_funds_notliquid {
     Forall xa
       [
         state==2
