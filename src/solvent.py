@@ -48,12 +48,9 @@ def run_makefile(Contract, N_Transactions, Solver, Timeout):
     
     clean_process = subprocess.Popen(['make', 'clean'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     clean_output, clean_error = clean_process.communicate()
-    
-    liquid_up_to = None
-    status = None
-
     print('\n---------------------')
     print(f'Contract: {Contract}\n')
+    contract_name = Contract.split("/")[-1].split(".sol")[0]
 
     split_properties(Contract)
 
@@ -79,11 +76,16 @@ def run_makefile(Contract, N_Transactions, Solver, Timeout):
     os.chdir('./split/')
 
     for sol in sol_files:
-        #print(f"{sol=}")
+        clean_process = subprocess.Popen(['make', 'clean'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        sol_name = (sol.split(contract_name)[-1].split(".sol")[0])[1:]
+        print(f"\nPROPERTY: {sol_name}")
+
+        liquid_up_to = None
+        status = None
         try:
+            stop = False
             compile_and_run_time = 0
             for iteration in range(1, N_Transactions+1):
-                stop = False
                 # Start timing
                 start_time = time.time()
 
@@ -91,7 +93,6 @@ def run_makefile(Contract, N_Transactions, Solver, Timeout):
                     compile_and_run_process = subprocess.run(f"make compile Contract={sol} N_Transactions={N_Transactions} Can_Transactions_Arrive_Any_time=True Fixed_Iteration={iteration}; echo end_compile_start_run; make run SMT={Solver} Timeout={Timeout}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=Timeout)
                 else:
                     compile_and_run_process = subprocess.run(f"make compile Contract={sol} N_Transactions={N_Transactions} Can_Transactions_Arrive_Any_time=True Fixed_Iteration={iteration} State_Based=false; echo end_compile_start_run; make run SMT={Solver} State_Based=false  Timeout={Timeout}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=Timeout)
-
 
                 if compile_and_run_process.returncode != 0:
                     print(f"Compilation or Execution failed for {sol}. Error message:\n{compile_and_run_process.stderr.decode()}")
@@ -120,7 +121,7 @@ def run_makefile(Contract, N_Transactions, Solver, Timeout):
                 for phi in res_run.split('PROPERTY:'):
                     if 'out/' not in phi: continue
                     phi = phi.split('\n')
-                    if iteration == 1: print(f'\nPROPERTY: {phi[0]}')
+                    #if iteration == 1: print(f'\nPROPERTY: {phi[0]}')
                     if 'NOT LIQUID' in phi[-2] and iteration != try_statebased_iter:    # Strong sat
                         print_not_liquid(iteration)
                         print('')
@@ -148,7 +149,6 @@ def run_makefile(Contract, N_Transactions, Solver, Timeout):
                 print(f"Time: {Timeout} seconds")
                 #print(f"Time: {compile_and_run_time} seconds")
             else:
-                print(f'\nPROPERTY: {phi[0]}')
                 print_timeout()
                 #print(f"Timeout for {sol}")
         clean_process = subprocess.Popen(['make', 'clean'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
