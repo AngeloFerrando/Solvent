@@ -30,7 +30,7 @@ def run_makefile(folder, dict_res):
         status = None
 
         print('\n---------------------')
-        print(f'Contract: {sol}\n')
+        print(f'VERIFICATION TASK: {sol}\n')
         try:
             
             compilation_time = 0
@@ -92,7 +92,7 @@ def run_makefile(folder, dict_res):
                 for phi in res_run.split('PROPERTY:'):
                     if 'out/' not in phi: continue
                     phi = phi.split('\n')
-                    if iteration == 1: print(f'PROPERTY: {phi[0]}')
+                    #if iteration == 1: print(f'PROPERTY: {phi[0]}')
                     if '_nonliquid' in phi[0] or '_notliquid' in phi[0]:
                         if 'NOT LIQUID' in phi[-2]:
                             print_passed()
