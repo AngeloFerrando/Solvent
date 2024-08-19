@@ -37,6 +37,8 @@ def run_makefile(folder, dict_res):
             running_time = 0
             compile_and_run_time = 0
             for iteration in range(1, N_Transactions+1):
+                stop = False
+                ok = False
                 # Start timing
                 start_time = time.time()
                 """
@@ -84,8 +86,6 @@ def run_makefile(folder, dict_res):
 
                 # Print the output of the make run command
                 # print(f"Output for {folder}:\n")
-                stop = False
-                ok = False
                 res = compile_and_run_process.stdout.decode()
                 #print(f"{res=}")
                 res_compile, res_run = res.split("end_compile_start_run")
@@ -118,7 +118,7 @@ def run_makefile(folder, dict_res):
                             # not_passed += 1
                     else:
                         #print(f"{phi[-2]=}")
-                        if 'NOT LIQUID'  in phi[-2]:
+                        if 'NOT LIQUID'  in phi[-2] and iteration != try_statebased_iter: # Weak sat
                             ok = False
                             stop = True
                             # print_not_passed()
