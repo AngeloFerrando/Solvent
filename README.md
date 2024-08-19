@@ -166,11 +166,11 @@ Then, to compare your results with those in the paper, run:
 ```bash
 git diff --no-index --word-diff results/z3.out z3.out
 ```
-Note that your results will be different from those in the repository, because of different timeouts (400s in the docker, 1000s in the paper) and different experimental setups. In particular:
-1. *[always]* computation times will be different (lines beginning with `Time`)
-2. *[very often]* experiments resulting in `LIQUID (up to N)` will have a different `N`
-3. *[hardly ever]* your experiments resulting in `LIQUID (up to N)` may be tagged as `NOT LIQUID (counterexample found in N+1 steps)` in the repository. This is possible because in the paper we gave the SMT solver more computation time. 
-4. *[hardly ever]* your experiments resulting in `Timeout` may be tagged as `LIQUID` or `NOT LIQUID` in the repository. See the previous item.
+Note that your results will be different from those in the repository, because of different computational resources. In particular:
+1. *[always]* computation times will be different (lines beginning with `Time`);
+2. *[very often]* experiments resulting in `LIQUID (up to N)` will have a different `N`;
+3. *[hardly ever]* your experiments resulting in `LIQUID (up to N)` may be tagged as `NOT LIQUID (counterexample found in N+1 steps)` in the paper. This is possible because in the paper we gave the SMT solver more computation time. When this happens, Solvent will output that the test has *not* passed (this may happen in the verification task `vesting_wallet_owner_wd_started_notliquid`, which requires a computation time close to the timeout);
+4. *[hardly ever]* your experiments resulting in `Timeout` may be tagged as `LIQUID` or `NOT LIQUID` in the paper. See the previous item.
 
 To check that your results are compatible with those in the repository, you should compare that the outcomes `LIQUID` / `NOT LIQUID` are *almost always* preserved. 
 
@@ -178,7 +178,7 @@ To check that your results are compatible with those in the repository, you shou
 
 To use Solvent on your own contract, open a terminal and run the following:
 ```bash
-python3 solvent.py <file.sol> <number of transactions> <solver> [-t timeout]
+python3 src/solvent.py <file.sol> <number of transactions> <solver> [-t timeout]
 ```
 where:
 - `file.sol` is the smart contract
