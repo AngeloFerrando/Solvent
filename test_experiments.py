@@ -19,6 +19,8 @@ def run_makefile(folder, dict_res):
     sol_files.sort()
 
     for sol in sol_files:
+        clean_process = subprocess.Popen(['make', 'clean'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        clean_output, clean_error = clean_process.communicate()
         #print(f"{sol=}")
         passed = 0
         not_passed = 0
