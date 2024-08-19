@@ -53,7 +53,7 @@ property owner_wd_expired_liquid {
     ]
 }
 
-property owner_wd_started_liquid {
+property owner_wd_started_notliquid {
     Forall xa
     [
       balance>0 && released==0 && block.number>start
