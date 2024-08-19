@@ -1,631 +1,561 @@
 
 ---------------------
-Contract: auction_no_frozen_funds_nonliquid.sol
+VERIFICATION TASK: auction_no_frozen_funds_nonliquid.sol
 
-PROPERTY:  out/smt2/no_frozen_funds_nonliquid
 [92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 3 steps)[0m
 
-Time: 1.1146883964538574 seconds
+Time: 1.152646780014038 seconds
 
 ---------------------
-Contract: auction_nonseller_wd_nonliquid.sol
+VERIFICATION TASK: auction_nonseller_wd_nonliquid.sol
 
-PROPERTY:  out/smt2/nonseller_wd_nonliquid
 [92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 2 steps)[0m
 
-Time: 0.6965799331665039 seconds
+Time: 0.6978952884674072 seconds
 
 ---------------------
-Contract: auction_old_winner_wd_liquid.sol
+VERIFICATION TASK: auction_old_winner_wd_liquid.sol
 
-PROPERTY:  out/smt2/old_winner_wd_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 11)[0m
-
-Time: 1000 seconds
-
----------------------
-Contract: auction_seller_wd2_liquid.sol
-
-PROPERTY:  out/smt2/seller_wd2_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 11)[0m
-
-Time: 1000 seconds
-
----------------------
-Contract: auction_seller_wd_closed_nonliquid.sol
-
-PROPERTY:  out/smt2/seller_wd_closed_nonliquid
-[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 4 steps)[0m
-
-Time: 29.731064796447754 seconds
-
----------------------
-Contract: auction_seller_wd_early_nonliquid.sol
-
-PROPERTY:  out/smt2/seller_wd_early_nonliquid
-[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 2 steps)[0m
-
-Time: 0.7531702518463135 seconds
-
----------------------
-Contract: auction_seller_wd_liquid.sol
-
-PROPERTY:  out/smt2/seller_wd_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 11)[0m
-
-Time: 1000 seconds
-
----------------------
-Contract: auction_seller_wd_nowinner_nonliquid.sol
-
-PROPERTY:  out/smt2/seller_wd_nowinner_nonliquid
-[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
-
-Time: 0.336073637008667 seconds
-
----------------------
-Contract: bank_deposit_not_revert_liquid.sol
-
-PROPERTY:  out/smt2/deposit_not_revert_liquid
-[92mPassed[0m	 - 	[93mLIQUID[0m
-
-Time: 17.482385873794556 seconds
-
----------------------
-Contract: bank_withdraw_not_revert_liquid.sol
-
-PROPERTY:  out/smt2/withdraw_not_revert_liquid
 [92mPassed[0m	 - 	[93mLIQUID (up to 9)[0m
 
-Time: 1000 seconds
+Time: 400 seconds
 
 ---------------------
-Contract: bet_any_timeout_join_liquid.sol
+VERIFICATION TASK: auction_seller_wd2_liquid.sol
 
-PROPERTY:  out/smt2/any_timeout_join_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 17)[0m
-
-Time: 1000 seconds
-
----------------------
-Contract: bet_any_timeout_win_liquid.sol
-
-PROPERTY:  out/smt2/any_timeout_win_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 13)[0m
-
-Time: 1000 seconds
-
----------------------
-Contract: bet_liquidity_notliquid.sol
-
-PROPERTY:  out/smt2/liquidity_notliquid
-[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 2 steps)[0m
-
-Time: 0.7020401954650879 seconds
-
----------------------
-Contract: bet_oracle_exact_balance_nonliquid.sol
-
-PROPERTY:  out/smt2/oracle_exact_balance_nonliquid
-[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
-
-Time: 0.3510458469390869 seconds
-
----------------------
-Contract: bet_oracle_win_liquid.sol
-
-PROPERTY:  out/smt2/oracle_win_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 10)[0m
-
-Time: 1000 seconds
-
----------------------
-Contract: bet_oracle_win_strong_liquid.sol
-
-PROPERTY:  out/smt2/oracle_win_strong_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 10)[0m
-
-Time: 1000 seconds
-
----------------------
-Contract: crowdfund-bug_can_reach_target_liquid.sol
-
-PROPERTY:  out/smt2/can_reach_target_liquid
-[92mPassed[0m	 - 	[93mLIQUID[0m
-
-Time: 57.25506043434143 seconds
-
----------------------
-Contract: crowdfund-bug_donor_wd_notliquid.sol
-
-PROPERTY:  out/smt2/donor_wd_notliquid
-[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 5 steps)[0m
-
-Time: 46.200746297836304 seconds
-
----------------------
-Contract: crowdfund-bug_no_frozen_funds_liquid_notliquid.sol
-
-PROPERTY:  out/smt2/no_frozen_funds_liquid_notliquid
-[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
-
-Time: 0.3557603359222412 seconds
-
----------------------
-Contract: crowdfund-bug_owner_wd_liquid.sol
-
-PROPERTY:  out/smt2/owner_wd_liquid
-[92mPassed[0m	 - 	[93mLIQUID[0m
-
-Time: 25.03234577178955 seconds
-
----------------------
-Contract: crowdfund-fix2_can_reach_target_liquid.sol
-
-PROPERTY:  out/smt2/can_reach_target_liquid
-[92mPassed[0m	 - 	[93mLIQUID[0m
-
-Time: 88.86281180381775 seconds
-
----------------------
-Contract: crowdfund-fix2_donor_wd_liquid.sol
-
-PROPERTY:  out/smt2/donor_wd_liquid
 [92mPassed[0m	 - 	[93mLIQUID (up to 9)[0m
 
-Time: 1000 seconds
+Time: 400 seconds
 
 ---------------------
-Contract: crowdfund-fix2_no_frozen_funds_liquid.sol
+VERIFICATION TASK: auction_seller_wd_closed_nonliquid.sol
 
-PROPERTY:  out/smt2/no_frozen_funds_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 10)[0m
-
-Time: 1000 seconds
-
----------------------
-Contract: crowdfund-fix2_owner_wd_liquid.sol
-
-PROPERTY:  out/smt2/owner_wd_liquid
-[92mPassed[0m	 - 	[93mLIQUID[0m
-
-Time: 31.761000633239746 seconds
-
----------------------
-Contract: crowdfund-fix_can_reach_target_liquid.sol
-
-PROPERTY:  out/smt2/can_reach_target_liquid
-[92mPassed[0m	 - 	[93mLIQUID[0m
-
-Time: 77.96859335899353 seconds
-
----------------------
-Contract: crowdfund-fix_donor_wd_liquid.sol
-
-PROPERTY:  out/smt2/donor_wd_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 10)[0m
-
-Time: 1000 seconds
-
----------------------
-Contract: crowdfund-fix_no_frozen_funds_liquid_notliquid.sol
-
-PROPERTY:  out/smt2/no_frozen_funds_liquid_notliquid
-[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
-
-Time: 0.3564004898071289 seconds
-
----------------------
-Contract: crowdfund-fix_owner_wd_liquid.sol
-
-PROPERTY:  out/smt2/owner_wd_liquid
-[92mPassed[0m	 - 	[93mLIQUID[0m
-
-Time: 25.25235676765442 seconds
-
----------------------
-Contract: crowdfund-v2_can_reach_target_liquid.sol
-
-PROPERTY:  out/smt2/can_reach_target_liquid
-[92mPassed[0m	 - 	[93mLIQUID[0m
-
-Time: 66.07519865036011 seconds
-
----------------------
-Contract: crowdfund-v2_donor_wd_after_owner_nonliquid.sol
-
-PROPERTY:  out/smt2/donor_wd_after_owner_nonliquid
-[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 3 steps)[0m
-
-Time: 14.341394901275635 seconds
-
----------------------
-Contract: crowdfund-v2_donor_wd_liquid.sol
-
-PROPERTY:  out/smt2/donor_wd_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 10)[0m
-
-Time: 1000 seconds
-
----------------------
-Contract: crowdfund-v2_owner_wd_balance_geq_nonliquid.sol
-
-PROPERTY:  out/smt2/owner_wd_balance_geq_nonliquid
-[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
-
-Time: 0.3732297420501709 seconds
-
----------------------
-Contract: crowdfund-v2_owner_wd_liquid.sol
-
-PROPERTY:  out/smt2/owner_wd_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 12)[0m
-
-Time: 1000 seconds
-
----------------------
-Contract: crowdfund-v2_owner_wd_toomuch_nonliquid.sol
-
-PROPERTY:  out/smt2/owner_wd_toomuch_nonliquid
-[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
-
-Time: 0.36639857292175293 seconds
-
----------------------
-Contract: crowdfund-v2_owner_wd_twice_nonliquid.sol
-
-PROPERTY:  out/smt2/owner_wd_twice_nonliquid
 [92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 4 steps)[0m
 
-Time: 28.062349557876587 seconds
+Time: 34.51277160644531 seconds
 
 ---------------------
-Contract: crowdfund-v3_can_reach_target_liquid.sol
+VERIFICATION TASK: auction_seller_wd_early_nonliquid.sol
 
-PROPERTY:  out/smt2/can_reach_target_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 13)[0m
-
-Time: 1000 seconds
-
----------------------
-Contract: crowdfund-v3_owner_wd_toomuch_nonliquid.sol
-
-PROPERTY:  out/smt2/owner_wd_toomuch_nonliquid
 [92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 2 steps)[0m
 
-Time: 0.750410795211792 seconds
+Time: 0.731452226638794 seconds
 
 ---------------------
-Contract: escrow_anyone_wd_notliquid.sol
+VERIFICATION TASK: auction_seller_wd_liquid.sol
 
-PROPERTY:  out/smt2/anyone_wd_notliquid
-[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 2 steps)[0m
+[92mPassed[0m	 - 	[93mLIQUID (up to 9)[0m
 
-Time: 0.7402682304382324 seconds
-
----------------------
-Contract: escrow_arbiter_wd_fee_liquid.sol
-
-PROPERTY:  out/smt2/arbiter_wd_fee_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 14)[0m
-
-Time: 1000 seconds
+Time: 400 seconds
 
 ---------------------
-Contract: escrow_buyerorseller_wd_deposit_liquid.sol
+VERIFICATION TASK: auction_seller_wd_nowinner_nonliquid.sol
 
-PROPERTY:  out/smt2/buyerorseller_wd_deposit_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 52)[0m
+[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
 
-Time: 1000 seconds
-
----------------------
-Contract: escrow_dispute_if_agree_liquid.sol
-
-PROPERTY:  out/smt2/dispute_if_agree_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 65)[0m
-
-Time: 1000 seconds
+Time: 0.34704041481018066 seconds
 
 ---------------------
-Contract: escrow_no_frozen_funds_notliquid.sol
+VERIFICATION TASK: bank_deposit_not_revert_liquid.sol
 
-PROPERTY:  out/smt2/no_frozen_funds_notliquid
-[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 3 steps)[0m
-
-Time: 1.2026946544647217 seconds
-
----------------------
-Contract: htlc_no_frozen_funds_liquid.sol
-
-PROPERTY:  out/smt2/no_frozen_funds_liquid
 [92mPassed[0m	 - 	[93mLIQUID[0m
 
-Time: 39.818981647491455 seconds
+Time: 19.79293918609619 seconds
 
 ---------------------
-Contract: htlc_notowner_wd_owner_nonliquid.sol
+VERIFICATION TASK: bank_withdraw_not_revert_liquid.sol
 
-PROPERTY:  out/smt2/notowner_wd_owner_nonliquid
-[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 2 steps)[0m
+[92mPassed[0m	 - 	[93mLIQUID (up to 8)[0m
 
-Time: 0.7186644077301025 seconds
+Time: 400 seconds
 
 ---------------------
-Contract: htlc_owner_wd_liquid.sol
+VERIFICATION TASK: bet_any_timeout_join_liquid.sol
 
-PROPERTY:  out/smt2/owner_wd_liquid
 [92mPassed[0m	 - 	[93mLIQUID (up to 12)[0m
 
-Time: 1000 seconds
+Time: 400 seconds
 
 ---------------------
-Contract: htlc_owner_wd_notowner_nonliquid.sol
+VERIFICATION TASK: bet_any_timeout_win_liquid.sol
 
-PROPERTY:  out/smt2/owner_wd_notowner_nonliquid
+[92mPassed[0m	 - 	[93mLIQUID (up to 9)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: bet_no_frozen_funds_notliquid.sol
+
 [92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 2 steps)[0m
 
-Time: 0.7114646434783936 seconds
+Time: 0.7454841136932373 seconds
 
 ---------------------
-Contract: htlc_verifier_wd_timeout_liquid.sol
+VERIFICATION TASK: bet_oracle_exact_balance_nonliquid.sol
 
-PROPERTY:  out/smt2/verifier_wd_timeout_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 11)[0m
-
-Time: 1000 seconds
-
----------------------
-Contract: htlc_without_hash_p1_liquid.sol
-
-PROPERTY:  out/smt2/p1_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 12)[0m
-
-Time: 1000 seconds
-
----------------------
-Contract: htlc_without_hash_p2_nonliquid.sol
-
-PROPERTY:  out/smt2/p2_nonliquid
 [92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
 
-Time: 0.3177518844604492 seconds
+Time: 0.357802152633667 seconds
 
 ---------------------
-Contract: htlc_without_hash_p3_liquid.sol
+VERIFICATION TASK: bet_oracle_win_liquid.sol
 
-PROPERTY:  out/smt2/p3_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 14)[0m
+[92mPassed[0m	 - 	[93mLIQUID (up to 7)[0m
 
-Time: 1000 seconds
+Time: 400 seconds
 
 ---------------------
-Contract: lottery_anyone_anystate_wd_nonliquid.sol
+VERIFICATION TASK: bet_oracle_win_strong_liquid.sol
 
-PROPERTY:  out/smt2/anyone_anystate_wd_nonliquid
+[92mPassed[0m	 - 	[93mLIQUID (up to 8)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: crowdfund-bug_can_reach_target_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID[0m
+
+Time: 71.51006388664246 seconds
+
+---------------------
+VERIFICATION TASK: crowdfund-bug_donor_wd_notliquid.sol
+
+[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 3 steps)[0m
+
+Time: 7.783645153045654 seconds
+
+---------------------
+VERIFICATION TASK: crowdfund-bug_no_frozen_funds_liquid_notliquid.sol
+
 [92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
 
-Time: 0.3932528495788574 seconds
+Time: 0.3586275577545166 seconds
 
 ---------------------
-Contract: lottery_anyone_liquid3_liquid.sol
+VERIFICATION TASK: crowdfund-bug_owner_wd_liquid.sol
 
-PROPERTY:  out/smt2/anyone_liquid3_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 13)[0m
+[92mPassed[0m	 - 	[93mLIQUID[0m
 
-Time: 1000 seconds
-
----------------------
-Contract: lottery_from1_to2.sol
-
-PROPERTY:  out/smt2/from1_to2
-[92mPassed[0m	 - 	[93mLIQUID (up to 12)[0m
-
-Time: 1000 seconds
+Time: 26.644248962402344 seconds
 
 ---------------------
-Contract: lottery_one_player_win_liquid.sol
+VERIFICATION TASK: crowdfund-fix2_can_reach_target_liquid.sol
 
-PROPERTY:  out/smt2/one_player_win_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 11)[0m
+[92mPassed[0m	 - 	[93mLIQUID[0m
 
-Time: 1000 seconds
+Time: 100.65262699127197 seconds
 
 ---------------------
-Contract: lottery_p1_anystate_wd_nonliquid.sol
+VERIFICATION TASK: crowdfund-fix2_donor_wd_liquid.sol
 
-PROPERTY:  out/smt2/p1_anystate_wd_nonliquid
+[92mPassed[0m	 - 	[93mLIQUID (up to 6)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: crowdfund-fix2_no_frozen_funds_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID (up to 8)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: crowdfund-fix2_owner_wd_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID[0m
+
+Time: 29.347217082977295 seconds
+
+---------------------
+VERIFICATION TASK: crowdfund-fix_can_reach_target_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID[0m
+
+Time: 78.12260413169861 seconds
+
+---------------------
+VERIFICATION TASK: crowdfund-fix_donor_wd_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID (up to 8)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: crowdfund-fix_no_frozen_funds_liquid_notliquid.sol
+
+[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
+
+Time: 0.36920642852783203 seconds
+
+---------------------
+VERIFICATION TASK: crowdfund-fix_owner_wd_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID[0m
+
+Time: 23.855674743652344 seconds
+
+---------------------
+VERIFICATION TASK: crowdfund-v2_can_reach_target_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID[0m
+
+Time: 44.48980689048767 seconds
+
+---------------------
+VERIFICATION TASK: crowdfund-v2_donor_wd_after_owner_nonliquid.sol
+
+[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 3 steps)[0m
+
+Time: 8.608947515487671 seconds
+
+---------------------
+VERIFICATION TASK: crowdfund-v2_donor_wd_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID (up to 8)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: crowdfund-v2_owner_wd_balance_geq_nonliquid.sol
+
+[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
+
+Time: 0.36714673042297363 seconds
+
+---------------------
+VERIFICATION TASK: crowdfund-v2_owner_wd_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID (up to 9)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: crowdfund-v2_owner_wd_toomuch_nonliquid.sol
+
+[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
+
+Time: 0.3702733516693115 seconds
+
+---------------------
+VERIFICATION TASK: crowdfund-v2_owner_wd_twice_nonliquid.sol
+
+[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 4 steps)[0m
+
+Time: 17.179962396621704 seconds
+
+---------------------
+VERIFICATION TASK: crowdfund-v3_can_reach_target_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID (up to 9)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: crowdfund-v3_owner_wd_toomuch_nonliquid.sol
+
 [92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 2 steps)[0m
 
-Time: 0.8607926368713379 seconds
+Time: 0.7739129066467285 seconds
 
 ---------------------
-Contract: lottery_p1_redeem_nojoin_liquid.sol
+VERIFICATION TASK: escrow_anyone_wd_notliquid.sol
 
-PROPERTY:  out/smt2/p1_redeem_nojoin_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 11)[0m
+[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 2 steps)[0m
 
-Time: 1000 seconds
-
----------------------
-Contract: lottery_p2_redeem_noreveal_liquid.sol
-
-PROPERTY:  out/smt2/p2_redeem_noreveal_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 12)[0m
-
-Time: 1000 seconds
+Time: 0.7616531848907471 seconds
 
 ---------------------
-Contract: lottery_player1_redeem_noreveal_liquid.sol
+VERIFICATION TASK: escrow_arbiter_wd_fee_liquid.sol
 
-PROPERTY:  out/smt2/player1_redeem_noreveal_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 12)[0m
+[92mPassed[0m	 - 	[93mLIQUID (up to 10)[0m
 
-Time: 1000 seconds
+Time: 400 seconds
 
 ---------------------
-Contract: payment_splitter_anyone_wd_ge_liquid.sol
+VERIFICATION TASK: escrow_buyerorseller_wd_deposit_liquid.sol
 
-PROPERTY:  out/smt2/anyone_wd_ge_liquid
+[92mPassed[0m	 - 	[93mLIQUID (up to 41)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: escrow_dispute_if_agree_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID (up to 50)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: escrow_no_frozen_funds_notliquid.sol
+
+[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 3 steps)[0m
+
+Time: 1.2383708953857422 seconds
+
+---------------------
+VERIFICATION TASK: htlc_no_frozen_funds_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID[0m
+
+Time: 54.8401415348053 seconds
+
+---------------------
+VERIFICATION TASK: htlc_notowner_wd_owner_nonliquid.sol
+
+[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 2 steps)[0m
+
+Time: 0.7398922443389893 seconds
+
+---------------------
+VERIFICATION TASK: htlc_owner_wd_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID (up to 9)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: htlc_owner_wd_notowner_nonliquid.sol
+
+[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 2 steps)[0m
+
+Time: 0.7426576614379883 seconds
+
+---------------------
+VERIFICATION TASK: htlc_verifier_wd_timeout_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID (up to 9)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: htlc_without_hash_p1_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID (up to 10)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: htlc_without_hash_p2_nonliquid.sol
+
+[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
+
+Time: 0.33011698722839355 seconds
+
+---------------------
+VERIFICATION TASK: htlc_without_hash_p3_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID (up to 10)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: lottery_anyone_anystate_wd_nonliquid.sol
+
+[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
+
+Time: 0.40482234954833984 seconds
+
+---------------------
+VERIFICATION TASK: lottery_anyone_liquid3_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID (up to 10)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: lottery_from1_to2.sol
+
+[92mPassed[0m	 - 	[93mLIQUID (up to 9)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: lottery_one_player_win_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID (up to 9)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: lottery_p1_anystate_wd_nonliquid.sol
+
+[92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 2 steps)[0m
+
+Time: 0.8518359661102295 seconds
+
+---------------------
+VERIFICATION TASK: lottery_p1_redeem_nojoin_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID (up to 8)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: lottery_p2_redeem_noreveal_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID (up to 8)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: lottery_player1_redeem_noreveal_liquid.sol
+
+[92mPassed[0m	 - 	[93mLIQUID (up to 9)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: payment_splitter_anyone_wd_ge_liquid.sol
+
 [92mPassed[0m	 - 	[93mLIQUID (up to 1)[0m
 
-Time: 0.7853868007659912 seconds
+Time: 400 seconds
 
 ---------------------
-Contract: payment_splitter_anyone_wd_nonliquid.sol
+VERIFICATION TASK: payment_splitter_anyone_wd_nonliquid.sol
 
-PROPERTY:  out/smt2/anyone_wd_nonliquid
 [92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
 
-Time: 0.3729400634765625 seconds
+Time: 0.38117384910583496 seconds
 
 ---------------------
-Contract: payment_splitter_anyone_wd_releasable_liquid.sol
+VERIFICATION TASK: payment_splitter_anyone_wd_releasable_liquid.sol
 
-PROPERTY:  out/smt2/anyone_wd_releasable_liquid
 [92mPassed[0m	 - 	[93mLIQUID (up to 1)[0m
 
-Time: 0.7512438297271729 seconds
+Time: 400 seconds
 
 ---------------------
-Contract: vault_canc_recovery_liquid.sol
+VERIFICATION TASK: vault_canc_recovery_liquid.sol
 
-PROPERTY:  out/smt2/canc_recovery_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 13)[0m
+[92mPassed[0m	 - 	[93mLIQUID (up to 10)[0m
 
-Time: 1000 seconds
-
----------------------
-Contract: vault_fin_owner_liquid.sol
-
-PROPERTY:  out/smt2/fin_owner_liquid
-[92mPassed[0m	 - 	[93mLIQUID (up to 13)[0m
-
-Time: 1000 seconds
+Time: 400 seconds
 
 ---------------------
-Contract: vault_wd_fin_owner_notliquid.sol
+VERIFICATION TASK: vault_fin_owner_liquid.sol
 
-PROPERTY:  out/smt2/wd_fin_owner_notliquid
+[92mPassed[0m	 - 	[93mLIQUID (up to 11)[0m
+
+Time: 400 seconds
+
+---------------------
+VERIFICATION TASK: vault_wd_fin_owner_notliquid.sol
+
 [92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
 
-Time: 0.4581480026245117 seconds
+Time: 0.44538044929504395 seconds
 
 ---------------------
-Contract: vesting_wallet_owner_wd_beforestart_notliquid.sol
+VERIFICATION TASK: vesting_wallet_owner_wd_beforestart_notliquid.sol
 
-PROPERTY:  out/smt2/owner_wd_beforestart_notliquid
 [92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
 
-Time: 0.36849093437194824 seconds
+Time: 0.35762667655944824 seconds
 
 ---------------------
-Contract: vesting_wallet_owner_wd_empty_notliquid.sol
+VERIFICATION TASK: vesting_wallet_owner_wd_empty_notliquid.sol
 
-PROPERTY:  out/smt2/owner_wd_empty_notliquid
 [92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
 
-Time: 0.3694272041320801 seconds
+Time: 0.3533148765563965 seconds
 
 ---------------------
-Contract: vesting_wallet_owner_wd_expired_liquid.sol
+VERIFICATION TASK: vesting_wallet_owner_wd_expired_liquid.sol
 
 Timeout for vesting_wallet_owner_wd_expired_liquid.sol
 
 ---------------------
-Contract: vesting_wallet_owner_wd_released_notliquid.sol
+VERIFICATION TASK: vesting_wallet_owner_wd_released_notliquid.sol
 
 Timeout for vesting_wallet_owner_wd_released_notliquid.sol
 
 ---------------------
-Contract: vesting_wallet_owner_wd_started_notliquid.sol
+VERIFICATION TASK: vesting_wallet_owner_wd_started_notliquid.sol
 
-PROPERTY:  out/smt2/owner_wd_started_notliquid
-[92m Passed[0m	 - 	[94mNOT LIQUID (counterexample found in 2 step)[0m
-
-Time: 385.08132767677307 seconds
+Timeout for vesting_wallet_owner_wd_started_notliquid.sol
 
 ---------------------
-Contract: vesting_wallet_owner_wd_uncond_notliquid.sol
+VERIFICATION TASK: vesting_wallet_owner_wd_uncond_notliquid.sol
 
-PROPERTY:  out/smt2/owner_wd_uncond_notliquid
 [92mPassed[0m	 - 	[94mNOT LIQUID (counterexample found in 1 step)[0m
 
-Time: 0.3535041809082031 seconds
+Time: 0.3648831844329834 seconds
 
 
 Results overview:
 
-Contract: auction_no_frozen_funds_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: auction_nonseller_wd_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: auction_old_winner_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: auction_seller_wd2_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: auction_seller_wd_closed_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: auction_seller_wd_early_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: auction_seller_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: auction_seller_wd_nowinner_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: bank_deposit_not_revert_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: bank_withdraw_not_revert_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: bet_any_timeout_join_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: bet_any_timeout_win_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: bet_liquidity_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: bet_oracle_exact_balance_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: bet_oracle_win_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: bet_oracle_win_strong_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-bug_can_reach_target_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-bug_donor_wd_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-bug_no_frozen_funds_liquid_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-bug_owner_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-fix2_can_reach_target_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-fix2_donor_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-fix2_no_frozen_funds_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-fix2_owner_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-fix_can_reach_target_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-fix_donor_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-fix_no_frozen_funds_liquid_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-fix_owner_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-v2_can_reach_target_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-v2_donor_wd_after_owner_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-v2_donor_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-v2_owner_wd_balance_geq_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-v2_owner_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-v2_owner_wd_toomuch_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-v2_owner_wd_twice_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-v3_can_reach_target_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: crowdfund-v3_owner_wd_toomuch_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: escrow_anyone_wd_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: escrow_arbiter_wd_fee_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: escrow_buyerorseller_wd_deposit_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: escrow_dispute_if_agree_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: escrow_no_frozen_funds_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: htlc_no_frozen_funds_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: htlc_notowner_wd_owner_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: htlc_owner_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: htlc_owner_wd_notowner_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: htlc_verifier_wd_timeout_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: htlc_without_hash_p1_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: htlc_without_hash_p2_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: htlc_without_hash_p3_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: lottery_anyone_anystate_wd_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: lottery_anyone_liquid3_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: lottery_from1_to2.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: lottery_one_player_win_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: lottery_p1_anystate_wd_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: lottery_p1_redeem_nojoin_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: lottery_p2_redeem_noreveal_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: lottery_player1_redeem_noreveal_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: payment_splitter_anyone_wd_ge_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: payment_splitter_anyone_wd_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: payment_splitter_anyone_wd_releasable_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: vault_canc_recovery_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: vault_fin_owner_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: vault_wd_fin_owner_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: vesting_wallet_owner_wd_beforestart_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: vesting_wallet_owner_wd_empty_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: vesting_wallet_owner_wd_expired_liquid.sol 0 [92mPassed[0m, 0 [91mNot Passed[0m 1 [93mTimeout[0m 	[ 0% ]
-Contract: vesting_wallet_owner_wd_released_notliquid.sol 0 [92mPassed[0m, 0 [91mNot Passed[0m 1 [93mTimeout[0m 	[ 0% ]
-Contract: vesting_wallet_owner_wd_started_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
-Contract: vesting_wallet_owner_wd_uncond_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m 	[ 100.0% ]
+Contract: auction_no_frozen_funds_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: auction_nonseller_wd_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: auction_old_winner_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: auction_seller_wd2_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: auction_seller_wd_closed_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: auction_seller_wd_early_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: auction_seller_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: auction_seller_wd_nowinner_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: bank_deposit_not_revert_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: bank_withdraw_not_revert_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: bet_any_timeout_join_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: bet_any_timeout_win_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: bet_no_frozen_funds_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: bet_oracle_exact_balance_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: bet_oracle_win_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: bet_oracle_win_strong_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-bug_can_reach_target_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-bug_donor_wd_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-bug_no_frozen_funds_liquid_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-bug_owner_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-fix2_can_reach_target_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-fix2_donor_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-fix2_no_frozen_funds_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-fix2_owner_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-fix_can_reach_target_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-fix_donor_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-fix_no_frozen_funds_liquid_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-fix_owner_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-v2_can_reach_target_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-v2_donor_wd_after_owner_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-v2_donor_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-v2_owner_wd_balance_geq_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-v2_owner_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-v2_owner_wd_toomuch_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-v2_owner_wd_twice_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-v3_can_reach_target_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: crowdfund-v3_owner_wd_toomuch_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: escrow_anyone_wd_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: escrow_arbiter_wd_fee_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: escrow_buyerorseller_wd_deposit_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: escrow_dispute_if_agree_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: escrow_no_frozen_funds_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: htlc_no_frozen_funds_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: htlc_notowner_wd_owner_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: htlc_owner_wd_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: htlc_owner_wd_notowner_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: htlc_verifier_wd_timeout_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: htlc_without_hash_p1_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: htlc_without_hash_p2_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: htlc_without_hash_p3_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: lottery_anyone_anystate_wd_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: lottery_anyone_liquid3_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: lottery_from1_to2.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: lottery_one_player_win_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: lottery_p1_anystate_wd_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: lottery_p1_redeem_nojoin_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: lottery_p2_redeem_noreveal_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: lottery_player1_redeem_noreveal_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: payment_splitter_anyone_wd_ge_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: payment_splitter_anyone_wd_nonliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: payment_splitter_anyone_wd_releasable_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: vault_canc_recovery_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: vault_fin_owner_liquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: vault_wd_fin_owner_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: vesting_wallet_owner_wd_beforestart_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: vesting_wallet_owner_wd_empty_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: vesting_wallet_owner_wd_expired_liquid.sol 0 [92mPassed[0m, 0 [91mNot Passed[0m 1 [93mTimeout[0m
+Contract: vesting_wallet_owner_wd_released_notliquid.sol 0 [92mPassed[0m, 0 [91mNot Passed[0m 1 [93mTimeout[0m
+Contract: vesting_wallet_owner_wd_started_notliquid.sol 0 [92mPassed[0m, 0 [91mNot Passed[0m 1 [93mTimeout[0m
+Contract: vesting_wallet_owner_wd_uncond_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
 
 
 All experiments were successful.
