@@ -1,6 +1,7 @@
 .PHONY: compile run clean set-logic all
 
 # Default value
+DEFAULT_TIMEOUT := 300
 DEFAULT_N_TRANSACTIONS := 100
 DEFAULT_N_PARTICIPANTS := 2
 DEFAULT_SMT := z3
@@ -11,6 +12,9 @@ DEFAULT_Trace_Based := true
 Contract := './auction.sol'
 
 # If no argument is provided, use the default value
+ifndef Timeout
+    Timeout := $(DEFAULT_TIMEOUT)
+endif
 ifndef N_Transactions
     N_Transactions := $(DEFAULT_N_TRANSACTIONS)
 endif
@@ -67,8 +71,8 @@ run:
 		if $(State_Based); then \
 			for file in $$(find $$Prop/statebased -type f -name '*.smt2' | sort); do \
 				foundSAT=false; \
-				output=$$($$SMT $$file $$smt_flag); \
-				# echo $$output; \
+				output=$$(time ; timeout $(Timeout) $$SMT $$file $$smt_flag); \
+				echo $$output; \
 				if echo "$$output" | grep -q "error"; then \
 					foundUNSAT=true; \
 					break; \
@@ -88,8 +92,8 @@ run:
 					foundUNSAT=false; \
 					for file in $$(find $$i -type f -name '*.smt2' | sort); do \
 						foundSAT=false; \
-						output=$$($$SMT $$file $$smt_flag); \
-						# echo $$output; \
+						output=$$(date ; timeout $(Timeout) $$SMT $$file $$smt_flag); \
+						echo $$output; \
 						if echo "$$output" | grep -q "error"; then \
 							foundUNSAT=true; \
 							ii=$$(echo $$i | rev | cut -d'/' -f1 | rev); \
