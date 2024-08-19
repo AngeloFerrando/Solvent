@@ -38,7 +38,6 @@ def run_makefile(folder, dict_res):
             compile_and_run_time = 0
             for iteration in range(1, N_Transactions+1):
                 stop = False
-                ok = False
                 # Start timing
                 start_time = time.time()
                 """
@@ -83,6 +82,7 @@ def run_makefile(folder, dict_res):
                     compile_and_run_time = Timeout     # TODO
                     break
 
+                ok = False
 
                 # Print the output of the make run command
                 # print(f"Output for {folder}:\n")
