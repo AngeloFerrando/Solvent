@@ -162,6 +162,7 @@ def run_makefile(folder, dict_res):
             #print(f"Compilation time: {compilation_time} seconds; Running time: {running_time} seconds")
         except subprocess.TimeoutExpired:            
             #print(f"\t...encountered timeout for {sol}")
+            compile_and_run_time = Timeout
             pass 
             #timeout += 1
             #print(f"Timeout for {sol}")
