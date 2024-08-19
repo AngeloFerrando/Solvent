@@ -145,7 +145,7 @@ python3 evaluate.py --solver cvc5 --only_regression --Timeout 5
 
 ## Reproducing the experiments
 
-To run all the experiments (should take up to 2 hours), use:
+To run all the experiments (should take up to 8 hours), use:
 ```bash
 python3 evaluate.py --solver z3 
 ```
@@ -166,8 +166,13 @@ Then, to compare your results with those in the paper, run:
 ```bash
 git diff --no-index --word-diff results/z3.out z3.out
 ```
-to check that the logs are the same (up to timing differences).
+Note that your results will be different from those in the repository, because of different timeouts (400s in the docker, 1000s in the paper) and different experimental setups. In particular:
+1. *[always]* computation times will be different (lines beginning with `Time`)
+2. *[very often]* experiments resulting in `LIQUID (up to N)` will have a different `N`
+3. *[hardly ever]* your experiments resulting in `LIQUID (up to N)` may be tagged as `NOT LIQUID (counterexample found in N+1 steps)` in the repository. This is possible because in the paper we gave the SMT solver more computation time. 
+4. *[hardly ever]* your experiments resulting in `Timeout` may be tagged as `LIQUID` or `NOT LIQUID` in the repository. See the previous item.
 
+To check that your results are compatible with those in the repository, you should compare that the outcomes `LIQUID` / `NOT LIQUID` are *almost always* preserved. 
 
 ## Verifying your own contracts
 
