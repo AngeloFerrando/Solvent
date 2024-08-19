@@ -145,7 +145,7 @@ python3 evaluate.py --solver cvc5 --only_regression --Timeout 5
 
 ## Reproducing the experiments
 
-To run all the experiments (should take up to 2 hours), use:
+To run all the experiments (should take up to 8 hours), use:
 ```bash
 python3 evaluate.py --solver z3 
 ```
