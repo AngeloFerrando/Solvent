@@ -173,7 +173,7 @@ to check that the logs are the same (up to timing differences).
 
 To use Solvent on your own contract, open a terminal and run the following:
 ```bash
-python3 solvent.py <file.sol> <number of transactions> <solver> <timeout>?
+python3 solvent.py <file.sol> <number of transactions> <solver> [-t timeout]
 ```
 where:
 - `file.sol` is the smart contract
