@@ -29,6 +29,8 @@ def run_makefile(folder, dict_res):
         liquid_up_to = None
         status = None
 
+        ok = False
+
         print('\n---------------------')
         print(f'VERIFICATION TASK: {sol}\n')
         try:
@@ -36,6 +38,7 @@ def run_makefile(folder, dict_res):
             compilation_time = 0
             running_time = 0
             compile_and_run_time = 0
+            
             for iteration in range(1, N_Transactions+1):
                 stop = False
                 # Start timing
@@ -82,8 +85,6 @@ def run_makefile(folder, dict_res):
                     compile_and_run_time = Timeout     # TODO
                     break
 
-                ok = False
-
                 # Print the output of the make run command
                 # print(f"Output for {folder}:\n")
                 res = compile_and_run_process.stdout.decode()
@@ -107,7 +108,7 @@ def run_makefile(folder, dict_res):
                             not_passed += 1
                             status = "not passed"
                             stop = True
-                            pass
+                            #pass
                         elif 'LIQUID'  in phi[-2]  and 'UP TO' in phi[-2]:    # Weak unsat
                             pass
                             # print_not_passed()
@@ -118,9 +119,12 @@ def run_makefile(folder, dict_res):
                             # not_passed += 1
                     else:
                         #print(f"{phi[-2]=}")
-                        if 'NOT LIQUID'  in phi[-2] and iteration != try_statebased_iter: # Weak sat
+                        if 'NOT LIQUID'  in phi[-2] and iteration != try_statebased_iter: # Strong sat
                             ok = False
                             stop = True
+                            print_not_passed()
+                            not_passed += 1
+                            status = "not passed"
                             # print_not_passed()
                             # not_passed += 1
                         elif 'LIQUID' in phi[-2] and 'UP TO' not in phi[-2]:  # Strong unsat
@@ -144,10 +148,9 @@ def run_makefile(folder, dict_res):
                 if stop:
                     break
             if not ok:
-                print_not_passed()
-                print('')
-                status = "not passed"
-                not_passed += 1
+                status = "timeout"  
+                timeout += 1
+                print(f"Timeout for {sol}")
             elif not stop and ok:
                 print_passed()
                 print_liquid(iteration)
@@ -157,13 +160,19 @@ def run_makefile(folder, dict_res):
             
             print(f"Time: {compile_and_run_time} seconds")
             #print(f"Compilation time: {compilation_time} seconds; Running time: {running_time} seconds")
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired:            
+            #print(f"\t...encountered timeout for {sol}")
+            compile_and_run_time = Timeout
             pass 
             #timeout += 1
             #print(f"Timeout for {sol}")
         if not status:
             #print(f"{liquid_up_to=}")
-            if liquid_up_to:
+            if not ok:
+                status = "timeout"  
+                timeout += 1
+                print(f"Timeout for {sol}")
+            elif liquid_up_to:
                 print_passed()
                 print_liquid(liquid_up_to)
                 print('')
