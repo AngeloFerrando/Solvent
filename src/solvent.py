@@ -74,20 +74,23 @@ def run_makefile(Contract, N_Transactions, Solver, Timeout):
 
     # Filter '.sol' files
     sol_files = [file for file in files if file.endswith('.sol')]
+    #print(f"{sol_files=}")
 
     os.chdir('./split/')
 
     for sol in sol_files:
+        #print(f"{sol=}")
         try:
             compile_and_run_time = 0
             for iteration in range(1, N_Transactions+1):
+                stop = False
                 # Start timing
                 start_time = time.time()
 
                 if iteration == try_statebased_iter:  # Try statebased
-                    compile_and_run_process = subprocess.run(f"make compile Contract={sol} N_Transactions={N_Transactions} Can_Transactions_Arrive_Any_time=True Fixed_Iteration={iteration}; echo end_compile_start_run; make run SMT={Solver}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=Timeout)
+                    compile_and_run_process = subprocess.run(f"make compile Contract={sol} N_Transactions={N_Transactions} Can_Transactions_Arrive_Any_time=True Fixed_Iteration={iteration}; echo end_compile_start_run; make run SMT={Solver} Timeout={Timeout}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=Timeout)
                 else:
-                    compile_and_run_process = subprocess.run(f"make compile Contract={sol} N_Transactions={N_Transactions} Can_Transactions_Arrive_Any_time=True Fixed_Iteration={iteration} State_Based=false; echo end_compile_start_run; make run SMT={Solver} State_Based=false", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=Timeout)
+                    compile_and_run_process = subprocess.run(f"make compile Contract={sol} N_Transactions={N_Transactions} Can_Transactions_Arrive_Any_time=True Fixed_Iteration={iteration} State_Based=false; echo end_compile_start_run; make run SMT={Solver} State_Based=false  Timeout={Timeout}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=Timeout)
 
 
                 if compile_and_run_process.returncode != 0:
@@ -106,8 +109,6 @@ def run_makefile(Contract, N_Transactions, Solver, Timeout):
 
                 # Print the output of the make run command
                 # print(f"Output for {folder}:\n")
-                stop = False
-                ok = False
                 res = compile_and_run_process.stdout.decode()
                 #print(f"{res=}")
                 res_compile, res_run = res.split("end_compile_start_run")
@@ -119,91 +120,55 @@ def run_makefile(Contract, N_Transactions, Solver, Timeout):
                 for phi in res_run.split('PROPERTY:'):
                     if 'out/' not in phi: continue
                     phi = phi.split('\n')
-                    if iteration == 1: print(f'PROPERTY: {phi[0]}')
-                    if '_nonliquid' in phi[0] or '_notliquid' in phi[0]:
-                        if 'NOT LIQUID' in phi[-2]:
-                            print_not_liquid(iteration)
-                            print('')
-                            status = "passed"
-                            stop = True
-                            ok = True
-                        elif 'LIQUID'  in phi[-2]  and not 'UP TO' in phi[-2]:        # Strong unsat
-                            print_liquid(-1)
-                            status = "not passed"
-                            stop = True
-                            pass
-                        elif 'LIQUID'  in phi[-2]  and 'UP TO' in phi[-2]:    # Weak unsat
-                            pass
-                            # print_not_passed()
-                            # not_passed += 1
-                        else:
-                            pass
-                            # print_not_passed()
-                            # not_passed += 1
+                    if iteration == 1: print(f'\nPROPERTY: {phi[0]}')
+                    if 'NOT LIQUID' in phi[-2] and iteration != try_statebased_iter:    # Strong sat
+                        print_not_liquid(iteration)
+                        print('')
+                        stop = True
+                    elif 'LIQUID'  in phi[-2]  and not 'UP TO' in phi[-2]:        # Strong unsat
+                        print_liquid(-1)
+                        stop = True
+                        pass
+                    elif 'LIQUID'  in phi[-2]  and 'UP TO' in phi[-2]:    # Weak unsat
+                        liquid_up_to = iteration
+                        pass
                     else:
-                        #print(f"{phi[-2]=}")
-                        if 'NOT LIQUID'  in phi[-2]:
-                            ok = False
-                            stop = True
-                            # print_not_passed()
-                            # not_passed += 1
-                        elif 'LIQUID' in phi[-2] and 'UP TO' not in phi[-2]:  # Strong unsat
-                            stop = True
-                            ok = True
-                            print_liquid(-1)
-                            print('')
-                            status = "passed"
-                        elif 'LIQUID' in phi[-2]:
-                            ok = True
-                            liquid_up_to = iteration
-                            #print(f"{liquid_up_to=}")
-                            # print_not_passed()
-                            # not_passed += 1
-                        else:
-                            ok = True
-                            # print_not_passed()
-                            # not_passed += 1
+                        pass
                 if stop:
-                    break
-            if not ok:
-                print_not_liquid(iteration)
-                print('')
-                status = "not passed"
-            elif not stop and ok:
-                print_liquid(iteration)
-                print('')
-                status = "passed"
-                
-            print(f"Time: {compile_and_run_time} seconds")
+                    print(f"Time: {compile_and_run_time} seconds")
+                    break                
             #print(f"Compilation time: {compilation_time} seconds; Running time: {running_time} seconds")
         except subprocess.TimeoutExpired:
             pass 
             #timeout += 1
-            #print(f"Timeout for {sol}")
-        if not status:
-            #print(f"{liquid_up_to=}")
+        if not stop:
             if liquid_up_to:
                 print_liquid(liquid_up_to)
                 print('')
-                print(f"Time: {compile_and_run_time} seconds")
-                status = "passed"
+                print(f"Time: {Timeout} seconds")
+                #print(f"Time: {compile_and_run_time} seconds")
             else:
-                status = "timeout"  
-                print(f"Timeout for {sol}")
+                print(f'\nPROPERTY: {phi[0]}')
+                print_timeout()
+                #print(f"Timeout for {sol}")
         clean_process = subprocess.Popen(['make', 'clean'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     remove_folder('../split')
 
+
+def print_timeout():
+        print(f"\t\033[95mTIMEOUT\033[0m\n", end='', flush=True) 
+
 def print_not_liquid(i):
     if i == 1:
-        print(f"\t - \t\033[94mNOT LIQUID (counterexample found in {i} step)\033[0m\n", end='', flush=True)  # ANSI escape code for blue text
+        print(f"\t\033[94mNOT LIQUID (counterexample found in {i} step)\033[0m", end='', flush=True)  # ANSI escape code for blue text
     else:
-        print(f"\t - \t\033[94mNOT LIQUID (counterexample found in {i} steps)\033[0m\n", end='', flush=True)  # ANSI escape code for blue text
+        print(f"\t\033[94mNOT LIQUID (counterexample found in {i} steps)\033[0m", end='', flush=True)  # ANSI escape code for blue text
 
 def print_liquid(i = None):
     if i == -1:         # LIQUID
-        print(f"\t - \t\033[93mLIQUID\033[0m\n", end='', flush=True)  # ANSI escape code for blue text
+        print(f"\t\033[93mLIQUID\033[0m", end='', flush=True)  # ANSI escape code for blue text
     elif i >= 0:        # LIQUID up to i
-        print(f"\t - \t\033[93mLIQUID (up to {i-1})\033[0m\n", end='', flush=True)  # ANSI escape code for blue text
+        print(f"\t\033[93mLIQUID (up to {i-1})\033[0m", end='', flush=True)  # ANSI escape code for blue text
     # else -> unknown, don't print anything
 
 if __name__ == "__main__":

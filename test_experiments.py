@@ -19,6 +19,8 @@ def run_makefile(folder, dict_res):
     sol_files.sort()
 
     for sol in sol_files:
+        clean_process = subprocess.Popen(['make', 'clean'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        clean_output, clean_error = clean_process.communicate()
         #print(f"{sol=}")
         passed = 0
         not_passed = 0
@@ -28,13 +30,15 @@ def run_makefile(folder, dict_res):
         status = None
 
         print('\n---------------------')
-        print(f'Contract: {sol}\n')
+        print(f'VERIFICATION TASK: {sol}\n')
         try:
             
             compilation_time = 0
             running_time = 0
             compile_and_run_time = 0
             for iteration in range(1, N_Transactions+1):
+                stop = False
+                ok = False
                 # Start timing
                 start_time = time.time()
                 """
@@ -62,9 +66,9 @@ def run_makefile(folder, dict_res):
                 start_time = time.time()
 
                 if iteration == try_statebased_iter:  # Try statebased
-                    compile_and_run_process = subprocess.run(f"make compile Contract={sol} N_Transactions={N_Transactions} Can_Transactions_Arrive_Any_time=True Fixed_Iteration={iteration}; echo end_compile_start_run; make run SMT={solver}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=Timeout)
+                    compile_and_run_process = subprocess.run(f"make compile Contract={sol} N_Transactions={N_Transactions} Can_Transactions_Arrive_Any_time=True Fixed_Iteration={iteration}; echo end_compile_start_run; make run SMT={solver}  Timeout={Timeout}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=Timeout)
                 else:
-                    compile_and_run_process = subprocess.run(f"make compile Contract={sol} N_Transactions={N_Transactions} Can_Transactions_Arrive_Any_time=True Fixed_Iteration={iteration} State_Based=false; echo end_compile_start_run; make run SMT={solver} State_Based=false", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=Timeout)
+                    compile_and_run_process = subprocess.run(f"make compile Contract={sol} N_Transactions={N_Transactions} Can_Transactions_Arrive_Any_time=True Fixed_Iteration={iteration} State_Based=false; echo end_compile_start_run; make run SMT={solver} State_Based=false Timeout={Timeout}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=Timeout)
 
 
                 if compile_and_run_process.returncode != 0:
@@ -82,15 +86,13 @@ def run_makefile(folder, dict_res):
 
                 # Print the output of the make run command
                 # print(f"Output for {folder}:\n")
-                stop = False
-                ok = False
                 res = compile_and_run_process.stdout.decode()
                 #print(f"{res=}")
                 res_compile, res_run = res.split("end_compile_start_run")
                 for phi in res_run.split('PROPERTY:'):
                     if 'out/' not in phi: continue
                     phi = phi.split('\n')
-                    if iteration == 1: print(f'PROPERTY: {phi[0]}')
+                    #if iteration == 1: print(f'PROPERTY: {phi[0]}')
                     if '_nonliquid' in phi[0] or '_notliquid' in phi[0]:
                         if 'NOT LIQUID' in phi[-2]:
                             print_passed()
@@ -116,7 +118,7 @@ def run_makefile(folder, dict_res):
                             # not_passed += 1
                     else:
                         #print(f"{phi[-2]=}")
-                        if 'NOT LIQUID'  in phi[-2]:
+                        if 'NOT LIQUID'  in phi[-2] and iteration != try_statebased_iter: # Weak sat
                             ok = False
                             stop = True
                             # print_not_passed()
@@ -256,7 +258,8 @@ def main(sys_argv):
             perc = 0
         else:
             perc = dict_res[k][0]/(dict_res[k][0]+dict_res[k][1])*100
-        print('Contract:', k, dict_res[k][0], "\033[92mPassed\033[0m,", dict_res[k][1], "\033[91mNot Passed\033[0m", dict_res[k][2], "\033[93mTimeout\033[0m", '\t[', str(perc)+'%', ']')
+        #print('Contract:', k, dict_res[k][0], "\033[92mPassed\033[0m,", dict_res[k][1], "\033[91mNot Passed\033[0m", dict_res[k][2], "\033[93mTimeout\033[0m", '\t[', str(perc)+'%', ']')
+        print('Contract:', k, dict_res[k][0], "\033[92mPassed\033[0m,", dict_res[k][1], "\033[91mNot Passed\033[0m", dict_res[k][2], "\033[93mTimeout\033[0m")
         if dict_res[k][1]>0:
             exp_succ = False
 
