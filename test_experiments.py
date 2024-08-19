@@ -209,7 +209,7 @@ def main(sys_argv):
 
     parser = argparse.ArgumentParser(prog='')
     parser.add_argument ('--N_Transactions', help='Max number of transactions of the bounded model checking problem.', action='store', required=False, type=int, default=500)
-    parser.add_argument ('--Timeout', help='Timeout for each verification task.', action='store', required=False, type=int, default=1000)
+    parser.add_argument ('--Timeout', help='Timeout for each verification task.', action='store', required=False, type=int, default=400)
     parser.add_argument ('--solver', help='Name of the SMT solver (e.g., z3 or cvc5)', action='store', required=True, type=str)
     parser.add_argument ('--try_statebased_iter', help='Try to use predicate abstraction after *n* successfull steps of bmc.', action='store', required=False, type=int, default=5)
     parser.add_argument ('--no_regression', help="If 'True' (default), does not run regression tests; if 'False', it runs also regression tests.", action='store', required=False, type=bool, default=True)
