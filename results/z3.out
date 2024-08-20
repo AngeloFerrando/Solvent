@@ -474,9 +474,7 @@ Timeout for vesting_wallet_owner_wd_released_notliquid.sol
 ---------------------
 VERIFICATION TASK: vesting_wallet_owner_wd_started_notliquid.sol
 
-[92mPassed[0m        -      [94mNOT LIQUID (counterexample found in 2 steps)[0m
-
-Time: 191.77558875083923 seconds
+Timeout for vesting_wallet_owner_wd_started_notliquid.sol
 
 ---------------------
 VERIFICATION TASK: vesting_wallet_owner_wd_uncond_notliquid.sol
@@ -556,7 +554,7 @@ Contract: vesting_wallet_owner_wd_beforestart_notliquid.sol 1 [92mPassed[0m, 0
 Contract: vesting_wallet_owner_wd_empty_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
 Contract: vesting_wallet_owner_wd_expired_liquid.sol 0 [92mPassed[0m, 0 [91mNot Passed[0m 1 [93mTimeout[0m
 Contract: vesting_wallet_owner_wd_released_notliquid.sol 0 [92mPassed[0m, 0 [91mNot Passed[0m 1 [93mTimeout[0m
-Contract: vesting_wallet_owner_wd_started_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
+Contract: vesting_wallet_owner_wd_started_notliquid.sol 0 [92mPassed[0m, 0 [91mNot Passed[0m 1 [93mTimeout[0m
 Contract: vesting_wallet_owner_wd_uncond_notliquid.sol 1 [92mPassed[0m, 0 [91mNot Passed[0m 0 [93mTimeout[0m
 
 
