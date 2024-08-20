@@ -153,6 +153,9 @@ If you want instead to use cvc5, run:
 ```bash
 python3 evaluate.py --solver cvc5 
 ```
+
+(Note that if you have installed cvc5 from github through pip3, the version is the 1.2.0, which differs from the 1.1.3-dev.152.701cd63e used for the experiments and installed in the docker.)
+
 You can set the amount of time available for each verification task via the optional argument `--Timeout`. For instance, here we reduce the timeout to 100s:
 ```bash
 python3 evaluate.py --solver z3 --Timeout 100
