@@ -172,7 +172,7 @@ git diff --no-index --word-diff results/z3.out z3.out
 Note that your results will be different from those in the repository, because of different computational resources. In particular:
 1. *[always]* computation times will be different (lines beginning with `Time`);
 2. *[very often]* experiments resulting in `LIQUID (up to N)` will have a different `N`;
-3. *[hardly ever]* your experiments resulting in `LIQUID (up to N)` may be tagged as `NOT LIQUID (counterexample found in N+1 steps)` in the paper. This is possible because of reduced computational resources w.r.t. those used in our experiments (e.g., a reduced timeout). When this happens, Solvent will output that the test has *not* passed;
+3. *[hardly ever]* your experiments resulting in `LIQUID (up to N)` may be tagged as `NOT LIQUID (counterexample found in N+1 steps)` in the paper. This is possible because of reduced computational resources w.r.t. those used in our experiments (e.g., a reduced timeout). When this happens, `evaluate.py` will output that the test has *not* passed;
 4. *[hardly ever]* your experiments resulting in `Timeout` may be tagged as `LIQUID` or `NOT LIQUID` in the paper. See the previous item.
 
 To check that your results are compatible with those in the repository, you should compare that the outcomes `LIQUID` / `NOT LIQUID` are *almost always* preserved. 
