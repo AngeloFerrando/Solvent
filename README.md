@@ -137,7 +137,6 @@ To install them, run:
 ```bash
 pip3 install -r requirements.txt
 ```
-
 To check that everything is ok, clone the repository and run the regression tests:
 ```bash
 python3 evaluate.py --solver cvc5 --only_regression --Timeout 5
@@ -145,23 +144,27 @@ python3 evaluate.py --solver cvc5 --only_regression --Timeout 5
 
 ## Reproducing the experiments
 
-To run all the experiments (should take up to 8 hours), use:
+To run all the experiments, use:
 ```bash
 python3 evaluate.py --solver z3 
 ```
-This runs all the experiments using z3 as a backend. If you want instead to use cvc5, run:
+This runs all the experiments using z3 as a backend, with a default timeout of 400s per verification task (this is the same timeout used in the paper; the execution should take up to 6 hours). 
+If you want instead to use cvc5, run:
 ```bash
 python3 evaluate.py --solver cvc5 
+```
+You can set the amount of time available for each verification task via the optional argument `--Timeout`. For instance, here we reduce the timeout to 100s:
+```bash
+python3 evaluate.py --solver z3 --Timeout 100
 ```
 If finished successfully, the evaluation script should print:
 ```
 All experiments were successful.
 ```
-To compare your results with those in the article, redirect the output of `evaluate.sh`. For instance:
+To compare your results with those in the paper, redirect the output of `evaluate.py`. For instance:
 ```
 python3 evaluate.py --solver z3 > z3.out
 ```
-
 Then, to compare your results with those in the paper, run:
 ```bash
 git diff --no-index --word-diff results/z3.out z3.out
@@ -169,7 +172,7 @@ git diff --no-index --word-diff results/z3.out z3.out
 Note that your results will be different from those in the repository, because of different computational resources. In particular:
 1. *[always]* computation times will be different (lines beginning with `Time`);
 2. *[very often]* experiments resulting in `LIQUID (up to N)` will have a different `N`;
-3. *[hardly ever]* your experiments resulting in `LIQUID (up to N)` may be tagged as `NOT LIQUID (counterexample found in N+1 steps)` in the paper. This is possible because in the paper we gave the SMT solver more computation time. When this happens, Solvent will output that the test has *not* passed (this may happen in the verification task `vesting_wallet_owner_wd_started_notliquid`, which requires a computation time close to the timeout);
+3. *[hardly ever]* your experiments resulting in `LIQUID (up to N)` may be tagged as `NOT LIQUID (counterexample found in N+1 steps)` in the paper. This is possible because of reduced computational resources w.r.t. those used in our experiments (e.g., a reduced timeout). When this happens, Solvent will output that the test has *not* passed;
 4. *[hardly ever]* your experiments resulting in `Timeout` may be tagged as `LIQUID` or `NOT LIQUID` in the paper. See the previous item.
 
 To check that your results are compatible with those in the repository, you should compare that the outcomes `LIQUID` / `NOT LIQUID` are *almost always* preserved. 
@@ -185,7 +188,6 @@ where:
 - `number of transactions` is the maximum number of transactions to consider in the bounded model checking problem
 - `solver` is the solver to use (eg., z3 or cvc5)
 - `timeout` (optional) is the maximum number of seconds the SMT solver can take to complete the verification
-
 
 ## Extending Solvent
 
