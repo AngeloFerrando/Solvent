@@ -1,4 +1,4 @@
-from Z3Visitor import *
+from Z3Visitor import * #...
 from TypeVisitor import *
 
 from antlr4.error.ErrorListener import ErrorListener
