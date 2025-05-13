@@ -1,6 +1,6 @@
 grammar TxScript;
 
-contractExpr : 'contract' name=LABELUPPER '{' decl=declsExpr '}' properties=propertiesExpr;
+contractExpr : 'contract' name=UPPER '{' decl=declsExpr '}' properties=rules;
 
 propertiesExpr : (propertyExpr)*;
 
@@ -64,60 +64,61 @@ expression :
  | ('not'|'!') child=expression                                         # notExpr
  | left=expression ('and' | '&&') right=expression                      # andExpr
  | left=expression ('or' | '||') right=expression                       # orExpr
+ | 'old' '(' child=expression ')'                                       # oldExpr
  | '(' child=expression ')'                                             # groupExpr
 ;
 
 qslf : 
   'Forall' ag=LABEL '[' where=expression '->' 'Exists' tx=LABEL '[' nTrans=NUMBER ',' sender=LABEL ']' '[' body=expression ']' ']'
 ;
-// canWithdrawExpr : 
-//   'can_withdraw' '('ag=constantExpr ',' body=expression ')'             # baseWithdrawExpr
-//   | left=canWithdrawExpr ('and' | '&&') right=canWithdrawExpr           # andWithdrawExpr
-//   | left=canWithdrawExpr ('or' | '||') right=canWithdrawExpr            # orWithdrawExpr
-// ;
 
-// qslf :
-//  child=constantExpr                                                     # qslfAtomExpr
-//  | functor=LABEL '(' args=qslfArgsExpr ')'                              # qslfFunctionExpr
-//  | ('E' | 'Exists') 'a' var=NUMBER child=qslf                           # qslfExistsAgentExpr
-//  | ('E' | 'Exists') 's' var=NUMBER child=qslf                           # qslfExistsStrategyExpr
-//  | ('A' | 'Forall') 'a' var=NUMBER child=qslf                           # qslfForallAgentExpr
-//  | ('A' | 'Forall') 's' var=NUMBER child=qslf                           # qslfForallStrategyExpr
-//  | '(' 'a' var=NUMBER ',' 's' var=NUMBER ')' child=qslf                 # qslfBindingExpr
-//  | ('X' | 'Next') child=qslf                                            # qslfNextExpr
-//  | ('G' | 'Globally') child=qslf                                        # qslfGloballyExpr
-//  | ('F' | 'Eventually') child=qslf                                      # qslfEventuallyExpr
-//  | left=qslf ('and' | '&&') right=qslf                                  # qslfAndExpr
-//  | left=qslf ('or' | '||') right=qslf                                   # qslfOrExpr
-//  | left=qslf ('implies' | '->') right=qslf                              # qslfImpliesExpr
-//  | left=expression op=('*' | '/') right=expression                      # qslfMultDivEqExpr
-//  | left=expression op=('+' | '-') right=expression                      # qslfSumSubEqExpr
-//  | left=expression ('==') right=expression                              # qslfEqExpr
-//  | left=expression ('!=') right=expression                              # qslfNeqExpr
-//  | left=expression ('<') right=expression                               # qslfLessExpr
-//  | left=expression ('>') right=expression                               # qslfGreaterExpr
-//  | left=expression ('<=') right=expression                              # qslfLessEqExpr
-//  | left=expression ('>=') right=expression                              # qslfGreaterEqExpr
-//  | 'not' child=expression                                               # qslfNotExpr
-//  | '(' child=expression ')'                                             # qslfGroupExpr
-// ;
+rules : (ruleExpr)*;
 
-// qslfArgsExpr : 
-//   child=qslf                                                            # qslfSingleArgExpr
-//   | left=qslf ',' right=qslf                                            # qslfMultiArgExpr
-// ;
+ruleExpr :
+  'rule' name=UPPER '{' phi=formulaExpr '}'
+;
+
+formulaExpr :
+  expr=expression                                                       # exprFormulaExpr
+  | '!' child=formulaExpr                                               # notFormulaExpr
+  | left=formulaExpr ('and' | '&&') right=formulaExpr                   # andFormulaExpr
+  | left=formulaExpr ('or' | '||') right=formulaExpr                    # orFormulaExpr
+  | left=formulaExpr ('implies' | '->') right=formulaExpr               # impliesFormulaExpr
+  | 'forall' variables=varsFormulaExpr ':' typenames=typeExpr '.' child=formulaExpr      # forallFormulaExpr
+  | 'exists' variables=varsFormulaExpr ':' typenames=typeExpr '.' child=formulaExpr      # existsFormulaExpr
+  | '<<' expr=expression ':' cname=UPPER '.' fname=LABEL '(' args=argsFormulaExpr ')' '$' value=expression '>>' child=formulaExpr     # complexExprFormulaExpr
+  | '(' child=formulaExpr ')'                                           # groupFormulaExpr
+;
+
+typeExpr : 
+  'address'           # typeAddress
+  | 'int'             # typeInt
+  | 'bool'            # typeBool
+  | 'method'          # typeMethod
+  | 'calldataargs'    # typeCallDataArgs
+;
+
+varsFormulaExpr : (varFormulaExpr)*;
+varFormulaExpr : 
+    child=LABEL (',')?                                                  
+;
+
+argsFormulaExpr : (argFormulaExpr)*;
+argFormulaExpr : 
+    child=expression (',')?                                             
+;
 
 constantExpr :
   v=NUMBER                                                              # numberConstant
-  | v=LABEL                                                             # strConstant
+  | v=(LABEL | UPPER)                                                   # strConstant
   | v=('true'|'True')                                                   # trueConstant
   | v=('false'|'False')                                                 # falseConstant
 ;
 
 
 LABEL : [_a-z.][_a-zA-Z0-9.]*;
-// LABELP : [_a-z.][_a-zA-Z0-9.]*('['[_a-z.][_a-zA-Z0-9.]*']')?;
-LABELUPPER : [_a-zA-Z][_a-zA-Z0-9]*;
+
+UPPER : [A-Z.][_a-zA-Z0-9]*;
 
 NUMBER : ('-')? DIGIT | ('-')? (DIGIT_NOT_ZERO DIGIT+);
 REAL : NUMBER '.' (DIGIT+) | NUMBER '.' (DIGIT+);

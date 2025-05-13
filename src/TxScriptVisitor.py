@@ -219,6 +219,11 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TxScriptParser#oldExpr.
+    def visitOldExpr(self, ctx:TxScriptParser.OldExprContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TxScriptParser#sumSubExpr.
     def visitSumSubExpr(self, ctx:TxScriptParser.SumSubExprContext):
         return self.visitChildren(ctx)
@@ -241,6 +246,106 @@ class TxScriptVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by TxScriptParser#qslf.
     def visitQslf(self, ctx:TxScriptParser.QslfContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#rules.
+    def visitRules(self, ctx:TxScriptParser.RulesContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#ruleExpr.
+    def visitRuleExpr(self, ctx:TxScriptParser.RuleExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#andFormulaExpr.
+    def visitAndFormulaExpr(self, ctx:TxScriptParser.AndFormulaExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#forallFormulaExpr.
+    def visitForallFormulaExpr(self, ctx:TxScriptParser.ForallFormulaExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#existsFormulaExpr.
+    def visitExistsFormulaExpr(self, ctx:TxScriptParser.ExistsFormulaExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#exprFormulaExpr.
+    def visitExprFormulaExpr(self, ctx:TxScriptParser.ExprFormulaExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#notFormulaExpr.
+    def visitNotFormulaExpr(self, ctx:TxScriptParser.NotFormulaExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#complexExprFormulaExpr.
+    def visitComplexExprFormulaExpr(self, ctx:TxScriptParser.ComplexExprFormulaExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#orFormulaExpr.
+    def visitOrFormulaExpr(self, ctx:TxScriptParser.OrFormulaExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#impliesFormulaExpr.
+    def visitImpliesFormulaExpr(self, ctx:TxScriptParser.ImpliesFormulaExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#groupFormulaExpr.
+    def visitGroupFormulaExpr(self, ctx:TxScriptParser.GroupFormulaExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#typeAddress.
+    def visitTypeAddress(self, ctx:TxScriptParser.TypeAddressContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#typeInt.
+    def visitTypeInt(self, ctx:TxScriptParser.TypeIntContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#typeBool.
+    def visitTypeBool(self, ctx:TxScriptParser.TypeBoolContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#typeMethod.
+    def visitTypeMethod(self, ctx:TxScriptParser.TypeMethodContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#typeCallDataArgs.
+    def visitTypeCallDataArgs(self, ctx:TxScriptParser.TypeCallDataArgsContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#varsFormulaExpr.
+    def visitVarsFormulaExpr(self, ctx:TxScriptParser.VarsFormulaExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#varFormulaExpr.
+    def visitVarFormulaExpr(self, ctx:TxScriptParser.VarFormulaExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#argsFormulaExpr.
+    def visitArgsFormulaExpr(self, ctx:TxScriptParser.ArgsFormulaExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#argFormulaExpr.
+    def visitArgFormulaExpr(self, ctx:TxScriptParser.ArgFormulaExprContext):
         return self.visitChildren(ctx)
 
 

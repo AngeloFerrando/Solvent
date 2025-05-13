@@ -1,0 +1,330 @@
+
+type functions = enum { dummy, pay_func };
+node ifnested1 (xa:int;xn:int;f:functions;pay_func_n:int;starting_w: int;starting_aw_1: int;starting_aw_2: int) returns();
+(*@contract
+    assume starting_w >= 0;
+    assume starting_aw_1 >= 0;
+assume starting_aw_2 >= 0;
+*)
+var contract_not_constructed: bool;
+const starting_err : bool = false;
+const starting_val : int = 0;
+var w: int;
+var w_0: int;
+var aw_1: int;
+var aw_2: int;
+var aw_1_0: int;
+var aw_2_0: int;
+var err : bool;
+var err_0 : bool;
+var err_1 : bool;
+var val : int;
+var val_0 : int;
+let
+    if (true -> pre contract_not_constructed) then
+		if (not(xn >= 0 and (xa = 1 or xa = 2) and ((not(xa = 1) or (starting_aw_1 -> pre aw_1) >= xn) and (not(xa = 2) or (starting_aw_2 -> pre aw_2) >= xn)))) 
+			then err_0=true; else err_0=false; 
+		fi
+		w_0 = (starting_w -> pre w) + xn;
+		if (xa = 1) then
+			aw_1_0 = (starting_aw_1 -> pre aw_1) - xn;
+			aw_2_0 = (starting_aw_2 -> pre aw_2);
+		else
+			aw_1_0 = (starting_aw_1 -> pre aw_1);
+			aw_2_0 = (starting_aw_2 -> pre aw_2) - xn;
+		fi
+		if (not(xn>0)) 
+			then err_1=true; else err_1=err_0;
+		fi
+		val_0 = 0; 
+		if (err_1) then 
+			w = (starting_w -> pre w);
+			aw_1 = (starting_aw_1 -> pre aw_1);
+			aw_2 = (starting_aw_2 -> pre aw_2);
+			val = (starting_val -> pre val);	
+			contract_not_constructed = true; 
+		else 
+			w = w_0;
+			aw_1 = aw_1_0;
+			aw_2 = aw_2_0;
+			val = val_0;
+			contract_not_constructed = false;
+		fi
+	elsif f = pay_func then
+		if (pay_func_n>5) then 
+			val_0 = ((starting_val -> pre val)+1); 
+			w_0 = (starting_w -> pre w); 
+			aw_1_0 = (starting_aw_1 -> pre aw_1); 
+			aw_2_0 = (starting_aw_2 -> pre aw_2); 
+			err_0=starting_err; 
+		else 
+			if (pay_func_n<5) then      
+				val_0 = ((starting_val -> pre val)); 
+				w_0 = (starting_w -> pre w); 
+				aw_1_0 = (starting_aw_1 -> pre aw_1); 
+				aw_2_0 = (starting_aw_2 -> pre aw_2); 
+				err_0=starting_err; 
+			else 
+				if ((starting_val -> pre val)>=1) then 
+					if (not(1 >= 0 and 1 <= (starting_w -> pre w))) 
+						then err_0=true; else err_0=false; fi
+					val_0 = (starting_val -> pre val); 
+					w_0 = (starting_w -> pre w) - 1;
+					if (xa = 1) then
+						aw_1_0 = (starting_aw_1 -> pre aw_1) + 1;
+						aw_2_0 = (starting_aw_2 -> pre aw_2);
+					else
+						aw_1_0 = (starting_aw_1 -> pre aw_1);
+						aw_2_0 = (starting_aw_2 -> pre aw_2) + 1;
+					fi
+				else 
+					val_0 = (starting_val -> pre val); 
+					w_0=(starting_w -> pre w); 
+					aw_1_0 = (starting_aw_1 -> pre aw_1); 
+					aw_2_0 = (starting_aw_2 -> pre aw_2); 
+					err_0 = starting_err; 
+				fi 
+			fi 
+    	fi 
+		if (err_0) then 
+			w = (starting_w -> pre w);
+			aw_1 = (starting_aw_1 -> pre aw_1);
+			aw_2 = (starting_aw_2 -> pre aw_2);
+			val = (starting_val -> pre val);
+			contract_not_constructed = (true -> pre contract_not_constructed); 
+		else 
+			w = w_0;
+			aw_1 = aw_1_0;
+			aw_2 = aw_2_0;
+			val = val_0;
+			contract_not_constructed = (true -> pre contract_not_constructed);
+		fi
+	else
+		w = (starting_w -> pre w);
+		aw_1 = (starting_aw_1 -> pre aw_1);
+		aw_2 = (starting_aw_2 -> pre aw_2);
+		err = (starting_err -> pre err);
+		val = (starting_val -> pre val);
+	fi
+    --%PROPERTY 
+forall (xa_tx: int;)
+    (not (xa_tx = 1 or xa_tx = 2) or not(w>0) or (contract_not_constructed)) /* user is legit*/
+    or
+    exists (
+            f_tx: functions; pay_func_n_tx: int; xn_tx: int;  /* Transition vars */
+            w_nx: int; w_0_nx: int; aw_1_nx: int; aw_2_nx: int; aw_1_0_nx: int; aw_2_0_nx: int; err_nx : bool; err_0_nx : bool; err_1_nx : bool; err_2_nx : bool; err_3_nx : bool; val_nx : int; val_0_nx : int; val_1_nx : int; /* Next state vars */
+    )
+    (
+        (   /* condition */
+            (not(xa_tx = 1) or (aw_1_nx>aw_1)) and (not(xa_tx = 2) or (aw_2_nx>aw_2)) and val_nx>=1
+        )
+        and
+        (
+	(if f_tx = pay_func then
+		(if pay_func_n_tx>5 then 
+			val_0_nx = (val+1) and 
+			w_0_nx = w and 
+			aw_1_0_nx = aw_1 and 
+			aw_2_0_nx = aw_2 and 
+			err_0_nx=false 
+		else 
+			(if pay_func_n_tx<5 then 
+				val_0_nx=val and 
+				w_0_nx = w and 
+				aw_1_0_nx = aw_1 and 
+				aw_2_0_nx = aw_2 and 
+				err_0_nx=false 
+			else 
+				(if val>=1 then 
+					(
+					(if (not(1 >= 0 and 1 <= w)) then 
+						err_0_nx=true 
+					else err_0_nx=false
+					) and 
+					val_0_nx=val and
+					w_0_nx = w - 1 and
+					if (xa_tx = 1) then
+						aw_1_0_nx = aw_1 + 1 and
+						aw_2_0_nx = aw_2
+					else
+						aw_1_0_nx = aw_1 and
+						aw_2_0_nx = aw_2 + 1
+					) 
+				else 
+					val_0_nx=val and
+					w_0_nx=w and 
+					aw_1_0_nx = aw_1 and 
+					aw_2_0_nx = aw_2 and 
+					err_0_nx = false
+				)
+			)
+		)
+		and 
+		(
+		if (err_0_nx) then 
+			w_nx = w and 
+			aw_1_nx = aw_1 and
+			aw_2_nx = aw_2 and 
+			val_nx = val and 
+			true 
+		else  
+			w_nx = w_0_nx and 
+			aw_1_nx = aw_1_0_nx and 
+			aw_2_nx = aw_2_0_nx and 
+			val_nx = val_0_nx and 
+			true
+		)
+	else
+		w_nx = w  and 
+		aw_1_nx = aw_1 and 
+		aw_2_nx = aw_2 and 
+		err_nx = err and 
+		val_nx = val and 
+		true
+	)
+        )
+    );
+
+--%PROPERTY 
+forall (xa_tx: int;)
+    (not (xa_tx = 1 or xa_tx = 2) or not(w>0) or (contract_not_constructed)) /* user is legit*/
+    or
+    exists (
+            f_tx: functions; pay_func_n_tx: int; xn_tx: int;f_tx2: functions; pay_func_n_tx2: int; xn_tx2: int;  /* Transition vars */
+            w_nx: int; w_0_nx: int; aw_1_nx: int; aw_2_nx: int; aw_1_0_nx: int; aw_2_0_nx: int; err_nx : bool; err_0_nx : bool; err_1_nx : bool; err_2_nx : bool; err_3_nx : bool; val_nx : int; val_0_nx : int; val_1_nx : int; w_nx2: int; w_0_nx2: int; aw_1_nx2: int; aw_2_nx2: int; aw_1_0_nx2: int; aw_2_0_nx2: int; err_nx2 : bool; err_0_nx2 : bool; err_1_nx2 : bool; err_2_nx2 : bool; err_3_nx2 : bool; val_nx2 : int; val_0_nx2 : int; val_1_nx2 : int; /* Next state vars */
+    )
+    (
+        (   /* condition */
+            (not(xa_tx = 1) or (aw_1_nx2>aw_1 and val_nx>=1)) and (not(xa_tx = 2) or (aw_2_nx2>aw_2 and val_nx>=1))
+        )
+        and
+        (
+	(if f_tx = pay_func then
+		(if pay_func_n_tx>5 then 
+			val_0_nx = (val+1) and 
+			w_0_nx = w and 
+			aw_1_0_nx = aw_1 and 
+			aw_2_0_nx = aw_2 and 
+			err_0_nx=false 
+		else 
+			(if pay_func_n_tx<5 then 
+				val_0_nx=val and 
+				w_0_nx = w and 
+				aw_1_0_nx = aw_1 and 
+				aw_2_0_nx = aw_2 and 
+				err_0_nx=false 
+			else 
+				(if val>=1 then 
+					(
+					(if (not(1 >= 0 and 1 <= w)) then 
+						err_0_nx=true 
+					else err_0_nx=false
+					) and 
+					val_0_nx=val and
+					w_0_nx = w - 1 and
+					if (xa_tx = 1) then
+						aw_1_0_nx = aw_1 + 1 and
+						aw_2_0_nx = aw_2
+					else
+						aw_1_0_nx = aw_1 and
+						aw_2_0_nx = aw_2 + 1
+					) 
+				else 
+					val_0_nx=val and
+					w_0_nx=w and 
+					aw_1_0_nx = aw_1 and 
+					aw_2_0_nx = aw_2 and 
+					err_0_nx = false
+				)
+			)
+		)
+		and 
+		(
+		if (err_0_nx) then 
+			w_nx = w and 
+			aw_1_nx = aw_1 and
+			aw_2_nx = aw_2 and 
+			val_nx = val and 
+			true 
+		else  
+			w_nx = w_0_nx and 
+			aw_1_nx = aw_1_0_nx and 
+			aw_2_nx = aw_2_0_nx and 
+			val_nx = val_0_nx and 
+			true
+		)
+	else
+		w_nx = w  and 
+		aw_1_nx = aw_1 and 
+		aw_2_nx = aw_2 and 
+		err_nx = err and 
+		val_nx = val and 
+		true
+	)
+	and 
+	(if f_tx2 = pay_func then
+		(if pay_func_n_tx2>5 then 
+			val_0_nx2 = (val_nx+1) and 
+			w_0_nx2 = w_nx and 
+			aw_1_0_nx2 = aw_1_nx and 
+			aw_2_0_nx2 = aw_2_nx and 
+			err_0_nx2 = false 
+		else 
+			(if pay_func_n_tx2<5 then 
+				val_0_nx2 =val_nx and 
+				w_0_nx2 = w_nx and 
+				aw_1_0_nx2 = aw_1_nx and 
+				aw_2_0_nx2 = aw_2_nx and 
+				err_0_nx2 = false 
+			else 
+				(if val_nx >= 1 then 
+					(
+					(if (not(1 >= 0 and 1 <= w)) then 
+						err_0_nx2 = true 
+					else err_0_nx2 = false
+					) and 
+					val_0_nx2 = val_nx and
+					w_0_nx2 = w_nx - 1 and
+					if (xa_tx = 1) then
+						aw_1_0_nx2 = aw_1_nx + 1 and
+						aw_2_0_nx2 = aw_2_nx
+					else
+						aw_1_0_nx2 = aw_1_nx and
+						aw_2_0_nx2 = aw_2_nx + 1
+					) 
+				else 
+					val_0_nx2 = val_nx and
+					w_0_nx2 = w_nx and 
+					aw_1_0_nx2 = aw_1_nx and 
+					aw_2_0_nx2 = aw_2_nx and 
+					err_0_nx2 = false
+				)
+			)
+		)
+		and 
+		(
+		if (err_0_nx2) then 
+			w_nx2 = w_nx and 
+			aw_1_nx2 = aw_1_nx and
+			aw_2_nx2 = aw_2_nx and 
+			val_nx2 = val_nx and 
+			true 
+		else  
+			w_nx2 = w_0_nx2 and 
+			aw_1_nx2 = aw_1_0_nx2 and 
+			aw_2_nx2 = aw_2_0_nx2 and 
+			val_nx2 = val_0_nx2 and 
+			true
+		)
+	else
+		w_nx2 = w_nx  and 
+		aw_1_nx2 = aw_1_nx and 
+		aw_2_nx2 = aw_2_nx and 
+		err_nx2 = err_nx and 
+		val_nx2 = val_nx and 
+		true
+	)
+				)
+	);
+tel
+        

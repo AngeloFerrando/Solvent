@@ -47,6 +47,8 @@ class Kind2Visitor(TxScriptVisitor):
         self.__defaultAddress = 0
         self.__ctx = None
         self.__payable = False
+        self.__vars = {}
+        self.__id = 1
         self.__not_valid_names = ['sender', 'msg.sender', 'value', 'msg.value', 'balance']
         if not self.__fixed_iteration == -1:
             self.__N = fixed_iteration
@@ -169,10 +171,11 @@ class Kind2Visitor(TxScriptVisitor):
                 # functions_call += '\t'*n_tabs + p + '(xa1, xn, ' + (','.join(self.__proc_args[p])+', ' if self.__proc_args[p] else '') + 'aw1, aw2, w1, w2, t_aw, t_w, block_num1' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + ', err),\n'
             n_tabs += 1
             body += 'else'
-            same = f'\n\tw = (starting_w -> pre w);'
+            same = '\n\tblock_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};'
+            same += f'\n\tw = (starting_w -> pre w);'
             same += '\n\t' + '\n\t'.join([f'aw_{i} = (starting_aw_{i} -> pre aw_{i});' for i in range(1, self.__A+1)])
             # same += '\n\t' + '\n\t'.join([g.text + ' = ' + f'(starting_{g.text} -> pre {g.text});' for (g, _) in self.__globals]) if self.__globals else ''
-            aux = '\n\t'.join([g.text + ' = ' + f'(starting_{g.text} -> pre {g.text});' for (g, ty) in self.__globals if ty != ('MapAddr', 'int')]) if self.__globals else ''
+            aux = '\n\t'.join([g.text + ' = ' + f'(starting_{g.text} -> pre {g.text});' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['block_num']]) if self.__globals else ''
             same += '\n\t' + (aux if aux else '')
             aux = '\n\t'.join([g.text + f'_{ag} = ' + f'(starting_{g.text}_{ag} -> pre {g.text}_{ag});' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
             same += '\n\t' + (aux if aux else '')
@@ -183,7 +186,8 @@ class Kind2Visitor(TxScriptVisitor):
         all_props = '\n'.join([prop for prop in props])
         res = f'''
 type functions = enum {{ dummy, {functions} }};
-node {ctx.name.text.lower()} ({contract_args}) returns();
+type address = enum {{ a1, a2 }};
+node {ctx.name.text} ({contract_args}) returns();
 (*@contract
     assume starting_w >= 0;
     {contract_assumptions}
@@ -232,6 +236,23 @@ tel
         self.__prop_name = ctx.name.text
         self.__prop_names.add(self.__prop_name)
         return self.visit(ctx.phi)
+    
+    # Visit a parse tree produced by TxScriptParser#rules.
+    def visitRules(self, ctx:TxScriptParser.RulesContext):
+        props = []
+        for prop in ctx.ruleExpr():
+            props.append(self.visit(prop))
+        return props
+
+
+    # Visit a parse tree produced by TxScriptParser#ruleExpr.
+    def visitRuleExpr(self, ctx:TxScriptParser.RuleExprContext):
+        self.__prop_name = ctx.name.text
+        self.__prop_names.add(self.__prop_name)
+        self.__id = 1
+        self.__vars = {}
+        phi = self.visit(ctx.phi)
+        return f'--%PROPERTY \n(\ncontract_not_constructed or \n({phi})\n);\n'
 
 
     # Visit a parse tree produced by TxScriptParser#hashDecl.
@@ -524,19 +545,19 @@ tel
         if not self.__visit_properties:
             skip = f'\n\tw = {self.__t_curr_w};'
             skip += '\n\t' + '\n\t'.join([f'aw_{i} = {self.__t_curr_a[i]};' for i in range(1, self.__A+1)])
-            skip += '\n\t' + '\n\t'.join([g.text + ' = ' + (f'(starting_{g.text} -> pre {g.text});' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_'+str(self.__globals_index[g.text]+self.__globals_modifier))+';' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text != 'err']) if self.__globals else ''        
+            skip += '\n\t' + '\n\t'.join([g.text + ' = ' + (f'(starting_{g.text} -> pre {g.text});' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_'+str(self.__globals_index[g.text]+self.__globals_modifier))+';' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['err', 'block_num']]) if self.__globals else ''        
             skip += '\n\t' + '\n\t'.join([g.text + f'_{ag}' + ' = ' + (f'(starting_{g.text}_{ag} -> pre {g.text}_{ag});' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_' + str(ag) + '_'+str(self.__globals_index[g.text]+self.__globals_modifier))+';' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''        
             # skip += '\n\t' + ('contract_not_constructed = false;' if self.__prefix == 'constructor' else 'contract_not_constructed = (true -> pre contract_not_constructed);')
             # body += skip
             # same = '\n\tcontract_not_constructed = true;' if self.__prefix == 'constructor' else '\n\tcontract_not_constructed = (true -> pre contract_not_constructed);'
             same = f'\n\tw = (starting_w -> pre w);'
             same += '\n\t' + '\n\t'.join([f'aw_{i} = (starting_aw_{i} -> pre aw_{i});' for i in range(1, self.__A+1)])
-            same += '\n\t' + '\n\t'.join([g.text + ' = ' + f'(starting_{g.text} -> pre {g.text});' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text != 'err']) if self.__globals else ''
+            same += '\n\t' + '\n\t'.join([g.text + ' = ' + f'(starting_{g.text} -> pre {g.text});' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['err', 'block_num']]) if self.__globals else ''
             same += '\n\t' + '\n\t'.join([g.text + f'_{ag}' + ' = ' + f'(starting_{g.text}_{ag} -> pre {g.text}_{ag});' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
         else:
             skip = f' \n\tw_nx = {self.__t_curr_w}'
             skip += ' and \n\t' + '\n\t and '.join([f'aw_{i}_nx = {self.__t_curr_a[i]}' for i in range(1, self.__A+1)])
-            aux = '\n\t and '.join([g.text + '_nx = ' + (f'{g.text}' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_'+str(self.__globals_index[g.text]+self.__globals_modifier))+'_nx' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text != 'err']) if self.__globals else ''        
+            aux = '\n\t and '.join([g.text + '_nx = ' + (f'{g.text}' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_'+str(self.__globals_index[g.text]+self.__globals_modifier))+'_nx' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['err', 'block_num']]) if self.__globals else ''        
             skip += ' and \n\t' + (aux if aux else 'true')
             aux = '\n\t and '.join([g.text + '_' + str(ag) + '_nx = ' + (f'{g.text}_{ag}' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_' + str(ag) +'_nx' + '_' + str(self.__globals_index[g.text]+self.__globals_modifier)) for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''        
             skip += ' and \n\t' + (aux if aux else 'true')
@@ -545,20 +566,26 @@ tel
             # body += skip
             same = f'\n\tw_nx = w'
             same += ' and \n\t' + '\n\t and '.join([f'aw_{i}_nx = aw_{i}' for i in range(1, self.__A+1)])
-            aux = '\n\t and '.join([g.text + '_nx = ' + f'{g.text}' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text != 'err']) if self.__globals else ''
+            aux = '\n\t and '.join([g.text + '_nx = ' + f'{g.text}' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['err', 'block_num']]) if self.__globals else ''
             same += ' and \n\t' + (aux if aux else 'true')
             aux = '\n\t and '.join([g.text + '_' + str(ag) + '_nx = ' + f'{g.text}_{ag}' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
             same += ' and \n\t' + (aux if aux else 'true')
         
         err = ('err_'+str(self.__globals_index['err']+self.__globals_modifier)) if (self.__globals_index['err']+self.__globals_modifier)>=0 else 'false'
         if self.__visit_properties:
+            same += ' and block_num_nx = any {block_num_tmp: int | block_num_tmp > block_num}'
+            skip += ' and block_num_nx = any {block_num_tmp: int | block_num_tmp > block_num}'
             if body.replace(' ', '').endswith('and'):
-                self.__functions_prop[self.__prefix] = f'{body} if ({err}_nx) then \n{same} else {skip}\n'
+                err1 = f'{err}_nx' if err != 'false' else 'false'
+                self.__functions_prop[self.__prefix] = f'{body} if ({err1}) then \n{same} else {skip}\n'
             else:
-                self.__functions_prop[self.__prefix] = f'{body} and if ({err}_nx) then \n{same} else {skip}\n'
+                err1 = f'{err}_nx' if err != 'false' else 'false'
+                self.__functions_prop[self.__prefix] = f'{body} and if ({err1}) then \n{same} else {skip}\n'
         else:
             same += '\n\tcontract_not_constructed = true;' if self.__prefix == 'constructor' else '\n\tcontract_not_constructed = (true -> pre contract_not_constructed);'
+            same += '\n\tblock_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};'
             skip += '\n\t' + ('contract_not_constructed = false;' if self.__prefix == 'constructor' else 'contract_not_constructed = (true -> pre contract_not_constructed);')
+            skip += '\n\tblock_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};'
             self.__functions[self.__prefix] = f'{body} if ({err}) then {same} else {skip}\nfi'
 
         # if self.__requires:
@@ -812,12 +839,18 @@ tel
             if gt == ('MapAddr', 'int'):
                 if backup_globals[g] < self.__globals_index[g]:
                     for ag in range(1, self.__A+1):
-                        tg_now = f'{g}_{backup_globals[g]}' if backup_globals[g] > 0 else f'starting_{g}_{ag}'
+                        if self.__visit_properties:
+                            tg_now = f'{g}_{backup_globals[g]}' if backup_globals[g] > 0 else f'{g}_{ag}'
+                        else:
+                            tg_now = f'{g}_{backup_globals[g]}' if backup_globals[g] > 0 else f'(starting_{g}_{ag} -> pre {g}_{ag})'
                         levelling_else_cmds += [f'{g}_{self.__globals_index[g]-1}_{ag} = {tg_now}_{ag}']
                     # levelling_else_cmds += f', t_{g}[{self.__globals_index[g]-1}]=={tg_now}'
             else:
                 if backup_globals[g] < self.__globals_index[g]:
-                    tg_now = f'{g}_{backup_globals[g]-1}' if backup_globals[g] > 0 else f'starting_{g}'
+                    if self.__visit_properties:
+                        tg_now = f'{g}_{backup_globals[g]-1}' if backup_globals[g] > 0 else (f'{g}' if g != 'err' else f'starting_{g}')
+                    else:
+                        tg_now = f'{g}_{backup_globals[g]-1}' if backup_globals[g] > 0 else (f'(starting_{g} -> pre {g})' if g != 'err' else f'starting_{g}')
                     levelling_else_cmds += [f'{g}_{self.__globals_index[g]-1} = {tg_now}'] #+ (';' if not self.__visit_properties else '')
         if self.__visit_properties:
             levelling_else_cmds = ' and '.join(levelling_else_cmds)
@@ -895,22 +928,34 @@ tel
             if gt == ('MapAddr', 'int'):
                 if if_globals_index[g] > self.__globals_index[g]:
                     for ag in range(1, self.__A+1):
-                        tg_now = f'{g}_{self.__globals_index[g]}_{ag}' if self.__globals_index[g] > 0 else f'starting_{g}'
+                        if self.__visit_properties:
+                            tg_now = f'{g}_{self.__globals_index[g]}_{ag}' if self.__globals_index[g] > 0 else f'{g}_{ag}'
+                        else:
+                            tg_now = f'{g}_{self.__globals_index[g]}_{ag}' if self.__globals_index[g] > 0 else f'(starting_{g}_{ag} -> pre {g}_{ag})'
                         # levelling_else_cmds += f', t_{g}[{if_globals_index[g]-1}]=={tg_now}'
                         levelling_else_cmds += [f'{g}_{if_globals_index[g]-1}_{ag} = {tg_now}']
                     self.__globals_index[g] = if_globals_index[g]
                 elif if_globals_index[g] < self.__globals_index[g]:
                     for ag in range(1, self.__A+1):
-                        tg_now = f'{g}_{if_globals_index[g]}_{ag}' if if_globals_index[g] > 0 else f'starting_{g}'
+                        if self.__visit_properties:
+                            tg_now = f'{g}_{if_globals_index[g]}_{ag}' if if_globals_index[g] > 0 else f'{g}_{ag}'
+                        else:
+                            tg_now = f'{g}_{if_globals_index[g]}_{ag}' if if_globals_index[g] > 0 else f'(starting_{g}_{ag} -> pre {g}_{ag})'
                         # levelling_if_cmds += f', {tg_now}==t_{g}[{self.__globals_index[g]-1}]'
                         levelling_if_cmds += [f'{tg_now}_{ag} = {g}[{self.__globals_index[g]-1}][j] for j in range(A+1)])']
             else:
                 if if_globals_index[g] > self.__globals_index[g]:
-                    tg_now = f'{g}_{self.__globals_index[g]}' if self.__globals_index[g] > 0 else f'starting_{g}'
+                    if self.__visit_properties:
+                        tg_now = f'{g}_{self.__globals_index[g]}' if self.__globals_index[g] > 0 else (f'{g}' if g != 'err' else f'starting_{g}')
+                    else:
+                        tg_now = f'{g}_{self.__globals_index[g]}' if self.__globals_index[g] > 0 else (f'(starting_{g} -> pre {g})' if g != 'err' else f'starting_{g}')
                     levelling_else_cmds += [f'{g}_{if_globals_index[g]-1}={tg_now}']
                     self.__globals_index[g] = if_globals_index[g]
                 elif if_globals_index[g] < self.__globals_index[g]:
-                    tg_now = f'{g}_{if_globals_index[g]}' if if_globals_index[g] > 0 else f'starting_{g}'
+                    if self.__visit_properties:
+                        tg_now = f'{g}_{if_globals_index[g]}' if if_globals_index[g] > 0 else (f'{g}' if g != 'err' else f'starting_{g}')
+                    else:
+                        tg_now = f'{g}_{if_globals_index[g]}' if if_globals_index[g] > 0 else (f'(starting_{g} -> pre {g})' if g != 'err' else f'starting_{g}')
                     levelling_if_cmds += [f'{g}_{self.__globals_index[g]-1}={tg_now}']
         self.__add_last_cmd = backup_add
         if self.__visit_properties:
@@ -1201,7 +1246,8 @@ tel
                 contract += f'\t{self.__functions_prop[p]}\n'
             n_tabs += 1
             contract += 'else'
-            same = f'\n\tw_nx = w '
+            same = ' block_num_nx = any {block_num_tmp: int | block_num_tmp > block_num}'   
+            same += f' and \n\tw_nx = w '
             same += ' and \n\t' + '\n\tand '.join([f'aw_{i}_nx = aw_{i}' for i in range(1, self.__A+1)])
             # same += ' and \n\t' + '\n\tand '.join([g.text + '_nx = ' + f'{g.text}' for (g, _) in self.__globals]) if self.__globals else ''
             aux = '\n\t and '.join([g.text + '_nx = ' + f'{g.text}' for (g, ty) in self.__globals if ty != ('MapAddr', 'int')]) if self.__globals else ''
@@ -1375,7 +1421,7 @@ forall (xa_tx: int;)
             if name.replace('st.','') in self.__globals_index:              
                 # return name.replace('st.','') + i
                 if self.__globals_index[name.replace('st.','')]+self.__globals_modifier < 0:
-                    return name.replace('st.','')
+                    return name.replace('st.','') + '_nx'
                 else:
                     return name.replace('st.', '') + '_' + str(self.__globals_index[name.replace('st.','')]+self.__globals_modifier) + '_nx'
             if name == 'sender':
@@ -1391,4 +1437,192 @@ forall (xa_tx: int;)
     # Visit a parse tree produced by TxScriptParser#falseConstant.
     def visitFalseConstant(self, ctx:TxScriptParser.FalseConstantContext):
         return 'false'
+
+
+    # Visit a parse tree produced by TxScriptParser#andFormulaExpr.
+    def visitAndFormulaExpr(self, ctx:TxScriptParser.AndFormulaExprContext):
+        return '(' + self.visit(ctx.left) + ' and ' + self.visit(ctx.right) + ')'
+
+
+    # Visit a parse tree produced by TxScriptParser#forallFormulaExpr.
+    def visitForallFormulaExpr(self, ctx:TxScriptParser.ForallFormulaExprContext):
+        ty = self.visit(ctx.typenames)
+        vs = []
+        for var in ctx.variables.varFormulaExpr():
+            vs.append(var.child.text + '_tx:' + ty + ';')
+            self.__vars[var.child.text] = ty
+        return 'forall(' + ''.join(vs) + ')' + self.visit(ctx.child)
+        
+
+
+    # Visit a parse tree produced by TxScriptParser#existsFormulaExpr.
+    def visitExistsFormulaExpr(self, ctx:TxScriptParser.ExistsFormulaExprContext):
+        ty = self.visit(ctx.typenames)
+        vs = []
+        for var in ctx.variables.varFormulaExpr():
+            vs.append(var.child.text + '_tx:' + ty + ';')
+            self.__vars[var.child.text] = ty
+        return 'exists(' + ''.join(vs) + ')' + self.visit(ctx.child)
+
+
+    # Visit a parse tree produced by TxScriptParser#exprFormulaExpr.
+    def visitExprFormulaExpr(self, ctx:TxScriptParser.ExprFormulaExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#notFormulaExpr.
+    def visitNotFormulaExpr(self, ctx:TxScriptParser.NotFormulaExprContext):
+        return 'not(' + self.visit(ctx.child) +')'
+
+
+    # Visit a parse tree produced by TxScriptParser#complexExprFormulaExpr.
+    def visitComplexExprFormulaExpr(self, ctx:TxScriptParser.ComplexExprFormulaExprContext):
+        id = self.__id
+        for k in self.__globals_index:
+            self.__globals_index[k] = 0
+        transition_vars = ''
+        transition_vars += f'xa_tx{id}: address; f_tx{id}: functions; ' + ' '.join(['{a}_tx{id}: {t};'.format(id=id, a=self.__args_map[a][0], t=self.__args_map[a][1]).replace('address', 'int') for a in self.__args_map if self.__args_map[a][1] != 'hash'])
+        transition_vars += f' xn_tx{id}: int;'
+        contract_globals = []
+        contract_globals += [f'w_nx{id}: int;']
+        contract_globals += [f'w_{i}_nx{id}: int;' for i in range(self.__max_nesting + 1)]
+        contract_globals += [f'aw_{ag}_nx{id}: int;' for ag in range(1, self.__A+1)]
+        contract_globals += [f'aw_{ag}_{i}_nx{id}: int;' for ag in range(1, self.__A+1) for i in range(self.__max_nesting + 1)]
+        for (g_var,g_type) in self.__globals:
+            if g_type == ('MapAddr', 'int'):
+                contract_globals += [f'{g_var.text}_{ag}_nx{id} : int;' for ag in range(1, self.__A+1)]
+                contract_globals += [f'{g_var.text}_{ag}_nx{id}_{i} : int;' for i in range(self.__globals_index_max[g_var.text]) for ag in range(1, self.__A+1)] 
+            else:
+                if g_type == 'Address' or g_type == 'Hash' or g_type == 'Secret':
+                    g_type = 'int'
+                contract_globals += [f'{g_var.text}_nx{id} : {g_type};']
+                contract_globals += [f'{g_var.text}_{i}_nx{id} : {g_type};' for i in range(self.__globals_index_max[g_var.text] + (1 if g_var.text != 'err' else 2))]      
+        next_state_vars = ' '.join(contract_globals)
+        self.__id += 1
+        condition = self.visit(ctx.child)
+        condition = condition.replace('_nx', f'_nx{id}')
+        self.__id -= 1
+        self.visit(self.__ctx)
+        fname = f'{ctx.fname.text}_tx' if ctx.fname.text in self.__vars else f'{ctx.fname.text}_func'
+        contract = f'(xa_tx{id} = {self.visit(ctx.expr)}_tx and f_tx{id} = {fname} and xn_tx{id} = {self.visit(ctx.value)}) and \n'
+        n_tabs = 0
+        keys = list(self.__proc_args.keys())
+        keys.append('dummy')
+        if 'constructor' in keys: keys.remove('constructor')
+        if keys:
+            for p in keys[:-1]:
+                if p == keys[0]:
+                    cmd = 'if'
+                else:
+                    cmd = 'else if'
+                contract += '\t'*n_tabs + cmd + f' f_tx{id} = ' + p + ' then\n'
+                n_tabs += 1
+                contract += f'\t{self.__functions_prop[p]}\n'.replace('_nx', f'_nx{id}').replace('_tx', f'_tx{id}')
+            n_tabs += 1
+            contract += 'else'
+            same = f' block_num_nx{id} = any '+'{block_num_tmp: int | block_num_tmp > block_num}'   
+            same += f' and \n\tw_nx{id} = w '
+            same += ' and \n\t' + '\n\tand '.join([f'aw_{i}_nx{id} = aw_{i}' for i in range(1, self.__A+1)])
+            # same += ' and \n\t' + '\n\tand '.join([g.text + '_nx = ' + f'{g.text}' for (g, _) in self.__globals]) if self.__globals else ''
+            aux = '\n\t and '.join([g.text + f'_nx{id} = ' + f'{g.text}' for (g, ty) in self.__globals if ty != ('MapAddr', 'int')]) if self.__globals else ''
+            same += ' and \n\t' + (aux if aux else 'true')
+            aux = '\n\t and '.join([g.text + '_' + str(ag) + f'_nx{id} = ' + f'{g.text}_{ag}' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
+            same += ' and \n\t' + (aux if aux else 'true')
+            contract += f'{same}\n'
+        contracts = [contract]
+        contracts = ' and '.join(f'({c})' for c in contracts)
+        pi = f'''
+    exists (
+        {transition_vars}  /* Transition vars */
+        {next_state_vars} /* Next state vars */
+    )
+    (   /* condition */
+        {condition}
+        and
+        (
+            {contracts}
+        )
+    )'''
+        print(pi)
+        return pi
+        # if self.visit(ctx.expr) != 'Address':
+        #     raise TypeError(ctx, f'{ctx.expr} needs to have type address')
+        # if ctx.fname.text+'_func' not in self.__function_args_types:
+        #     raise TypeError(ctx, f'{ctx.fname.text} does not exist')
+        # if self.visit(ctx.value) != 'Int':
+        #     raise TypeError(ctx, f'{ctx.value} needs to have integer type')
+        # index = 0
+        # for arg in ctx.args.argFormulaExpr():
+        #     ty = self.visit(arg.child)
+        #     if ty != self.__function_args_types[self.__prefix][index]:
+        #         raise TypeError(ctx, f'argument {arg} should be {self.__function_args_types[self.__prefix][index]}, as expected by function {self.__prefix}, instead is {ty}')
+        #     index += 1
+        # self.__old += 1
+        # self.visit(ctx.child)
+
+
+    # Visit a parse tree produced by TxScriptParser#orFormulaExpr.
+    def visitOrFormulaExpr(self, ctx:TxScriptParser.OrFormulaExprContext):
+        return '(' + self.visit(ctx.left) + ' or ' + self.visit(ctx.right) + ')'
+
+
+    # Visit a parse tree produced by TxScriptParser#impliesFormulaExpr.
+    def visitImpliesFormulaExpr(self, ctx:TxScriptParser.ImpliesFormulaExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#groupFormulaExpr.
+    def visitGroupFormulaExpr(self, ctx:TxScriptParser.GroupFormulaExprContext):
+        return '(' + self.visit(ctx.child) + ')'
+
+
+    # Visit a parse tree produced by TxScriptParser#typeExpr.
+    def visitTypeExpr(self, ctx:TxScriptParser.TypeExprContext):
+        return self.visitChildren(ctx)
     
+    # Visit a parse tree produced by TxScriptParser#typeAddress.
+    def visitTypeAddress(self, ctx:TxScriptParser.TypeAddressContext):
+        return 'address'
+
+
+    def visitTypeInt(self, ctx:TxScriptParser.TypeIntContext):
+        return 'int'
+
+
+    # Visit a parse tree produced by TxScriptParser#typeBool.
+    def visitTypeBool(self, ctx:TxScriptParser.TypeBoolContext):
+        return 'bool'
+
+
+    # Visit a parse tree produced by TxScriptParser#typeMethod.
+    def visitTypeMethod(self, ctx:TxScriptParser.TypeMethodContext):
+        return 'functions'
+
+
+    # Visit a parse tree produced by TxScriptParser#typeCallDataArgs.
+    def visitTypeCallDataArgs(self, ctx:TxScriptParser.TypeCallDataArgsContext):
+        return 'calldataargs'
+
+
+    # Visit a parse tree produced by TxScriptParser#varsFormulaExpr.
+    def visitVarsFormulaExpr(self, ctx:TxScriptParser.VarsFormulaExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#varFormulaExpr.
+    def visitVarFormulaExpr(self, ctx:TxScriptParser.VarFormulaExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#argsFormulaExpr.
+    def visitArgsFormulaExpr(self, ctx:TxScriptParser.ArgsFormulaExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#argFormulaExpr.
+    def visitArgFormulaExpr(self, ctx:TxScriptParser.ArgFormulaExprContext):
+        return self.visitChildren(ctx)
+    
+    # Visit a parse tree produced by TxScriptParser#oldExpr.
+    def visitOldExpr(self, ctx:TxScriptParser.OldExprContext):
+        return self.visitChildren(ctx)

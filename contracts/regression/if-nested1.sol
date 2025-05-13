@@ -1,5 +1,6 @@
 contract IfNested1 {
   int val;
+  address pippo;
 
   constructor() payable {
     require(msg.value>0);
@@ -30,7 +31,7 @@ property tx1_nonliquid {
       ->
       Exists tx [1, xa]
       [
-        ((<tx>balance[xa] > balance[xa] && <tx>val >= 1))
+        ((<tx>balance[pippo] > balance[xa] && <tx>val >= 1))
       ]
     ]
 }

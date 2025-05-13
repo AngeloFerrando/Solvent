@@ -9,16 +9,11 @@ contract Constructor1 {
   }
 }
 
-
-// liquid
-property liquidity1_nonliquid {
-    Forall xa
-    [
-        true
-        ->
-      Exists tx [1, xa]
-      [
-        ((<tx>balance[xa] > balance[xa]))
-      ]
-    ]
+rule Paynotrevert {
+  forall a : address .
+  exists v : int . 
+    <a : Constructor1 . pay(v) $ 0> !lastReverted
 }
+
+
+

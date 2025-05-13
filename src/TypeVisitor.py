@@ -20,6 +20,9 @@ class TypeVisitor(TxScriptVisitor):
         self.__prop_name = ''
         self.__prop_names = set()
         self.__args_map = {}
+        self.__old = 0
+        self.__function_args_types = {}
+        self.__vars = {}
 
     # Visit a parse tree produced by TxScriptParser#contractExpr.
     def visitContractExpr(self, ctx:TxScriptParser.ContractExprContext):
@@ -125,6 +128,7 @@ class TypeVisitor(TxScriptVisitor):
 
     # Visit a parse tree produced by TxScriptParser#funDecl.
     def visitFun(self, ctx):
+        self.__function_args_types[self.__prefix] = []
         self.visit(ctx.args)
         self.visit(ctx.cmds)
 
@@ -139,6 +143,7 @@ class TypeVisitor(TxScriptVisitor):
             else:
                 type = ('MapAddr', 'Int')
             self.__args_map[name] = type
+            self.__function_args_types[self.__prefix].append(type)
 
 
     # Visit a parse tree produced by TxScriptParser#sendCmd.
@@ -177,6 +182,8 @@ class TypeVisitor(TxScriptVisitor):
             raise TypeError(ctx, f'Assignment requires the same types ({t_left} != {t_right})')
 
     def get_type(self, ctx, var):
+        if var == 'lastReverted':
+            return 'Bool'
         var = var.replace('app_tx_st.', '').replace('st.', '')
         var = var.replace('<tx>st.', '').replace('st.', '')
         if '.balance' in var:
@@ -199,11 +206,13 @@ class TypeVisitor(TxScriptVisitor):
             elif var == 'app_tx_st.balance' or var == '<tx>st.balance' or var == 'st.balance' or var == 'balance':
                 t_var = 'Int'
             elif var == 'block.number':
-                return 'Int'
+                t_var = 'Int'
             if var == 'msg.value' or var == 'value':
-                return 'Int'
+                t_var = 'Int'
             if var == 'msg.sender' or var == 'sender' or var == 'xa':
-                return 'Address'
+                t_var = 'Address'
+            if var in self.__vars:
+                t_var = self.__vars[var]
         if not t_var:
             raise TypeError(ctx, f'{var} has not been defined in the contract')
         return t_var
@@ -434,3 +443,144 @@ class TypeVisitor(TxScriptVisitor):
     def visitFalseConstant(self, ctx:TxScriptParser.FalseConstantContext):
         return 'Bool'
     
+    # Visit a parse tree produced by TxScriptParser#rules.
+    def visitRules(self, ctx:TxScriptParser.RulesContext):
+        self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#ruleExpr.
+    def visitRuleExpr(self, ctx:TxScriptParser.RuleExprContext):
+        self.__old = 0
+        self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#andFormulaExpr.
+    def visitAndFormulaExpr(self, ctx:TxScriptParser.AndFormulaExprContext):
+        t_left = self.visit(ctx.left)
+        t_right = self.visit(ctx.right)
+        if t_left != 'Bool' or t_right != 'Bool':
+            raise TypeError(ctx, f'And operator requires both operands to be boolean ({t_left} and {t_right} are given)')
+        return 'Bool'
+
+
+    # Visit a parse tree produced by TxScriptParser#forallFormulaExpr.
+    def visitForallFormulaExpr(self, ctx:TxScriptParser.ForallFormulaExprContext):
+        for var in ctx.variables.varFormulaExpr():
+            self.__vars[var.child.text] = self.visit(ctx.typenames)
+        self.visit(ctx.child)
+
+
+    # Visit a parse tree produced by TxScriptParser#existsFormulaExpr.
+    def visitExistsFormulaExpr(self, ctx:TxScriptParser.ExistsFormulaExprContext):
+        for var in ctx.variables.varFormulaExpr():
+            self.__vars[var.child.text] = self.visit(ctx.typenames)
+        self.visit(ctx.child)
+
+
+    # Visit a parse tree produced by TxScriptParser#exprFormulaExpr.
+    def visitExprFormulaExpr(self, ctx:TxScriptParser.ExprFormulaExprContext):
+        return self.visit(ctx.expr)
+
+
+    # Visit a parse tree produced by TxScriptParser#notFormulaExpr.
+    def visitNotFormulaExpr(self, ctx:TxScriptParser.NotFormulaExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#complexExprFormulaExpr.
+    def visitComplexExprFormulaExpr(self, ctx:TxScriptParser.ComplexExprFormulaExprContext):
+        if self.visit(ctx.expr) != 'Address':
+            raise TypeError(ctx, f'{ctx.expr} needs to have type address')
+        if ctx.fname.text+'_func' not in self.__function_args_types and ctx.fname.text not in self.__vars:
+            raise TypeError(ctx, f'{ctx.fname.text} does not exist')
+        if self.visit(ctx.value) != 'Int':
+            raise TypeError(ctx, f'{ctx.value} needs to have integer type')
+        index = 0
+        for arg in ctx.args.argFormulaExpr():
+            ty = self.visit(arg.child)
+            if ty != self.__function_args_types[self.__prefix][index]:
+                raise TypeError(ctx, f'argument {arg} should be {self.__function_args_types[self.__prefix][index]}, as expected by function {self.__prefix}, instead is {ty}')
+            index += 1
+        self.__old += 1
+        self.visit(ctx.child)
+
+
+    # Visit a parse tree produced by TxScriptParser#orFormulaExpr.
+    def visitOrFormulaExpr(self, ctx:TxScriptParser.OrFormulaExprContext):
+        t_left = self.visit(ctx.left)
+        t_right = self.visit(ctx.right)
+        if t_left != 'Bool' or t_right != 'Bool':
+            raise TypeError(ctx, f'And operator requires both operands to be boolean ({t_left} and {t_right} are given)')
+        return 'Bool'
+
+
+    # Visit a parse tree produced by TxScriptParser#impliesFormulaExpr.
+    def visitImpliesFormulaExpr(self, ctx:TxScriptParser.ImpliesFormulaExprContext):
+        t_left = self.visit(ctx.left)
+        t_right = self.visit(ctx.right)
+        if t_left != 'Bool' or t_right != 'Bool':
+            raise TypeError(ctx, f'And operator requires both operands to be boolean ({t_left} and {t_right} are given)')
+        return 'Bool'
+
+
+    # Visit a parse tree produced by TxScriptParser#groupFormulaExpr.
+    def visitGroupFormulaExpr(self, ctx:TxScriptParser.GroupFormulaExprContext):
+        return self.visit(ctx.child)
+
+
+    # # Visit a parse tree produced by TxScriptParser#typeExpr.
+    # def visitTypeExpr(self, ctx:TxScriptParser.TypeExprContext):
+    #     return self.get_type(ctx, ctx.)
+
+
+    # Visit a parse tree produced by TxScriptParser#varsFormulaExpr.
+    def visitVarsFormulaExpr(self, ctx:TxScriptParser.VarsFormulaExprContext):
+        return self.visitChildren(ctx)
+    
+    # Visit a parse tree produced by TxScriptParser#typeAddress.
+    def visitTypeAddress(self, ctx:TxScriptParser.TypeAddressContext):
+        return 'Address'
+
+
+    # Visit a parse tree produced by TxScriptParser#typeInt.
+    def visitTypeInt(self, ctx:TxScriptParser.TypeIntContext):
+        return 'Int'
+
+
+    # Visit a parse tree produced by TxScriptParser#typeBool.
+    def visitTypeBool(self, ctx:TxScriptParser.TypeBoolContext):
+        return 'Bool'
+
+
+    # Visit a parse tree produced by TxScriptParser#typeMethod.
+    def visitTypeMethod(self, ctx:TxScriptParser.TypeMethodContext):
+        return 'Method'
+
+
+    # Visit a parse tree produced by TxScriptParser#typeCallDataArgs.
+    def visitTypeCallDataArgs(self, ctx:TxScriptParser.TypeCallDataArgsContext):
+        return 'CallDataArgs'
+
+
+    # # Visit a parse tree produced by TxScriptParser#varFormulaExpr.
+    # def visitVarFormulaExpr(self, ctx:TxScriptParser.VarFormulaExprContext):
+    #     return self.visitChildren(ctx)
+
+
+    # # Visit a parse tree produced by TxScriptParser#argsFormulaExpr.
+    # def visitArgsFormulaExpr(self, ctx:TxScriptParser.ArgsFormulaExprContext):
+    #     types = []
+    #     for arg in ctx.argFormulaExpr():
+    #         types.append(self.visit(arg.child))
+    #     return types
+
+
+    # Visit a parse tree produced by TxScriptParser#argFormulaExpr.
+    def visitArgFormulaExpr(self, ctx:TxScriptParser.ArgFormulaExprContext):
+        return self.visit(ctx.child)
+    
+    # Visit a parse tree produced by TxScriptParser#oldExpr.
+    def visitOldExpr(self, ctx:TxScriptParser.OldExprContext):
+        if self.__old <= 0:
+            raise TypeError(ctx, 'old(_) can only be used when nested inside a <> expression') 
+        return self.visit(ctx.child)
