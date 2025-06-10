@@ -87,7 +87,7 @@ class Kind2Visitor(TxScriptVisitor):
         functions = ','.join([f'{p}' for p in self.__proc if p != 'constructor'])
         contract_args = ['{a}:{t}'.format(a=self.__args_map[a][0], t=self.__args_map[a][1]).replace('address', 'int') for a in self.__args_map if self.__args_map[a][1] != 'hash']
         contract_args = ';'.join(
-            ['xa:int', 'xn:int', 'f:functions'] + 
+            ['xa:address', 'xn:int', 'f:functions'] + 
             contract_args + 
             ['starting_w: int', 'starting_aw_1: int', 'starting_aw_2: int']) 
         contract_assumptions = '\n'.join([f'assume starting_aw_{ag} >= 0;' for ag in range(1, self.__A+1)])
@@ -199,7 +199,7 @@ let
 tel
         '''.replace('skip and', 'true and').replace('and skip', 'and true').replace('skip', '').replace(';;', ';')
         
-        return res 
+        return res.replace('_0_nx', '') 
 
 
     # Visit a parse tree produced by TxScriptParser#constFieldDecl.
@@ -642,7 +642,7 @@ tel
             if ag == self.__A:
                 res += 'e\n'
             else:
-                res += f'if ({sender} = {ag})'
+                res += f'if ({sender} = a{ag})'
                 res += ' then\n'
             for ag1 in range(1, self.__A+1):
                 if ag == ag1:
@@ -1338,23 +1338,23 @@ forall (xa_tx: int;)
                 ag = index.replace('_q', '')
                 if ag == 'xa':
                     self.__prop_nested_i.add(ag+'_q')#(ag+'[i]')
-                    return 'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
+                    return 'aw_{ag}' + i + '_nx' #f'aw{i}[{ag}[i]]'
                 else:
                     self.__prop_nested_i.add(ag)#(ag+'[i]')
-                    return 'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
+                    return 'aw_{ag}' + i + '_nx' #f'aw{i}[{ag}[i]]'
             if name.replace('st.','') in self.__args_map:
-                return self.__args_map[ctx.v.text][0]  
+                return self.__args_map[ctx.v.text][0] + '_nx'
             if name.replace('st.','') in self.__globals_index:  
                 ag = index.replace('_q', '')
                 if ag == 'xa':
                     self.__prop_nested_i.add(ag+'_q')#(ag+'[i]')
-                    return name.replace('st.','') + f'_{ag}' + i
+                    return name.replace('st.','') + f'_{ag}' + i + '_nx'
                 else:
                     # if '[i]' not in ag:
                     #     ag = ag+'[i]'
                     self.__prop_nested_i.add(ag)#(ag+'[i]')
-                    return name.replace('st.','') + '_{ag}' + i
-            return name.replace('st.', '')
+                    return name.replace('st.','') + '_{ag}' + i + '_nx'
+            return name.replace('st.', '') + ('_tx' if '_tx' not in name else '')
 
 
     # Visit a parse tree produced by TxScriptParser#strConstant.
@@ -1426,7 +1426,7 @@ forall (xa_tx: int;)
                     return name.replace('st.', '') + '_' + str(self.__globals_index[name.replace('st.','')]+self.__globals_modifier) + '_nx'
             if name == 'sender':
                 return name + '_tx'
-            return name.replace('st.', '')
+            return name.replace('st.', '') + ('_tx' if '_tx' not in name else '')
 
 
     # Visit a parse tree produced by TxScriptParser#trueConstant.
@@ -1475,6 +1475,15 @@ forall (xa_tx: int;)
         return 'not(' + self.visit(ctx.child) +')'
 
 
+    # Visit a parse tree produced by TxScriptParser#oldExpr.
+    def visitOldExpr(self, ctx:TxScriptParser.OldExprContext):
+        value = self.visit(ctx.child)
+        # if not bool(re.search(r'_[0-9]+$', value)):
+        #     value += '_' + str(self.__id)
+        value = value.replace('tx', 'oldtx').replace('nx', 'oldnx')
+        return value
+    
+
     # Visit a parse tree produced by TxScriptParser#complexExprFormulaExpr.
     def visitComplexExprFormulaExpr(self, ctx:TxScriptParser.ComplexExprFormulaExprContext):
         id = self.__id
@@ -1500,11 +1509,22 @@ forall (xa_tx: int;)
         next_state_vars = ' '.join(contract_globals)
         self.__id += 1
         condition = self.visit(ctx.child)
-        condition = condition.replace('_nx', f'_nx{id}')
         self.__id -= 1
+        if 'exists' not in condition and 'forall' not in condition:
+            if '_{ag}' in condition:
+                aux = []
+                for a in range(1, self.__A+1):
+                    c = condition.format(ag=a)
+                    aux.append(f'(not(xa_tx{id} = a{a}) or {c})')
+                condition = ' and '.join(aux)
+            condition = condition.replace('_nx', f'_nx{id}')
+            if condition.count('old') < id:
+                condition = condition.replace('old', '').replace('nx', 'nx' + str(id - condition.count('old')))
+            else:
+                condition = condition.replace('_oldnx', '').replace('oldnx', '').replace('_old', '').replace('old', '')
         self.visit(self.__ctx)
         fname = f'{ctx.fname.text}_tx' if ctx.fname.text in self.__vars else f'{ctx.fname.text}_func'
-        contract = f'(xa_tx{id} = {self.visit(ctx.expr)}_tx and f_tx{id} = {fname} and xn_tx{id} = {self.visit(ctx.value)}) and \n'
+        contract = f'(xa_tx{id} = {self.visit(ctx.expr)} and f_tx{id} = {fname} and xn_tx{id} = {self.visit(ctx.value)}) and \n'
         n_tabs = 0
         keys = list(self.__proc_args.keys())
         keys.append('dummy')
@@ -1524,10 +1544,16 @@ forall (xa_tx: int;)
             same += f' and \n\tw_nx{id} = w '
             same += ' and \n\t' + '\n\tand '.join([f'aw_{i}_nx{id} = aw_{i}' for i in range(1, self.__A+1)])
             # same += ' and \n\t' + '\n\tand '.join([g.text + '_nx = ' + f'{g.text}' for (g, _) in self.__globals]) if self.__globals else ''
-            aux = '\n\t and '.join([g.text + f'_nx{id} = ' + f'{g.text}' for (g, ty) in self.__globals if ty != ('MapAddr', 'int')]) if self.__globals else ''
-            same += ' and \n\t' + (aux if aux else 'true')
-            aux = '\n\t and '.join([g.text + '_' + str(ag) + f'_nx{id} = ' + f'{g.text}_{ag}' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
-            same += ' and \n\t' + (aux if aux else 'true')
+            if id <= 1:
+                aux = '\n\t and '.join([g.text + f'_nx{id} = ' + f'{g.text}' for (g, ty) in self.__globals if ty != ('MapAddr', 'int')]) if self.__globals else ''
+                same += ' and \n\t' + (aux if aux else 'true')
+                aux = '\n\t and '.join([g.text + '_' + str(ag) + f'_nx{id} = ' + f'{g.text}_{ag}' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
+                same += ' and \n\t' + (aux if aux else 'true')
+            else:
+                aux = '\n\t and '.join([g.text + f'_nx{id} = ' + f'{g.text}_nx{id-1}' for (g, ty) in self.__globals if ty != ('MapAddr', 'int')]) if self.__globals else ''
+                same += ' and \n\t' + (aux if aux else 'true')
+                aux = '\n\t and '.join([g.text + '_' + str(ag) + f'_nx{id} = ' + f'{g.text}_{ag}_nx{id-1}' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
+                same += ' and \n\t' + (aux if aux else 'true')
             contract += f'{same}\n'
         contracts = [contract]
         contracts = ' and '.join(f'({c})' for c in contracts)
@@ -1568,7 +1594,7 @@ forall (xa_tx: int;)
 
     # Visit a parse tree produced by TxScriptParser#impliesFormulaExpr.
     def visitImpliesFormulaExpr(self, ctx:TxScriptParser.ImpliesFormulaExprContext):
-        return self.visitChildren(ctx)
+        return '(not(' + self.visit(ctx.left) + ') or ' + self.visit(ctx.right) + ')'
 
 
     # Visit a parse tree produced by TxScriptParser#groupFormulaExpr.
@@ -1622,7 +1648,4 @@ forall (xa_tx: int;)
     # Visit a parse tree produced by TxScriptParser#argFormulaExpr.
     def visitArgFormulaExpr(self, ctx:TxScriptParser.ArgFormulaExprContext):
         return self.visitChildren(ctx)
-    
-    # Visit a parse tree produced by TxScriptParser#oldExpr.
-    def visitOldExpr(self, ctx:TxScriptParser.OldExprContext):
-        return self.visitChildren(ctx)
+   

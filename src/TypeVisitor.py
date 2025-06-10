@@ -467,14 +467,20 @@ class TypeVisitor(TxScriptVisitor):
     def visitForallFormulaExpr(self, ctx:TxScriptParser.ForallFormulaExprContext):
         for var in ctx.variables.varFormulaExpr():
             self.__vars[var.child.text] = self.visit(ctx.typenames)
-        self.visit(ctx.child)
+        t = self.visit(ctx.child)
+        if t != 'Bool':
+            raise TypeError('Forall requires boolean operand')
+        return 'Bool'
 
 
     # Visit a parse tree produced by TxScriptParser#existsFormulaExpr.
     def visitExistsFormulaExpr(self, ctx:TxScriptParser.ExistsFormulaExprContext):
         for var in ctx.variables.varFormulaExpr():
             self.__vars[var.child.text] = self.visit(ctx.typenames)
-        self.visit(ctx.child)
+        t = self.visit(ctx.child)
+        if t != 'Bool':
+            raise TypeError('Exists requires boolean operand')
+        return 'Bool'
 
 
     # Visit a parse tree produced by TxScriptParser#exprFormulaExpr.
@@ -502,7 +508,7 @@ class TypeVisitor(TxScriptVisitor):
                 raise TypeError(ctx, f'argument {arg} should be {self.__function_args_types[self.__prefix][index]}, as expected by function {self.__prefix}, instead is {ty}')
             index += 1
         self.__old += 1
-        self.visit(ctx.child)
+        return self.visit(ctx.child)
 
 
     # Visit a parse tree produced by TxScriptParser#orFormulaExpr.

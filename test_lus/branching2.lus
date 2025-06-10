@@ -91,10 +91,10 @@ contract_not_constructed or
         w_nx1: int; aw_1_nx1: int; aw_2_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; v_nx1 : int; v_0_nx1 : int; v_1_nx1 : int; /* Next state vars */
     )
     (   /* condition */
-        v_nx1 = 1
+        v_nx1 = 3
         and
         (
-            ((xa_tx1 = a_tx and f_tx1 = h_tx and xn_tx1 = 0) and 
+            ((xa_tx1 = a_tx and f_tx1 = f_func and xn_tx1 = 0) and 
 if f_tx1 = f_func then
 	
 v_0_nx1 = 1 and if (false) then 

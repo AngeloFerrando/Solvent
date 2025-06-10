@@ -1,5 +1,5 @@
 
-type functions = enum { dummy, g_func,f_func };
+type functions = enum { dummy, f_func,g_func };
 type address = enum { a1, a2 };
 node C (xa:int;xn:int;f:functions;starting_w: int;starting_aw_1: int;starting_aw_2: int) returns();
 (*@contract
@@ -85,7 +85,7 @@ fi
     --%PROPERTY 
 (
 contract_not_constructed or 
-(forall(a_tx:address;)exists(h_tx:functions;)
+(forall(a_tx:address;)((
     exists (
         xa_tx1: address; f_tx1: functions;  xn_tx1: int;  /* Transition vars */
         w_nx1: int; aw_1_nx1: int; aw_2_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; v_nx1 : int; v_0_nx1 : int; v_1_nx1 : int; /* Next state vars */
@@ -94,7 +94,7 @@ contract_not_constructed or
         v_nx1 = 1
         and
         (
-            ((xa_tx1 = a_tx and f_tx1 = h_tx and xn_tx1 = 0) and 
+            ((xa_tx1 = a_tx and f_tx1 = f_func and xn_tx1 = 0) and 
 if f_tx1 = f_func then
 	
 v_0_nx1 = 1 and if (false) then 
@@ -135,7 +135,57 @@ else block_num_nx1 = any {block_num_tmp: int | block_num_tmp > block_num} and
 	true
 )
         )
-    ))
+    )) and (
+    exists (
+        xa_tx1: address; f_tx1: functions;  xn_tx1: int;  /* Transition vars */
+        w_nx1: int; aw_1_nx1: int; aw_2_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; v_nx1 : int; v_0_nx1 : int; v_1_nx1 : int; /* Next state vars */
+    )
+    (   /* condition */
+        v_nx1 = 2
+        and
+        (
+            ((xa_tx1 = a_tx and f_tx1 = g_func and xn_tx1 = 0) and 
+if f_tx1 = f_func then
+	
+v_0_nx1 = 1 and if (false) then 
+
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	v_nx1 = v and 
+	true and block_num_nx1 = any {block_num_tmp: int | block_num_tmp > block_num} else  
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	v_nx1 = v_0_nx1 and 
+	true and block_num_nx1 = any {block_num_tmp: int | block_num_tmp > block_num}
+
+	else if f_tx1 = g_func then
+	
+v_0_nx1 = 2 and if (false) then 
+
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	v_nx1 = v and 
+	true and block_num_nx1 = any {block_num_tmp: int | block_num_tmp > block_num} else  
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	v_nx1 = v_0_nx1 and 
+	true and block_num_nx1 = any {block_num_tmp: int | block_num_tmp > block_num}
+
+else block_num_nx1 = any {block_num_tmp: int | block_num_tmp > block_num} and 
+	w_nx1 = w  and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	err_nx1 = err
+	 and block_num_nx1 = block_num
+	 and v_nx1 = v and 
+	true
+)
+        )
+    ))))
 );
 
 tel

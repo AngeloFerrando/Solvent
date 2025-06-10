@@ -10,31 +10,9 @@ contract C4 {
   }
 }
 
-// (WEAK SAT - WEAK UNSAT)
-// Can_Transactions_Arrive_Any_time=True: STRONG SAT
-// not liquid
-property liquidity1_nonliquid {
-    Forall xa
-    [
-      true
-        ->
-      Exists tx [1, xa]
-      [
-        ((<tx>balance[xa] == balance[xa]  + balance))
-      ]
-    ]
-}
-
-// STRONG UNSAT
-// liquid
-property liquidity2_liquid {
-    Forall xa
-    [
-      st.balance > 1
-        ->
-      Exists tx [1, xa]
-      [
-        ((<tx>balance[xa] == st.balance[xa]  + (st.balance - 1)))
-      ]
-    ]
+rule Liquidity1_nonliquid {
+  forall a : address .
+  exists v : int .   
+    << a : C4 . pay() $ v >>		
+      balance[a] == old(balance[a]) + 1
 }
