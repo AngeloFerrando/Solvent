@@ -1,0 +1,129 @@
+
+type functions = enum { dummy, pay_func };
+type address = enum { a1, a2 };
+node C4 (xa:address;xn:int;f:functions;pay_func_amount:int;starting_w: int;starting_aw_1: int;starting_aw_2: int) returns();
+(*@contract
+    assume starting_w >= 0;
+    assume starting_aw_1 >= 0;
+assume starting_aw_2 >= 0;
+*)
+var contract_not_constructed: bool;
+const starting_err : bool = false;
+const starting_block_num : int = 0;
+var w: int;
+var w_0: int;
+var aw_1: int;
+var aw_2: int;
+var aw_1_0: int;
+var aw_2_0: int;
+var err : bool;
+var err_0 : bool;
+var err_1 : bool;
+var block_num : int;
+let
+    if (true -> pre contract_not_constructed) then
+
+ if (false) then 
+	w = (starting_w -> pre w);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	
+	
+	contract_not_constructed = true;
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)}; else 
+	w = (starting_w -> pre w);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	
+	
+	contract_not_constructed = false;
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+fi
+elsif f = pay_func then
+	
+if (not(pay_func_amount<=((starting_w -> pre w)-1))) then err_0=true; else err_0=false; fi
+
+if (not(pay_func_amount >= 0 and pay_func_amount <= (starting_w -> pre w))) then err_1=true; else err_1=err_0; fi
+w_0 = (starting_w -> pre w) - pay_func_amount;
+if (xa = a1) then
+	aw_1_0 = (starting_aw_1 -> pre aw_1) + pay_func_amount;
+	aw_2_0 = (starting_aw_2 -> pre aw_2);
+else
+	aw_1_0 = (starting_aw_1 -> pre aw_1);
+	aw_2_0 = (starting_aw_2 -> pre aw_2) + pay_func_amount;
+fi
+ if (err_1) then 
+	w = (starting_w -> pre w);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	
+	
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)}; else 
+	w = w_0;
+	aw_1 = aw_1_0;
+	aw_2 = aw_2_0;
+	
+	
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+fi
+else
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+	w = (starting_w -> pre w);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	err = (starting_err -> pre err);
+	
+fi
+    --%PROPERTY 
+(
+contract_not_constructed or 
+(forall(a_tx:address;)exists(v_tx:int;)
+    exists (
+        xa_tx1: address; f_tx1: functions; pay_func_amount_tx1: int; xn_tx1: int;  /* Transition vars */
+        w_nx1: int; w1: int; aw_1_nx1: int; aw_2_nx1: int; aw_11: int; aw_21: int; err_nx1 : bool; err1 : bool; err_1_nx1 : bool; err_2_nx1 : bool; err_3_nx1 : bool; block_num_nx1 : int; block_num1 : int; /* Next state vars */
+    )
+    (   /* condition */
+        (not(xa_tx1 = a1) or aw_1_nx1 = (aw_1+1)) and (not(xa_tx1 = a2) or aw_2_nx1 = (aw_2+1))
+        and
+        (
+            ((xa_tx1 = a_tx and f_tx1 = pay_func and xn_tx1 = v_tx) and 
+if f_tx1 = pay_func then
+	
+(if (not(pay_func_amount_tx1<=(w-1))) then err1=true else err1=false)
+ and ((if (not(pay_func_amount_tx1 >= 0 and pay_func_amount_tx1 <= w)) then err_1_nx1=true else err_1_nx1=err1) 
+ and w1 = w - pay_func_amount_tx1 and
+if (xa_tx1 = a1) then
+	aw_11 = aw_1 + pay_func_amount_tx1 and
+	aw_21 = aw_2
+else
+	aw_11 = aw_1 and
+	aw_21 = aw_2 + pay_func_amount_tx1
+) and if (err_1_nx1) then 
+
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	true and 
+	true and block_num_nx1 = any {block_num_tmp: int | block_num_tmp > block_num} else  
+	w_nx1 = w1 and 
+	aw_1_nx1 = aw_11
+	 and aw_2_nx1 = aw_21 and 
+	true and 
+	true and block_num_nx1 = any {block_num_tmp: int | block_num_tmp > block_num}
+
+else block_num_nx1 = any {block_num_tmp: int | block_num_tmp > block_num} and 
+	w_nx1 = w  and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	err_nx1 = err
+	 and block_num_nx1 = block_num and 
+	true
+)
+        )
+    ))
+);
+
+tel
+        

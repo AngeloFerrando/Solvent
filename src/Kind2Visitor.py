@@ -573,8 +573,8 @@ tel
         
         err = ('err_'+str(self.__globals_index['err']+self.__globals_modifier)) if (self.__globals_index['err']+self.__globals_modifier)>=0 else 'false'
         if self.__visit_properties:
-            same += ' and block_num_nx = any {block_num_tmp: int | block_num_tmp > block_num}'
-            skip += ' and block_num_nx = any {block_num_tmp: int | block_num_tmp > block_num}'
+            same += ' and block_num_nx >= block_num' #= any {block_num_tmp: int | block_num_tmp > block_num}'
+            skip += ' and block_num_nx >= block_num' #any {block_num_tmp: int | block_num_tmp > block_num}'
             if body.replace(' ', '').endswith('and'):
                 err1 = f'{err}_nx' if err != 'false' else 'false'
                 self.__functions_prop[self.__prefix] = f'{body} if ({err1}) then \n{same} else {skip}\n'
@@ -1246,7 +1246,7 @@ tel
                 contract += f'\t{self.__functions_prop[p]}\n'
             n_tabs += 1
             contract += 'else'
-            same = ' block_num_nx = any {block_num_tmp: int | block_num_tmp > block_num}'   
+            same = ' block_num_nx >= block_num' #any {block_num_tmp: int | block_num_tmp > block_num}'   
             same += f' and \n\tw_nx = w '
             same += ' and \n\t' + '\n\tand '.join([f'aw_{i}_nx = aw_{i}' for i in range(1, self.__A+1)])
             # same += ' and \n\t' + '\n\tand '.join([g.text + '_nx = ' + f'{g.text}' for (g, _) in self.__globals]) if self.__globals else ''
@@ -1483,6 +1483,26 @@ forall (xa_tx: int;)
         value = value.replace('tx', 'oldtx').replace('nx', 'oldnx')
         return value
     
+    @staticmethod
+    def bump_nx_all(condition, id):
+        pid = f'_nx{id - 1}' if id > 1 else ''
+        # 1) find all the "base" names that have appeared with "_nx"
+        bases = set(re.findall(r'\b(\w+)_nx\b', condition))
+        # 2) for each of those bases, do the two replacements
+        for base in bases:
+            # a) bump the _nx suffix
+            condition = re.sub(
+                rf'\b{base}_nx\b',
+                f'{base}_nx{id}',
+                condition
+            )
+            # b) replace the bare base with base_nx
+            condition = re.sub(
+                rf'\b{base}\b',
+                f'{base}{pid}',
+                condition
+            )
+        return condition
 
     # Visit a parse tree produced by TxScriptParser#complexExprFormulaExpr.
     def visitComplexExprFormulaExpr(self, ctx:TxScriptParser.ComplexExprFormulaExprContext):
@@ -1517,7 +1537,8 @@ forall (xa_tx: int;)
                     c = condition.format(ag=a)
                     aux.append(f'(not(xa_tx{id} = a{a}) or {c})')
                 condition = ' and '.join(aux)
-            condition = condition.replace('_nx', f'_nx{id}')
+            # condition = condition.replace('_nx', f'_nx{id}')
+            condition = self.bump_nx_all(condition, id)
             if condition.count('old') < id:
                 condition = condition.replace('old', '').replace('nx', 'nx' + str(id - condition.count('old')))
             else:
@@ -1537,12 +1558,13 @@ forall (xa_tx: int;)
                     cmd = 'else if'
                 contract += '\t'*n_tabs + cmd + f' f_tx{id} = ' + p + ' then\n'
                 n_tabs += 1
-                contract += f'\t{self.__functions_prop[p]}\n'.replace('_nx', f'_nx{id}').replace('_tx', f'_tx{id}')
+                # contract += f'\t{self.__functions_prop[p]}\n'.replace('_nx', f'_nx{id}').replace('_tx', f'_tx{id}')
+                contract += self.bump_nx_all(self.__functions_prop[p], id).replace('block_num_nx1', 'block_num') + '\n'
             n_tabs += 1
             contract += 'else'
-            same = f' block_num_nx{id} = any '+'{block_num_tmp: int | block_num_tmp > block_num}'   
-            same += f' and \n\tw_nx{id} = w '
-            same += ' and \n\t' + '\n\tand '.join([f'aw_{i}_nx{id} = aw_{i}' for i in range(1, self.__A+1)])
+            same = f' block_num_nx{id} >= block_num' #= any '+'{block_num_tmp: int | block_num_tmp > block_num}'   
+            same += f' and \n\tw_nx{id} = w ' if id <= 1 else f' and \n\tw_nx{id} = w_nx{id-1} '
+            same += ' and \n\t' + '\n\tand '.join([f'aw_{i}_nx{id} = aw_{i}' if id <= 1 else f'aw_{i}_nx{id} = aw_{i}_nx{id-1}' for i in range(1, self.__A+1)])
             # same += ' and \n\t' + '\n\tand '.join([g.text + '_nx = ' + f'{g.text}' for (g, _) in self.__globals]) if self.__globals else ''
             if id <= 1:
                 aux = '\n\t and '.join([g.text + f'_nx{id} = ' + f'{g.text}' for (g, ty) in self.__globals if ty != ('MapAddr', 'int')]) if self.__globals else ''
@@ -1550,7 +1572,7 @@ forall (xa_tx: int;)
                 aux = '\n\t and '.join([g.text + '_' + str(ag) + f'_nx{id} = ' + f'{g.text}_{ag}' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
                 same += ' and \n\t' + (aux if aux else 'true')
             else:
-                aux = '\n\t and '.join([g.text + f'_nx{id} = ' + f'{g.text}_nx{id-1}' for (g, ty) in self.__globals if ty != ('MapAddr', 'int')]) if self.__globals else ''
+                aux = '\n\t and '.join([g.text + f'_nx{id} = ' + f'{g.text}_nx{id-1}' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text != 'block_num']) if self.__globals else ''
                 same += ' and \n\t' + (aux if aux else 'true')
                 aux = '\n\t and '.join([g.text + '_' + str(ag) + f'_nx{id} = ' + f'{g.text}_{ag}_nx{id-1}' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
                 same += ' and \n\t' + (aux if aux else 'true')
