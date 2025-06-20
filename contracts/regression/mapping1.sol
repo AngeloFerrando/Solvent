@@ -6,6 +6,7 @@ contract Mapping1 {
     }
 }  
 
+/*
 property liquid1 {
     Forall xa
       [
@@ -16,4 +17,12 @@ property liquid1 {
           (<tx>m[xa] == m[xa] + 1)
         ]
       ]
+}
+*/
+
+rule P1 {
+    forall a : address .
+    exists h : method .
+        << a : Mapping1 . h() $ 0 >> 
+            m[a] == m[a] + 1
 }
