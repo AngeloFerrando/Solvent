@@ -353,10 +353,10 @@ tel
         self.__requires = set()
         if not self.__visit_properties: 
             self.__requires.add('xn=0')
-            self.__requires.add('(' + ' or '.join([f'xa = {i}' for i in range(1, self.__A+1)]) + ')')
+            self.__requires.add('(' + ' or '.join([f'xa = a{i}' for i in range(1, self.__A+1)]) + ')')
         else:
             self.__requires.add('xn_tx=0')
-            self.__requires.add('(' + ' or '.join([f'xa_tx = {i}' for i in range(1, self.__A+1)]) + ')')
+            self.__requires.add('(' + ' or '.join([f'xa_tx = a{i}' for i in range(1, self.__A+1)]) + ')')
         return self.visitFun(ctx, '')
     
 
@@ -384,8 +384,8 @@ tel
         err1 = 'err' + '_' + str(self.__globals_index['err']-1) if self.__globals_index['err'] > 0 else 'false'
         self.__globals_index['err'] += 1
         if not self.__visit_properties: 
-            req1 = '(' + ' or '.join([f'xa = {i}' for i in range(1, self.__A+1)]) + ')'
-            req2 = '(' + ' and '.join([f'(not(xa = {i}) or (starting_aw_{i} -> pre aw_{i}) >= xn)' for i in range(1, self.__A+1)]) + ')'
+            req1 = '(' + ' or '.join([f'xa = a{i}' for i in range(1, self.__A+1)]) + ')'
+            req2 = '(' + ' and '.join([f'(not(xa = a{i}) or (starting_aw_{i} -> pre aw_{i}) >= xn)' for i in range(1, self.__A+1)]) + ')'
             req = f'if (not(xn >= 0 and {req1} and {req2})) then {err}=true; else {err}={err1}; fi\n'
             # self.__requires.add('xn >= 0')
             # self.__requires.add('(' + ' or '.join([f'xa = {i}' for i in range(1, self.__A+1)]) + ')')
@@ -436,8 +436,8 @@ tel
         err1 = 'err' + '_' + str(self.__globals_index['err']-1) if self.__globals_index['err'] > 0 else 'false'
         self.__globals_index['err'] += 1
         if not self.__visit_properties: 
-            req1 = '(' + ' or '.join([f'xa = {i}' for i in range(1, self.__A+1)]) + ')'
-            req2 = '(' + ' and '.join([f'(not(xa = {i}) or (starting_aw_{i} -> pre aw_{i}) >= xn)' for i in range(1, self.__A+1)]) + ')'
+            req1 = '(' + ' or '.join([f'xa = a{i}' for i in range(1, self.__A+1)]) + ')'
+            req2 = '(' + ' and '.join([f'(not(xa = a{i}) or (starting_aw_{i} -> pre aw_{i}) >= xn)' for i in range(1, self.__A+1)]) + ')'
             req = f'if (not(xn >= 0 and {req1} and {req2})) then {err}=true; else {err}={err1}; fi\n'
             # self.__requires.add('xn >= 0')
             # self.__requires.add('(' + ' or '.join([f'xa = {i}' for i in range(1, self.__A+1)]) + ')')
@@ -485,10 +485,10 @@ tel
         self.__requires = set()
         if not self.__visit_properties: 
             self.__requires.add('xn=0')
-            self.__requires.add('(' + ' or '.join([f'xa = {i}' for i in range(1, self.__A+1)]) + ')')
+            self.__requires.add('(' + ' or '.join([f'xa = a{i}' for i in range(1, self.__A+1)]) + ')')
         else:
             self.__requires.add('xn_tx=0')
-            self.__requires.add('(' + ' or '.join([f'xa_tx = {i}' for i in range(1, self.__A+1)]) + ')')
+            self.__requires.add('(' + ' or '.join([f'xa_tx = a{i}' for i in range(1, self.__A+1)]) + ')')
         return self.visitFun(ctx, '')
 
 
@@ -498,19 +498,20 @@ tel
         self.__add_last_cmd = True
         body = self.visit(ctx.cmds)
         if '_xa' in body:
-            new_body = 'if (xa = 1) then ' + ('(' if self.__visit_properties else '') + body.format(ag='xa').replace('_xa_tx', '_1_nx').replace('_xa', '_1') + (')' if self.__visit_properties else '')
+            tx = '_tx' if self.__visit_properties else ''
+            new_body = f'if (xa{tx} = a1) then ' + ('(' if self.__visit_properties else '') + body.format(ag='xa').replace('_xa_tx', '_1_nx').replace('_xa', '_1') + (')' if self.__visit_properties else '')
             for ag in range(2, self.__A+1):
                 if not self.__visit_properties:
                     if ag == self.__A:
                         new_body += ' else '
                     else:
-                        new_body += f' elsif (xa = {ag}) then '
+                        new_body += f' elsif (xa{tx} = {ag}) then '
                     new_body += body.format(ag='xa').replace('_xa_tx', f'_{ag}_nx').replace('_xa', f'_{ag}')
                 else:
                     if ag == self.__A:
                         new_body += ' else '
                     else:
-                        new_body += f' else if (xa = {ag}) then '
+                        new_body += f' else if (xa{tx} = a{ag}) then '
                     new_body += '(' + body.format(ag='xa').replace('_xa_tx', f'_{ag}_nx').replace('_xa', f'_{ag}') + ')'
             if not self.__visit_properties:
                 body = new_body + ' fi'
@@ -546,29 +547,26 @@ tel
             skip = f'\n\tw = {self.__t_curr_w};'
             skip += '\n\t' + '\n\t'.join([f'aw_{i} = {self.__t_curr_a[i]};' for i in range(1, self.__A+1)])
             skip += '\n\t' + '\n\t'.join([g.text + ' = ' + (f'(starting_{g.text} -> pre {g.text});' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_'+str(self.__globals_index[g.text]+self.__globals_modifier))+';' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['err', 'block_num']]) if self.__globals else ''        
-            skip += '\n\t' + '\n\t'.join([g.text + f'_{ag}' + ' = ' + (f'(starting_{g.text}_{ag} -> pre {g.text}_{ag});' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_' + str(ag) + '_'+str(self.__globals_index[g.text]+self.__globals_modifier))+';' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''        
+            skip += '\n\t' + '\n\t'.join([f'if (xa = a{ag}) then ' + g.text + f'_{ag}' + ' = ' + (f'(starting_{g.text}_{ag} -> pre {g.text}_{ag});' + 'fi' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_' + str(ag) + '_'+str(self.__globals_index[g.text]+self.__globals_modifier) + ';fi') for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''        
             # skip += '\n\t' + ('contract_not_constructed = false;' if self.__prefix == 'constructor' else 'contract_not_constructed = (true -> pre contract_not_constructed);')
             # body += skip
             # same = '\n\tcontract_not_constructed = true;' if self.__prefix == 'constructor' else '\n\tcontract_not_constructed = (true -> pre contract_not_constructed);'
             same = f'\n\tw = (starting_w -> pre w);'
             same += '\n\t' + '\n\t'.join([f'aw_{i} = (starting_aw_{i} -> pre aw_{i});' for i in range(1, self.__A+1)])
             same += '\n\t' + '\n\t'.join([g.text + ' = ' + f'(starting_{g.text} -> pre {g.text});' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['err', 'block_num']]) if self.__globals else ''
-            same += '\n\t' + '\n\t'.join([g.text + f'_{ag}' + ' = ' + f'(starting_{g.text}_{ag} -> pre {g.text}_{ag});' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
+            same += '\n\t' + '\n\t'.join([f'if (xa = a{ag}) then ' + g.text + f'_{ag}' + ' = ' + f'(starting_{g.text}_{ag} -> pre {g.text}_{ag});' + 'fi' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
         else:
             skip = f' \n\tw_nx = {self.__t_curr_w}'
             skip += ' and \n\t' + '\n\t and '.join([f'aw_{i}_nx = {self.__t_curr_a[i]}' for i in range(1, self.__A+1)])
             aux = '\n\t and '.join([g.text + '_nx = ' + (f'{g.text}' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_'+str(self.__globals_index[g.text]+self.__globals_modifier))+'_nx' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['err', 'block_num']]) if self.__globals else ''        
             skip += ' and \n\t' + (aux if aux else 'true')
-            aux = '\n\t and '.join([g.text + '_' + str(ag) + '_nx = ' + (f'{g.text}_{ag}' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_' + str(ag) +'_nx' + '_' + str(self.__globals_index[g.text]+self.__globals_modifier)) for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''        
+            aux = '\n\t and '.join([f'if (xa = a{ag}) then ' + g.text + '_' + str(ag) + '_nx = ' + (f'{g.text}_{ag}' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_' + str(ag) +'_nx' + '_' + str(self.__globals_index[g.text]+self.__globals_modifier)) + ' else true' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''        
             skip += ' and \n\t' + (aux if aux else 'true')
-            # if body.replace('skip', '').replace('\n', '').replace(' ', '').replace('and', ''):
-            #     skip = ' and' + skip
-            # body += skip
             same = f'\n\tw_nx = w'
             same += ' and \n\t' + '\n\t and '.join([f'aw_{i}_nx = aw_{i}' for i in range(1, self.__A+1)])
             aux = '\n\t and '.join([g.text + '_nx = ' + f'{g.text}' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['err', 'block_num']]) if self.__globals else ''
             same += ' and \n\t' + (aux if aux else 'true')
-            aux = '\n\t and '.join([g.text + '_' + str(ag) + '_nx = ' + f'{g.text}_{ag}' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
+            aux = '\n\t and '.join([f'if (xa = a{ag}) then ' + g.text + '_' + str(ag) + '_nx = ' + f'{g.text}_{ag}' + ' else true' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
             same += ' and \n\t' + (aux if aux else 'true')
         
         err = ('err_'+str(self.__globals_index['err']+self.__globals_modifier)) if (self.__globals_index['err']+self.__globals_modifier)>=0 else 'false'
@@ -770,6 +768,18 @@ tel
         left = ctx.var.text
         # self.__globals_modifier -= 1
         right = self.visit(ctx.child)
+        # Remove all variants of _nx, such as _nx, _nx1, _nx2, etc.
+        # Replace _nx followed by a number with _nx(number-1), and remove plain _nx
+        def replace_nx(match):
+            if match.group(1):
+                num = int(match.group(1))
+                if num > 1:
+                    return f'_nx{num-1}'
+                else:
+                    return ''
+            else:
+                return ''
+        right = re.sub(r'_nx(\d+)?', replace_nx, right)
         # self.__globals_modifier += 1
         i = self.__globals_index[left]
         self.__globals_index[left] = i+1
@@ -797,6 +807,16 @@ tel
         index = self.visit(ctx.index)
         self.__globals_modifier -= 1
         right = self.visit(ctx.child)#.replace(str(index), 'j')
+        def replace_nx(match):
+            if match.group(1):
+                num = int(match.group(1))
+                if num > 1:
+                    return f'_nx{num-1}'
+                else:
+                    return ''
+            else:
+                return ''
+        right = re.sub(r'_nx(\d+)?', replace_nx, right)
         self.__globals_modifier += 1
 
         if left in self.__globals_index:
@@ -1492,10 +1512,10 @@ forall (xa_tx: int;)
         bases_tx = set(re.findall(r'\b(\w+)_tx\b', condition))
         # 2) for each of those bases, do the two replacements for _nx
         for base in bases_nx:
-            # a) bump the _nx suffix
+            # a) bump the _nx suffix, including indexed forms like m_1_nx_0
             condition = re.sub(
-                rf'\b{base}_nx\b',
-                f'{base}_nx{id}',
+                rf'({base}(_\d+)?)(_nx)(?!\d)',
+                rf'\1_nx{id}',
                 condition
             )
             # b) replace the bare base with base_nx
@@ -1506,10 +1526,10 @@ forall (xa_tx: int;)
             )
         # 3) for each of those bases, do the two replacements for _tx
         for base in bases_tx:
-            # a) bump the _tx suffix
+            # a) bump the _tx suffix, including indexed forms like m_1_tx_0
             condition = re.sub(
-                rf'\b{base}_tx\b',
-                f'{base}_tx{id}',
+                rf'({base}(_\d+)?)(_tx)(?!\d)',
+                rf'\1_tx{id}',
                 condition
             )
             # b) replace the bare base with base_tx
@@ -1575,7 +1595,7 @@ forall (xa_tx: int;)
                 contract += '\t'*n_tabs + cmd + f' f_tx{id} = ' + p + ' then\n'
                 n_tabs += 1
                 # contract += f'\t{self.__functions_prop[p]}\n'.replace('_nx', f'_nx{id}').replace('_tx', f'_tx{id}')
-                contract += self.bump_nx_all(self.__functions_prop[p], id).replace('block_num_nx1', 'block_num') + '\n'
+                contract += self.bump_nx_all(self.__functions_prop[p], id) + '\n' #.replace('block_num_nx1', 'block_num') + '\n'
             n_tabs += 1
             contract += 'else'
             same = f' block_num_nx{id} >= block_num' #= any '+'{block_num_tmp: int | block_num_tmp > block_num}'   
@@ -1583,7 +1603,7 @@ forall (xa_tx: int;)
             same += ' and \n\t' + '\n\tand '.join([f'aw_{i}_nx{id} = aw_{i}' if id <= 1 else f'aw_{i}_nx{id} = aw_{i}_nx{id-1}' for i in range(1, self.__A+1)])
             # same += ' and \n\t' + '\n\tand '.join([g.text + '_nx = ' + f'{g.text}' for (g, _) in self.__globals]) if self.__globals else ''
             if id <= 1:
-                aux = '\n\t and '.join([g.text + f'_nx{id} = ' + f'{g.text}' for (g, ty) in self.__globals if ty != ('MapAddr', 'int')]) if self.__globals else ''
+                aux = '\n\t and '.join([g.text + f'_nx{id} = ' + f'{g.text}' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text != 'block_num'] ) if self.__globals else ''
                 same += ' and \n\t' + (aux if aux else 'true')
                 aux = '\n\t and '.join([g.text + '_' + str(ag) + f'_nx{id} = ' + f'{g.text}_{ag}' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
                 same += ' and \n\t' + (aux if aux else 'true')

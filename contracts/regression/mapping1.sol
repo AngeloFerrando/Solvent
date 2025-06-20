@@ -6,6 +6,14 @@ contract Mapping1 {
     }
 }  
 
+rule Liquid1 {
+  forall a : address .
+  exists h : method .  
+    << a : C . h() $ 0 >> 
+      m[a] == old(m[a]) + 1 
+}
+
+/*
 property liquid1 {
     Forall xa
       [
@@ -17,3 +25,4 @@ property liquid1 {
         ]
       ]
 }
+*/
