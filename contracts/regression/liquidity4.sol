@@ -10,9 +10,18 @@ contract C4 {
   }
 }
 
-rule Liquidity1_nonliquid {
+rule Liquidity4_nonliquid {
   forall a : address .
   exists v : int .   
     << a : C4 . pay() $ v >>		
       balance[a] == old(balance[a]) + 1
+}
+
+
+rule Liquidity4_liquid {
+  forall a : address .
+  exists v : int .   
+    << a : C4 . pay() $ v >>
+      st.balance > 1 ->		
+      balance[a] == old(balance[a]) + (st.balance - 1)
 }
