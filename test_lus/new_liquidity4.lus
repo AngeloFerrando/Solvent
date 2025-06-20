@@ -90,7 +90,7 @@ contract_not_constructed or
         (
             ((xa_tx1 = a_tx and f_tx1 = pay_func and xn_tx1 = v_tx) and 
 if f_tx1 = pay_func then
-	
+
 (if (not(pay_func_amount_tx1<=(w-1))) then err1=true else err1=false)
  and ((if (not(pay_func_amount_tx1 >= 0 and pay_func_amount_tx1 <= w)) then err_1_nx1=true else err_1_nx1=err1) 
  and w1 = w - pay_func_amount_tx1 and
@@ -106,14 +106,14 @@ else
 	aw_1_nx1 = aw_1
 	 and aw_2_nx1 = aw_2 and 
 	true and 
-	true and block_num_nx1 = any {block_num_tmp: int | block_num_tmp > block_num} else  
+	true and block_num >= block_num else  
 	w_nx1 = w1 and 
 	aw_1_nx1 = aw_11
 	 and aw_2_nx1 = aw_21 and 
 	true and 
-	true and block_num_nx1 = any {block_num_tmp: int | block_num_tmp > block_num}
+	true and block_num >= block_num
 
-else block_num_nx1 = any {block_num_tmp: int | block_num_tmp > block_num} and 
+else block_num_nx1 >= block_num and 
 	w_nx1 = w  and 
 	aw_1_nx1 = aw_1
 	and aw_2_nx1 = aw_2 and 

@@ -1485,11 +1485,13 @@ forall (xa_tx: int;)
     
     @staticmethod
     def bump_nx_all(condition, id):
-        pid = f'_nx{id - 1}' if id > 1 else ''
-        # 1) find all the "base" names that have appeared with "_nx"
-        bases = set(re.findall(r'\b(\w+)_nx\b', condition))
-        # 2) for each of those bases, do the two replacements
-        for base in bases:
+        pid_nx = f'_nx{id - 1}' if id > 1 else ''
+        pid_tx = f'_tx{id - 1}' if id > 1 else ''
+        # 1) find all the "base" names that have appeared with "_nx" or "_tx"
+        bases_nx = set(re.findall(r'\b(\w+)_nx\b', condition))
+        bases_tx = set(re.findall(r'\b(\w+)_tx\b', condition))
+        # 2) for each of those bases, do the two replacements for _nx
+        for base in bases_nx:
             # a) bump the _nx suffix
             condition = re.sub(
                 rf'\b{base}_nx\b',
@@ -1499,7 +1501,21 @@ forall (xa_tx: int;)
             # b) replace the bare base with base_nx
             condition = re.sub(
                 rf'\b{base}\b',
-                f'{base}{pid}',
+                f'{base}{pid_nx}',
+                condition
+            )
+        # 3) for each of those bases, do the two replacements for _tx
+        for base in bases_tx:
+            # a) bump the _tx suffix
+            condition = re.sub(
+                rf'\b{base}_tx\b',
+                f'{base}_tx{id}',
+                condition
+            )
+            # b) replace the bare base with base_tx
+            condition = re.sub(
+                rf'\b{base}\b',
+                f'{base}{pid_tx}',
                 condition
             )
         return condition
