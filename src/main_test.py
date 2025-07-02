@@ -39,7 +39,7 @@ def parse(pattern):
         print(e)
         return
     # try:
-    with open('./out/outputTrace.py', 'w') as file:
+    with open('./out/outputTrace.lus', 'w') as file:
         file.write(visitor.visit(tree))
     # visitor = Kind2Visitor(int(sys.argv[2]), int(sys.argv[3]), False, can_transactions_arrive_any_time, fixed_iteration)
     # with open('./out/outputState.py', 'w') as file:
