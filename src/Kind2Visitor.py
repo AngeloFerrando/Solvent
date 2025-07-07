@@ -1008,10 +1008,9 @@ tel
     def visitGreaterEqExpr(self, ctx:TxScriptParser.GreaterEqExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        # if not self.__visit_properties_body:
-        for el in self.__prop_nested_i:
-            if el in left or el in right:
-                return f'And([Or(j != {el}, '+f'{left} >= {right}) for j in range(A+1)])'.replace(el, 'j')
+        nested_res = handle_nested_prop(left, right, '>=')
+        if nested_res is not None:
+            return nested_res
         return left + '>=' + right
         # else:
         #     for el in self.__prop_nested_i:
@@ -1025,10 +1024,9 @@ tel
     def visitLessExpr(self, ctx:TxScriptParser.LessExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        # if not self.__visit_properties_body:
-        for el in self.__prop_nested_i:
-            if el in left or el in right:
-                return f'And([Or(j != {el}, '+f'{left} < {right}) for j in range(A+1)])'.replace(el, 'j')
+        nested_res = handle_nested_prop(left, right, '<')
+        if nested_res is not None:
+            return nested_res
         return left + '<' + right
         # else:
         #     for el in self.__prop_nested_i:
@@ -1048,12 +1046,7 @@ tel
     # def visitVariableExpr(self, ctx:TxScriptParser.VariableExprContext):
     #     return self.visitChildren(ctx)
 
-
-    # Visit a parse tree produced by TxScriptParser#greaterExpr.
-    def visitGreaterExpr(self, ctx:TxScriptParser.GreaterExprContext):
-        left = self.visit(ctx.left)
-        right = self.visit(ctx.right)
-        # if not self.__visit_properties_body:
+    def handle_nested_prop(left, right, op):
         for el in self.__prop_nested_i:
             if el in left or el in right:
                 res = ''
@@ -1064,8 +1057,19 @@ tel
                         res += f'else '
                     else:
                         res += f'else if {el} = a{ag} then '
-                    res += f'{left} > {right}'.replace(el, f'{ag}') + '\n\t'
+                    res += f'{left} {op} {right}'.replace(el, f'{ag}') + '\n\t'
                 return res
+        return None
+
+
+    # Visit a parse tree produced by TxScriptParser#greaterExpr.
+    def visitGreaterExpr(self, ctx:TxScriptParser.GreaterExprContext):
+        left = self.visit(ctx.left)
+        right = self.visit(ctx.right)
+
+        nested_res = handle_nested_prop(left, right, '>')
+        if nested_res is not None:
+            return nested_res
         return left + '>' + right
         # else:
         #     for el in self.__prop_nested_i:
@@ -1084,9 +1088,9 @@ tel
         if right == 'tx_sender':
             self.__tx_sender = left
             return 'true'
-        # if self.__visit_properties:
-        #     return f'{left} = {right}'    
-        # else:
+        # nested_res = handle_nested_prop(left, right, '=')
+        # if nested_res is not None:
+        #     return nested_res
         return f'{left} = {right}'
 
 
@@ -1120,10 +1124,9 @@ tel
     def visitLessEqExpr(self, ctx:TxScriptParser.LessEqExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        # if not self.__visit_properties_body:
-        for el in self.__prop_nested_i:
-            if el in left or el in right:
-                return f'And([Or(j != {el}, '+f'{left} <= {right}) for j in range(A+1)])'.replace(el, 'j')
+        nested_res = handle_nested_prop(left, right, '<=')
+        if nested_res is not None:
+            return nested_res
         return left + '<=' + right
         # else:
         #     for el in self.__prop_nested_i:
