@@ -199,7 +199,7 @@ let
 tel
         '''.replace('skip and', 'true and').replace('and skip', 'and true').replace('skip', '').replace(';;', ';')
         
-        return res.replace('_0_nx', '') 
+        return res.replace('_nx0', '') #.replace('_0_nx', '') 
 
 
     # Visit a parse tree produced by TxScriptParser#constFieldDecl.
@@ -251,6 +251,8 @@ tel
         self.__prop_names.add(self.__prop_name)
         self.__id = 1
         self.__vars = {}
+        for k in self.__globals_index:
+            self.__globals_index[k] = 0
         phi = self.visit(ctx.phi)
         return f'--%PROPERTY \n(\ncontract_not_constructed or \n({phi})\n);\n'
 
@@ -353,7 +355,7 @@ tel
         self.__requires = set()
         if not self.__visit_properties: 
             self.__requires.add('xn=0')
-            self.__requires.add('(' + ' or '.join([f'xa = {i}' for i in range(1, self.__A+1)]) + ')')
+            self.__requires.add('(' + ' or '.join([f'xa = a{i}' for i in range(1, self.__A+1)]) + ')')
         else:
             self.__requires.add('xn_tx=0')
             self.__requires.add('(' + ' or '.join([f'xa_tx = {i}' for i in range(1, self.__A+1)]) + ')')
@@ -384,8 +386,8 @@ tel
         err1 = 'err' + '_' + str(self.__globals_index['err']-1) if self.__globals_index['err'] > 0 else 'false'
         self.__globals_index['err'] += 1
         if not self.__visit_properties: 
-            req1 = '(' + ' or '.join([f'xa = {i}' for i in range(1, self.__A+1)]) + ')'
-            req2 = '(' + ' and '.join([f'(not(xa = {i}) or (starting_aw_{i} -> pre aw_{i}) >= xn)' for i in range(1, self.__A+1)]) + ')'
+            req1 = '(' + ' or '.join([f'xa = a{i}' for i in range(1, self.__A+1)]) + ')'
+            req2 = '(' + ' and '.join([f'(not(xa = a{i}) or (starting_aw_{i} -> pre aw_{i}) >= xn)' for i in range(1, self.__A+1)]) + ')'
             req = f'if (not(xn >= 0 and {req1} and {req2})) then {err}=true; else {err}={err1}; fi\n'
             # self.__requires.add('xn >= 0')
             # self.__requires.add('(' + ' or '.join([f'xa = {i}' for i in range(1, self.__A+1)]) + ')')
@@ -396,8 +398,8 @@ tel
             self.__t_curr_w = 'w_' + str(self.__nesting_w-1)
             self.__t_new_w = 'w_' + str(self.__nesting_w)
         else:
-            req1 = '(' + ' or '.join([f'xa_tx = {i}' for i in range(1, self.__A+1)]) + ')'
-            req2 = '(' + ' and '.join([f'(not(xa_tx = {i}) or aw_{i} >= xn_tx)' for i in range(1, self.__A+1)]) + ')'
+            req1 = '(' + ' or '.join([f'xa_tx = a{i}' for i in range(1, self.__A+1)]) + ')'
+            req2 = '(' + ' and '.join([f'(not(xa_tx = a{i}) or aw_{i} >= xn_tx)' for i in range(1, self.__A+1)]) + ')'
             err1 = err1+'_nx' if err1 != 'false' else err1
             req = f'(if (not(xn_tx >= 0 and {req1} and {req2})) then {err}_nx=true else {err}={err1})\n'
             # self.__requires.add('xn_tx >= 0')
@@ -436,8 +438,8 @@ tel
         err1 = 'err' + '_' + str(self.__globals_index['err']-1) if self.__globals_index['err'] > 0 else 'false'
         self.__globals_index['err'] += 1
         if not self.__visit_properties: 
-            req1 = '(' + ' or '.join([f'xa = {i}' for i in range(1, self.__A+1)]) + ')'
-            req2 = '(' + ' and '.join([f'(not(xa = {i}) or (starting_aw_{i} -> pre aw_{i}) >= xn)' for i in range(1, self.__A+1)]) + ')'
+            req1 = '(' + ' or '.join([f'xa = a{i}' for i in range(1, self.__A+1)]) + ')'
+            req2 = '(' + ' and '.join([f'(not(xa = a{i}) or (starting_aw_{i} -> pre aw_{i}) >= xn)' for i in range(1, self.__A+1)]) + ')'
             req = f'if (not(xn >= 0 and {req1} and {req2})) then {err}=true; else {err}={err1}; fi\n'
             # self.__requires.add('xn >= 0')
             # self.__requires.add('(' + ' or '.join([f'xa = {i}' for i in range(1, self.__A+1)]) + ')')
@@ -448,8 +450,8 @@ tel
             self.__t_curr_w = 'w_' + str(self.__nesting_w-1)
             self.__t_new_w = 'w_' + str(self.__nesting_w)
         else:
-            req1 = '(' + ' or '.join([f'xa_tx = {i}' for i in range(1, self.__A+1)]) + ')'
-            req2 = '(' + ' and '.join([f'(not(xa_tx = {i}) or aw_{i} >= xn_tx)' for i in range(1, self.__A+1)]) + ')'
+            req1 = '(' + ' or '.join([f'xa_tx = a{i}' for i in range(1, self.__A+1)]) + ')'
+            req2 = '(' + ' and '.join([f'(not(xa_tx = a{i}) or aw_{i} >= xn_tx)' for i in range(1, self.__A+1)]) + ')'
             err1 = err1+'_nx' if err1 != 'false' else err1
             req = f'(if (not(xn_tx >= 0 and {req1} and {req2})) then {err}_nx=true else {err}_nx={err1})\n'
             # self.__requires.add('xn_tx >= 0')
@@ -485,10 +487,10 @@ tel
         self.__requires = set()
         if not self.__visit_properties: 
             self.__requires.add('xn=0')
-            self.__requires.add('(' + ' or '.join([f'xa = {i}' for i in range(1, self.__A+1)]) + ')')
+            self.__requires.add('(' + ' or '.join([f'xa = a{i}' for i in range(1, self.__A+1)]) + ')')
         else:
             self.__requires.add('xn_tx=0')
-            self.__requires.add('(' + ' or '.join([f'xa_tx = {i}' for i in range(1, self.__A+1)]) + ')')
+            self.__requires.add('(' + ' or '.join([f'xa_tx = a{i}' for i in range(1, self.__A+1)]) + ')')
         return self.visitFun(ctx, '')
 
 
@@ -498,19 +500,19 @@ tel
         self.__add_last_cmd = True
         body = self.visit(ctx.cmds)
         if '_xa' in body:
-            new_body = 'if (xa = 1) then ' + ('(' if self.__visit_properties else '') + body.format(ag='xa').replace('_xa_tx', '_1_nx').replace('_xa', '_1') + (')' if self.__visit_properties else '')
+            new_body = 'if (xa = a1) then ' + ('(' if self.__visit_properties else '') + body.format(ag='xa').replace('_xa_tx', '_1_nx').replace('_xa', '_1') + (')' if self.__visit_properties else '')
             for ag in range(2, self.__A+1):
                 if not self.__visit_properties:
                     if ag == self.__A:
                         new_body += ' else '
                     else:
-                        new_body += f' elsif (xa = {ag}) then '
+                        new_body += f' elsif (xa = a{ag}) then '
                     new_body += body.format(ag='xa').replace('_xa_tx', f'_{ag}_nx').replace('_xa', f'_{ag}')
                 else:
                     if ag == self.__A:
                         new_body += ' else '
                     else:
-                        new_body += f' else if (xa = {ag}) then '
+                        new_body += f' else if (xa = a{ag}) then '
                     new_body += '(' + body.format(ag='xa').replace('_xa_tx', f'_{ag}_nx').replace('_xa', f'_{ag}') + ')'
             if not self.__visit_properties:
                 body = new_body + ' fi'
@@ -1054,7 +1056,16 @@ tel
         # if not self.__visit_properties_body:
         for el in self.__prop_nested_i:
             if el in left or el in right:
-                return f'And([Or(j != {el}, '+f'{left} > {right}) for j in range(A+1)])'.replace(el, 'j')
+                res = ''
+                for ag in range(1, self.__A+1):
+                    if ag == 1:
+                        res += f'if {el} = a{ag} then '
+                    elif ag == self.__A:
+                        res += f'else '
+                    else:
+                        res += f'else if {el} = a{ag} then '
+                    res += f'{left} > {right}'.replace(el, f'{ag}') + '\n\t'
+                return res
         return left + '>' + right
         # else:
         #     for el in self.__prop_nested_i:
@@ -1328,32 +1339,32 @@ forall (xa_tx: int;)
                     return f'{ctx.mapVar.text}_{index}_' + str(self.__globals_index[ctx.mapVar.text])
             return f'{ctx.mapVar.text}_{index}' #ctx.mapVar.text + '[' + index + ']'
         else:
-            if 'app_tx_st' in ctx.mapVar.text:
-                i = '_nx'
-                name = ctx.mapVar.text.replace('app_tx_', '')
-            else:
+            if self.__id <= 1:
                 name = ctx.mapVar.text
                 i = ''
+            else:
+                i = '_nx'
+                name = ctx.mapVar.text.replace('app_tx_', '')
             if 'balance' in name:
                 ag = index.replace('_q', '')
                 if ag == 'xa':
-                    self.__prop_nested_i.add(ag+'_q')#(ag+'[i]')
-                    return 'aw_{ag}' + i + '_nx' #f'aw{i}[{ag}[i]]'
+                    self.__prop_nested_i.add(ag)#(ag+'[i]')
+                    return f'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
                 else:
                     self.__prop_nested_i.add(ag)#(ag+'[i]')
-                    return 'aw_{ag}' + i + '_nx' #f'aw{i}[{ag}[i]]'
+                    return f'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
             if name.replace('st.','') in self.__args_map:
-                return self.__args_map[ctx.v.text][0] + '_nx'
+                return self.__args_map[ctx.v.text][0] + i
             if name.replace('st.','') in self.__globals_index:  
                 ag = index.replace('_q', '')
                 if ag == 'xa':
-                    self.__prop_nested_i.add(ag+'_q')#(ag+'[i]')
-                    return name.replace('st.','') + f'_{ag}' + i + '_nx'
+                    self.__prop_nested_i.add(ag)#(ag+'[i]')
+                    return name.replace('st.','') + f'_{ag}' + i
                 else:
                     # if '[i]' not in ag:
                     #     ag = ag+'[i]'
                     self.__prop_nested_i.add(ag)#(ag+'[i]')
-                    return name.replace('st.','') + '_{ag}' + i + '_nx'
+                    return name.replace('st.','') + f'_{ag}' + i
             return name.replace('st.', '') + ('_tx' if '_tx' not in name else '')
 
 
@@ -1380,7 +1391,7 @@ forall (xa_tx: int;)
                     return ctx.v.text + '_' + str(self.__globals_index[ctx.v.text]+self.__globals_modifier)
             return ctx.v.text
         else:
-            if 'app_tx_st' in ctx.v.text:
+            if self.__id > 1:
                 name = ctx.v.text.replace('app_tx_st', 'st')
                 i = '_nx'
             else:
@@ -1389,16 +1400,16 @@ forall (xa_tx: int;)
             if 'balance' in name and '[' in name and ']' in name:
                 ag = name[name.index('[')+1:name.index(']')]
                 if ag == 'xa': # aw_q0[xa_q] == (aw[i][xa_q]+w[i])    aw_1_nx = aw_1 + w
-                    self.__prop_nested_i.add(ag+'_q')#(ag+'[i]')
-                    return 'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
+                    self.__prop_nested_i.add(ag)#(ag+'[i]')
+                    return f'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
                 else:
                     self.__prop_nested_i.add(ag+'[i]')#(ag+'[i]')
                     return 'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
             if '.balance' in name and name != 'st.balance':
                 ag = name[:name.index('.balance')].replace('st.', '')
                 if ag == 'xa':
-                    self.__prop_nested_i.add(ag+'_q')#(ag+'[i]')
-                    return 'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
+                    self.__prop_nested_i.add(ag)#(ag+'[i]')
+                    return f'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
                 else:
                     self.__prop_nested_i.add(ag+'[i]')#(ag+'[i]')
                     return f'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
@@ -1421,9 +1432,9 @@ forall (xa_tx: int;)
             if name.replace('st.','') in self.__globals_index:              
                 # return name.replace('st.','') + i
                 if self.__globals_index[name.replace('st.','')]+self.__globals_modifier < 0:
-                    return name.replace('st.','') + '_nx'
+                    return name.replace('st.','') + i
                 else:
-                    return name.replace('st.', '') + '_' + str(self.__globals_index[name.replace('st.','')]+self.__globals_modifier) + '_nx'
+                    return name.replace('st.', '') + '_' + str(self.__globals_index[name.replace('st.','')]+self.__globals_modifier) + i
             if name == 'sender':
                 return name + '_tx'
             return name.replace('st.', '') + ('_tx' if '_tx' not in name else '')
@@ -1484,12 +1495,16 @@ forall (xa_tx: int;)
         return value
     
     @staticmethod
-    def bump_nx_all(condition, id):
+    def bump_nx_all(condition, id, vars):
         pid_nx = f'_nx{id - 1}' if id > 1 else ''
         pid_tx = f'_tx{id - 1}' if id > 1 else ''
         # 1) find all the "base" names that have appeared with "_nx" or "_tx"
         bases_nx = set(re.findall(r'\b(\w+)_nx\b', condition))
         bases_tx = set(re.findall(r'\b(\w+)_tx\b', condition))
+        # Remove any bases that are in self.__vars (ignore them)
+        ignore_vars = set(vars.keys())
+        bases_nx -= ignore_vars
+        bases_tx -= ignore_vars
         # 2) for each of those bases, do the two replacements for _nx
         for base in bases_nx:
             # a) bump the _nx suffix
@@ -1523,8 +1538,8 @@ forall (xa_tx: int;)
     # Visit a parse tree produced by TxScriptParser#complexExprFormulaExpr.
     def visitComplexExprFormulaExpr(self, ctx:TxScriptParser.ComplexExprFormulaExprContext):
         id = self.__id
-        for k in self.__globals_index:
-            self.__globals_index[k] = 0
+        # for k in self.__globals_index:
+        #     self.__globals_index[k] = 0
         transition_vars = ''
         transition_vars += f'xa_tx{id}: address; f_tx{id}: functions; ' + ' '.join(['{a}_tx{id}: {t};'.format(id=id, a=self.__args_map[a][0], t=self.__args_map[a][1]).replace('address', 'int') for a in self.__args_map if self.__args_map[a][1] != 'hash'])
         transition_vars += f' xn_tx{id}: int;'
@@ -1554,11 +1569,14 @@ forall (xa_tx: int;)
                     aux.append(f'(not(xa_tx{id} = a{a}) or {c})')
                 condition = ' and '.join(aux)
             # condition = condition.replace('_nx', f'_nx{id}')
-            condition = self.bump_nx_all(condition, id)
-            if condition.count('old') < id:
-                condition = condition.replace('old', '').replace('nx', 'nx' + str(id - condition.count('old')))
-            else:
+            condition = self.bump_nx_all(condition, id, self.__vars)
+            n_olds = condition.count('old')
+            if n_olds > id:
                 condition = condition.replace('_oldnx', '').replace('oldnx', '').replace('_old', '').replace('old', '')
+            else:
+                for i in range(n_olds, 0, -1):
+                    aux = 'old' * i + 'nx'
+                    condition = condition.replace(aux, 'nx' + str(id - i))
         self.visit(self.__ctx)
         fname = f'{ctx.fname.text}_tx' if ctx.fname.text in self.__vars else f'{ctx.fname.text}_func'
         contract = f'(xa_tx{id} = {self.visit(ctx.expr)} and f_tx{id} = {fname} and xn_tx{id} = {self.visit(ctx.value)}) and \n'
@@ -1575,7 +1593,7 @@ forall (xa_tx: int;)
                 contract += '\t'*n_tabs + cmd + f' f_tx{id} = ' + p + ' then\n'
                 n_tabs += 1
                 # contract += f'\t{self.__functions_prop[p]}\n'.replace('_nx', f'_nx{id}').replace('_tx', f'_tx{id}')
-                contract += self.bump_nx_all(self.__functions_prop[p], id).replace('block_num_nx1', 'block_num') + '\n'
+                contract += self.bump_nx_all(self.__functions_prop[p], id, self.__vars).replace('block_num_nx1', 'block_num') + '\n'
             n_tabs += 1
             contract += 'else'
             same = f' block_num_nx{id} >= block_num' #= any '+'{block_num_tmp: int | block_num_tmp > block_num}'   

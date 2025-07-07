@@ -25,7 +25,7 @@ var v : int;
 var v_0 : int;
 let
     if (true -> pre contract_not_constructed) then
-if (not(xn >= 0 and (xa = 1 or xa = 2) and ((not(xa = 1) or (starting_aw_1 -> pre aw_1) >= xn) and (not(xa = 2) or (starting_aw_2 -> pre aw_2) >= xn)))) then err_0=true; else err_0=false; fi
+if (not(xn >= 0 and (xa = a1 or xa = a2) and ((not(xa = a1) or (starting_aw_1 -> pre aw_1) >= xn) and (not(xa = a2) or (starting_aw_2 -> pre aw_2) >= xn)))) then err_0=true; else err_0=false; fi
 w_0 = (starting_w -> pre w) + xn;
 if (xa = a1) then
 	aw_1_0 = (starting_aw_1 -> pre aw_1) - xn;
@@ -54,7 +54,7 @@ v_0 = xn; if (err_1) then
 	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
 fi
 elsif f = set_v_func then
-	if (not(xn >= 0 and (xa = 1 or xa = 2) and ((not(xa = 1) or (starting_aw_1 -> pre aw_1) >= xn) and (not(xa = 2) or (starting_aw_2 -> pre aw_2) >= xn)))) then err_0=true; else err_0=false; fi
+	if (not(xn >= 0 and (xa = a1 or xa = a2) and ((not(xa = a1) or (starting_aw_1 -> pre aw_1) >= xn) and (not(xa = a2) or (starting_aw_2 -> pre aw_2) >= xn)))) then err_0=true; else err_0=false; fi
 w_0 = (starting_w -> pre w) + xn;
 if (xa = a1) then
 	aw_1_0 = (starting_aw_1 -> pre aw_1) - xn;
@@ -102,18 +102,18 @@ contract_not_constructed or
 --%PROPERTY 
 (
 contract_not_constructed or 
-(forall(v1_tx:int;)forall(addr_tx:address;)exists(qfa_tx:functions;)exists(qxa_tx:calldataargs;)exists(msgvalue_tx:int;)
+(forall(v1_tx:int;)forall(addr_tx:address;)exists(qfa_tx:functions;)exists(msgvalue_tx:int;)
     exists (
         xa_tx1: address; f_tx1: functions; constructor_initial_v_tx1: int; set_v_func_new_v_tx1: int; xn_tx1: int;  /* Transition vars */
         w_nx1: int; w1: int; aw_1_nx1: int; aw_2_nx1: int; aw_11: int; aw_21: int; err_nx1 : bool; err1 : bool; err_1_nx1 : bool; err_2_nx1 : bool; err_3_nx1 : bool; block_num_nx1 : int; block_num1 : int; v_nx1 : int; v1 : int; v_1_nx1 : int; /* Next state vars */
     )
     (   /* condition */
-        v_nx11 = v1_tx1
+        v_nx1 = v1_tx
         and
         (
             ((xa_tx1 = addr_tx and f_tx1 = qfa_tx and xn_tx1 = msgvalue_tx) and 
 if f_tx1 = set_v_func then
-(if (not(xn_tx1 >= 0 and (xa_tx1 = 1 or xa_tx1 = 2) and ((not(xa_tx1 = 1) or aw_1 >= xn_tx1) and (not(xa_tx1 = 2) or aw_2 >= xn_tx1)))) then err1=true else err1=false)
+(if (not(xn_tx1 >= 0 and (xa_tx1 = a1 or xa_tx1 = a2) and ((not(xa_tx1 = a1) or aw_1 >= xn_tx1) and (not(xa_tx1 = a2) or aw_2 >= xn_tx1)))) then err1=true else err1=false)
  and (w1 = w + xn_tx1 and
 if (xa_tx1 = a1) then
 	aw_11 = aw_1 - xn_tx1 and
@@ -153,18 +153,20 @@ else block_num_nx1 >= block_num and
 --%PROPERTY 
 (
 contract_not_constructed or 
-(forall(v1_tx:int;)forall(addr_tx:address;)(not(aw_{ag}_nx>100) or exists(qfa_tx:functions;)exists(qxa_tx:calldataargs;)exists(msgvalue_tx:int;)
+(forall(v1_tx:int;)forall(addr_tx:address;)(not(if addr_tx = a1 then aw_1 > 100
+	else aw_2 > 100
+	) or exists(qfa_tx:functions;)exists(msgvalue_tx:int;)
     exists (
         xa_tx1: address; f_tx1: functions; constructor_initial_v_tx1: int; set_v_func_new_v_tx1: int; xn_tx1: int;  /* Transition vars */
         w_nx1: int; w1: int; aw_1_nx1: int; aw_2_nx1: int; aw_11: int; aw_21: int; err_nx1 : bool; err1 : bool; err_1_nx1 : bool; err_2_nx1 : bool; err_3_nx1 : bool; block_num_nx1 : int; block_num1 : int; v_nx1 : int; v1 : int; v_1_nx1 : int; /* Next state vars */
     )
     (   /* condition */
-        v_nx11 = v1_tx1
+        v_nx1 = v1_tx
         and
         (
             ((xa_tx1 = addr_tx and f_tx1 = qfa_tx and xn_tx1 = msgvalue_tx) and 
 if f_tx1 = set_v_func then
-(if (not(xn_tx1 >= 0 and (xa_tx1 = 1 or xa_tx1 = 2) and ((not(xa_tx1 = 1) or aw_1 >= xn_tx1) and (not(xa_tx1 = 2) or aw_2 >= xn_tx1)))) then err1=true else err1=false)
+(if (not(xn_tx1 >= 0 and (xa_tx1 = a1 or xa_tx1 = a2) and ((not(xa_tx1 = a1) or aw_1 >= xn_tx1) and (not(xa_tx1 = a2) or aw_2 >= xn_tx1)))) then err1=true else err1=false)
  and (w1 = w + xn_tx1 and
 if (xa_tx1 = a1) then
 	aw_11 = aw_1 - xn_tx1 and

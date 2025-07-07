@@ -19,14 +19,14 @@ rule P0a_true {
 }
 */
 
-/*
+
 rule P0b_false {
     forall a : address .
     exists h : method .
         << a : C . f() $ 0 >> 
             v==3
 }
-*/
+
 
 /*
 rule P1_true {

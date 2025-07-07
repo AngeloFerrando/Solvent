@@ -30,7 +30,6 @@ rule R1 {
     forall v1 : int .
     forall addr : address .
     exists qfa : method .
-    exists qxa : calldataargs .
     exists msgvalue : int .
     << addr : IfRequire . qfa() $ msgvalue >>		
     v == v1
@@ -43,7 +42,6 @@ rule R2 {
     balance[addr] > 100
     ->
     exists qfa : method .
-    exists qxa : calldataargs .
     exists msgvalue : int .
     << addr : IfRequire . qfa() $ msgvalue >>		
     v == v1

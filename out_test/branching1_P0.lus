@@ -1,5 +1,5 @@
 
-type functions = enum { dummy, g_func,f_func };
+type functions = enum { dummy, f_func,g_func };
 type address = enum { a1, a2 };
 node C (xa:address;xn:int;f:functions;starting_w: int;starting_aw_1: int;starting_aw_2: int) returns();
 (*@contract
@@ -88,16 +88,16 @@ contract_not_constructed or
 (forall(a_tx:address;)exists(h_tx:functions;)
     exists (
         xa_tx1: address; f_tx1: functions;  xn_tx1: int;  /* Transition vars */
-        w_nx1: int; aw_1_nx1: int; aw_2_nx1: int; err_nx1 : bool; err1 : bool; err_1_nx1 : bool; block_num_nx1 : int; block_num1 : int; v_nx1 : int; v1 : int; v_1_nx1 : int; /* Next state vars */
+        w_nx1: int; aw_1_nx1: int; aw_2_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; v_nx1 : int; v_0_nx1 : int; v_1_nx1 : int; /* Next state vars */
     )
     (   /* condition */
-        v_nx11 = 1
+        v_nx1 = 3
         and
         (
-            ((xa_tx1 = a_tx and f_tx1 = h_tx and xn_tx1 = 0) and 
+            ((xa_tx1 = a_tx and f_tx1 = f_func and xn_tx1 = 0) and 
 if f_tx1 = f_func then
 
-v1 = 1 and if (false) then 
+v_0_nx1 = 1 and if (false) then 
 
 	w_nx1 = w and 
 	aw_1_nx1 = aw_1
@@ -107,12 +107,12 @@ v1 = 1 and if (false) then
 	w_nx1 = w and 
 	aw_1_nx1 = aw_1
 	 and aw_2_nx1 = aw_2 and 
-	v_nx1 = v1 and 
+	v_nx1 = v_0_nx1 and 
 	true and block_num >= block_num
 
 	else if f_tx1 = g_func then
 
-v1 = 2 and if (false) then 
+v_0_nx1 = 2 and if (false) then 
 
 	w_nx1 = w and 
 	aw_1_nx1 = aw_1
@@ -122,7 +122,7 @@ v1 = 2 and if (false) then
 	w_nx1 = w and 
 	aw_1_nx1 = aw_1
 	 and aw_2_nx1 = aw_2 and 
-	v_nx1 = v1 and 
+	v_nx1 = v_0_nx1 and 
 	true and block_num >= block_num
 
 else block_num_nx1 >= block_num and 
@@ -141,19 +141,68 @@ else block_num_nx1 >= block_num and
 --%PROPERTY 
 (
 contract_not_constructed or 
-(forall(a_tx:address;)exists(h_tx:functions;)
+((not((v = 1 or v = 2)) or (forall(a_tx:address;)forall(h1_tx:functions;)exists(h2_tx:functions;)
     exists (
         xa_tx1: address; f_tx1: functions;  xn_tx1: int;  /* Transition vars */
-        w_nx1: int; aw_1_nx1: int; aw_2_nx1: int; err_nx1 : bool; err1 : bool; err_1_nx1 : bool; block_num_nx1 : int; block_num1 : int; v_nx1 : int; v1 : int; v_1_nx1 : int; /* Next state vars */
+        w_nx1: int; aw_1_nx1: int; aw_2_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; v_nx1 : int; v_0_nx1 : int; v_1_nx1 : int; /* Next state vars */
     )
     (   /* condition */
-        v_nx11 = 3
+        
+    exists (
+        xa_tx2: address; f_tx2: functions;  xn_tx2: int;  /* Transition vars */
+        w_nx2: int; aw_1_nx2: int; aw_2_nx2: int; err_nx2 : bool; err_0_nx2 : bool; err_1_nx2 : bool; block_num_nx2 : int; block_num_0_nx2 : int; v_nx2 : int; v_0_nx2 : int; v_1_nx2 : int; /* Next state vars */
+    )
+    (   /* condition */
+        v_nx2 = v
         and
         (
-            ((xa_tx1 = a_tx and f_tx1 = f_func and xn_tx1 = 0) and 
+            ((xa_tx2 = a_tx and f_tx2 = h2_tx and xn_tx2 = 0) and 
+if f_tx2 = f_func then
+
+v_0_nx2 = 1 and if (false) then 
+
+	w_nx2 = w_nx1 and 
+	aw_1_nx2 = aw_1_nx1
+	 and aw_2_nx2 = aw_2_nx1 and 
+	v_nx2 = v_nx1 and 
+	true and block_num_nx2 >= block_num else  
+	w_nx2 = w_nx1 and 
+	aw_1_nx2 = aw_1_nx1
+	 and aw_2_nx2 = aw_2_nx1 and 
+	v_nx2 = v_0_nx2 and 
+	true and block_num_nx2 >= block_num
+
+	else if f_tx2 = g_func then
+
+v_0_nx2 = 2 and if (false) then 
+
+	w_nx2 = w_nx1 and 
+	aw_1_nx2 = aw_1_nx1
+	 and aw_2_nx2 = aw_2_nx1 and 
+	v_nx2 = v_nx1 and 
+	true and block_num_nx2 >= block_num else  
+	w_nx2 = w_nx1 and 
+	aw_1_nx2 = aw_1_nx1
+	 and aw_2_nx2 = aw_2_nx1 and 
+	v_nx2 = v_0_nx2 and 
+	true and block_num_nx2 >= block_num
+
+else block_num_nx2 >= block_num and 
+	w_nx2 = w_nx1  and 
+	aw_1_nx2 = aw_1_nx1
+	and aw_2_nx2 = aw_2_nx1 and 
+	err_nx2 = err_nx1
+	 and v_nx2 = v_nx1 and 
+	true
+)
+        )
+    )
+        and
+        (
+            ((xa_tx1 = a_tx and f_tx1 = h1_tx and xn_tx1 = 0) and 
 if f_tx1 = f_func then
 
-v1 = 1 and if (false) then 
+v_0_nx1 = 1 and if (false) then 
 
 	w_nx1 = w and 
 	aw_1_nx1 = aw_1
@@ -163,12 +212,12 @@ v1 = 1 and if (false) then
 	w_nx1 = w and 
 	aw_1_nx1 = aw_1
 	 and aw_2_nx1 = aw_2 and 
-	v_nx1 = v1 and 
+	v_nx1 = v_0_nx1 and 
 	true and block_num >= block_num
 
 	else if f_tx1 = g_func then
 
-v1 = 2 and if (false) then 
+v_0_nx1 = 2 and if (false) then 
 
 	w_nx1 = w and 
 	aw_1_nx1 = aw_1
@@ -178,7 +227,7 @@ v1 = 2 and if (false) then
 	w_nx1 = w and 
 	aw_1_nx1 = aw_1
 	 and aw_2_nx1 = aw_2 and 
-	v_nx1 = v1 and 
+	v_nx1 = v_0_nx1 and 
 	true and block_num >= block_num
 
 else block_num_nx1 >= block_num and 
@@ -191,7 +240,7 @@ else block_num_nx1 >= block_num and
 	true
 )
         )
-    ))
+    ))))
 );
 
 tel
