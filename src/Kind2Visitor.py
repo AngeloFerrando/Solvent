@@ -1008,7 +1008,7 @@ tel
     def visitGreaterEqExpr(self, ctx:TxScriptParser.GreaterEqExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        nested_res = handle_nested_prop(left, right, '>=')
+        nested_res = self.handle_nested_prop(left, right, '>=')
         if nested_res is not None:
             return nested_res
         return left + '>=' + right
@@ -1024,7 +1024,7 @@ tel
     def visitLessExpr(self, ctx:TxScriptParser.LessExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        nested_res = handle_nested_prop(left, right, '<')
+        nested_res = self.handle_nested_prop(left, right, '<')
         if nested_res is not None:
             return nested_res
         return left + '<' + right
@@ -1046,13 +1046,14 @@ tel
     # def visitVariableExpr(self, ctx:TxScriptParser.VariableExprContext):
     #     return self.visitChildren(ctx)
 
-    def handle_nested_prop(left, right, op):
+    def handle_nested_prop(self, left, right, op):
+        tx = '_tx' if self.__visit_properties else '' 
         for el in self.__prop_nested_i:
             if el in left or el in right:
                 res = ''
                 for ag in range(1, self.__A+1):
                     if ag == 1:
-                        res += f'if {el} = a{ag} then '
+                        res += f'if {el}{tx} = a{ag} then '
                     elif ag == self.__A:
                         res += f'else '
                     else:
@@ -1067,7 +1068,7 @@ tel
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
 
-        nested_res = handle_nested_prop(left, right, '>')
+        nested_res = self.handle_nested_prop(left, right, '>')
         if nested_res is not None:
             return nested_res
         return left + '>' + right
@@ -1088,9 +1089,9 @@ tel
         if right == 'tx_sender':
             self.__tx_sender = left
             return 'true'
-        # nested_res = handle_nested_prop(left, right, '=')
-        # if nested_res is not None:
-        #     return nested_res
+        nested_res = self.handle_nested_prop(left, right, '=')
+        if nested_res is not None:
+            return nested_res
         return f'{left} = {right}'
 
 
@@ -1124,7 +1125,7 @@ tel
     def visitLessEqExpr(self, ctx:TxScriptParser.LessEqExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        nested_res = handle_nested_prop(left, right, '<=')
+        nested_res = self.handle_nested_prop(left, right, '<=')
         if nested_res is not None:
             return nested_res
         return left + '<=' + right
@@ -1332,7 +1333,7 @@ forall (xa_tx: int;)
 
     # Visit a parse tree produced by TxScriptParser#mapExpr.
     def visitMapExpr(self, ctx:TxScriptParser.MapExprContext):
-        index = self.visit(ctx.index)
+        index = self.visit(ctx.index).replace('_tx', '')
         if not self.__visit_properties:
             if ctx.mapVar.text in self.__globals_index:
                 self.__prop_nested_i.add(index)
@@ -1573,13 +1574,13 @@ forall (xa_tx: int;)
                 condition = ' and '.join(aux)
             # condition = condition.replace('_nx', f'_nx{id}')
             condition = self.bump_nx_all(condition, id, self.__vars)
-            n_olds = condition.count('old')
-            if n_olds > id:
-                condition = condition.replace('_oldnx', '').replace('oldnx', '').replace('_old', '').replace('old', '')
-            else:
-                for i in range(n_olds, 0, -1):
-                    aux = 'old' * i + 'nx'
-                    condition = condition.replace(aux, 'nx' + str(id - i))
+            n_olds = min(condition.count('old'), id)
+            # if n_olds > id:
+            #     condition = condition.replace('_oldnx', '').replace('oldnx', '').replace('_old', '').replace('old', '')
+            # else:
+            for i in range(n_olds, 0, -1):
+                aux = 'old' * i + 'nx'
+                condition = condition.replace(aux, 'nx' + str(id - i))
         self.visit(self.__ctx)
         fname = f'{ctx.fname.text}_tx' if ctx.fname.text in self.__vars else f'{ctx.fname.text}_func'
         contract = f'(xa_tx{id} = {self.visit(ctx.expr)} and f_tx{id} = {fname} and xn_tx{id} = {self.visit(ctx.value)}) and \n'

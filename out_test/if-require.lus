@@ -105,7 +105,7 @@ contract_not_constructed or
 (forall(v1_tx:int;)forall(addr_tx:address;)exists(qfa_tx:functions;)exists(msgvalue_tx:int;)
     exists (
         xa_tx1: address; f_tx1: functions; constructor_initial_v_tx1: int; set_v_func_new_v_tx1: int; xn_tx1: int;  /* Transition vars */
-        w_nx1: int; w1: int; aw_1_nx1: int; aw_2_nx1: int; aw_11: int; aw_21: int; err_nx1 : bool; err1 : bool; err_1_nx1 : bool; err_2_nx1 : bool; err_3_nx1 : bool; block_num_nx1 : int; block_num1 : int; v_nx1 : int; v1 : int; v_1_nx1 : int; /* Next state vars */
+        w_nx1: int; w_0_nx1: int; aw_1_nx1: int; aw_2_nx1: int; aw_1_0_nx1: int; aw_2_0_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; err_2_nx1 : bool; err_3_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; v_nx1 : int; v_0_nx1 : int; v_1_nx1 : int; /* Next state vars */
     )
     (   /* condition */
         v_nx1 = v1_tx
@@ -113,28 +113,28 @@ contract_not_constructed or
         (
             ((xa_tx1 = addr_tx and f_tx1 = qfa_tx and xn_tx1 = msgvalue_tx) and 
 if f_tx1 = set_v_func then
-(if (not(xn_tx1 >= 0 and (xa_tx1 = a1 or xa_tx1 = a2) and ((not(xa_tx1 = a1) or aw_1 >= xn_tx1) and (not(xa_tx1 = a2) or aw_2 >= xn_tx1)))) then err1=true else err1=false)
- and (w1 = w + xn_tx1 and
+(if (not(xn_tx1 >= 0 and (xa_tx1 = a1 or xa_tx1 = a2) and ((not(xa_tx1 = a1) or aw_1 >= xn_tx1) and (not(xa_tx1 = a2) or aw_2 >= xn_tx1)))) then err_0_nx1=true else err_0_nx1=false)
+ and (w_0_nx1 = w + xn_tx1 and
 if (xa_tx1 = a1) then
-	aw_11 = aw_1 - xn_tx1 and
-	aw_21 = aw_2
+	aw_1_0_nx1 = aw_1 - xn_tx1 and
+	aw_2_0_nx1 = aw_2
 else
-	aw_11 = aw_1 and
-	aw_21 = aw_2 - xn_tx1
+	aw_1_0_nx1 = aw_1 and
+	aw_2_0_nx1 = aw_2 - xn_tx1
 ) and 
-(if set_v_func_new_v_tx1>10 then (if (not(xn_tx1 = 100)) then err_1_nx1=true else err_1_nx1=err1)
- and v1 = set_v_func_new_v_tx1 else (if (not(xn_tx1 = 1)) then err_1_nx1=true else err_1_nx1=err1)
- and v1 = set_v_func_new_v_tx1) and if (err_1_nx1) then 
+(if set_v_func_new_v_tx1>10 then (if (not(xn_tx1 = 100)) then err_1_nx1=true else err_1_nx1=err_0_nx1)
+ and v_0_nx1 = set_v_func_new_v_tx1 else (if (not(xn_tx1 = 1)) then err_1_nx1=true else err_1_nx1=err_0_nx1)
+ and v_0_nx1 = set_v_func_new_v_tx1) and if (err_1_nx1) then 
 
 	w_nx1 = w and 
 	aw_1_nx1 = aw_1
 	 and aw_2_nx1 = aw_2 and 
 	v_nx1 = v and 
 	true and block_num >= block_num else  
-	w_nx1 = w1 and 
-	aw_1_nx1 = aw_11
-	 and aw_2_nx1 = aw_21 and 
-	v_nx1 = v1 and 
+	w_nx1 = w_0_nx1 and 
+	aw_1_nx1 = aw_1_0_nx1
+	 and aw_2_nx1 = aw_2_0_nx1 and 
+	v_nx1 = v_0_nx1 and 
 	true and block_num >= block_num
 
 else block_num_nx1 >= block_num and 
@@ -158,7 +158,7 @@ contract_not_constructed or
 	) or exists(qfa_tx:functions;)exists(msgvalue_tx:int;)
     exists (
         xa_tx1: address; f_tx1: functions; constructor_initial_v_tx1: int; set_v_func_new_v_tx1: int; xn_tx1: int;  /* Transition vars */
-        w_nx1: int; w1: int; aw_1_nx1: int; aw_2_nx1: int; aw_11: int; aw_21: int; err_nx1 : bool; err1 : bool; err_1_nx1 : bool; err_2_nx1 : bool; err_3_nx1 : bool; block_num_nx1 : int; block_num1 : int; v_nx1 : int; v1 : int; v_1_nx1 : int; /* Next state vars */
+        w_nx1: int; w_0_nx1: int; aw_1_nx1: int; aw_2_nx1: int; aw_1_0_nx1: int; aw_2_0_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; err_2_nx1 : bool; err_3_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; v_nx1 : int; v_0_nx1 : int; v_1_nx1 : int; /* Next state vars */
     )
     (   /* condition */
         v_nx1 = v1_tx
@@ -166,28 +166,28 @@ contract_not_constructed or
         (
             ((xa_tx1 = addr_tx and f_tx1 = qfa_tx and xn_tx1 = msgvalue_tx) and 
 if f_tx1 = set_v_func then
-(if (not(xn_tx1 >= 0 and (xa_tx1 = a1 or xa_tx1 = a2) and ((not(xa_tx1 = a1) or aw_1 >= xn_tx1) and (not(xa_tx1 = a2) or aw_2 >= xn_tx1)))) then err1=true else err1=false)
- and (w1 = w + xn_tx1 and
+(if (not(xn_tx1 >= 0 and (xa_tx1 = a1 or xa_tx1 = a2) and ((not(xa_tx1 = a1) or aw_1 >= xn_tx1) and (not(xa_tx1 = a2) or aw_2 >= xn_tx1)))) then err_0_nx1=true else err_0_nx1=false)
+ and (w_0_nx1 = w + xn_tx1 and
 if (xa_tx1 = a1) then
-	aw_11 = aw_1 - xn_tx1 and
-	aw_21 = aw_2
+	aw_1_0_nx1 = aw_1 - xn_tx1 and
+	aw_2_0_nx1 = aw_2
 else
-	aw_11 = aw_1 and
-	aw_21 = aw_2 - xn_tx1
+	aw_1_0_nx1 = aw_1 and
+	aw_2_0_nx1 = aw_2 - xn_tx1
 ) and 
-(if set_v_func_new_v_tx1>10 then (if (not(xn_tx1 = 100)) then err_1_nx1=true else err_1_nx1=err1)
- and v1 = set_v_func_new_v_tx1 else (if (not(xn_tx1 = 1)) then err_1_nx1=true else err_1_nx1=err1)
- and v1 = set_v_func_new_v_tx1) and if (err_1_nx1) then 
+(if set_v_func_new_v_tx1>10 then (if (not(xn_tx1 = 100)) then err_1_nx1=true else err_1_nx1=err_0_nx1)
+ and v_0_nx1 = set_v_func_new_v_tx1 else (if (not(xn_tx1 = 1)) then err_1_nx1=true else err_1_nx1=err_0_nx1)
+ and v_0_nx1 = set_v_func_new_v_tx1) and if (err_1_nx1) then 
 
 	w_nx1 = w and 
 	aw_1_nx1 = aw_1
 	 and aw_2_nx1 = aw_2 and 
 	v_nx1 = v and 
 	true and block_num >= block_num else  
-	w_nx1 = w1 and 
-	aw_1_nx1 = aw_11
-	 and aw_2_nx1 = aw_21 and 
-	v_nx1 = v1 and 
+	w_nx1 = w_0_nx1 and 
+	aw_1_nx1 = aw_1_0_nx1
+	 and aw_2_nx1 = aw_2_0_nx1 and 
+	v_nx1 = v_0_nx1 and 
 	true and block_num >= block_num
 
 else block_num_nx1 >= block_num and 

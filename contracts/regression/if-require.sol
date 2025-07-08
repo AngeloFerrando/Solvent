@@ -9,14 +9,14 @@ contract IfRequire {
 
     function set_v(int new_v) payable {
         if (new_v > 10) {
-            require(msg.value == 100);
-            v = new_v
+            require(msg.value == 100)
+            //v = new_v
         }
         else {
-            require(msg.value == 1);
-            v = new_v
-        }
-        //v = new_v
+            require(msg.value == 1)
+            //v = new_v
+        };
+        v = new_v
     }
 }
 
