@@ -1,0 +1,260 @@
+
+type functions = enum { dummy, add_func };
+type address = enum { a1, a2 };
+node C (xa:address;xn:int;f:functions;constructor_initial_v:int;add_func_c:int;starting_w: int;starting_aw_1: int;starting_aw_2: int) returns();
+(*@contract
+    assume starting_w >= 0;
+    assume starting_aw_1 >= 0;
+assume starting_aw_2 >= 0;
+*)
+var contract_not_constructed: bool;
+const starting_err : bool = false;
+const starting_block_num : int = 0;
+const starting_v : int = 0;
+const starting_owner : address = a1;
+var w: int;
+var aw_1: int;
+var aw_2: int;
+var err : bool;
+var err_0 : bool;
+var block_num : int;
+var v : int;
+var v_0 : int;
+var owner : address;
+var owner_0 : address;
+let
+    if (true -> pre contract_not_constructed) then
+
+v_0 = constructor_initial_v;
+owner_0 = xa; if (false) then 
+	w = (starting_w -> pre w);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	v = (starting_v -> pre v);
+	owner = (starting_owner -> pre owner);
+	
+	contract_not_constructed = true;
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)}; else 
+	w = (starting_w -> pre w);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	v = v_0;
+	owner = owner_0;
+	
+	contract_not_constructed = false;
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+fi
+elsif f = add_func then
+	
+if (not((xa = (starting_owner -> pre owner) or add_func_c>0))) then err_0=true; else err_0=false; fi
+
+v_0 = ((starting_v -> pre v)+add_func_c); if (err_0) then 
+	w = (starting_w -> pre w);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	v = (starting_v -> pre v);
+	owner = (starting_owner -> pre owner);
+	
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)}; else 
+	w = (starting_w -> pre w);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	v = v_0;
+	owner = (starting_owner -> pre owner);
+	
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+fi
+else
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+	w = (starting_w -> pre w);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	err = (starting_err -> pre err);
+	v = (starting_v -> pre v);
+	owner = (starting_owner -> pre owner);
+	
+fi
+    --%PROPERTY 
+(
+contract_not_constructed or 
+(forall(addr_tx:address;)exists(f_tx:functions;)
+    exists (
+        xa_tx1: address; f_tx1: functions; constructor_initial_v_tx1: int; add_func_c_tx1: int; xn_tx1: int;  /* Transition vars */
+        w_nx1: int; aw_1_nx1: int; aw_2_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; err_2_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; v_nx1 : int; v_0_nx1 : int; v_1_nx1 : int; owner_nx1 : address; owner_0_nx1 : address; owner_1_nx1 : address; /* Next state vars */
+    )
+    (   /* condition */
+        v_nx1 = (v+1)
+        and
+        (
+            ((xa_tx1 = addr_tx and f_tx1 = f_tx and xn_tx1 = 0) and 
+if f_tx1 = add_func then
+
+(if (not((xa_tx1 = owner or add_func_c_tx1>0))) then err_0_nx1=true else err_0_nx1=false)
+ and v_0_nx1 = (v+add_func_c_tx1) and if (err_0_nx1) then 
+
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	v_nx1 = v
+	 and owner_nx1 = owner and 
+	true and block_num >= block_num else  
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	v_nx1 = v_0_nx1
+	 and owner_nx1 = owner_nx1 and 
+	true and block_num >= block_num
+
+else block_num_nx1 >= block_num and 
+	w_nx1 = w  and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	err_nx1 = err
+	 and block_num_nx1 = block_num
+	 and v_nx1 = v
+	 and owner_nx1 = owner and 
+	true
+)
+        )
+    ))
+);
+
+--%PROPERTY 
+(
+contract_not_constructed or 
+(forall(addr_tx:address;)exists(f_tx:functions;)
+    exists (
+        xa_tx1: address; f_tx1: functions; constructor_initial_v_tx1: int; add_func_c_tx1: int; xn_tx1: int;  /* Transition vars */
+        w_nx1: int; aw_1_nx1: int; aw_2_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; err_2_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; v_nx1 : int; v_0_nx1 : int; v_1_nx1 : int; owner_nx1 : address; owner_0_nx1 : address; owner_1_nx1 : address; /* Next state vars */
+    )
+    (   /* condition */
+        v_nx1 = (v-1)
+        and
+        (
+            ((xa_tx1 = addr_tx and f_tx1 = f_tx and xn_tx1 = 0) and 
+if f_tx1 = add_func then
+
+(if (not((xa_tx1 = owner or add_func_c_tx1>0))) then err_0_nx1=true else err_0_nx1=false)
+ and v_0_nx1 = (v+add_func_c_tx1) and if (err_0_nx1) then 
+
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	v_nx1 = v
+	 and owner_nx1 = owner and 
+	true and block_num >= block_num else  
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	v_nx1 = v_0_nx1
+	 and owner_nx1 = owner_nx1 and 
+	true and block_num >= block_num
+
+else block_num_nx1 >= block_num and 
+	w_nx1 = w  and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	err_nx1 = err
+	 and block_num_nx1 = block_num
+	 and v_nx1 = v
+	 and owner_nx1 = owner and 
+	true
+)
+        )
+    ))
+);
+
+--%PROPERTY 
+(
+contract_not_constructed or 
+(exists(addr_tx:address;)exists(f_tx:functions;)
+    exists (
+        xa_tx1: address; f_tx1: functions; constructor_initial_v_tx1: int; add_func_c_tx1: int; xn_tx1: int;  /* Transition vars */
+        w_nx1: int; aw_1_nx1: int; aw_2_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; err_2_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; v_nx1 : int; v_0_nx1 : int; v_1_nx1 : int; owner_nx1 : address; owner_0_nx1 : address; owner_1_nx1 : address; /* Next state vars */
+    )
+    (   /* condition */
+        v_nx1 = (v-1)
+        and
+        (
+            ((xa_tx1 = addr_tx and f_tx1 = f_tx and xn_tx1 = 0) and 
+if f_tx1 = add_func then
+
+(if (not((xa_tx1 = owner or add_func_c_tx1>0))) then err_0_nx1=true else err_0_nx1=false)
+ and v_0_nx1 = (v+add_func_c_tx1) and if (err_0_nx1) then 
+
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	v_nx1 = v
+	 and owner_nx1 = owner and 
+	true and block_num >= block_num else  
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	v_nx1 = v_0_nx1
+	 and owner_nx1 = owner_nx1 and 
+	true and block_num >= block_num
+
+else block_num_nx1 >= block_num and 
+	w_nx1 = w  and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	err_nx1 = err
+	 and block_num_nx1 = block_num
+	 and v_nx1 = v
+	 and owner_nx1 = owner and 
+	true
+)
+        )
+    ))
+);
+
+--%PROPERTY 
+(
+contract_not_constructed or 
+(forall(addr_tx:address;)(not(not(addr_tx=owner)) or exists(f_tx:functions;)
+    exists (
+        xa_tx1: address; f_tx1: functions; constructor_initial_v_tx1: int; add_func_c_tx1: int; xn_tx1: int;  /* Transition vars */
+        w_nx1: int; aw_1_nx1: int; aw_2_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; err_2_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; v_nx1 : int; v_0_nx1 : int; v_1_nx1 : int; owner_nx1 : address; owner_0_nx1 : address; owner_1_nx1 : address; /* Next state vars */
+    )
+    (   /* condition */
+        v_nx1 = (v-1)
+        and
+        (
+            ((xa_tx1 = addr_tx and f_tx1 = f_tx and xn_tx1 = 0) and 
+if f_tx1 = add_func then
+
+(if (not((xa_tx1 = owner or add_func_c_tx1>0))) then err_0_nx1=true else err_0_nx1=false)
+ and v_0_nx1 = (v+add_func_c_tx1) and if (err_0_nx1) then 
+
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	v_nx1 = v
+	 and owner_nx1 = owner and 
+	true and block_num >= block_num else  
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	v_nx1 = v_0_nx1
+	 and owner_nx1 = owner_nx1 and 
+	true and block_num >= block_num
+
+else block_num_nx1 >= block_num and 
+	w_nx1 = w  and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	err_nx1 = err
+	 and block_num_nx1 = block_num
+	 and v_nx1 = v
+	 and owner_nx1 = owner and 
+	true
+)
+        )
+    )))
+);
+
+tel
+        
