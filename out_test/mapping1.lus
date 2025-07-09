@@ -1,0 +1,246 @@
+
+type functions = enum { dummy, foo_func };
+type address = enum { a1, a2 };
+node Mapping1 (xa:address;xn:int;f:functions;starting_w: int;starting_aw_1: int;starting_aw_2: int) returns();
+(*@contract
+    assume starting_w >= 0;
+    assume starting_aw_1 >= 0;
+assume starting_aw_2 >= 0;
+*)
+var contract_not_constructed: bool;
+const starting_err : bool = false;
+const starting_block_num : int = 0;
+const starting_m_1 : int = 0;
+const starting_m_2 : int = 0;
+var w: int;
+var aw_1: int;
+var aw_2: int;
+var err : bool;
+var block_num : int;
+var m_1 : int;
+var m_2 : int;
+var m_1_0 : int;
+var m_2_0 : int;
+let
+    if (true -> pre contract_not_constructed) then
+
+ if (false) then 
+	w = (starting_w -> pre w);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	
+	m_1 = (starting_m_1 -> pre m_1);
+	m_2 = (starting_m_2 -> pre m_2);
+	contract_not_constructed = true;
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)}; else 
+	w = (starting_w -> pre w);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	
+	m_1 = (starting_m_1 -> pre m_1);
+	m_2 = (starting_m_2 -> pre m_2);
+	contract_not_constructed = false;
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+fi
+elsif f = foo_func then
+	
+if (xa = a1) then m_1_0 = ((starting_m_1 -> pre m_1)+1); else m_2_0 = ((starting_m_2 -> pre m_2)+1); fi if (false) then 
+	w = (starting_w -> pre w);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	
+	m_1 = (starting_m_1 -> pre m_1);
+	m_2 = (starting_m_2 -> pre m_2);
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)}; else 
+	w = (starting_w -> pre w);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	
+	m_1 = m_1_0;
+	m_2 = m_2_0;
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+fi
+else
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+	w = (starting_w -> pre w);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	err = (starting_err -> pre err);
+	m_1 = (starting_m_1 -> pre m_1);
+	m_2 = (starting_m_2 -> pre m_2);
+fi
+    --%PROPERTY 
+(
+contract_not_constructed or 
+(forall(a_tx:address;)exists(h_tx:functions;)
+    exists (
+        xa_tx1: address; f_tx1: functions;  xn_tx1: int;  /* Transition vars */
+        w_nx1: int; aw_1_nx1: int; aw_2_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; m_1_nx1 : int; m_2_nx1 : int; m_1_nx1_0 : int; m_2_nx1_0 : int; /* Next state vars */
+    )
+    (   /* condition */
+        if a_tx = a1 then m_1_nx1 = (m_1+1)
+	else m_2_nx1 = (m_2+1)
+	
+        and
+        (
+            ((xa_tx1 = a_tx and f_tx1 = h_tx and xn_tx1 = 0) and 
+if f_tx1 = foo_func then
+
+if (xa = a1) then (m_1_nx_0 = (m_1+1)) else (m_2_nx_0 = (m_2+1)) and if (false) then 
+
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	true and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2 and block_num >= block_num else  
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	true and 
+	m_1_nx1 = m_1_nx_0
+	 and m_2_nx1 = m_2_nx_0 and block_num >= block_num
+
+else block_num_nx1 >= block_num and 
+	w_nx1 = w  and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	err_nx1 = err
+	 and block_num_nx1 = block_num and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2
+)
+        )
+    ))
+);
+
+--%PROPERTY 
+(
+contract_not_constructed or 
+(forall(a_tx:address;)exists(h_tx:functions;)
+    exists (
+        xa_tx1: address; f_tx1: functions;  xn_tx1: int;  /* Transition vars */
+        w_nx1: int; aw_1_nx1: int; aw_2_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; m_1_nx1 : int; m_2_nx1 : int; m_1_nx1_0 : int; m_2_nx1_0 : int; /* Next state vars */
+    )
+    (   /* condition */
+        if a_tx = a1 then m_1_nx1 = (m_1+2)
+	else m_2_nx1 = (m_2+2)
+	
+        and
+        (
+            ((xa_tx1 = a_tx and f_tx1 = h_tx and xn_tx1 = 0) and 
+if f_tx1 = foo_func then
+
+if (xa = a1) then (m_1_nx_0 = (m_1+1)) else (m_2_nx_0 = (m_2+1)) and if (false) then 
+
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	true and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2 and block_num >= block_num else  
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	true and 
+	m_1_nx1 = m_1_nx_0
+	 and m_2_nx1 = m_2_nx_0 and block_num >= block_num
+
+else block_num_nx1 >= block_num and 
+	w_nx1 = w  and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	err_nx1 = err
+	 and block_num_nx1 = block_num and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2
+)
+        )
+    ))
+);
+
+--%PROPERTY 
+(
+contract_not_constructed or 
+(forall(a_tx:address;)exists(h1_tx:functions;)exists(h2_tx:functions;)
+    exists (
+        xa_tx1: address; f_tx1: functions;  xn_tx1: int;  /* Transition vars */
+        w_nx1: int; aw_1_nx1: int; aw_2_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; m_1_nx1 : int; m_2_nx1 : int; m_1_nx1_0 : int; m_2_nx1_0 : int; /* Next state vars */
+    )
+    (   /* condition */
+        
+    exists (
+        xa_tx2: address; f_tx2: functions;  xn_tx2: int;  /* Transition vars */
+        w_nx2: int; aw_1_nx2: int; aw_2_nx2: int; err_nx2 : bool; err_0_nx2 : bool; err_1_nx2 : bool; block_num_nx2 : int; block_num_0_nx2 : int; m_1_nx2 : int; m_2_nx2 : int; m_1_nx2_0 : int; m_2_nx2_0 : int; /* Next state vars */
+    )
+    (   /* condition */
+        if a_tx = a1 then m_1_nx2 = (m_1+2)
+	else m_2_nx2 = (m_2+2)
+	
+        and
+        (
+            ((xa_tx2 = a_tx and f_tx2 = h2_tx and xn_tx2 = 0) and 
+if f_tx2 = foo_func then
+
+if (xa = a1) then (m_1_nx_0 = (m_1_nx2+1)) else (m_2_nx_0 = (m_2_nx2+1)) and if (false) then 
+
+	w_nx2 = w_nx1 and 
+	aw_1_nx2 = aw_1_nx1
+	 and aw_2_nx2 = aw_2_nx1 and 
+	true and 
+	m_1_nx2 = m_1_nx1
+	 and m_2_nx2 = m_2_nx1 and block_num_nx2 >= block_num else  
+	w_nx2 = w_nx1 and 
+	aw_1_nx2 = aw_1_nx1
+	 and aw_2_nx2 = aw_2_nx1 and 
+	true and 
+	m_1_nx2 = m_1_nx_0
+	 and m_2_nx2 = m_2_nx_0 and block_num_nx2 >= block_num
+
+else block_num_nx2 >= block_num and 
+	w_nx2 = w_nx1  and 
+	aw_1_nx2 = aw_1_nx1
+	and aw_2_nx2 = aw_2_nx1 and 
+	err_nx2 = err_nx1 and 
+	m_1_nx2 = m_1_nx1
+	 and m_2_nx2 = m_2_nx1
+)
+        )
+    )
+        and
+        (
+            ((xa_tx1 = a_tx and f_tx1 = h1_tx and xn_tx1 = 0) and 
+if f_tx1 = foo_func then
+
+if (xa = a1) then (m_1_nx_0 = (m_1+1)) else (m_2_nx_0 = (m_2+1)) and if (false) then 
+
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	true and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2 and block_num >= block_num else  
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	true and 
+	m_1_nx1 = m_1_nx_0
+	 and m_2_nx1 = m_2_nx_0 and block_num >= block_num
+
+else block_num_nx1 >= block_num and 
+	w_nx1 = w  and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	err_nx1 = err
+	 and block_num_nx1 = block_num and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2
+)
+        )
+    ))
+);
+
+tel
+        
