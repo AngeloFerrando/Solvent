@@ -607,6 +607,7 @@ tel
     # Visit a parse tree produced by TxScriptParser#argsExpr.
     def visitArgsExpr(self, ctx:TxScriptParser.ArgsExprContext):
         args = set()
+        i = 0
         for arg in ctx.argExpr():
             if arg.var.text in self.__not_valid_names:
                 raise Exception(f'{arg.var.text} is not a valid name for a function\'s argument, please choose a different name')
@@ -616,7 +617,8 @@ tel
                 pref = self.__prefix.replace('_func', '')
                 if not self.__visit_properties:
                     raise Exception(f'The argument named {arg.var.text} in {pref} function is not valid (another function has already an argument called {arg.var.text})')
-            self.__args_map[arg.var.text] = (self.__prefix + '_' + arg.var.text, arg.ty.text)
+            self.__args_map[arg.var.text] = (self.__prefix + '_' + arg.var.text, arg.ty.text, i)
+            i += 1
         return args
 
 
@@ -771,7 +773,9 @@ tel
     def visitAssignCmd(self, ctx:TxScriptParser.AssignCmdContext):
         left = ctx.var.text
         # self.__globals_modifier -= 1
+        self.__id -= 1
         right = self.visit(ctx.child)
+        self.__id += 1
         # self.__globals_modifier += 1
         i = self.__globals_index[left]
         self.__globals_index[left] = i+1
@@ -1542,8 +1546,8 @@ forall (xa_tx: int;)
     # Visit a parse tree produced by TxScriptParser#complexExprFormulaExpr.
     def visitComplexExprFormulaExpr(self, ctx:TxScriptParser.ComplexExprFormulaExprContext):
         id = self.__id
-        # for k in self.__globals_index:
-        #     self.__globals_index[k] = 0
+        for k in self.__globals_index:
+            self.__globals_index[k] = 0
         transition_vars = ''
         transition_vars += f'xa_tx{id}: address; f_tx{id}: functions; ' + ' '.join(['{a}_tx{id}: {t};'.format(id=id, a=self.__args_map[a][0], t=self.__args_map[a][1]).replace('address', 'int') for a in self.__args_map if self.__args_map[a][1] != 'hash'])
         transition_vars += f' xn_tx{id}: int;'
@@ -1563,7 +1567,9 @@ forall (xa_tx: int;)
                 contract_globals += [f'{g_var.text}_{i}_nx{id} : {g_type};' for i in range(self.__globals_index_max[g_var.text] + (1 if g_var.text != 'err' else 2))]      
         next_state_vars = ' '.join(contract_globals)
         self.__id += 1
+        backup_globals_index = copy.deepcopy(self.__globals_index)
         condition = self.visit(ctx.child)
+        self.__globals_index = backup_globals_index
         self.__id -= 1
         if 'exists' not in condition and 'forall' not in condition:
             if '_{ag}' in condition:
@@ -1581,9 +1587,22 @@ forall (xa_tx: int;)
             for i in range(n_olds, 0, -1):
                 aux = 'old' * i + 'nx'
                 condition = condition.replace(aux, 'nx' + str(id - i))
+        backup_globals_index = copy.deepcopy(self.__globals_index)
         self.visit(self.__ctx)
+        self.__globals_index = backup_globals_index
         fname = f'{ctx.fname.text}_tx' if ctx.fname.text in self.__vars else f'{ctx.fname.text}_func'
-        contract = f'(xa_tx{id} = {self.visit(ctx.expr)} and f_tx{id} = {fname} and xn_tx{id} = {self.visit(ctx.value)}) and \n'
+
+        argsFCond = ['true']
+        argsF = []
+        for argF in ctx.args.argFormulaExpr():
+            aux = self.visit(argF)
+            argsF.append(aux.replace('nx', 'nx' + str(id - 1)))
+        for i in range(len(argsF)):
+            for a in self.__args_map:
+                if self.__args_map[a][0].startswith(fname) and self.__args_map[a][2] == i:
+                    argsFCond.append(f'{self.__args_map[a][0]}_tx{id} = {argsF[i]}')
+        argsFCond = ' and '.join(argsFCond)
+        contract = f'(xa_tx{id} = {self.visit(ctx.expr)} and f_tx{id} = {fname} and {argsFCond} and xn_tx{id} = {self.visit(ctx.value)}) and \n'
         n_tabs = 0
         keys = list(self.__proc_args.keys())
         keys.append('dummy')

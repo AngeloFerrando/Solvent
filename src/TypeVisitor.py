@@ -501,8 +501,12 @@ class TypeVisitor(TxScriptVisitor):
             raise TypeError(ctx, f'{ctx.fname.text} does not exist')
         if self.visit(ctx.value) != 'Int':
             raise TypeError(ctx, f'{ctx.value} needs to have integer type')
+        if self.__function_args_types[ctx.fname.text+'_func'] and not ctx.args.argFormulaExpr():
+            raise TypeError(ctx, f'Function {ctx.fname.text} requires arguments, but none are given')
         index = 0
         for arg in ctx.args.argFormulaExpr():
+            if index >= len(self.__function_args_types[self.__prefix]):
+                raise TypeError(ctx, f'Function {ctx.fname.text} requires {len(self.__function_args_types[self.__prefix])} arguments, but {index+1} are given')
             ty = self.visit(arg.child)
             if ty != self.__function_args_types[self.__prefix][index]:
                 raise TypeError(ctx, f'argument {arg} should be {self.__function_args_types[self.__prefix][index]}, as expected by function {self.__prefix}, instead is {ty}')

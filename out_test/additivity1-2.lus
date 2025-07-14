@@ -82,10 +82,10 @@ contract_not_constructed or
         v12_storage_tx = v_nx2
         and
         (
-            ((xa_tx2 = addr_tx and f_tx2 = add_func and xn_tx2 = 0) and 
+            ((xa_tx2 = addr_tx and f_tx2 = add_func and true and add_func_c_tx2 = c2_tx and xn_tx2 = 0) and 
 if f_tx2 = add_func then
 
-v_0_nx2 = (v_nx2+add_func_c_tx2) and if (false) then 
+v_0_nx2 = (v_nx1+add_func_c_tx2) and if (false) then 
 
 	w_nx2 = w_nx1 and 
 	aw_1_nx2 = aw_1_nx1
@@ -110,7 +110,7 @@ else block_num_nx2 >= block_num and
     ))
         and
         (
-            ((xa_tx1 = addr_tx and f_tx1 = add_func and xn_tx1 = 0) and 
+            ((xa_tx1 = addr_tx and f_tx1 = add_func and true and add_func_c_tx1 = c1_tx and xn_tx1 = 0) and 
 if f_tx1 = add_func then
 
 v_0_nx1 = (v+add_func_c_tx1) and if (false) then 
@@ -142,10 +142,10 @@ else block_num_nx1 >= block_num and
         w_nx1: int; aw_1_nx1: int; aw_2_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; v_nx1 : int; v_0_nx1 : int; v_1_nx1 : int; /* Next state vars */
     )
     (   /* condition */
-        v3_storage_tx = v_0_nx1
+        v3_storage_tx = v_nx1
         and
         (
-            ((xa_tx1 = addr_tx and f_tx1 = add_func and xn_tx1 = 0) and 
+            ((xa_tx1 = addr_tx and f_tx1 = add_func and true and add_func_c_tx1 = c3_tx and xn_tx1 = 0) and 
 if f_tx1 = add_func then
 
 v_0_nx1 = (v+add_func_c_tx1) and if (false) then 
@@ -172,157 +172,6 @@ else block_num_nx1 >= block_num and
 )
         )
     ))) and v12_storage_tx = v3_storage_tx))
-);
-
---%PROPERTY 
-(
-contract_not_constructed or 
-(forall(c1_tx:int;)forall(c2_tx:int;)forall(c3_tx:int;)exists(v12_storage_tx:int;)exists(v3_storage_tx:int;)forall(addr_tx:address;)(((
-    exists (
-        xa_tx1: address; f_tx1: functions; constructor_initial_v_tx1: int; add_func_c_tx1: int; xn_tx1: int;  /* Transition vars */
-        w_nx1: int; aw_1_nx1: int; aw_2_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; v_nx1 : int; v_0_nx1 : int; v_1_nx1 : int; /* Next state vars */
-    )
-    (   /* condition */
-        (
-    exists (
-        xa_tx2: address; f_tx2: functions; constructor_initial_v_tx2: int; add_func_c_tx2: int; xn_tx2: int;  /* Transition vars */
-        w_nx2: int; aw_1_nx2: int; aw_2_nx2: int; err_nx2 : bool; err_0_nx2 : bool; err_1_nx2 : bool; block_num_nx2 : int; block_num_0_nx2 : int; v_nx2 : int; v_0_nx2 : int; v_1_nx2 : int; /* Next state vars */
-    )
-    (   /* condition */
-        v12_storage_tx = v_nx2
-        and
-        (
-            ((xa_tx2 = addr_tx and f_tx2 = add_func and xn_tx2 = 0) and 
-if f_tx2 = add_func then
-
-v_0_nx2 = (v_nx2+add_func_c_tx2) and if (false) then 
-
-	w_nx2 = w_nx1 and 
-	aw_1_nx2 = aw_1_nx1
-	 and aw_2_nx2 = aw_2_nx1 and 
-	v_nx2 = v_nx1 and 
-	true and block_num_nx2 >= block_num else  
-	w_nx2 = w_nx1 and 
-	aw_1_nx2 = aw_1_nx1
-	 and aw_2_nx2 = aw_2_nx1 and 
-	v_nx2 = v_0_nx2 and 
-	true and block_num_nx2 >= block_num
-
-else block_num_nx2 >= block_num and 
-	w_nx2 = w_nx1  and 
-	aw_1_nx2 = aw_1_nx1
-	and aw_2_nx2 = aw_2_nx1 and 
-	err_nx2 = err_nx1
-	 and v_nx2 = v_nx1 and 
-	true
-)
-        )
-    ))
-        and
-        (
-            ((xa_tx1 = addr_tx and f_tx1 = add_func and xn_tx1 = 0) and 
-if f_tx1 = add_func then
-
-v_0_nx1 = (v+add_func_c_tx1) and if (false) then 
-
-	w_nx1 = w and 
-	aw_1_nx1 = aw_1
-	 and aw_2_nx1 = aw_2 and 
-	v_nx1 = v and 
-	true and block_num >= block_num else  
-	w_nx1 = w and 
-	aw_1_nx1 = aw_1
-	 and aw_2_nx1 = aw_2 and 
-	v_nx1 = v_0_nx1 and 
-	true and block_num >= block_num
-
-else block_num_nx1 >= block_num and 
-	w_nx1 = w  and 
-	aw_1_nx1 = aw_1
-	and aw_2_nx1 = aw_2 and 
-	err_nx1 = err
-	 and block_num_nx1 = block_num
-	 and v_nx1 = v and 
-	true
-)
-        )
-    )) and (
-    exists (
-        xa_tx1: address; f_tx1: functions; constructor_initial_v_tx1: int; add_func_c_tx1: int; xn_tx1: int;  /* Transition vars */
-        w_nx1: int; aw_1_nx1: int; aw_2_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; v_nx1 : int; v_0_nx1 : int; v_1_nx1 : int; /* Next state vars */
-    )
-    (   /* condition */
-        v3_storage_tx = v_0_nx1
-        and
-        (
-            ((xa_tx1 = addr_tx and f_tx1 = add_func and xn_tx1 = 0) and 
-if f_tx1 = add_func then
-
-v_0_nx1 = (v+add_func_c_tx1) and if (false) then 
-
-	w_nx1 = w and 
-	aw_1_nx1 = aw_1
-	 and aw_2_nx1 = aw_2 and 
-	v_nx1 = v and 
-	true and block_num >= block_num else  
-	w_nx1 = w and 
-	aw_1_nx1 = aw_1
-	 and aw_2_nx1 = aw_2 and 
-	v_nx1 = v_0_nx1 and 
-	true and block_num >= block_num
-
-else block_num_nx1 >= block_num and 
-	w_nx1 = w  and 
-	aw_1_nx1 = aw_1
-	and aw_2_nx1 = aw_2 and 
-	err_nx1 = err
-	 and block_num_nx1 = block_num
-	 and v_nx1 = v and 
-	true
-)
-        )
-    ))) and v12_storage_tx = v3_storage_tx))
-);
-
---%PROPERTY 
-(
-contract_not_constructed or 
-(forall(c1_tx:int;)forall(addr_tx:address;)(
-    exists (
-        xa_tx1: address; f_tx1: functions; constructor_initial_v_tx1: int; add_func_c_tx1: int; xn_tx1: int;  /* Transition vars */
-        w_nx1: int; aw_1_nx1: int; aw_2_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; v_nx1 : int; v_0_nx1 : int; v_1_nx1 : int; /* Next state vars */
-    )
-    (   /* condition */
-        true
-        and
-        (
-            ((xa_tx1 = addr_tx and f_tx1 = add_func and xn_tx1 = 0) and 
-if f_tx1 = add_func then
-
-v_0_nx1 = (v+add_func_c_tx1) and if (false) then 
-
-	w_nx1 = w and 
-	aw_1_nx1 = aw_1
-	 and aw_2_nx1 = aw_2 and 
-	v_nx1 = v and 
-	true and block_num >= block_num else  
-	w_nx1 = w and 
-	aw_1_nx1 = aw_1
-	 and aw_2_nx1 = aw_2 and 
-	v_nx1 = v_0_nx1 and 
-	true and block_num >= block_num
-
-else block_num_nx1 >= block_num and 
-	w_nx1 = w  and 
-	aw_1_nx1 = aw_1
-	and aw_2_nx1 = aw_2 and 
-	err_nx1 = err
-	 and block_num_nx1 = block_num
-	 and v_nx1 = v and 
-	true
-)
-        )
-    )))
 );
 
 tel
