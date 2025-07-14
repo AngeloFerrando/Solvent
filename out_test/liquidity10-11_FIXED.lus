@@ -1,0 +1,182 @@
+
+type functions = enum { dummy, pay_func };
+type address = enum { a1, a2 };
+node C4 (xa:address;xn:int;f:functions;pay_func_amount:int;starting_w: int;starting_aw_1: int;starting_aw_2: int) returns();
+(*@contract
+    assume starting_w >= 0;
+    assume starting_aw_1 >= 0;
+assume starting_aw_2 >= 0;
+*)
+var contract_not_constructed: bool;
+const starting_err : bool = false;
+const starting_block_num : int = 0;
+var w: int;
+var w_0: int;
+var aw_1: int;
+var aw_2: int;
+var aw_1_0: int;
+var aw_2_0: int;
+var err : bool;
+var lastReverted_0 : bool;
+var lastReverted_1 : bool;
+var block_num : int;
+let
+    if (true -> pre contract_not_constructed) then
+
+ if (false) then 
+	w = (starting_w -> pre w);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	
+	
+	contract_not_constructed = true;
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)}; else 
+	w = (starting_w -> pre w);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	
+	
+	contract_not_constructed = false;
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+fi
+elsif f = pay_func then
+	
+if (not(pay_func_amount<=((starting_w -> pre w)-1))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+if (not(pay_func_amount >= 0 and pay_func_amount <= (starting_w -> pre w))) then lastReverted_1=true; else lastReverted_1=lastReverted_0; fi
+w_0 = (starting_w -> pre w) - pay_func_amount;
+if (xa = a1) then
+	aw_1_0 = (starting_aw_1 -> pre aw_1) + pay_func_amount;
+	aw_2_0 = (starting_aw_2 -> pre aw_2);
+else
+	aw_1_0 = (starting_aw_1 -> pre aw_1);
+	aw_2_0 = (starting_aw_2 -> pre aw_2) + pay_func_amount;
+fi
+ if (lastReverted_1) then 
+	w = (starting_w -> pre w);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	
+	
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)}; else 
+	w = w_0;
+	aw_1 = aw_1_0;
+	aw_2 = aw_2_0;
+	
+	
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+fi
+else
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+	w = (starting_w -> pre w);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	err = (starting_err -> pre err);
+	
+fi
+    --%PROPERTY 
+(
+contract_not_constructed or 
+(forall(addr_tx:address;)exists(v_tx:int;)
+    exists (
+        xa_tx1: address; f_tx1: functions; pay_func_amount_tx1: int; xn_tx1: int;  /* Transition vars */
+        w_nx1: int; w_0_nx1: int; aw_1_nx1: int; aw_2_nx1: int; aw_1_0_nx1: int; aw_2_0_nx1: int; lastReverted_nx1 : bool; lastReverted_0_nx1 : bool; lastReverted_1_nx1 : bool; lastReverted_2_nx1 : bool; lastReverted_3_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; /* Next state vars */
+    )
+    (   /* condition */
+        (not(not(lastReverted_nx1)) or if addr_tx = a1 then aw_1_nx1 = ((aw_1+w)-1)
+	else aw_2_nx1 = ((aw_2+w)-1)
+	)
+        and
+        (
+            ((xa_tx1 = addr_tx and f_tx1 = pay_func and true and pay_func_amount_tx1 = v_tx and xn_tx1 = 0) and 
+if f_tx1 = pay_func then
+
+(if (not(pay_func_amount_tx1<=(w-1))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and ((if (not(pay_func_amount_tx1 >= 0 and pay_func_amount_tx1 <= w)) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1) 
+ and w_0_nx1 = w - pay_func_amount_tx1 and
+if (xa_tx1 = a1) then
+	aw_1_0_nx1 = aw_1 + pay_func_amount_tx1 and
+	aw_2_0_nx1 = aw_2
+else
+	aw_1_0_nx1 = aw_1 and
+	aw_2_0_nx1 = aw_2 + pay_func_amount_tx1
+) and if (lastReverted_1_nx1) then 
+
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	true and 
+	true and block_num >= block_num else  
+	w_nx1 = w_0_nx1 and 
+	aw_1_nx1 = aw_1_0_nx1
+	 and aw_2_nx1 = aw_2_0_nx1 and 
+	true and 
+	true and block_num >= block_num
+
+else block_num_nx1 >= block_num and 
+	w_nx1 = w  and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	lastReverted_nx1 = err
+	 and block_num_nx1 = block_num and 
+	true
+)
+        )
+    ))
+);
+
+--%PROPERTY 
+(
+contract_not_constructed or 
+(forall(addr_tx:address;)exists(v_tx:int;)
+    exists (
+        xa_tx1: address; f_tx1: functions; pay_func_amount_tx1: int; xn_tx1: int;  /* Transition vars */
+        w_nx1: int; w_0_nx1: int; aw_1_nx1: int; aw_2_nx1: int; aw_1_0_nx1: int; aw_2_0_nx1: int; lastReverted_nx1 : bool; lastReverted_0_nx1 : bool; lastReverted_1_nx1 : bool; lastReverted_2_nx1 : bool; lastReverted_3_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; /* Next state vars */
+    )
+    (   /* condition */
+        (lastReverted_nx1 and if addr_tx = a1 then aw_1_nx1 = ((aw_1+w)-1)
+	else aw_2_nx1 = ((aw_2+w)-1)
+	)
+        and
+        (
+            ((xa_tx1 = addr_tx and f_tx1 = pay_func and true and pay_func_amount_tx1 = v_tx and xn_tx1 = 0) and 
+if f_tx1 = pay_func then
+
+(if (not(pay_func_amount_tx1<=(w-1))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and ((if (not(pay_func_amount_tx1 >= 0 and pay_func_amount_tx1 <= w)) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1) 
+ and w_0_nx1 = w - pay_func_amount_tx1 and
+if (xa_tx1 = a1) then
+	aw_1_0_nx1 = aw_1 + pay_func_amount_tx1 and
+	aw_2_0_nx1 = aw_2
+else
+	aw_1_0_nx1 = aw_1 and
+	aw_2_0_nx1 = aw_2 + pay_func_amount_tx1
+) and if (lastReverted_1_nx1) then 
+
+	w_nx1 = w and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	true and 
+	true and block_num >= block_num else  
+	w_nx1 = w_0_nx1 and 
+	aw_1_nx1 = aw_1_0_nx1
+	 and aw_2_nx1 = aw_2_0_nx1 and 
+	true and 
+	true and block_num >= block_num
+
+else block_num_nx1 >= block_num and 
+	w_nx1 = w  and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	lastReverted_nx1 = err
+	 and block_num_nx1 = block_num and 
+	true
+)
+        )
+    ))
+);
+
+tel
+        
