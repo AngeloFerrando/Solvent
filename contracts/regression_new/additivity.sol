@@ -10,7 +10,6 @@ contract Additivity {
         v = v + c
     }
 }
-/*
 rule P1_true {
     forall c1 : int .
     forall c2 : int .
@@ -29,7 +28,6 @@ rule P1_true {
 }
 
 
-
 rule P2_false {
     forall c1 : int .
     forall c2 : int .
@@ -45,7 +43,7 @@ rule P2_false {
             (v3_storage == v))
     &&
     (v12_storage == v3_storage)
-}*/
+}
 
 /*
 rule P_signature_error {
@@ -57,21 +55,20 @@ rule P_signature_error {
 */
 
 
-/*
+
 rule P3_true {
     forall addr : address .
     << addr : Addittivity . add(2) $ 0 >>		
-        v == old(v)
+        v == old(v)+2
 }
 
 
 rule P4_false {
     forall addr : address .
-    << addr : Addittivity . add() $ 0 >>		
+    << addr : Addittivity . add(v) $ 0 >>		
         v == old(v)+3
 }
-*/
-/*
+
 rule P5_true {
     forall addr : address .
     << addr : Addittivity . add(v) $ 0 >>		
@@ -83,7 +80,7 @@ rule P6_false {
     << addr : Addittivity . add(v) $ 0 >>		
         v == 3*old(v)
 }
-*/
+
 
 rule P7_true {
     forall addr : address .
