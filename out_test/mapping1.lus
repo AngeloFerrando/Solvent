@@ -44,7 +44,10 @@ let
 fi
 elsif f = foo_func then
 	
-if (xa = a1) then m_1_0 = ((starting_m_1 -> pre m_1)+1); else m_2_0 = ((starting_m_2 -> pre m_2)+1); fi if (false) then 
+if (xa = a1) then 
+ m_1_0 = ((starting_m_1 -> pre m_1)+1); 
+ else 
+ m_2_0 = ((starting_m_2 -> pre m_2)+1); fi if (false) then 
 	w = (starting_w -> pre w);
 	aw_1 = (starting_aw_1 -> pre aw_1);
 	aw_2 = (starting_aw_2 -> pre aw_2);
@@ -85,10 +88,13 @@ contract_not_constructed or
 	
         and
         (
-            ((xa_tx1 = a_tx and f_tx1 = h_tx and xn_tx1 = 0) and 
+            ((xa_tx1 = a_tx and f_tx1 = h_tx and true and xn_tx1 = 0) and 
 if f_tx1 = foo_func then
 
-if (xa = a1) then (m_1_nx_0 = (m_1+1)) else (m_2_nx_0 = (m_2+1)) and if (false) then 
+if (xa = a1) then 
+ (m_1_nx1_0 = (m_1+1)) 
+ else 
+(m_2_nx1_0 = (m_2+1)) and if (false) then 
 
 	w_nx1 = w and 
 	aw_1_nx1 = aw_1
@@ -100,8 +106,8 @@ if (xa = a1) then (m_1_nx_0 = (m_1+1)) else (m_2_nx_0 = (m_2+1)) and if (false) 
 	aw_1_nx1 = aw_1
 	 and aw_2_nx1 = aw_2 and 
 	true and 
-	m_1_nx1 = m_1_nx_0
-	 and m_2_nx1 = m_2_nx_0 and block_num >= block_num
+	m_1_nx1 = m_1_nx1_0
+	 and m_2_nx1 = m_2_nx1_0 and block_num >= block_num
 
 else block_num_nx1 >= block_num and 
 	w_nx1 = w  and 
@@ -130,10 +136,13 @@ contract_not_constructed or
 	
         and
         (
-            ((xa_tx1 = a_tx and f_tx1 = h_tx and xn_tx1 = 0) and 
+            ((xa_tx1 = a_tx and f_tx1 = h_tx and true and xn_tx1 = 0) and 
 if f_tx1 = foo_func then
 
-if (xa = a1) then (m_1_nx_0 = (m_1+1)) else (m_2_nx_0 = (m_2+1)) and if (false) then 
+if (xa = a1) then 
+ (m_1_nx1_0 = (m_1+1)) 
+ else 
+(m_2_nx1_0 = (m_2+1)) and if (false) then 
 
 	w_nx1 = w and 
 	aw_1_nx1 = aw_1
@@ -145,8 +154,8 @@ if (xa = a1) then (m_1_nx_0 = (m_1+1)) else (m_2_nx_0 = (m_2+1)) and if (false) 
 	aw_1_nx1 = aw_1
 	 and aw_2_nx1 = aw_2 and 
 	true and 
-	m_1_nx1 = m_1_nx_0
-	 and m_2_nx1 = m_2_nx_0 and block_num >= block_num
+	m_1_nx1 = m_1_nx1_0
+	 and m_2_nx1 = m_2_nx1_0 and block_num >= block_num
 
 else block_num_nx1 >= block_num and 
 	w_nx1 = w  and 
@@ -181,10 +190,13 @@ contract_not_constructed or
 	
         and
         (
-            ((xa_tx2 = a_tx and f_tx2 = h2_tx and xn_tx2 = 0) and 
+            ((xa_tx2 = a_tx and f_tx2 = h2_tx and true and xn_tx2 = 0) and 
 if f_tx2 = foo_func then
 
-if (xa = a1) then (m_1_nx_0 = (m_1_nx2+1)) else (m_2_nx_0 = (m_2_nx2+1)) and if (false) then 
+if (xa = a1) then 
+ (m_1_nx2_0 = (m_1_nx1+1)) 
+ else 
+(m_2_nx2_0 = (m_2_nx1+1)) and if (false) then 
 
 	w_nx2 = w_nx1 and 
 	aw_1_nx2 = aw_1_nx1
@@ -196,8 +208,8 @@ if (xa = a1) then (m_1_nx_0 = (m_1_nx2+1)) else (m_2_nx_0 = (m_2_nx2+1)) and if 
 	aw_1_nx2 = aw_1_nx1
 	 and aw_2_nx2 = aw_2_nx1 and 
 	true and 
-	m_1_nx2 = m_1_nx_0
-	 and m_2_nx2 = m_2_nx_0 and block_num_nx2 >= block_num
+	m_1_nx2 = m_1_nx2_0
+	 and m_2_nx2 = m_2_nx2_0 and block_num_nx2 >= block_num
 
 else block_num_nx2 >= block_num and 
 	w_nx2 = w_nx1  and 
@@ -211,10 +223,13 @@ else block_num_nx2 >= block_num and
     )
         and
         (
-            ((xa_tx1 = a_tx and f_tx1 = h1_tx and xn_tx1 = 0) and 
+            ((xa_tx1 = a_tx and f_tx1 = h1_tx and true and xn_tx1 = 0) and 
 if f_tx1 = foo_func then
 
-if (xa = a1) then (m_1_nx_0 = (m_1+1)) else (m_2_nx_0 = (m_2+1)) and if (false) then 
+if (xa = a1) then 
+ (m_1_nx1_0 = (m_1+1)) 
+ else 
+(m_2_nx1_0 = (m_2+1)) and if (false) then 
 
 	w_nx1 = w and 
 	aw_1_nx1 = aw_1
@@ -226,8 +241,8 @@ if (xa = a1) then (m_1_nx_0 = (m_1+1)) else (m_2_nx_0 = (m_2+1)) and if (false) 
 	aw_1_nx1 = aw_1
 	 and aw_2_nx1 = aw_2 and 
 	true and 
-	m_1_nx1 = m_1_nx_0
-	 and m_2_nx1 = m_2_nx_0 and block_num >= block_num
+	m_1_nx1 = m_1_nx1_0
+	 and m_2_nx1 = m_2_nx1_0 and block_num >= block_num
 
 else block_num_nx1 >= block_num and 
 	w_nx1 = w  and 

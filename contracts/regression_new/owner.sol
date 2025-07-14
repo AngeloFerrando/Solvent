@@ -14,6 +14,7 @@ contract C {
     }
 }
 
+
 rule P1_true {
     forall addr : address .
     exists f : method .
@@ -36,6 +37,8 @@ rule P2_true {
     << addr : C . f() $ 0 >>			
         v == old(v) - 1
 }
+
+
 
 rule P3_false {
     forall addr : address .

@@ -97,8 +97,10 @@ class Kind2Visitor(TxScriptVisitor):
                 g_init_value = self.__initial_const_globals[g_var.text]
                 contract_globals += [f'const starting_{g_var.text}_{ag} : int = {g_init_value};' for ag in range(1, self.__A+1)]
             else:
-                if g_type == 'Address' or g_type == 'Hash' or g_type == 'Secret':
+                if g_type == 'Hash' or g_type == 'Secret':
                     g_type = 'int'
+                if g_type == 'Address':
+                    g_type = 'address'
                 g_init_value = self.__initial_const_globals[g_var.text]
                 contract_globals += [f'const starting_{g_var.text} : {g_type} = {g_init_value};']
             # I assume that the visit of the constructor has generated such information
@@ -111,8 +113,10 @@ class Kind2Visitor(TxScriptVisitor):
                 contract_globals += [f'var {g_var.text}_{ag} : int;' for ag in range(1, self.__A+1)]
                 contract_globals += [f'var {g_var.text}_{ag}_{i} : int;' for i in range(self.__globals_index_max[g_var.text]) for ag in range(1, self.__A+1)]
             else:
-                if g_type == 'Address' or g_type == 'Hash' or g_type == 'Secret':
+                if g_type == 'Hash' or g_type == 'Secret':
                     g_type = 'int'
+                if g_type == 'Address':
+                    g_type = 'address'
                 contract_globals += [f'var {g_var.text} : {g_type};']
                 contract_globals += [f'var {g_var.text}_{i} : {g_type};' for i in range(self.__globals_index_max[g_var.text])]
         contract_globals = '\n'.join(contract_globals)
@@ -199,7 +203,7 @@ let
 tel
         '''.replace('skip and', 'true and').replace('and skip', 'and true').replace('skip', '').replace(';;', ';')
         
-        return res.replace('_nx0', '') #.replace('_0_nx', '') 
+        return res.replace('_nx0', '').replace('> =', '>=') #.replace('_0_nx', '') 
 
 
     # Visit a parse tree produced by TxScriptParser#constFieldDecl.
@@ -500,19 +504,19 @@ tel
         self.__add_last_cmd = True
         body = self.visit(ctx.cmds)
         if '_xa' in body:
-            new_body = 'if (xa = a1) then ' + ('(' if self.__visit_properties else '') + body.format(ag='xa').replace('_xa_tx', '_1_nx').replace('_xa', '_1') + (')' if self.__visit_properties else '')
+            new_body = 'if (xa = a1) then \n ' + ('(' if self.__visit_properties else '') + body.format(ag='xa').replace('_xa_tx', '_1_nx').replace('_xa', '_1') + (')' if self.__visit_properties else '')
             for ag in range(2, self.__A+1):
                 if not self.__visit_properties:
                     if ag == self.__A:
-                        new_body += ' else '
+                        new_body += ' \n else \n '
                     else:
-                        new_body += f' elsif (xa = a{ag}) then '
+                        new_body += f' \n elsif (xa = a{ag}) then \n'
                     new_body += body.format(ag='xa').replace('_xa_tx', f'_{ag}_nx').replace('_xa', f'_{ag}')
                 else:
                     if ag == self.__A:
-                        new_body += ' else '
+                        new_body += ' \n else \n'
                     else:
-                        new_body += f' else if (xa = a{ag}) then '
+                        new_body += f' \n else if (xa = a{ag}) then \n'
                     new_body += '(' + body.format(ag='xa').replace('_xa_tx', f'_{ag}_nx').replace('_xa', f'_{ag}') + ')'
             if not self.__visit_properties:
                 body = new_body + ' fi'
@@ -526,6 +530,8 @@ tel
                 # elif ty == ('MapAddr', 'int'):
                 #     for i in range(1, self.__A + 1):
                 #         self.__initial_const_globals[f'{g.text}_{i}'] = 0
+                elif ty == 'Address':
+                    self.__initial_const_globals[g.text] = 'a1'
                 else:
                     self.__initial_const_globals[g.text] = 0
             # for (g, ty) in self.__globals:
@@ -802,7 +808,9 @@ tel
         left = ctx.var.text
         index = self.visit(ctx.index)
         self.__globals_modifier -= 1
+        self.__id -= 1
         right = self.visit(ctx.child)#.replace(str(index), 'j')
+        self.__id += 1
         self.__globals_modifier += 1
 
         if left in self.__globals_index:
@@ -1501,46 +1509,74 @@ forall (xa_tx: int;)
         #     value += '_' + str(self.__id)
         value = value.replace('tx', 'oldtx').replace('nx', 'oldnx')
         return value
-    
+
     @staticmethod
     def bump_nx_all(condition, id, vars):
         pid_nx = f'_nx{id - 1}' if id > 1 else ''
         pid_tx = f'_tx{id - 1}' if id > 1 else ''
-        # 1) find all the "base" names that have appeared with "_nx" or "_tx"
-        bases_nx = set(re.findall(r'\b(\w+)_nx\b', condition))
-        bases_tx = set(re.findall(r'\b(\w+)_tx\b', condition))
-        # Remove any bases that are in self.__vars (ignore them)
-        ignore_vars = set(vars.keys())
-        bases_nx -= ignore_vars
-        bases_tx -= ignore_vars
-        # 2) for each of those bases, do the two replacements for _nx
-        for base in bases_nx:
-            # a) bump the _nx suffix
+        ignore = set(vars.keys())
+
+        # 1) Handle variables that already have a numeric _nx_<idx> suffix
+        for base, idx in set(re.findall(r'\b(\w+)_nx_(\d+)\b', condition)):
+            if base in ignore:
+                continue
+            # a) bump the branch‐id but keep the original index
             condition = re.sub(
-                rf'\b{base}_nx\b',
-                f'{base}_nx{id}',
+                rf'\b{base}_nx_{idx}\b',
+                f'{base}_nx{id}_{idx}',
                 condition
             )
-            # b) replace the bare base with base_nx
+            # b) rename any bare occurrences of `base`
             condition = re.sub(
                 rf'\b{base}\b',
                 f'{base}{pid_nx}',
                 condition
             )
-        # 3) for each of those bases, do the two replacements for _tx
-        for base in bases_tx:
-            # a) bump the _tx suffix
+
+        # 2) Then handle the “plain” _nx suffix (no trailing number)
+        for base in set(re.findall(r'\b(\w+)_nx\b', condition)):
+            if base in ignore:
+                continue
             condition = re.sub(
-                rf'\b{base}_tx\b',
-                f'{base}_tx{id}',
+                rf'\b{base}_nx\b',
+                f'{base}_nx{id}',
                 condition
             )
-            # b) replace the bare base with base_tx
+            condition = re.sub(
+                rf'\b{base}\b',
+                f'{base}{pid_nx}',
+                condition
+            )
+
+        # 3) Repeat the same two‐step process for _tx
+        for base, idx in set(re.findall(r'\b(\w+)_tx_(\d+)\b', condition)):
+            if base in ignore:
+                continue
+            condition = re.sub(
+                rf'\b{base}_tx_{idx}\b',
+                f'{base}_tx{id}_{idx}',
+                condition
+            )
             condition = re.sub(
                 rf'\b{base}\b',
                 f'{base}{pid_tx}',
                 condition
             )
+
+        for base in set(re.findall(r'\b(\w+)_tx\b', condition)):
+            if base in ignore:
+                continue
+            condition = re.sub(
+                rf'\b{base}_tx\b',
+                f'{base}_tx{id}',
+                condition
+            )
+            condition = re.sub(
+                rf'\b{base}\b',
+                f'{base}{pid_tx}',
+                condition
+            )
+
         return condition
 
     # Visit a parse tree produced by TxScriptParser#complexExprFormulaExpr.
@@ -1561,8 +1597,10 @@ forall (xa_tx: int;)
                 contract_globals += [f'{g_var.text}_{ag}_nx{id} : int;' for ag in range(1, self.__A+1)]
                 contract_globals += [f'{g_var.text}_{ag}_nx{id}_{i} : int;' for i in range(self.__globals_index_max[g_var.text]) for ag in range(1, self.__A+1)] 
             else:
-                if g_type == 'Address' or g_type == 'Hash' or g_type == 'Secret':
+                if g_type == 'Hash' or g_type == 'Secret':
                     g_type = 'int'
+                if g_type == 'Address':
+                    g_type = 'address'
                 contract_globals += [f'{g_var.text}_nx{id} : {g_type};']
                 contract_globals += [f'{g_var.text}_{i}_nx{id} : {g_type};' for i in range(self.__globals_index_max[g_var.text] + (1 if g_var.text != 'err' else 2))]      
         next_state_vars = ' '.join(contract_globals)

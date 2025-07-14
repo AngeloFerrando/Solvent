@@ -14,6 +14,7 @@ rule P1_true {
 }
 
 
+
 rule P2_false {
     forall a : address .
     exists h : method .
