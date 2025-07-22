@@ -150,7 +150,7 @@ class Kind2Visitor(TxScriptVisitor):
         body = ''
         n_tabs = 0
         keys = list(self.__proc_args.keys())
-        keys.append('dummy')
+        # keys.append('dummy')
         if 'constructor' in keys: keys.remove('constructor')
         if keys:
             aux = 1
@@ -189,7 +189,7 @@ class Kind2Visitor(TxScriptVisitor):
             body += 'fi'
         all_props = '\n'.join([prop for prop in props])
         res = f'''
-type functions = enum {{ dummy, {functions} }};
+type functions = enum {{ {functions} }};
 type address = enum {{ a1, a2 }};
 node {ctx.name.text} ({contract_args}) returns();
 (*@contract
@@ -1161,14 +1161,18 @@ tel
     def visitMultDivModExpr(self, ctx:TxScriptParser.MultDivModExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
+        if not self.__visit_properties:
+            post = 'Now'
+        else:
+            post = ''
         if left in self.__globals_index:
             if self.__globals_index[left]+self.__globals_modifier < 0:
-                left = left + 'Now'
+                left = left + post
             else:
                 left = 't_'+left + '['+str(self.__globals_index[left]+self.__globals_modifier)+']'
         if right in self.__globals_index:
             if self.__globals_index[right]+self.__globals_modifier < 0:
-                right = right + 'Now'
+                right = right + post
             else:
                 right = 't_'+right + '['+str(self.__globals_index[right]+self.__globals_modifier)+']'
         res = '(' + left + ctx.op.text + right + ')'
@@ -1264,7 +1268,7 @@ tel
         contract = ''
         n_tabs = 0
         keys = list(self.__proc_args.keys())
-        keys.append('dummy')
+        # keys.append('dummy')
         if 'constructor' in keys: keys.remove('constructor')
         if keys:
             for p in keys[:-1]:
@@ -1666,7 +1670,7 @@ forall (xa_tx: int;)
 
         n_tabs = 0
         keys = list(self.__proc_args.keys())
-        keys.append('dummy')
+        # keys.append('dummy')
         if 'constructor' in keys: keys.remove('constructor')
         if keys:
             for p in keys[:-1]:
