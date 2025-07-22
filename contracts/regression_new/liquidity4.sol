@@ -138,3 +138,13 @@ rule P15_false {
       balance[addr] == old(balance[addr]) + old(balance) - 1
 }
 
+/*
+rule P15_false {
+  forall addr : address .
+  forall f : method .   
+  forall arg1 : calldataargs .
+  forall arg2 : calldataargs .
+    << addr : C4 . f(arg1) $ 0 >>
+      << addr : C4 . wd(args2) $ 0 >>
+        balance[addr] == old(balance[addr]) + old(balance) - 1
+}*/

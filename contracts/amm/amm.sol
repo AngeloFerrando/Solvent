@@ -10,8 +10,8 @@ contract AMM {
         require(x0 > 0 && x1 > 0);
         bal0[msg.sender] = bal0[msg.sender] - x0;
         bal1[msg.sender] = bal1[msg.sender] - x1;  
-        bal0[a0] = x0;
-        bal1[a0] = x1
+        bal0[this] = x0;
+        bal1[this] = x1
     }
 
     /* tin is 0 if T0; 1 if T1 */

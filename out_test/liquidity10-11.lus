@@ -84,13 +84,16 @@ contract_not_constructed or
         xa_tx1: address; f_tx1: functions; pay_func_amount_tx1: int; xn_tx1: int;  /* Transition vars */
         w_nx1: int; w_0_nx1: int; aw_1_nx1: int; aw_2_nx1: int; aw_1_0_nx1: int; aw_2_0_nx1: int; err_nx1 : bool; err_0_nx1 : bool; err_1_nx1 : bool; err_2_nx1 : bool; err_3_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; /* Next state vars */
     )
+
+	forall(pay_func_amount_arg1: int, wd_func_x_arg1: int, wd_func_y_arg1: int)
+
     (   /* condition */
         (not(not(lastReverted_tx1)) or if addr_tx = a1 then aw_1_nx1 = ((aw_1+w)-1)
 	else aw_2_nx1 = ((aw_2+w)-1)
 	)
         and
-        (
-            ((xa_tx1 = addr_tx and f_tx1 = pay_func and true and pay_func_amount_tx1 = v_tx and xn_tx1 = 0) and 
+        (													/* srotoli sempre qui sopra i calldataargs */
+            ((xa_tx1 = addr_tx and f_tx1 = pay_func and true and pay_func_amount_tx2 = pay_func_amount_arg2 and xn_tx1 = 0) and 
 if f_tx1 = pay_func then
 
 (if (not(pay_func_amount_tx1<=(w-1))) then err_0_nx1=true else err_0_nx1=false)

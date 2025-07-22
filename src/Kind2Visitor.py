@@ -386,9 +386,9 @@ tel
         for k in self.__globals_index:
             self.__globals_index[k] = 0
         self.__requires = set()
-        err = 'err' + '_' + str(self.__globals_index['err'])
-        err1 = 'err' + '_' + str(self.__globals_index['err']-1) if self.__globals_index['err'] > 0 else 'false'
-        self.__globals_index['err'] += 1
+        err = 'lastReverted' + '_' + str(self.__globals_index['lastReverted'])
+        err1 = 'lastReverted' + '_' + str(self.__globals_index['lastReverted']-1) if self.__globals_index['lastReverted'] > 0 else 'false'
+        self.__globals_index['lastReverted'] += 1
         if not self.__visit_properties: 
             req1 = '(' + ' or '.join([f'xa = a{i}' for i in range(1, self.__A+1)]) + ')'
             req2 = '(' + ' and '.join([f'(not(xa = a{i}) or (starting_aw_{i} -> pre aw_{i}) >= xn)' for i in range(1, self.__A+1)]) + ')'
@@ -438,9 +438,9 @@ tel
         for k in self.__globals_index:
             self.__globals_index[k] = 0
         self.__requires = set()
-        err = 'err' + '_' + str(self.__globals_index['err'])
-        err1 = 'err' + '_' + str(self.__globals_index['err']-1) if self.__globals_index['err'] > 0 else 'false'
-        self.__globals_index['err'] += 1
+        err = 'lastReverted' + '_' + str(self.__globals_index['lastReverted'])
+        err1 = 'lastReverted' + '_' + str(self.__globals_index['lastReverted']-1) if self.__globals_index['lastReverted'] > 0 else 'false'
+        self.__globals_index['lastReverted'] += 1
         if not self.__visit_properties: 
             req1 = '(' + ' or '.join([f'xa = a{i}' for i in range(1, self.__A+1)]) + ')'
             req2 = '(' + ' and '.join([f'(not(xa = a{i}) or (starting_aw_{i} -> pre aw_{i}) >= xn)' for i in range(1, self.__A+1)]) + ')'
@@ -553,19 +553,19 @@ tel
         if not self.__visit_properties:
             skip = f'\n\tw = {self.__t_curr_w};'
             skip += '\n\t' + '\n\t'.join([f'aw_{i} = {self.__t_curr_a[i]};' for i in range(1, self.__A+1)])
-            skip += '\n\t' + '\n\t'.join([g.text + ' = ' + (f'(starting_{g.text} -> pre {g.text});' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_'+str(self.__globals_index[g.text]+self.__globals_modifier))+';' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['err', 'block_num']]) if self.__globals else ''        
+            skip += '\n\t' + '\n\t'.join([g.text + ' = ' + (f'(starting_{g.text} -> pre {g.text});' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_'+str(self.__globals_index[g.text]+self.__globals_modifier))+';' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['lastReverted', 'block_num']]) if self.__globals else ''        
             skip += '\n\t' + '\n\t'.join([g.text + f'_{ag}' + ' = ' + (f'(starting_{g.text}_{ag} -> pre {g.text}_{ag});' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_' + str(ag) + '_'+str(self.__globals_index[g.text]+self.__globals_modifier))+';' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''        
             # skip += '\n\t' + ('contract_not_constructed = false;' if self.__prefix == 'constructor' else 'contract_not_constructed = (true -> pre contract_not_constructed);')
             # body += skip
             # same = '\n\tcontract_not_constructed = true;' if self.__prefix == 'constructor' else '\n\tcontract_not_constructed = (true -> pre contract_not_constructed);'
             same = f'\n\tw = (starting_w -> pre w);'
             same += '\n\t' + '\n\t'.join([f'aw_{i} = (starting_aw_{i} -> pre aw_{i});' for i in range(1, self.__A+1)])
-            same += '\n\t' + '\n\t'.join([g.text + ' = ' + f'(starting_{g.text} -> pre {g.text});' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['err', 'block_num']]) if self.__globals else ''
+            same += '\n\t' + '\n\t'.join([g.text + ' = ' + f'(starting_{g.text} -> pre {g.text});' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['lastReverted', 'block_num']]) if self.__globals else ''
             same += '\n\t' + '\n\t'.join([g.text + f'_{ag}' + ' = ' + f'(starting_{g.text}_{ag} -> pre {g.text}_{ag});' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
         else:
             skip = f' \n\tw_nx = {self.__t_curr_w}'
             skip += ' and \n\t' + '\n\t and '.join([f'aw_{i}_nx = {self.__t_curr_a[i]}' for i in range(1, self.__A+1)])
-            aux = '\n\t and '.join([g.text + '_nx = ' + (f'{g.text}' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_'+str(self.__globals_index[g.text]+self.__globals_modifier))+'_nx' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['err', 'block_num']]) if self.__globals else ''        
+            aux = '\n\t and '.join([g.text + '_nx = ' + (f'{g.text}' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_'+str(self.__globals_index[g.text]+self.__globals_modifier))+'_nx' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['lastReverted', 'block_num']]) if self.__globals else ''        
             skip += ' and \n\t' + (aux if aux else 'true')
             aux = '\n\t and '.join([g.text + '_' + str(ag) + '_nx = ' + (f'{g.text}_{ag}' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_' + str(ag) +'_nx' + '_' + str(self.__globals_index[g.text]+self.__globals_modifier)) for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''        
             skip += ' and \n\t' + (aux if aux else 'true')
@@ -574,12 +574,12 @@ tel
             # body += skip
             same = f'\n\tw_nx = w'
             same += ' and \n\t' + '\n\t and '.join([f'aw_{i}_nx = aw_{i}' for i in range(1, self.__A+1)])
-            aux = '\n\t and '.join([g.text + '_nx = ' + f'{g.text}' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['err', 'block_num']]) if self.__globals else ''
+            aux = '\n\t and '.join([g.text + '_nx = ' + f'{g.text}' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['lastReverted', 'block_num']]) if self.__globals else ''
             same += ' and \n\t' + (aux if aux else 'true')
             aux = '\n\t and '.join([g.text + '_' + str(ag) + '_nx = ' + f'{g.text}_{ag}' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
             same += ' and \n\t' + (aux if aux else 'true')
         
-        err = ('err_'+str(self.__globals_index['err']+self.__globals_modifier)) if (self.__globals_index['err']+self.__globals_modifier)>=0 else 'false'
+        err = ('lastReverted_'+str(self.__globals_index['lastReverted']+self.__globals_modifier)) if (self.__globals_index['lastReverted']+self.__globals_modifier)>=0 else 'false'
         if self.__visit_properties:
             same += ' and block_num_nx >= block_num' #= any {block_num_tmp: int | block_num_tmp > block_num}'
             skip += ' and block_num_nx >= block_num' #any {block_num_tmp: int | block_num_tmp > block_num}'
@@ -648,12 +648,15 @@ tel
             res += ';\n'
         for ag in range(1, self.__A+1):
             if ag != 1:
-                res += 'els'
-            if ag == self.__A:
-                res += 'e\n'
-            else:
-                res += f'if ({sender} = a{ag})'
-                res += ' then\n'
+                if not self.__visit_properties:
+                    res += 'els'
+                else:
+                    res += 'else '
+            # if ag == self.__A:
+            #     res += 'e\n'
+            # else:
+            res += f'if ({sender} = a{ag})'
+            res += ' then\n'
             for ag1 in range(1, self.__A+1):
                 if ag == ag1:
                     res += f'\t{self.__t_new_a[ag1]} = {self.__t_curr_a[ag1]} {op2} {amount}'
@@ -666,7 +669,8 @@ tel
                         res += '\n'
                 else:
                     res += ';\n'
-        if not self.__visit_properties: res += 'fi\n'
+        if not self.__visit_properties: res += '\nfi\n'
+        else: res += 'else true\n'
         return res
 
     # Visit a parse tree produced by TxScriptParser#sendCmd.
@@ -708,9 +712,9 @@ tel
         
         res = self.send(sender, left)
         # self.__requires.add(send_chk)
-        err = 'err' + '_' + str(self.__globals_index['err'])
-        err1 = 'err' + '_' + str(self.__globals_index['err']-1) if self.__globals_index['err'] > 0 else 'false'
-        self.__globals_index['err'] += 1
+        err = 'lastReverted' + '_' + str(self.__globals_index['lastReverted'])
+        err1 = 'lastReverted' + '_' + str(self.__globals_index['lastReverted']-1) if self.__globals_index['lastReverted'] > 0 else 'false'
+        self.__globals_index['lastReverted'] += 1
         if self.__visit_properties:
             err1 = err1+'_nx' if err1 != 'false' else err1
             res = f'(if (not({send_chk})) then {err}_nx=true else {err}_nx={err1}) \n and ' + res
@@ -733,9 +737,9 @@ tel
 
     # Visit a parse tree produced by TxScriptParser#requireCmd.
     def visitRequireCmd(self, ctx:TxScriptParser.RequireCmdContext):
-        err = 'err' + '_' + str(self.__globals_index['err'])
-        err1 = 'err' + '_' + str(self.__globals_index['err']-1) if self.__globals_index['err'] > 0 else 'false'
-        self.__globals_index['err'] += 1
+        err = 'lastReverted' + '_' + str(self.__globals_index['lastReverted'])
+        err1 = 'lastReverted' + '_' + str(self.__globals_index['lastReverted']-1) if self.__globals_index['lastReverted'] > 0 else 'false'
+        self.__globals_index['lastReverted'] += 1
         if self.__visit_properties:
             err1 = err1+'_nx' if err1 != 'false' else err1
             return f'(if (not({self.visit(ctx.child)})) then {err}_nx=true else {err}_nx={err1})\n'
@@ -862,9 +866,9 @@ tel
             else:
                 if backup_globals[g] < self.__globals_index[g]:
                     if self.__visit_properties:
-                        tg_now = f'{g}_{backup_globals[g]-1}' if backup_globals[g] > 0 else (f'{g}' if g != 'err' else f'starting_{g}')
+                        tg_now = f'{g}_{backup_globals[g]-1}' if backup_globals[g] > 0 else (f'{g}' if g != 'lastReverted' else f'starting_{g}')
                     else:
-                        tg_now = f'{g}_{backup_globals[g]-1}' if backup_globals[g] > 0 else (f'(starting_{g} -> pre {g})' if g != 'err' else f'starting_{g}')
+                        tg_now = f'{g}_{backup_globals[g]-1}' if backup_globals[g] > 0 else (f'(starting_{g} -> pre {g})' if g != 'lastReverted' else f'starting_{g}')
                     levelling_else_cmds += [f'{g}_{self.__globals_index[g]-1} = {tg_now}'] #+ (';' if not self.__visit_properties else '')
         if self.__visit_properties:
             levelling_else_cmds = ' and '.join(levelling_else_cmds)
@@ -960,16 +964,16 @@ tel
             else:
                 if if_globals_index[g] > self.__globals_index[g]:
                     if self.__visit_properties:
-                        tg_now = f'{g}_{self.__globals_index[g]}' if self.__globals_index[g] > 0 else (f'{g}' if g != 'err' else f'starting_{g}')
+                        tg_now = f'{g}_{self.__globals_index[g]}' if self.__globals_index[g] > 0 else (f'{g}' if g != 'lastReverted' else f'starting_{g}')
                     else:
-                        tg_now = f'{g}_{self.__globals_index[g]}' if self.__globals_index[g] > 0 else (f'(starting_{g} -> pre {g})' if g != 'err' else f'starting_{g}')
+                        tg_now = f'{g}_{self.__globals_index[g]}' if self.__globals_index[g] > 0 else (f'(starting_{g} -> pre {g})' if g != 'lastReverted' else f'starting_{g}')
                     levelling_else_cmds += [f'{g}_{if_globals_index[g]-1}={tg_now}']
                     self.__globals_index[g] = if_globals_index[g]
                 elif if_globals_index[g] < self.__globals_index[g]:
                     if self.__visit_properties:
-                        tg_now = f'{g}_{if_globals_index[g]}' if if_globals_index[g] > 0 else (f'{g}' if g != 'err' else f'starting_{g}')
+                        tg_now = f'{g}_{if_globals_index[g]}' if if_globals_index[g] > 0 else (f'{g}' if g != 'lastReverted' else f'starting_{g}')
                     else:
-                        tg_now = f'{g}_{if_globals_index[g]}' if if_globals_index[g] > 0 else (f'(starting_{g} -> pre {g})' if g != 'err' else f'starting_{g}')
+                        tg_now = f'{g}_{if_globals_index[g]}' if if_globals_index[g] > 0 else (f'(starting_{g} -> pre {g})' if g != 'lastReverted' else f'starting_{g}')
                     levelling_if_cmds += [f'{g}_{self.__globals_index[g]-1}={tg_now}']
         self.__add_last_cmd = backup_add
         if self.__visit_properties:
@@ -1231,7 +1235,7 @@ tel
                 if g_type == 'Address' or g_type == 'Hash' or g_type == 'Secret':
                     g_type = 'int'
                 contract_globals += [f'{g_var.text}_nx : {g_type};']
-                contract_globals += [f'{g_var.text}_{i}_nx : {g_type};' for i in range(self.__globals_index_max[g_var.text] + (1 if g_var.text != 'err' else 2))]  
+                contract_globals += [f'{g_var.text}_{i}_nx : {g_type};' for i in range(self.__globals_index_max[g_var.text] + (1 if g_var.text != 'lastReverted' else 2))]  
         for j in range(2, ntrans+1):
             contract_globals += [f'w_nx{j}: int;']
             contract_globals += [f'w_{i}_nx{j}: int;' for i in range(self.__max_nesting + 1)]
@@ -1245,7 +1249,7 @@ tel
                     if g_type == 'Address' or g_type == 'Hash' or g_type == 'Secret':
                         g_type = 'int'
                     contract_globals += [f'{g_var.text}_nx{j} : {g_type};']
-                    contract_globals += [f'{g_var.text}_{i}_nx{j} : {g_type};' for i in range(self.__globals_index_max[g_var.text] + (1 if g_var.text != 'err' else 2))]
+                    contract_globals += [f'{g_var.text}_{i}_nx{j} : {g_type};' for i in range(self.__globals_index_max[g_var.text] + (1 if g_var.text != 'lastReverted' else 2))]
             
         next_state_vars = ' '.join(contract_globals)
         implication = 'not(' + self.visit(ctx.where) + ')'
@@ -1387,6 +1391,8 @@ forall (xa_tx: int;)
     # Visit a parse tree produced by TxScriptParser#strConstant.
     def visitStrConstant(self, ctx:TxScriptParser.StrConstantContext):
         if not self.__visit_properties:
+            if ctx.v.text == 'this':
+                return 'a0'
             if ctx.v.text == 'balance':
                 return self.__t_curr_w
             if ctx.v.text == 'block.number':
@@ -1413,6 +1419,8 @@ forall (xa_tx: int;)
             else:
                 name = ctx.v.text
                 i = ''
+            if ctx.v.text == 'this':
+                return 'a0'
             if 'balance' in name and '[' in name and ']' in name:
                 ag = name[name.index('[')+1:name.index(']')]
                 if ag == 'xa': # aw_q0[xa_q] == (aw[i][xa_q]+w[i])    aw_1_nx = aw_1 + w
@@ -1453,6 +1461,8 @@ forall (xa_tx: int;)
                     return name.replace('st.', '') + '_' + str(self.__globals_index[name.replace('st.','')]+self.__globals_modifier) + i
             if name == 'sender':
                 return name + '_tx'
+            if name in map(lambda x: x.replace('_func', ''), self.__proc):
+                return name.replace('st.', '') + '_func'
             return name.replace('st.', '') + ('_tx' if '_tx' not in name else '')
 
 
@@ -1476,7 +1486,11 @@ forall (xa_tx: int;)
         ty = self.visit(ctx.typenames)
         vs = []
         for var in ctx.variables.varFormulaExpr():
-            vs.append(var.child.text + '_tx:' + ty + ';')
+            if ty == 'calldataargs':
+                for arg in self.__args_map:
+                    vs.append(self.__args_map[arg][0] + '_' + var.child.text + '_tx:' + self.__args_map[arg][1] + ';')
+            else:
+                vs.append(var.child.text + '_tx:' + ty + ';')
             self.__vars[var.child.text] = ty
         return 'forall(' + ''.join(vs) + ')' + self.visit(ctx.child)
         
@@ -1487,7 +1501,11 @@ forall (xa_tx: int;)
         ty = self.visit(ctx.typenames)
         vs = []
         for var in ctx.variables.varFormulaExpr():
-            vs.append(var.child.text + '_tx:' + ty + ';')
+            if ty == 'calldataargs':
+                for arg in self.__args_map:
+                    vs.append(self.__args_map[arg][0] + '_' + var.child.text + '_tx:' + self.__args_map[arg][1] + ';')
+            else:
+                vs.append(var.child.text + '_tx:' + ty + ';')
             self.__vars[var.child.text] = ty
         return 'exists(' + ''.join(vs) + ')' + self.visit(ctx.child)
 
@@ -1602,7 +1620,7 @@ forall (xa_tx: int;)
                 if g_type == 'Address':
                     g_type = 'address'
                 contract_globals += [f'{g_var.text}_nx{id} : {g_type};']
-                contract_globals += [f'{g_var.text}_{i}_nx{id} : {g_type};' for i in range(self.__globals_index_max[g_var.text] + (1 if g_var.text != 'err' else 2))]      
+                contract_globals += [f'{g_var.text}_{i}_nx{id} : {g_type};' for i in range(self.__globals_index_max[g_var.text] + (1 if g_var.text != 'lastReverted' else 2))]      
         next_state_vars = ' '.join(contract_globals)
         self.__id += 1
         backup_globals_index = copy.deepcopy(self.__globals_index)
@@ -1641,6 +1659,11 @@ forall (xa_tx: int;)
                     argsFCond.append(f'{self.__args_map[a][0]}_tx{id} = {argsF[i]}')
         argsFCond = ' and '.join(argsFCond)
         contract = f'(xa_tx{id} = {self.visit(ctx.expr)} and f_tx{id} = {fname} and {argsFCond} and xn_tx{id} = {self.visit(ctx.value)}) and \n'
+
+        for calldataarg in filter(lambda x: self.__vars[x] == 'calldataargs', self.__vars):
+            for arg in self.__args_map:
+                contract += f'{self.__args_map[arg][0]}_tx{id} = {self.__args_map[arg][0]}_{calldataarg}_tx and \n'        
+
         n_tabs = 0
         keys = list(self.__proc_args.keys())
         keys.append('dummy')

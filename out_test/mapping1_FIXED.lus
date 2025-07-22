@@ -1,6 +1,6 @@
 
 type functions = enum { dummy, foo_func };
-type address = enum { a1, a2 };
+type address = enum { aMapping1, a1, a2 };
 node Mapping1 (xa:address;xn:int;f:functions;starting_w: int;starting_aw_1: int;starting_aw_2: int) returns();
 (*@contract
     assume starting_w >= 0;
@@ -85,7 +85,7 @@ contract_not_constructed or
 	
         and
         (
-            ((xa_tx1 = a_tx and f_tx1 = h_tx and xn_tx1 = 0) and 
+            ((xa_tx1 = a_tx and f_tx1 = h_tx and xn_tx1 = 0 and not(xa_tx1 = aMapping1)) and 
 if f_tx1 = foo_func then
 
 if (xa = a1) then (m_1_nx1_0 = (m_1+1)) else (m_2_nx1_0 = (m_2+1)) and if (false) then 

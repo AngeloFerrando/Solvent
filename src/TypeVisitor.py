@@ -201,7 +201,11 @@ class TypeVisitor(TxScriptVisitor):
                 t_var = t
                 break
         else:
-            if self.__prefix+'_'+var in self.__args_map:
+            if var + '_func' in self.__function_args_types:
+                t_var = 'Method'
+            elif var == 'this':
+                t_var = 'Address'
+            elif self.__prefix+'_'+var in self.__args_map:
                 t_var = self.__args_map[self.__prefix+'_'+var]
             elif var == 'app_tx_st.balance' or var == '<tx>st.balance' or var == 'st.balance' or var == 'balance':
                 t_var = 'Int'
@@ -510,7 +514,7 @@ class TypeVisitor(TxScriptVisitor):
             if index >= len(self.__function_args_types[self.__prefix]):
                 raise TypeError(ctx, f'Function {ctx.fname.text} requires {len(self.__function_args_types[self.__prefix])} arguments, but {index+1} are given')
             ty = self.visit(arg.child)
-            if ty != self.__function_args_types[self.__prefix][index]:
+            if ty != self.__function_args_types[self.__prefix][index] and ty != 'CallDataArgs':
                 raise TypeError(ctx, f'argument {arg} should be {self.__function_args_types[self.__prefix][index]}, as expected by function {self.__prefix}, instead is {ty}')
             index += 1
         self.__old += 1
