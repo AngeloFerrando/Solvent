@@ -32,14 +32,40 @@ rule P2_false {
             v == v_after
 }
 
-rule P3_true {
+
+rule P3a_true {
     forall a : address .
     forall v_after : int .
-    v_after > 0 ->
+    v_after >= v ->
+        (
         forall h : method .
         exists arg : calldataargs .
             << a : C . h(arg) $ 0 >> 
-                v == v_after
+                v == v_after)
+}
+
+
+rule P3b_false {
+    forall a : address .
+    forall v_after : int .
+    v_after > 0 ->
+        (
+        forall h : method .
+        exists arg : calldataargs .
+            << a : C . h(arg) $ 0 >> 
+                v == v_after)
+}
+
+
+rule P3c_true {
+    forall a : address .
+    forall v_after : int .
+    v_after * v_after * v_after >= v * v * v ->
+        (
+        forall h : method .
+        exists arg : calldataargs .
+            << a : C . h(arg) $ 0 >> 
+                v == v_after)
 }
 
 
