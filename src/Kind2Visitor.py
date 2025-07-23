@@ -150,7 +150,7 @@ class Kind2Visitor(TxScriptVisitor):
         body = ''
         n_tabs = 0
         keys = list(self.__proc_args.keys())
-        # keys.append('dummy')
+        keys.append('dummy')
         if 'constructor' in keys: keys.remove('constructor')
         if keys:
             aux = 1
@@ -1268,7 +1268,7 @@ tel
         contract = ''
         n_tabs = 0
         keys = list(self.__proc_args.keys())
-        # keys.append('dummy')
+        keys.append('dummy')
         if 'constructor' in keys: keys.remove('constructor')
         if keys:
             for p in keys[:-1]:
@@ -1670,7 +1670,7 @@ forall (xa_tx: int;)
 
         n_tabs = 0
         keys = list(self.__proc_args.keys())
-        # keys.append('dummy')
+        keys.append('dummy')
         if 'constructor' in keys: keys.remove('constructor')
         if keys:
             for p in keys[:-1]:

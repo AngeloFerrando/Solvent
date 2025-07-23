@@ -11,7 +11,6 @@ contract C {
     }
 }
 
-/*
 
 rule P1_true {
     forall a : address .
@@ -56,7 +55,7 @@ rule P3b_false {
                 v == v_after)
 }
 
-*/
+
 rule P3c_true {
     forall a : address .
     forall v_after : int .
@@ -68,7 +67,6 @@ rule P3c_true {
                 v == v_after)
 }
 
-/*
 
 rule P4_false {
     forall a : address .
@@ -108,4 +106,3 @@ rule P7_true {
 }
 
 
-*/
