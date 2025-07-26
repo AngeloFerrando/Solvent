@@ -11,14 +11,14 @@ contract C {
     }
 }
 
+
 rule P1_true {
     forall a : address .
     forall v_after : int .
     exists h : method .
     exists arg : calldataargs .
-        (a != this -> 
-        (<< a : C . h(arg) $ 0 >> 
-            v == v_after))
+        << a : C . h(arg) $ 0 >> 
+            v == v_after
 }
 
 // false if v_after < 0
@@ -27,9 +27,8 @@ rule P2_false {
     forall v_after : int .
     forall h : method .
     exists arg : calldataargs .
-        (a != this -> 
-        (<< a : C . h(arg) $ 0 >> 
-            v == v_after))
+        << a : C . h(arg) $ 0 >> 
+            v == v_after
 }
 
 

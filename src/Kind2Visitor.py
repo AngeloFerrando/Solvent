@@ -190,7 +190,7 @@ class Kind2Visitor(TxScriptVisitor):
         all_props = '\n'.join([prop for prop in props])
         res = f'''
 type functions = enum {{ {functions} }};
-type address = enum {{ a0, a1, a2 }};
+type address = enum {{ a1, a2 }};
 node {ctx.name.text} ({contract_args}) returns();
 (*@contract
     assume starting_w >= 0;

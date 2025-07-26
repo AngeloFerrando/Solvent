@@ -62,7 +62,7 @@ def parseFile(file):
     pattern = pattern.replace('<tx> ', '<tx>').replace('<tx>', 'app_tx_st.')
     pattern = re.sub(r'(contract\s+\w+\s*\{)', lambda match: match.group(1) + ' bool lastReverted;\nint block_num;\n', pattern)
     pattern = re.sub(r'(\bfunction\s+\w+\s*\([^)]*\)\s*)(?!payable\b)\{', r'\1{ require(msg.value == 0); ', pattern)
-    pattern = re.sub(r'(\bfunction\s+\w+\s*\([^)]*\)(?:\s*payable)?\s*)\{', r'\1{ require(msg.sender != this); ', pattern)
+    # pattern = re.sub(r'(\bfunction\s+\w+\s*\([^)]*\)(?:\s*payable)?\s*)\{', r'\1{ require(msg.sender != this); ', pattern)
     parse(pattern)
 
 def main(args):
