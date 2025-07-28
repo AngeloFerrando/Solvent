@@ -1656,7 +1656,8 @@ forall (xa_tx: int;)
         argsF = []
         for argF in ctx.args.argFormulaExpr():
             aux = self.visit(argF)
-            argsF.append(aux.replace('nx', 'nx' + str(id - 1)))
+            if aux:
+                argsF.append(aux.replace('nx', 'nx' + str(id - 1)))
         for i in range(len(argsF)):
             for a in self.__args_map:
                 if self.__args_map[a][0].startswith(fname) and self.__args_map[a][2] == i:

@@ -43,7 +43,7 @@ rule Test {
       true
 }
 
-/*
+
 
 rule P1_false {
   forall a : address .  
@@ -70,4 +70,3 @@ rule P4_true {
       bal1[this] < old(bal1[this])
 }
 
-*/
