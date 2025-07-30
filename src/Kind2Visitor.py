@@ -50,11 +50,13 @@ class Kind2Visitor(TxScriptVisitor):
         self.__vars = {}
         self.__id = 1
         self.__not_valid_names = ['sender', 'msg.sender', 'value', 'msg.value', 'balance']
+        self.__contract_name = ''
         if not self.__fixed_iteration == -1:
             self.__N = fixed_iteration
 
     # Visit a parse tree produced by TxScriptParser#contractExpr.
     def visitContractExpr(self, ctx:TxScriptParser.ContractExprContext):
+        self.__contract_name = ctx.name.text
         decls = self.visit(ctx.decl)
         decls = [decl for decl in decls if decl is not None]
         # Properties commented for now!
@@ -66,8 +68,8 @@ class Kind2Visitor(TxScriptVisitor):
         # self.__visit_properties = False
         self.__nesting_w = 1
         self.__nesting_aw = 1
-        self.__t_curr_w = 't_w_0'
-        self.__t_new_w = 't_w_1'
+        self.__t_curr_w = 'awNow'
+        self.__t_new_w = 't_aw_0'
         self.__t_curr_a = ['awNow'] * self.__A
         self.__t_new_a = ['t_aw_0'] * self.__A
         
@@ -89,8 +91,8 @@ class Kind2Visitor(TxScriptVisitor):
         contract_args = ';'.join(
             ['xa:address', 'xn:int', 'f:functions'] + 
             contract_args + 
-            ['starting_w: int', 'starting_aw_1: int', 'starting_aw_2: int']) 
-        contract_assumptions = '\n'.join([f'assume starting_aw_{ag} >= 0;' for ag in range(1, self.__A+1)])
+            [f'starting_aw_{self.__contract_name}: int', 'starting_aw_1: int', 'starting_aw_2: int']) 
+        contract_assumptions = f'assume starting_aw_{self.__contract_name} >= 0;\n' + '\n'.join([f'assume starting_aw_{ag} >= 0;' for ag in range(1, self.__A+1)])
         contract_globals = ['var contract_not_constructed: bool;']
         for (g_var,g_type) in self.__globals:
             if g_type == ('MapAddr', 'int'):
@@ -104,8 +106,10 @@ class Kind2Visitor(TxScriptVisitor):
                 g_init_value = self.__initial_const_globals[g_var.text]
                 contract_globals += [f'const starting_{g_var.text} : {g_type} = {g_init_value};']
             # I assume that the visit of the constructor has generated such information
-        contract_globals += ['var w: int;']
-        contract_globals += [f'var w_{i}: int;' for i in range(self.__max_nesting + 1)]
+        # contract_globals += ['var w: int;']
+        # contract_globals += [f'var w_{i}: int;' for i in range(self.__max_nesting + 1)]
+        contract_globals += [f'var aw_{self.__contract_name}: int;']
+        contract_globals += [f'var aw_{self.__contract_name}_{i}: int;' for i in range(self.__max_nesting + 1)]
         contract_globals += [f'var aw_{ag}: int;' for ag in range(1, self.__A+1)]
         contract_globals += [f'var aw_{ag}_{i}: int;' for ag in range(1, self.__A+1) for i in range(self.__max_nesting + 1)]
         for (g_var,g_type) in self.__globals:
@@ -176,7 +180,7 @@ class Kind2Visitor(TxScriptVisitor):
             n_tabs += 1
             body += 'else'
             same = '\n\tblock_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};'
-            same += f'\n\tw = (starting_w -> pre w);'
+            same += f'\n\taw_{self.__contract_name} = (starting_aw_{self.__contract_name} -> pre aw_{self.__contract_name});'
             same += '\n\t' + '\n\t'.join([f'aw_{i} = (starting_aw_{i} -> pre aw_{i});' for i in range(1, self.__A+1)])
             # same += '\n\t' + '\n\t'.join([g.text + ' = ' + f'(starting_{g.text} -> pre {g.text});' for (g, _) in self.__globals]) if self.__globals else ''
             aux = '\n\t'.join([g.text + ' = ' + f'(starting_{g.text} -> pre {g.text});' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['block_num']]) if self.__globals else ''
@@ -190,10 +194,9 @@ class Kind2Visitor(TxScriptVisitor):
         all_props = '\n'.join([prop for prop in props])
         res = f'''
 type functions = enum {{ {functions} }};
-type address = enum {{ a1, a2 }};
+type address = enum {{ a{self.__contract_name}, a1, a2 }};
 node {ctx.name.text} ({contract_args}) returns();
 (*@contract
-    assume starting_w >= 0;
     {contract_assumptions}
 *)
 {contract_globals}
@@ -343,13 +346,13 @@ tel
         self.__nesting_w = 0
         self.__nesting_aw = 0
         if self.__visit_properties:
-            self.__t_curr_w = 'w'
-            self.__t_new_w = 'w_0_nx'
+            self.__t_curr_w = f'aw_{self.__contract_name}'
+            self.__t_new_w = f'aw_{self.__contract_name}_0_nx'
             self.__t_curr_a = [f'aw_{i}' for i in range(self.__A+1)]
             self.__t_new_a = [f'aw_{i}_0_nx' for i in range(self.__A+1)]
         else:
-            self.__t_curr_w = '(starting_w -> pre w)'
-            self.__t_new_w = 'w_0'
+            self.__t_curr_w = f'(starting_aw_{self.__contract_name} -> pre aw_{self.__contract_name})'
+            self.__t_new_w = f'aw_{self.__contract_name}_0'
             self.__t_curr_a = [f'(starting_aw_{i} -> pre aw_{i})' for i in range(self.__A+1)]
             self.__t_new_a = [f'aw_{i}_0' for i in range(self.__A+1)]
         self.__proc.add('constructor')
@@ -372,13 +375,13 @@ tel
         self.__nesting_w = 1
         self.__nesting_aw = 1
         if self.__visit_properties:
-            self.__t_curr_w = 'w'
-            self.__t_new_w = 'w_0_nx'
+            self.__t_curr_w = f'aw_{self.__contract_name}'
+            self.__t_new_w = f'aw_{self.__contract_name}_0_nx'
             self.__t_curr_a = [f'aw_{i}' for i in range(self.__A+1)]
             self.__t_new_a = [f'aw_{i}_0_nx' for i in range(self.__A+1)]
         else:
-            self.__t_curr_w = '(starting_w -> pre w)'
-            self.__t_new_w = 'w_0'
+            self.__t_curr_w = f'(starting_aw_{self.__contract_name} -> pre aw_{self.__contract_name})'
+            self.__t_new_w = f'aw_{self.__contract_name}_0'
             self.__t_curr_a = [f'(starting_aw_{i} -> pre aw_{i})' for i in range(self.__A+1)]
             self.__t_new_a = [f'aw_{i}_0' for i in range(self.__A+1)]
         self.__proc.add('constructor')
@@ -399,8 +402,8 @@ tel
             add_to_body = req + self.send('xa', 'xn', negative=True)
             self.__t_curr_a = [f'aw_{i}_{self.__nesting_aw-1}' for i in range(self.__A+1)]
             self.__t_new_a = [f'aw_{i}_{self.__nesting_aw}' for i in range(self.__A+1)]
-            self.__t_curr_w = 'w_' + str(self.__nesting_w-1)
-            self.__t_new_w = 'w_' + str(self.__nesting_w)
+            self.__t_curr_w = f'aw_{self.__contract_name}_{self.__nesting_w-1}'
+            self.__t_new_w = f'aw_{self.__contract_name}_{self.__nesting_w}'
         else:
             req1 = '(' + ' or '.join([f'xa_tx = a{i}' for i in range(1, self.__A+1)]) + ')'
             req2 = '(' + ' and '.join([f'(not(xa_tx = a{i}) or aw_{i} >= xn_tx)' for i in range(1, self.__A+1)]) + ')'
@@ -412,8 +415,8 @@ tel
             add_to_body = req + ' and (' + self.send('xa_tx', 'xn_tx', negative=True) + ')'
             self.__t_curr_a = [f'aw_{i}_{self.__nesting_aw-1}_nx' for i in range(self.__A+1)]
             self.__t_new_a = [f'aw_{i}_{self.__nesting_aw}_nx' for i in range(self.__A+1)]
-            self.__t_curr_w = 'w_' + str(self.__nesting_w-1) + '_nx'
-            self.__t_new_w = 'w_' + str(self.__nesting_w) + '_nx'
+            self.__t_curr_w = f'aw_{self.__contract_name}_{self.__nesting_w-1}_nx'
+            self.__t_new_w = f'aw_{self.__contract_name}_{self.__nesting_w}_nx'
         self.__M += 1        
         return self.visitFun(ctx, add_to_body)
 
@@ -424,13 +427,13 @@ tel
         self.__nesting_w = 1
         self.__nesting_aw = 1
         if self.__visit_properties:
-            self.__t_curr_w = 'w'
-            self.__t_new_w = 'w_0_nx'
+            self.__t_curr_w = f'aw_{self.__contract_name}'
+            self.__t_new_w = f'aw_{self.__contract_name}_0_nx'
             self.__t_curr_a = [f'aw_{i}' for i in range(self.__A+1)]
             self.__t_new_a = [f'aw_{i}_0_nx' for i in range(self.__A+1)]
         else:
-            self.__t_curr_w = '(starting_w -> pre w)'
-            self.__t_new_w = 'w_0'
+            self.__t_curr_w = f'(starting_aw_{self.__contract_name} -> pre aw_{self.__contract_name})'
+            self.__t_new_w = f'aw_{self.__contract_name}_0'
             self.__t_curr_a = [f'(starting_aw_{i} -> pre aw_{i})' for i in range(self.__A+1)]
             self.__t_new_a = [f'aw_{i}_0' for i in range(self.__A+1)]
         self.__proc.add(ctx.name.text + '_func')
@@ -451,8 +454,8 @@ tel
             add_to_body = req + self.send('xa', 'xn', negative=True)
             self.__t_curr_a = [f'aw_{i}_{self.__nesting_aw-1}' for i in range(self.__A+1)]
             self.__t_new_a = [f'aw_{i}_{self.__nesting_aw}' for i in range(self.__A+1)]
-            self.__t_curr_w = 'w_' + str(self.__nesting_w-1)
-            self.__t_new_w = 'w_' + str(self.__nesting_w)
+            self.__t_curr_w = f'aw_{self.__contract_name}_{self.__nesting_w-1}'
+            self.__t_new_w = f'aw_{self.__contract_name}_{self.__nesting_w}'
         else:
             req1 = '(' + ' or '.join([f'xa_tx = a{i}' for i in range(1, self.__A+1)]) + ')'
             req2 = '(' + ' and '.join([f'(not(xa_tx = a{i}) or aw_{i} >= xn_tx)' for i in range(1, self.__A+1)]) + ')'
@@ -464,8 +467,8 @@ tel
             add_to_body = req + ' and (' + self.send('xa_tx', 'xn_tx', negative=True) + ') and '
             self.__t_curr_a = [f'aw_{i}_{self.__nesting_aw-1}_nx' for i in range(self.__A+1)]
             self.__t_new_a = [f'aw_{i}_{self.__nesting_aw}_nx' for i in range(self.__A+1)]
-            self.__t_curr_w = 'w_' + str(self.__nesting_w-1) + '_nx'
-            self.__t_new_w = 'w_' + str(self.__nesting_w) + '_nx'
+            self.__t_curr_w = f'aw_{self.__contract_name}_{self.__nesting_w-1}_nx'
+            self.__t_new_w = f'aw_{self.__contract_name}_{self.__nesting_w}_nx'
         self.__M += 1        
         return self.visitFun(ctx, add_to_body)
 
@@ -475,13 +478,13 @@ tel
         self.__nesting_w = 0
         self.__nesting_aw = 0
         if self.__visit_properties:
-            self.__t_curr_w = 'w'
-            self.__t_new_w = 'w_0_nx'
+            self.__t_curr_w = f'aw_{self.__contract_name}'
+            self.__t_new_w = f'aw_{self.__contract_name}_0_nx'
             self.__t_curr_a = [f'aw_{i}' for i in range(self.__A+1)]
             self.__t_new_a = [f'aw_{i}_0_nx' for i in range(self.__A+1)]
         else:
-            self.__t_curr_w = '(starting_w -> pre w)'
-            self.__t_new_w = 'w_0'
+            self.__t_curr_w = f'(starting_aw_{self.__contract_name} -> pre aw_{self.__contract_name})'
+            self.__t_new_w = f'aw_{self.__contract_name}_0'
             self.__t_curr_a = [f'(starting_aw_{i} -> pre aw_{i})' for i in range(self.__A+1)]
             self.__t_new_a = [f'aw_{i}_0' for i in range(self.__A+1)]
         self.__proc.add(ctx.name.text + '_func')
@@ -551,19 +554,19 @@ tel
         self.__proc_args[self.__prefix] = args
         
         if not self.__visit_properties:
-            skip = f'\n\tw = {self.__t_curr_w};'
+            skip = f'\n\taw_{self.__contract_name} = {self.__t_curr_w};'
             skip += '\n\t' + '\n\t'.join([f'aw_{i} = {self.__t_curr_a[i]};' for i in range(1, self.__A+1)])
             skip += '\n\t' + '\n\t'.join([g.text + ' = ' + (f'(starting_{g.text} -> pre {g.text});' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_'+str(self.__globals_index[g.text]+self.__globals_modifier))+';' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['lastReverted', 'block_num']]) if self.__globals else ''        
             skip += '\n\t' + '\n\t'.join([g.text + f'_{ag}' + ' = ' + (f'(starting_{g.text}_{ag} -> pre {g.text}_{ag});' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_' + str(ag) + '_'+str(self.__globals_index[g.text]+self.__globals_modifier))+';' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''        
             # skip += '\n\t' + ('contract_not_constructed = false;' if self.__prefix == 'constructor' else 'contract_not_constructed = (true -> pre contract_not_constructed);')
             # body += skip
             # same = '\n\tcontract_not_constructed = true;' if self.__prefix == 'constructor' else '\n\tcontract_not_constructed = (true -> pre contract_not_constructed);'
-            same = f'\n\tw = (starting_w -> pre w);'
+            same = f'\n\taw_{self.__contract_name} = (starting_aw_{self.__contract_name} -> pre aw_{self.__contract_name});'
             same += '\n\t' + '\n\t'.join([f'aw_{i} = (starting_aw_{i} -> pre aw_{i});' for i in range(1, self.__A+1)])
             same += '\n\t' + '\n\t'.join([g.text + ' = ' + f'(starting_{g.text} -> pre {g.text});' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['lastReverted', 'block_num']]) if self.__globals else ''
             same += '\n\t' + '\n\t'.join([g.text + f'_{ag}' + ' = ' + f'(starting_{g.text}_{ag} -> pre {g.text}_{ag});' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
         else:
-            skip = f' \n\tw_nx = {self.__t_curr_w}'
+            skip = f' \n\taw_{self.__contract_name}_nx = {self.__t_curr_w}'
             skip += ' and \n\t' + '\n\t and '.join([f'aw_{i}_nx = {self.__t_curr_a[i]}' for i in range(1, self.__A+1)])
             aux = '\n\t and '.join([g.text + '_nx = ' + (f'{g.text}' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_'+str(self.__globals_index[g.text]+self.__globals_modifier))+'_nx' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['lastReverted', 'block_num']]) if self.__globals else ''        
             skip += ' and \n\t' + (aux if aux else 'true')
@@ -572,7 +575,7 @@ tel
             # if body.replace('skip', '').replace('\n', '').replace(' ', '').replace('and', ''):
             #     skip = ' and' + skip
             # body += skip
-            same = f'\n\tw_nx = w'
+            same = f'\n\taw_{self.__contract_name}_nx = aw_{self.__contract_name}'
             same += ' and \n\t' + '\n\t and '.join([f'aw_{i}_nx = aw_{i}' for i in range(1, self.__A+1)])
             aux = '\n\t and '.join([g.text + '_nx = ' + f'{g.text}' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['lastReverted', 'block_num']]) if self.__globals else ''
             same += ' and \n\t' + (aux if aux else 'true')
@@ -688,9 +691,9 @@ tel
         # else:
         send_chk = left + ' >= 0' + ' and '
         if self.__visit_properties:
-            send_chk += left + ' <= ' + 'w'
+            send_chk += left + ' <= ' + f'aw_{self.__contract_name}'
         else:
-            send_chk += left + ' <= ' + '(starting_w -> pre w)'
+            send_chk += left + ' <= ' + f'(starting_aw_{self.__contract_name} -> pre aw_{self.__contract_name})'
         # for el in self.__prop_nested_i:
         #     if el in left:
         #         send = f'And([Or(j != {el}, '+'send({sender}, {amount}, {t_curr_w}, {t_new_w}, {t_curr_a}, {t_new_a})) for j in range(A+1)])'
@@ -724,14 +727,14 @@ tel
         if not self.__visit_properties:
             self.__t_curr_a = [f'aw_{i}_{self.__nesting_aw-1}' for i in range(self.__A+1)]
             self.__t_new_a = [f'aw_{i}_{self.__nesting_aw}' for i in range(self.__A+1)]
-            self.__t_curr_w = 'w_' + str(self.__nesting_w-1)
-            self.__t_new_w = 'w_' + str(self.__nesting_w)
+            self.__t_curr_w = f'aw_{self.__contract_name}_{self.__nesting_w-1}'
+            self.__t_new_w = f'aw_{self.__contract_name}_{self.__nesting_w}'
         else:
             res = '(' + res + ')'
             self.__t_curr_a = [f'aw_{i}_{self.__nesting_aw-1}_nx' for i in range(self.__A+1)]
             self.__t_new_a = [f'aw_{i}_{self.__nesting_aw}_nx' for i in range(self.__A+1)]
-            self.__t_curr_w = 'w_' + str(self.__nesting_w-1) + '_nx'
-            self.__t_new_w = 'w_' + str(self.__nesting_w) + '_nx'
+            self.__t_curr_w = f'aw_{self.__contract_name}_{self.__nesting_w-1}_nx'
+            self.__t_new_w = f'aw_{self.__contract_name}_{self.__nesting_w}_nx'
         self.__M += 1
         return res
 
@@ -1067,14 +1070,24 @@ tel
         for el in self.__prop_nested_i:
             if el in left or el in right:
                 res = ''
-                for ag in range(1, self.__A+1):
-                    if ag == 1:
-                        res += f'if {el}{tx} = a{ag} then '
-                    elif ag == self.__A:
-                        res += f'else '
-                    else:
-                        res += f'else if {el} = a{ag} then '
-                    res += f'{left} {op} {right}'.replace(el, f'{ag}') + '\n\t'
+                if el == 'xa':
+                    for ag in range(1, self.__A+1):
+                        if ag == 1:
+                            res += f'if {el}{tx} = a{ag} then '
+                        elif ag == self.__A:
+                            res += f'else '
+                        else:
+                            res += f'else if {el} = a{ag} then '
+                        res += f'{left} {op} {right}'.replace(f'aw_{el}', self.__t_curr_a[ag]) + '\n\t'
+                else:
+                    for ag in range(1, self.__A+1):
+                        if ag == 1:
+                            res += f'if {el}{tx} = a{ag} then '
+                        elif ag == self.__A:
+                            res += f'else '
+                        else:
+                            res += f'else if {el} = a{ag} then '
+                        res += f'{left} {op} {right}'.replace(el, f'{ag}') + '\n\t'
                 return res
         return None
 
@@ -1282,7 +1295,7 @@ tel
             n_tabs += 1
             contract += 'else'
             same = ' block_num_nx >= block_num' #any {block_num_tmp: int | block_num_tmp > block_num}'   
-            same += f' and \n\tw_nx = w '
+            same += f' and \n\taw_{self.__contract_name}_nx = aw_{self.__contract_name} '
             same += ' and \n\t' + '\n\tand '.join([f'aw_{i}_nx = aw_{i}' for i in range(1, self.__A+1)])
             # same += ' and \n\t' + '\n\tand '.join([g.text + '_nx = ' + f'{g.text}' for (g, _) in self.__globals]) if self.__globals else ''
             aux = '\n\t and '.join([g.text + '_nx = ' + f'{g.text}' for (g, ty) in self.__globals if ty != ('MapAddr', 'int')]) if self.__globals else ''
@@ -1355,6 +1368,15 @@ forall (xa_tx: int;)
     def visitMapExpr(self, ctx:TxScriptParser.MapExprContext):
         index = self.visit(ctx.index).replace('_tx', '')
         if not self.__visit_properties:
+            if ctx.mapVar.text == 'balance':
+                if index == 'a' + self.__contract_name:
+                    return self.__t_curr_w #f'aw_{self.__contract_name}'
+                elif index == 'xa':
+                    self.__prop_nested_i.add(index)
+                    return f'aw_{index}'
+                else:
+                    self.__prop_nested_i.add(index)
+                    return f'aw_{index}'
             if ctx.mapVar.text in self.__globals_index:
                 self.__prop_nested_i.add(index)
                 if self.__globals_index[ctx.mapVar.text] + self.__globals_modifier < 0:
@@ -1371,7 +1393,9 @@ forall (xa_tx: int;)
                 name = ctx.mapVar.text.replace('app_tx_', '')
             if 'balance' in name:
                 ag = index.replace('_q', '')
-                if ag == 'xa':
+                if ag == 'a' + self.__contract_name:
+                    return f'aw_{self.__contract_name}' + i #f'aw{i}[{ag}[
+                elif ag == 'xa':
                     self.__prop_nested_i.add(ag)#(ag+'[i]')
                     return f'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
                 else:
@@ -1382,7 +1406,7 @@ forall (xa_tx: int;)
             if name.replace('st.','') in self.__globals_index:  
                 ag = index.replace('_q', '')
                 if ag == 'xa':
-                    self.__prop_nested_i.add(ag)#(ag+'[i]')
+                    # self.__prop_nested_i.add(ag)#(ag+'[i]')
                     return name.replace('st.','') + f'_{ag}' + i
                 else:
                     # if '[i]' not in ag:
@@ -1396,7 +1420,7 @@ forall (xa_tx: int;)
     def visitStrConstant(self, ctx:TxScriptParser.StrConstantContext):
         if not self.__visit_properties:
             if ctx.v.text == 'this':
-                return 'a0'
+                return f'a{self.__contract_name}'
             if ctx.v.text == 'balance':
                 return self.__t_curr_w
             if ctx.v.text == 'block.number':
@@ -1424,7 +1448,7 @@ forall (xa_tx: int;)
                 name = ctx.v.text
                 i = ''
             if ctx.v.text == 'this':
-                return 'a0'
+                return f'a{self.__contract_name}'
             if 'balance' in name and '[' in name and ']' in name:
                 ag = name[name.index('[')+1:name.index(']')]
                 if ag == 'xa': # aw_q0[xa_q] == (aw[i][xa_q]+w[i])    aw_1_nx = aw_1 + w
@@ -1442,7 +1466,8 @@ forall (xa_tx: int;)
                     self.__prop_nested_i.add(ag+'[i]')#(ag+'[i]')
                     return f'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
             if 'balance' in name:
-                return 'w' + i
+                # self.__prop_nested_i.add(self.__contract_name)
+                return f'aw_{self.__contract_name}' + i
             if 'block.number' in name:
                 return 'block_num' + i
             if 'msg.value' in name:
@@ -1489,6 +1514,7 @@ forall (xa_tx: int;)
     def visitForallFormulaExpr(self, ctx:TxScriptParser.ForallFormulaExprContext):
         ty = self.visit(ctx.typenames)
         vs = []
+        addr = None
         for var in ctx.variables.varFormulaExpr():
             if ty == 'calldataargs':
                 for arg in self.__args_map:
@@ -1496,8 +1522,11 @@ forall (xa_tx: int;)
             else:
                 vs.append(var.child.text + '_tx:' + ty + ';')
             self.__vars[var.child.text] = ty
-        return 'forall(' + ''.join(vs) + ')' + self.visit(ctx.child)
-        
+            if ty == 'address': addr = var.child.text
+        if addr:
+            return 'forall(' + ''.join(vs) + ')' + '(' + f'({addr}_tx = a{self.__contract_name}) or (' + self.visit(ctx.child) + '))'
+        else:
+            return 'forall(' + ''.join(vs) + ')' + self.visit(ctx.child)
 
 
     # Visit a parse tree produced by TxScriptParser#existsFormulaExpr.
@@ -1610,8 +1639,8 @@ forall (xa_tx: int;)
         transition_vars += f'xa_tx{id}: address; f_tx{id}: functions; ' + ' '.join(['{a}_tx{id}: {t};'.format(id=id, a=self.__args_map[a][0], t=self.__args_map[a][1]).replace('address', 'int') for a in self.__args_map if self.__args_map[a][1] != 'hash'])
         transition_vars += f' xn_tx{id}: int;'
         contract_globals = []
-        contract_globals += [f'w_nx{id}: int;']
-        contract_globals += [f'w_{i}_nx{id}: int;' for i in range(self.__max_nesting + 1)]
+        contract_globals += [f'aw_{self.__contract_name}_nx{id}: int;']
+        contract_globals += [f'aw_{self.__contract_name}_{i}_nx{id}: int;' for i in range(self.__max_nesting + 1)]
         contract_globals += [f'aw_{ag}_nx{id}: int;' for ag in range(1, self.__A+1)]
         contract_globals += [f'aw_{ag}_{i}_nx{id}: int;' for ag in range(1, self.__A+1) for i in range(self.__max_nesting + 1)]
         for (g_var,g_type) in self.__globals:
@@ -1686,7 +1715,7 @@ forall (xa_tx: int;)
             n_tabs += 1
             contract += 'else'
             same = f' block_num_nx{id} >= block_num' #= any '+'{block_num_tmp: int | block_num_tmp > block_num}'   
-            same += f' and \n\tw_nx{id} = w ' if id <= 1 else f' and \n\tw_nx{id} = w_nx{id-1} '
+            same += f' and \n\taw_{self.__contract_name}_nx{id} = aw_{self.__contract_name}' if id <= 1 else f' and \n\taw_{self.__contract_name}_nx{id} = aw_{self.__contract_name}_nx{id-1} '
             same += ' and \n\t' + '\n\tand '.join([f'aw_{i}_nx{id} = aw_{i}' if id <= 1 else f'aw_{i}_nx{id} = aw_{i}_nx{id-1}' for i in range(1, self.__A+1)])
             # same += ' and \n\t' + '\n\tand '.join([g.text + '_nx = ' + f'{g.text}' for (g, _) in self.__globals]) if self.__globals else ''
             if id <= 1:
