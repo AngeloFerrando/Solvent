@@ -2,11 +2,12 @@
 contract Pricebet {
     int initial_pot;
     address immutable owner;
-    address immutable oracle_owner;
+    address oracle_owner; // immutable TODO
     address player;
     int deadline;
     int exchange_rate;
-    int oracle_exchange_rate;
+    int oracle_exchange_rate; 
+    bool oracle_constructed;
 
     constructor(int _timeout, int _exchange_rate) payable {
         require (msg.value > 0);
@@ -38,16 +39,20 @@ contract Pricebet {
     }
 
 
-
+    
     function oracle_constructor(int init_rate) {
-        require(oracle_exchange_rate == 0); // not yet constructed
-        oracle_exchange_rate = init_rate
+        require(!oracle_constructed); // not yet constructed
+        oracle_exchange_rate = init_rate;
+        oracle_constructed = true;
+        oracle_owner = msg.sender
     }
+    
 
 
     // TODO fix different owner for oracle
     // function oracle_set_exchange_rate(int new_rate, int msg_value) public {
     function oracle_set_exchange_rate(int new_rate)  payable {
+        require(msg.sender == oracle_owner);
         if (new_rate > oracle_exchange_rate) {
         //require(msg.value == 1000 * (new_rate / oracle_exchange_rate) + 1000);
         require(msg.value == 1000);
@@ -66,8 +71,21 @@ rule Dummy1 {
     True
 }
 
-rule R1 {
 
+// bug
+
+rule No_Frozen_Funds {
+    forall a : address .
+    exists f : method .
+    exists args : calldataargs .    
+    exists msgvalue : int .    
+    << a : Pricebet . f(args) $ msgvalue >>
+        balance[owner] == old(balance[owner] + balance)		
+}
+/*
+
+
+rule Winning_player_can_be_frontrun {
     exists bal1 : int .
     << player : Pricebet . win() $0 >> 
             (bal1 == balance[player] 
@@ -80,9 +98,8 @@ rule R1 {
     exists qxa : calldataargs .
     exists bal2 : int .
     << adv : Pricebet . qfa() $ v >>		
-    << player : Pricebet . win() $ 0 >>
-    bal2 == balance[player] 
-    &&
-    bal2 < bal1
-
-}
+        << player : Pricebet . win() $ 0 >>
+            (bal2 == balance[player] 
+            &&
+            bal2 < bal1)
+}*/
