@@ -1,0 +1,351 @@
+
+type functions = enum { foo_func };
+type address = enum { aMapping1, a1, a2 };
+node Mapping1 (xa:address;xn:int;f:functions;starting_aw_Mapping1: int;starting_aw_1: int;starting_aw_2: int) returns();
+(*@contract
+    assume starting_aw_Mapping1 >= 0;
+assume starting_aw_1 >= 0;
+assume starting_aw_2 >= 0;
+assume starting_aw_3 >= 0;
+*)
+var contract_not_constructed: bool;
+const starting_lastReverted : bool = false;
+const starting_block_num : int = 0;
+const starting_m_1 : int = 0;
+const starting_m_2 : int = 0;
+const starting_m_3 : int = 0;
+var aw_Mapping1: int;
+var aw_1: int;
+var aw_2: int;
+var aw_3: int;
+var lastReverted : bool;
+var lastReverted_0 : bool;
+var lastReverted_1 : bool;
+var block_num : int;
+var m_1 : int;
+var m_2 : int;
+var m_3 : int;
+var m_1_0 : int;
+var m_2_0 : int;
+var m_3_0 : int;
+let
+    if (true -> pre contract_not_constructed) then
+
+ if (false) then 
+	aw_Mapping1 = (starting_aw_Mapping1 -> pre aw_Mapping1);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	aw_3 = (starting_aw_3 -> pre aw_3);
+	
+	m_1 = (starting_m_1 -> pre m_1);
+	m_2 = (starting_m_2 -> pre m_2);
+	m_3 = (starting_m_3 -> pre m_3);
+	contract_not_constructed = true;
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)}; else 
+	aw_Mapping1 = (starting_aw_Mapping1 -> pre aw_Mapping1);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	aw_3 = (starting_aw_3 -> pre aw_3);
+	
+	m_1 = (starting_m_1 -> pre m_1);
+	m_2 = (starting_m_2 -> pre m_2);
+	m_3 = (starting_m_3 -> pre m_3);
+	contract_not_constructed = false;
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+fi
+elsif f = foo_func then
+	
+if (xa = a1) then 
+ if (not(not(xa=aMapping1))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+if (not(xn = 0)) then lastReverted_1=true; else lastReverted_1=lastReverted_0; fi
+
+m_1_0 = ((starting_m_1 -> pre m_1)+1); 
+ elsif (xa = a2) then 
+if (not(not(xa=aMapping1))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+if (not(xn = 0)) then lastReverted_1=true; else lastReverted_1=lastReverted_0; fi
+
+m_2_0 = ((starting_m_2 -> pre m_2)+1); 
+ else 
+ if (not(not(xa=aMapping1))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+if (not(xn = 0)) then lastReverted_1=true; else lastReverted_1=lastReverted_0; fi
+
+m_3_0 = ((starting_m_3 -> pre m_3)+1); fi if (lastReverted_1) then 
+	aw_Mapping1 = (starting_aw_Mapping1 -> pre aw_Mapping1);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	aw_3 = (starting_aw_3 -> pre aw_3);
+	
+	m_1 = (starting_m_1 -> pre m_1);
+	m_2 = (starting_m_2 -> pre m_2);
+	m_3 = (starting_m_3 -> pre m_3);
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)}; else 
+	aw_Mapping1 = (starting_aw_Mapping1 -> pre aw_Mapping1);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	aw_3 = (starting_aw_3 -> pre aw_3);
+	
+	m_1 = m_1_0;
+	m_2 = m_2_0;
+	m_3 = m_3_0;
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+fi
+else
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+	aw_Mapping1 = (starting_aw_Mapping1 -> pre aw_Mapping1);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	aw_3 = (starting_aw_3 -> pre aw_3);
+	lastReverted = (starting_lastReverted -> pre lastReverted);
+	m_1 = (starting_m_1 -> pre m_1);
+	m_2 = (starting_m_2 -> pre m_2);
+	m_3 = (starting_m_3 -> pre m_3);
+fi
+    --%PROPERTY 
+(
+contract_not_constructed or 
+(forall(a_tx:address;)((a_tx = aMapping1) or (exists(h_tx:functions;)
+    exists (
+        xa_tx1: address; f_tx1: functions;  xn_tx1: int;  /* Transition vars */
+        aw_Mapping1_nx1: int; aw_1_nx1: int; aw_2_nx1: int; aw_3_nx1: int; lastReverted_nx1 : bool; lastReverted_0_nx1 : bool; lastReverted_1_nx1 : bool; lastReverted_2_nx1 : bool; lastReverted_3_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; m_1_nx1 : int; m_2_nx1 : int; m_3_nx1 : int; m_1_nx1_0 : int; m_2_nx1_0 : int; m_3_nx1_0 : int; /* Next state vars */
+    )
+    (   /* condition */
+        if a_tx = a1 then m_1_nx1 = (m_1+1)
+	else if a = a2 then m_2_nx1 = (m_2+1)
+	else m_3_nx1 = (m_3+1)
+	
+        and
+        (
+            ((xa_tx1 = a_tx and f_tx1 = h_tx and true and xn_tx1 = 0) and 
+if f_tx1 = foo_func then
+
+if (xa = a1) then 
+ ((if (not(not(xa_tx1=aMapping1))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
+ and m_1_nx1_0 = (m_1+1)) 
+ else if (xa = a2) then 
+((if (not(not(xa_tx1=aMapping1))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
+ and m_2_nx1_0 = (m_2+1)) 
+ else 
+((if (not(not(xa_tx1=aMapping1))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
+ and m_3_nx1_0 = (m_3+1)) and if (lastReverted_1_nx1) then 
+
+	aw_Mapping1_nx1 = aw_Mapping1 and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2
+	 and aw_3_nx1 = aw_3 and 
+	true and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2
+	 and m_3_nx1 = m_3 and block_num >= block_num else  
+	aw_Mapping1_nx1 = aw_Mapping1 and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2
+	 and aw_3_nx1 = aw_3 and 
+	true and 
+	m_1_nx1 = m_1_nx1_0
+	 and m_2_nx1 = m_2_nx1_0
+	 and m_3_nx1 = m_3_nx1_0 and block_num >= block_num
+
+else block_num_nx1 >= block_num and 
+	aw_Mapping1_nx1 = aw_Mapping1 and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2
+	and aw_3_nx1 = aw_3 and 
+	lastReverted_nx1 = lastReverted
+	 and block_num_nx1 = block_num and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2
+	 and m_3_nx1 = m_3
+)
+        )
+    ))))
+);
+
+--%PROPERTY 
+(
+contract_not_constructed or 
+(forall(a_tx:address;)((a_tx = aMapping1) or (exists(h_tx:functions;)
+    exists (
+        xa_tx1: address; f_tx1: functions;  xn_tx1: int;  /* Transition vars */
+        aw_Mapping1_nx1: int; aw_1_nx1: int; aw_2_nx1: int; aw_3_nx1: int; lastReverted_nx1 : bool; lastReverted_0_nx1 : bool; lastReverted_1_nx1 : bool; lastReverted_2_nx1 : bool; lastReverted_3_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; m_1_nx1 : int; m_2_nx1 : int; m_3_nx1 : int; m_1_nx1_0 : int; m_2_nx1_0 : int; m_3_nx1_0 : int; /* Next state vars */
+    )
+    (   /* condition */
+        if a_tx = a1 then m_1_nx1 = (m_1+2)
+	else if a = a2 then m_2_nx1 = (m_2+2)
+	else m_3_nx1 = (m_3+2)
+	
+        and
+        (
+            ((xa_tx1 = a_tx and f_tx1 = h_tx and true and xn_tx1 = 0) and 
+if f_tx1 = foo_func then
+
+if (xa = a1) then 
+ ((if (not(not(xa_tx1=aMapping1))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
+ and m_1_nx1_0 = (m_1+1)) 
+ else if (xa = a2) then 
+((if (not(not(xa_tx1=aMapping1))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
+ and m_2_nx1_0 = (m_2+1)) 
+ else 
+((if (not(not(xa_tx1=aMapping1))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
+ and m_3_nx1_0 = (m_3+1)) and if (lastReverted_1_nx1) then 
+
+	aw_Mapping1_nx1 = aw_Mapping1 and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2
+	 and aw_3_nx1 = aw_3 and 
+	true and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2
+	 and m_3_nx1 = m_3 and block_num >= block_num else  
+	aw_Mapping1_nx1 = aw_Mapping1 and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2
+	 and aw_3_nx1 = aw_3 and 
+	true and 
+	m_1_nx1 = m_1_nx1_0
+	 and m_2_nx1 = m_2_nx1_0
+	 and m_3_nx1 = m_3_nx1_0 and block_num >= block_num
+
+else block_num_nx1 >= block_num and 
+	aw_Mapping1_nx1 = aw_Mapping1 and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2
+	and aw_3_nx1 = aw_3 and 
+	lastReverted_nx1 = lastReverted
+	 and block_num_nx1 = block_num and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2
+	 and m_3_nx1 = m_3
+)
+        )
+    ))))
+);
+
+--%PROPERTY 
+(
+contract_not_constructed or 
+(forall(a_tx:address;)((a_tx = aMapping1) or (exists(h1_tx:functions;)exists(h2_tx:functions;)
+    exists (
+        xa_tx1: address; f_tx1: functions;  xn_tx1: int;  /* Transition vars */
+        aw_Mapping1_nx1: int; aw_1_nx1: int; aw_2_nx1: int; aw_3_nx1: int; lastReverted_nx1 : bool; lastReverted_0_nx1 : bool; lastReverted_1_nx1 : bool; lastReverted_2_nx1 : bool; lastReverted_3_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; m_1_nx1 : int; m_2_nx1 : int; m_3_nx1 : int; m_1_nx1_0 : int; m_2_nx1_0 : int; m_3_nx1_0 : int; /* Next state vars */
+    )
+    (   /* condition */
+        
+    exists (
+        xa_tx2: address; f_tx2: functions;  xn_tx2: int;  /* Transition vars */
+        aw_Mapping1_nx2: int; aw_1_nx2: int; aw_2_nx2: int; aw_3_nx2: int; lastReverted_nx2 : bool; lastReverted_0_nx2 : bool; lastReverted_1_nx2 : bool; lastReverted_2_nx2 : bool; lastReverted_3_nx2 : bool; block_num_nx2 : int; block_num_0_nx2 : int; m_1_nx2 : int; m_2_nx2 : int; m_3_nx2 : int; m_1_nx2_0 : int; m_2_nx2_0 : int; m_3_nx2_0 : int; /* Next state vars */
+    )
+    (   /* condition */
+        if a_tx = a1 then m_1_nx2 = (m_1+2)
+	else if a = a2 then m_2_nx2 = (m_2+2)
+	else m_3_nx2 = (m_3+2)
+	
+        and
+        (
+            ((xa_tx2 = a_tx and f_tx2 = h2_tx and true and xn_tx2 = 0) and 
+if f_tx2 = foo_func then
+
+if (xa_tx1 = a1) then 
+ ((if (not(not(xa_tx2=aMapping1))) then lastReverted_0_nx2=true else lastReverted_0_nx2=false)
+ and (if (not(xn_tx2 = 0)) then lastReverted_1_nx2=true else lastReverted_1_nx2=lastReverted_0_nx2)
+ and m_1_nx2_0 = (m_1_nx1+1)) 
+ else if (xa_tx1 = a2) then 
+((if (not(not(xa_tx2=aMapping1))) then lastReverted_0_nx2=true else lastReverted_0_nx2=false)
+ and (if (not(xn_tx2 = 0)) then lastReverted_1_nx2=true else lastReverted_1_nx2=lastReverted_0_nx2)
+ and m_2_nx2_0 = (m_2_nx1+1)) 
+ else 
+((if (not(not(xa_tx2=aMapping1))) then lastReverted_0_nx2=true else lastReverted_0_nx2=false)
+ and (if (not(xn_tx2 = 0)) then lastReverted_1_nx2=true else lastReverted_1_nx2=lastReverted_0_nx2)
+ and m_3_nx2_0 = (m_3_nx1+1)) and if (lastReverted_1_nx2) then 
+
+	aw_Mapping1_nx2 = aw_Mapping1_nx1 and 
+	aw_1_nx2 = aw_1_nx1
+	 and aw_2_nx2 = aw_2_nx1
+	 and aw_3_nx2 = aw_3_nx1 and 
+	true and 
+	m_1_nx2 = m_1_nx1
+	 and m_2_nx2 = m_2_nx1
+	 and m_3_nx2 = m_3_nx1 and block_num_nx2 >= block_num else  
+	aw_Mapping1_nx2 = aw_Mapping1_nx1 and 
+	aw_1_nx2 = aw_1_nx1
+	 and aw_2_nx2 = aw_2_nx1
+	 and aw_3_nx2 = aw_3_nx1 and 
+	true and 
+	m_1_nx2 = m_1_nx2_0
+	 and m_2_nx2 = m_2_nx2_0
+	 and m_3_nx2 = m_3_nx2_0 and block_num_nx2 >= block_num
+
+else block_num_nx2 >= block_num and 
+	aw_Mapping1_nx2 = aw_Mapping1_nx1  and 
+	aw_1_nx2 = aw_1_nx1
+	and aw_2_nx2 = aw_2_nx1
+	and aw_3_nx2 = aw_3_nx1 and 
+	lastReverted_nx2 = lastReverted_nx1 and 
+	m_1_nx2 = m_1_nx1
+	 and m_2_nx2 = m_2_nx1
+	 and m_3_nx2 = m_3_nx1
+)
+        )
+    )
+        and
+        (
+            ((xa_tx1 = a_tx and f_tx1 = h1_tx and true and xn_tx1 = 0) and 
+if f_tx1 = foo_func then
+
+if (xa = a1) then 
+ ((if (not(not(xa_tx1=aMapping1))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
+ and m_1_nx1_0 = (m_1+1)) 
+ else if (xa = a2) then 
+((if (not(not(xa_tx1=aMapping1))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
+ and m_2_nx1_0 = (m_2+1)) 
+ else 
+((if (not(not(xa_tx1=aMapping1))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
+ and m_3_nx1_0 = (m_3+1)) and if (lastReverted_1_nx1) then 
+
+	aw_Mapping1_nx1 = aw_Mapping1 and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2
+	 and aw_3_nx1 = aw_3 and 
+	true and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2
+	 and m_3_nx1 = m_3 and block_num >= block_num else  
+	aw_Mapping1_nx1 = aw_Mapping1 and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2
+	 and aw_3_nx1 = aw_3 and 
+	true and 
+	m_1_nx1 = m_1_nx1_0
+	 and m_2_nx1 = m_2_nx1_0
+	 and m_3_nx1 = m_3_nx1_0 and block_num >= block_num
+
+else block_num_nx1 >= block_num and 
+	aw_Mapping1_nx1 = aw_Mapping1 and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2
+	and aw_3_nx1 = aw_3 and 
+	lastReverted_nx1 = lastReverted
+	 and block_num_nx1 = block_num and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2
+	 and m_3_nx1 = m_3
+)
+        )
+    ))))
+);
+
+tel
+        
