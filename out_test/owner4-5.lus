@@ -1,0 +1,188 @@
+
+type functions = enum { add_func };
+type address = enum { aC, a1, a2 };
+node C (xa:address;xn:int;f:functions;constructor_initial_v:int;add_func_c:int;starting_aw_C: int;starting_aw_1: int;starting_aw_2: int) returns();
+(*@contract
+    assume starting_aw_C >= 0;
+assume starting_aw_1 >= 0;
+assume starting_aw_2 >= 0;
+*)
+var contract_not_constructed: bool;
+const starting_lastReverted : bool = false;
+const starting_block_num : int = 0;
+const starting_v : int = 0;
+const starting_owner : address = a1;
+var aw_C: int;
+var aw_1: int;
+var aw_2: int;
+var lastReverted : bool;
+var lastReverted_0 : bool;
+var lastReverted_1 : bool;
+var lastReverted_2 : bool;
+var block_num : int;
+var v : int;
+var v_0 : int;
+var owner : address;
+var owner_0 : address;
+let
+    if (true -> pre contract_not_constructed) then
+
+if (not(not(xa=aC))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+v_0 = constructor_initial_v;
+owner_0 = xa; if (lastReverted_0) then 
+	aw_C = (starting_aw_C -> pre aw_C);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	v = (starting_v -> pre v);
+	owner = (starting_owner -> pre owner);
+	
+	contract_not_constructed = true;
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)}; else 
+	aw_C = (starting_aw_C -> pre aw_C);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	v = v_0;
+	owner = owner_0;
+	
+	contract_not_constructed = false;
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+fi
+elsif f = add_func then
+	
+if (not(not(xa=aC))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+if (not(xn = 0)) then lastReverted_1=true; else lastReverted_1=lastReverted_0; fi
+
+if (not((xa = (starting_owner -> pre owner) or add_func_c>0))) then lastReverted_2=true; else lastReverted_2=lastReverted_1; fi
+
+v_0 = ((starting_v -> pre v)+add_func_c); if (lastReverted_2) then 
+	aw_C = (starting_aw_C -> pre aw_C);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	v = (starting_v -> pre v);
+	owner = (starting_owner -> pre owner);
+	
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)}; else 
+	aw_C = (starting_aw_C -> pre aw_C);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	v = v_0;
+	owner = (starting_owner -> pre owner);
+	
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+fi
+else
+	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+	aw_C = (starting_aw_C -> pre aw_C);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	lastReverted = (starting_lastReverted -> pre lastReverted);
+	v = (starting_v -> pre v);
+	owner = (starting_owner -> pre owner);
+	
+fi
+    --%PROPERTY 
+(
+contract_not_constructed or 
+(forall(addr_tx:address;)((addr_tx = aC) or (forall(f_tx:functions;)forall(constructor_initial_v_args_tx:int;add_func_c_args_tx:int;)
+    exists (
+        xa_tx1: address; f_tx1: functions; constructor_initial_v_tx1: int; add_func_c_tx1: int; xn_tx1: int;  /* Transition vars */
+        aw_C_nx1: int; aw_1_nx1: int; aw_2_nx1: int; lastReverted_nx1 : bool; lastReverted_0_nx1 : bool; lastReverted_1_nx1 : bool; lastReverted_2_nx1 : bool; lastReverted_3_nx1 : bool; lastReverted_4_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; v_nx1 : int; v_0_nx1 : int; v_1_nx1 : int; owner_nx1 : address; owner_0_nx1 : address; owner_1_nx1 : address; /* Next state vars */
+    )
+    (   /* condition */
+        if owner_nx_tx1 = a1 then aw_1_nx1 = aw_owner
+	else aw_2_nx1 = aw_owner
+	
+        and
+        (
+            ((xa_tx1 = addr_tx and f_tx1 = f_tx and true and xn_tx1 = 0) and 
+constructor_initial_v_tx1 = constructor_initial_v_args_tx and 
+add_func_c_tx1 = add_func_c_args_tx and 
+if f_tx1 = add_func then
+
+(if (not(not(xa_tx1=aC))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
+ and (if (not((xa_tx1 = owner or add_func_c_tx1>0))) then lastReverted_2_nx1=true else lastReverted_2_nx1=lastReverted_1_nx1)
+ and v_0_nx1 = (v+add_func_c_tx1) and if (lastReverted_2_nx1) then 
+
+	aw_C_nx1 = aw_C and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	v_nx1 = v
+	 and owner_nx1 = owner and 
+	true and block_num >= block_num else  
+	aw_C_nx1 = aw_C and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	v_nx1 = v_0_nx1
+	 and owner_nx1 = owner_nx1 and 
+	true and block_num >= block_num
+
+else block_num_nx1 >= block_num and 
+	aw_C_nx1 = aw_C and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	lastReverted_nx1 = lastReverted
+	 and block_num_nx1 = block_num
+	 and v_nx1 = v
+	 and owner_nx1 = owner and 
+	true
+)
+        )
+    ))))
+);
+
+--%PROPERTY 
+(
+contract_not_constructed or 
+(exists(addr_tx:address;)exists(f_tx:functions;)exists(constructor_initial_v_args_tx:int;add_func_c_args_tx:int;)
+    exists (
+        xa_tx1: address; f_tx1: functions; constructor_initial_v_tx1: int; add_func_c_tx1: int; xn_tx1: int;  /* Transition vars */
+        aw_C_nx1: int; aw_1_nx1: int; aw_2_nx1: int; lastReverted_nx1 : bool; lastReverted_0_nx1 : bool; lastReverted_1_nx1 : bool; lastReverted_2_nx1 : bool; lastReverted_3_nx1 : bool; lastReverted_4_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; v_nx1 : int; v_0_nx1 : int; v_1_nx1 : int; owner_nx1 : address; owner_0_nx1 : address; owner_1_nx1 : address; /* Next state vars */
+    )
+    (   /* condition */
+        not(aw_owner_nx_nx1=aw_owner)
+        and
+        (
+            ((xa_tx1 = addr_tx and f_tx1 = f_tx and true and xn_tx1 = 0) and 
+constructor_initial_v_tx1 = constructor_initial_v_args_tx and 
+add_func_c_tx1 = add_func_c_args_tx and 
+if f_tx1 = add_func then
+
+(if (not(not(xa_tx1=aC))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
+ and (if (not((xa_tx1 = owner or add_func_c_tx1>0))) then lastReverted_2_nx1=true else lastReverted_2_nx1=lastReverted_1_nx1)
+ and v_0_nx1 = (v+add_func_c_tx1) and if (lastReverted_2_nx1) then 
+
+	aw_C_nx1 = aw_C and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	v_nx1 = v
+	 and owner_nx1 = owner and 
+	true and block_num >= block_num else  
+	aw_C_nx1 = aw_C and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	v_nx1 = v_0_nx1
+	 and owner_nx1 = owner_nx1 and 
+	true and block_num >= block_num
+
+else block_num_nx1 >= block_num and 
+	aw_C_nx1 = aw_C and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	lastReverted_nx1 = lastReverted
+	 and block_num_nx1 = block_num
+	 and v_nx1 = v
+	 and owner_nx1 = owner and 
+	true
+)
+        )
+    ))
+);
+
+tel
+        
