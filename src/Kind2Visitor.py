@@ -1059,6 +1059,9 @@ tel
     def visitNeqExpr(self, ctx:TxScriptParser.NeqExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
+        nested_res = self.handle_nested_prop(left, right, '=')
+        if nested_res is not None:
+            return 'not(' + nested_res + ')'
         return 'not(' + left + '=' + right + ')'
 
 
@@ -1070,25 +1073,26 @@ tel
         tx = '_tx' if self.__visit_properties else '' 
         for el in self.__prop_nested_i:
             if el in left or el in right:
+                tx_tmp = '_tx' if tx == '_tx' and not el.endswith('nx') else ''
                 res = ''
                 if el == 'xa':
                     for ag in range(1, self.__A+1):
                         if ag == 1:
-                            res += f'if {el}{tx} = a{ag} then '
+                            res += f'if {el}{tx_tmp} = a{ag} then '
                         elif ag == self.__A:
                             res += f'else '
                         else:
-                            res += f'else if {el}{tx} = a{ag} then '
+                            res += f'else if {el}{tx_tmp} = a{ag} then '
                         res += f'{left} {op} {right}'.replace(f'aw_{el}', self.__t_curr_a[ag]) + '\n\t'
                 else:
                     for ag in range(1, self.__A+1):
                         if ag == 1:
-                            res += f'if {el}{tx} = a{ag} then '
+                            res += f'if {el}{tx_tmp} = a{ag} then '
                         elif ag == self.__A:
                             res += f'else '
                         else:
-                            res += f'else if {el}{tx} = a{ag} then '
-                        res += f'{left} {op} {right}'.replace(el, f'{ag}') + '\n\t'
+                            res += f'else if {el}{tx_tmp} = a{ag} then '
+                        res += f'{left} {op} {right}'.replace(el, f'{ag}').replace(el.replace('_nx', '_oldnx'), f'{ag}') + '\n\t'
                 return res
         return None
 

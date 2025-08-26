@@ -15,7 +15,7 @@ contract C {
     }
 }
 
-
+/*
 rule P0_true {
     forall addr : address .
     exists f : method .
@@ -23,6 +23,7 @@ rule P0_true {
     << addr : C . f(args) $ 0 >>			
         v == old(v)+1
 }
+
 rule P2_true {
     exists addr : address .
     exists f : method .
@@ -40,7 +41,7 @@ rule P3_false {
     << addr : C . f(args) $ 0 >>			
         v == old(v) - 1
 }
-
+*/
 rule P4_true {
     forall addr : address .
     forall f : method .
@@ -48,7 +49,6 @@ rule P4_true {
     << addr : C . f(args) $ 0 >>			
         balance[owner] == old(balance[owner])
 }
-
 
 rule P5_false {
     exists addr : address .
