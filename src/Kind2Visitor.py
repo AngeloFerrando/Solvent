@@ -179,7 +179,7 @@ class Kind2Visitor(TxScriptVisitor):
                 # functions_call += '\t'*n_tabs + p + '(xa1, xn, ' + (','.join(self.__proc_args[p])+', ' if self.__proc_args[p] else '') + 'aw1, aw2, w1, w2, t_aw, t_w, block_num1' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + ', err),\n'
             n_tabs += 1
             body += 'else'
-            same = '\n\tblock_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};'
+            same = '\n\tblock_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num)};'
             same += f'\n\taw_{self.__contract_name} = (starting_aw_{self.__contract_name} -> pre aw_{self.__contract_name});'
             same += '\n\t' + '\n\t'.join([f'aw_{i} = (starting_aw_{i} -> pre aw_{i});' for i in range(1, self.__A+1)])
             # same += '\n\t' + '\n\t'.join([g.text + ' = ' + f'(starting_{g.text} -> pre {g.text});' for (g, _) in self.__globals]) if self.__globals else ''
@@ -595,9 +595,9 @@ tel
                 self.__functions_prop[self.__prefix] = f'{body} and if ({err1}) then \n{same} else {skip}\n'
         else:
             same += '\n\tcontract_not_constructed = true;' if self.__prefix == 'constructor' else '\n\tcontract_not_constructed = (true -> pre contract_not_constructed);'
-            same += '\n\tblock_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};'
+            same += '\n\tblock_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num)};'
             skip += '\n\t' + ('contract_not_constructed = false;' if self.__prefix == 'constructor' else 'contract_not_constructed = (true -> pre contract_not_constructed);')
-            skip += '\n\tblock_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};'
+            skip += '\n\tblock_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num)};'
             self.__functions[self.__prefix] = f'{body} if ({err}) then {same} else {skip}\nfi'
 
         # if self.__requires:
