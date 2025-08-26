@@ -91,7 +91,7 @@ class Kind2Visitor(TxScriptVisitor):
         contract_args = ';'.join(
             ['xa:address', 'xn:int', 'f:functions'] + 
             contract_args + 
-            [f'starting_aw_{self.__contract_name}: int', 'starting_aw_1: int', 'starting_aw_2: int']) 
+            [f'starting_aw_{self.__contract_name}: int'] + [f'starting_aw_{i}: int' for i in range(1, self.__A+1)])
         contract_assumptions = f'assume starting_aw_{self.__contract_name} >= 0;\n' + '\n'.join([f'assume starting_aw_{ag} >= 0;' for ag in range(1, self.__A+1)])
         contract_globals = ['var contract_not_constructed: bool;']
         for (g_var,g_type) in self.__globals:
@@ -192,9 +192,10 @@ class Kind2Visitor(TxScriptVisitor):
             # functions_call += '\t'*n_tabs + keys[-1] + '(xa1, xn, ' + (','.join(self.__proc_args[keys[-1]])+', ' if self.__proc_args[keys[-1]] else '') + 'aw1, aw2, w1, w2, t_aw, t_w, block_num1' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + ', err)'
             body += 'fi'
         all_props = '\n'.join([prop for prop in props])
+        agents = ', '.join([f'a{i}' for i in range(1, self.__A+1)])
         res = f'''
 type functions = enum {{ {functions} }};
-type address = enum {{ a{self.__contract_name}, a1, a2 }};
+type address = enum {{ a{self.__contract_name}, {agents} }};
 node {ctx.name.text} ({contract_args}) returns();
 (*@contract
     {contract_assumptions}
@@ -1077,7 +1078,7 @@ tel
                         elif ag == self.__A:
                             res += f'else '
                         else:
-                            res += f'else if {el} = a{ag} then '
+                            res += f'else if {el}{tx} = a{ag} then '
                         res += f'{left} {op} {right}'.replace(f'aw_{el}', self.__t_curr_a[ag]) + '\n\t'
                 else:
                     for ag in range(1, self.__A+1):
@@ -1086,7 +1087,7 @@ tel
                         elif ag == self.__A:
                             res += f'else '
                         else:
-                            res += f'else if {el} = a{ag} then '
+                            res += f'else if {el}{tx} = a{ag} then '
                         res += f'{left} {op} {right}'.replace(el, f'{ag}') + '\n\t'
                 return res
         return None
