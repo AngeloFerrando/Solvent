@@ -49,21 +49,53 @@ def parse(pattern):
 
 
 def parseFile(file):
-    #print(f"... -- {os.getcwd()=}")
     with open(file, 'r') as content_file:
         pattern = content_file.read()
+
+    # If constructor missing, inject it
     if 'constructor' not in pattern:
         if 'contract' in pattern and '{' in pattern and '}' in pattern:
             if 'function' in pattern:
-                pattern = pattern[:pattern.index('function')] + '\nconstructor(){\n\tskip\n}\n' + pattern[pattern.index('function'):]
+                pattern = (
+                    pattern[:pattern.index('function')] +
+                    '\nconstructor(){\n\trequire(msg.sender != this)\n}\n' +
+                    pattern[pattern.index('function'):]
+                )
             else:
-                pattern = pattern[:pattern.index('}')] + '\nconstructor(){\n\tskip\n}\n' + pattern[pattern.index('}'):]
+                pattern = (
+                    pattern[:pattern.index('}')] +
+                    '\nconstructor(){\n\trequire(msg.sender != this)\n}\n' +
+                    pattern[pattern.index('}'):]
+                )
+    else:
+        # Ensure constructor starts with require(msg.sender != this);
+        pattern = re.sub(
+            r'(constructor\s*\([^)]*\)\s*\{)',
+            r'\1\n\trequire(msg.sender != this);',
+            pattern
+        )
+
+    # Existing replacements
     pattern = re.sub(r'\.transfer\((.*?)\)', r'!\1', pattern)
     pattern = pattern.replace('<tx> ', '<tx>').replace('<tx>', 'app_tx_st.')
-    pattern = re.sub(r'(contract\s+\w+\s*\{)', lambda match: match.group(1) + ' bool lastReverted;\nint block_num;\n', pattern)
-    pattern = re.sub(r'(\bfunction\s+\w+\s*\([^)]*\)\s*)(?!payable\b)\{', r'\1{ require(msg.value == 0); ', pattern)
-    pattern = re.sub(r'(\bfunction\s+\w+\s*\([^)]*\)(?:\s*payable)?\s*)\{', r'\1{ require(msg.sender != this); ', pattern)
+    pattern = re.sub(
+        r'(contract\s+\w+\s*\{)',
+        lambda match: match.group(1) + ' bool lastReverted;\nint block_num;\n',
+        pattern
+    )
+    pattern = re.sub(
+        r'(\bfunction\s+\w+\s*\([^)]*\)\s*)(?!payable\b)\{',
+        r'\1{ require(msg.value == 0); ',
+        pattern
+    )
+    pattern = re.sub(
+        r'(\bfunction\s+\w+\s*\([^)]*\)(?:\s*payable)?\s*)\{',
+        r'\1{ require(msg.sender != this); ',
+        pattern
+    )
+
     parse(pattern)
+
 
 def main(args):
     parseFile(args[1])
