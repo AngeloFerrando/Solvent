@@ -1073,6 +1073,7 @@ tel
         tx = '_tx' if self.__visit_properties else '' 
         for el in self.__prop_nested_i:
             if el in left or el in right:
+                # el = '_' + el
                 tx_tmp = '_tx' if tx == '_tx' and not el.endswith('nx') else ''
                 res = ''
                 if el == 'xa':
@@ -1092,7 +1093,7 @@ tel
                             res += f'else '
                         else:
                             res += f'else if {el}{tx_tmp} = a{ag} then '
-                        res += f'{left} {op} {right}'.replace(el, f'{ag}').replace(el.replace('_nx', '_oldnx'), f'{ag}') + '\n\t'
+                        res += f'{left} {op} {right}'.replace('_'+el, f'_{ag}').replace('_'+el.replace('_nx', '_oldnx'), f'_{ag}') + '\n\t'
                 return res
         return None
 
@@ -1138,21 +1139,24 @@ tel
     def visitSumSubExpr(self, ctx:TxScriptParser.SumSubExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        if not self.__visit_properties:
-            post = 'Now'
-        else:
-            post = ''
-        if left in self.__globals_index:
-            if self.__globals_index[left]+self.__globals_modifier < 0:
-                left = left + post
-            else:
-                left = 't_'+left + '['+str(self.__globals_index[left]+self.__globals_modifier)+']'
-        if right in self.__globals_index:
-            if self.__globals_index[right]+self.__globals_modifier < 0:
-                right = right + post
-            else:
-                right = 't_'+right + '['+str(self.__globals_index[right]+self.__globals_modifier)+']'
+        nested_res = self.handle_nested_prop(left, right, ctx.op.text)
+        if nested_res is not None:
+            return '(' + nested_res + ')'
         return '(' + left + ctx.op.text + right + ')'
+        # if not self.__visit_properties:
+        #     post = 'Now'
+        # else:
+        #     post = ''
+        # if left in self.__globals_index:
+        #     if self.__globals_index[left]+self.__globals_modifier < 0:
+        #         left = left + post
+        #     else:
+        #         left = 't_'+left + '['+str(self.__globals_index[left]+self.__globals_modifier)+']'
+        # if right in self.__globals_index:
+        #     if self.__globals_index[right]+self.__globals_modifier < 0:
+        #         right = right + post
+        #     else:
+        #         right = 't_'+right + '['+str(self.__globals_index[right]+self.__globals_modifier)+']'
 
 
     # Visit a parse tree produced by TxScriptParser#lessEqExpr.
@@ -1179,25 +1183,24 @@ tel
     def visitMultDivModExpr(self, ctx:TxScriptParser.MultDivModExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        if not self.__visit_properties:
-            post = 'Now'
-        else:
-            post = ''
-        if left in self.__globals_index:
-            if self.__globals_index[left]+self.__globals_modifier < 0:
-                left = left + post
-            else:
-                left = 't_'+left + '['+str(self.__globals_index[left]+self.__globals_modifier)+']'
-        if right in self.__globals_index:
-            if self.__globals_index[right]+self.__globals_modifier < 0:
-                right = right + post
-            else:
-                right = 't_'+right + '['+str(self.__globals_index[right]+self.__globals_modifier)+']'
-        res = '(' + left + ctx.op.text + right + ')'
-        #  left out for now, it would require to keep track of the division and propagate their handling in the assign command
-        # if ctx.op.text == '/':
-        #     res = 'If(\n\tNot(' + right + ' != 0), \n\t\tnext_state_tx(awNow, awNext, wNow, wNext'+((', ' + ', '.join([g.text+'Now, '+g.text+'Next' for (g, _) in self.__globals])) if self.__globals else '')+'), And(' + res + ', {subs}))'        
-        return res
+        nested_res = self.handle_nested_prop(left, right, ctx.op.text)
+        if nested_res is not None:
+            return '(' + nested_res + ')'
+        return '(' + left + ctx.op.text + right + ')'
+        # if not self.__visit_properties:
+        #     post = 'Now'
+        # else:
+        #     post = ''
+        # if left in self.__globals_index:
+        #     if self.__globals_index[left]+self.__globals_modifier < 0:
+        #         left = left + post
+        #     else:
+        #         left = 't_'+left + '['+str(self.__globals_index[left]+self.__globals_modifier)+']'
+        # if right in self.__globals_index:
+        #     if self.__globals_index[right]+self.__globals_modifier < 0:
+        #         right = right + post
+        #     else:
+        #         right = 't_'+right + '['+str(self.__globals_index[right]+self.__globals_modifier)+']'
 
 
     # Visit a parse tree produced by TxScriptParser#andExpr.
