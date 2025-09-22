@@ -10,7 +10,7 @@ contract C4 {
   }
 }
 
-/*
+
 rule P1_false {
   forall addr : address .
   exists v : int .   
@@ -85,7 +85,7 @@ rule P9_false {
       balance[addr] == old(balance[addr]) + (balance - 1) // note: we are using current balance 
 }
 
-*/
+
 
 rule P10_true {
   forall addr : address .
