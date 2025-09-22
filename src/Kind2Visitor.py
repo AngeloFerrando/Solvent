@@ -1745,7 +1745,9 @@ forall (xa_tx: int;)
         {next_state_vars} /* Next state vars */
     )
     (   /* condition */
-        {condition}
+        (
+            {condition}
+        )
         and
         (
             {contracts}
