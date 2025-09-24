@@ -16,8 +16,12 @@ contract TwoDonatee {
         started = true
     }
 
+    
+    // translates `donatee` as int in kind2, which triggers an error 
+    // error: Cannot unify type int with inferred type enum { aTwoDonatee, a1, a2 } 
     /*
-    function donate(address donatee) payable {
+    function donate(address donatee) payable { 
+        require(started);
         //donatee.transfer(msg.value);
         if (donatee == p1) {
             p1.transfer(msg.value)
@@ -25,9 +29,7 @@ contract TwoDonatee {
         else {
             p2.transfer(msg.value)
         }
-    }
-    */
-
+    }*/
     
     function donate(int donatee_index) payable {
         require(started);
@@ -39,12 +41,7 @@ contract TwoDonatee {
             p2.transfer(msg.value)
         }
     }
-    /*
-    function donate(int donatee_index) payable {
-        //require(started);
-        //require(donatee_index == 1 || donatee_index == 2);
-        p1.transfer(msg.value)
-    }*/
+
 
 }
 
@@ -100,6 +97,7 @@ rule P4_true {
     )	
 }
 */
+
 rule P5_true {
     (started && balance[p2] == 1 && balance[this] == 1 && p1 != p2) ->
     (
@@ -108,6 +106,13 @@ rule P5_true {
     )	
 }
 
+rule P5_false {
+    (started && balance[p2] == 1 && balance[this] == 1 && p1 != p2) ->
+    (
+        << p2 : TwoDonatee . donate(1) $ 1 >>
+            balance[p1] <= old(balance[p1])	
+    )	
+}
 /*
 
 rule P2_false {

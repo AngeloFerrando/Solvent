@@ -1,0 +1,405 @@
+
+type functions = enum { donate_func,join_func };
+type address = enum { aTwoDonatee, a1, a2 };
+node TwoDonatee (xa:address;xn:int;f:functions;constructor_initial_v:int;donate_func_donatee_index:int;starting_aw_TwoDonatee: int;starting_aw_1: int;starting_aw_2: int) returns();
+(*@contract
+    assume starting_aw_TwoDonatee >= 0;
+assume starting_aw_1 >= 0;
+assume starting_aw_2 >= 0;
+*)
+var contract_not_constructed: bool;
+const starting_lastReverted : bool = false;
+const starting_block_num : int = 0;
+const starting_p1 : address = a1;
+const starting_p2 : address = a1;
+const starting_started : bool = false;
+var aw_TwoDonatee: int;
+var aw_TwoDonatee_0: int;
+var aw_TwoDonatee_1: int;
+var aw_1: int;
+var aw_2: int;
+var aw_1_0: int;
+var aw_1_1: int;
+var aw_2_0: int;
+var aw_2_1: int;
+var lastReverted : bool;
+var lastReverted_0 : bool;
+var lastReverted_1 : bool;
+var lastReverted_2 : bool;
+var lastReverted_3 : bool;
+var lastReverted_4 : bool;
+var block_num : int;
+var p1 : address;
+var p1_0 : address;
+var p2 : address;
+var p2_0 : address;
+var started : bool;
+var started_0 : bool;
+let
+    if (true -> pre contract_not_constructed) then
+
+if (not(not(xa=aTwoDonatee))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+p1_0 = xa;
+started_0 = false; if (lastReverted_0) then 
+	aw_TwoDonatee = (starting_aw_TwoDonatee -> pre aw_TwoDonatee);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	p1 = (starting_p1 -> pre p1);
+	p2 = (starting_p2 -> pre p2);
+	started = (starting_started -> pre started);
+	
+	contract_not_constructed = true;
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num)}; else 
+	aw_TwoDonatee = (starting_aw_TwoDonatee -> pre aw_TwoDonatee);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	p1 = p1_0;
+	p2 = (starting_p2 -> pre p2);
+	started = started_0;
+	
+	contract_not_constructed = false;
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num)};
+fi
+elsif f = join_func then
+	if (not(xn >= 0 and (xa = a1 or xa = a2) and ((not(xa = a1) or (starting_aw_1 -> pre aw_1) >= xn) and (not(xa = a2) or (starting_aw_2 -> pre aw_2) >= xn)))) then lastReverted_0=true; else lastReverted_0=false; fi
+aw_TwoDonatee_0 = (starting_aw_TwoDonatee -> pre aw_TwoDonatee) + xn;
+if (xa = a1) then
+	aw_1_0 = (starting_aw_1 -> pre aw_1) - xn;
+	aw_2_0 = (starting_aw_2 -> pre aw_2);
+elsif (xa = a2) then
+	aw_1_0 = (starting_aw_1 -> pre aw_1);
+	aw_2_0 = (starting_aw_2 -> pre aw_2) - xn;
+
+fi
+
+if (not(not(xa=aTwoDonatee))) then lastReverted_1=true; else lastReverted_1=lastReverted_0; fi
+
+if (not(not(xa=(starting_p1 -> pre p1)))) then lastReverted_2=true; else lastReverted_2=lastReverted_1; fi
+
+if (not(not((starting_started -> pre started)))) then lastReverted_3=true; else lastReverted_3=lastReverted_2; fi
+
+p2_0 = xa;
+started_0 = true; if (lastReverted_3) then 
+	aw_TwoDonatee = (starting_aw_TwoDonatee -> pre aw_TwoDonatee);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	p1 = (starting_p1 -> pre p1);
+	p2 = (starting_p2 -> pre p2);
+	started = (starting_started -> pre started);
+	
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num)}; else 
+	aw_TwoDonatee = aw_TwoDonatee_0;
+	aw_1 = aw_1_0;
+	aw_2 = aw_2_0;
+	p1 = (starting_p1 -> pre p1);
+	p2 = p2_0;
+	started = started_0;
+	
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num)};
+fi
+	elsif f = donate_func then
+	if (not(xn >= 0 and (xa = a1 or xa = a2) and ((not(xa = a1) or (starting_aw_1 -> pre aw_1) >= xn) and (not(xa = a2) or (starting_aw_2 -> pre aw_2) >= xn)))) then lastReverted_0=true; else lastReverted_0=false; fi
+aw_TwoDonatee_0 = (starting_aw_TwoDonatee -> pre aw_TwoDonatee) + xn;
+if (xa = a1) then
+	aw_1_0 = (starting_aw_1 -> pre aw_1) - xn;
+	aw_2_0 = (starting_aw_2 -> pre aw_2);
+elsif (xa = a2) then
+	aw_1_0 = (starting_aw_1 -> pre aw_1);
+	aw_2_0 = (starting_aw_2 -> pre aw_2) - xn;
+
+fi
+
+if (not(not(xa=aTwoDonatee))) then lastReverted_1=true; else lastReverted_1=lastReverted_0; fi
+
+if (not((starting_started -> pre started))) then lastReverted_2=true; else lastReverted_2=lastReverted_1; fi
+
+if (not((donate_func_donatee_index = 1 or donate_func_donatee_index = 2))) then lastReverted_3=true; else lastReverted_3=lastReverted_2; fi
+
+if (donate_func_donatee_index = 1) then if (not(xn >= 0 and xn <= (starting_aw_TwoDonatee -> pre aw_TwoDonatee))) then lastReverted_4=true; else lastReverted_4=lastReverted_3; fi
+aw_TwoDonatee_1 = aw_TwoDonatee_0 - xn;
+if ((starting_p1 -> pre p1) = a1) then
+	aw_1_1 = aw_1_0 + xn;
+	aw_2_1 = aw_2_0;
+elsif ((starting_p1 -> pre p1) = a2) then
+	aw_1_1 = aw_1_0;
+	aw_2_1 = aw_2_0 + xn;
+
+fi
+ else if (not(xn >= 0 and xn <= (starting_aw_TwoDonatee -> pre aw_TwoDonatee))) then lastReverted_4=true; else lastReverted_4=lastReverted_3; fi
+aw_TwoDonatee_1 = aw_TwoDonatee_0 - xn;
+if ((starting_p2 -> pre p2) = a1) then
+	aw_1_1 = aw_1_0 + xn;
+	aw_2_1 = aw_2_0;
+elsif ((starting_p2 -> pre p2) = a2) then
+	aw_1_1 = aw_1_0;
+	aw_2_1 = aw_2_0 + xn;
+
+fi
+ fi if (lastReverted_4) then 
+	aw_TwoDonatee = (starting_aw_TwoDonatee -> pre aw_TwoDonatee);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	p1 = (starting_p1 -> pre p1);
+	p2 = (starting_p2 -> pre p2);
+	started = (starting_started -> pre started);
+	
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num)}; else 
+	aw_TwoDonatee = aw_TwoDonatee_1;
+	aw_1 = aw_1_1;
+	aw_2 = aw_2_1;
+	p1 = (starting_p1 -> pre p1);
+	p2 = (starting_p2 -> pre p2);
+	started = (starting_started -> pre started);
+	
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num)};
+fi
+else
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num)};
+	aw_TwoDonatee = (starting_aw_TwoDonatee -> pre aw_TwoDonatee);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	lastReverted = (starting_lastReverted -> pre lastReverted);
+	p1 = (starting_p1 -> pre p1);
+	p2 = (starting_p2 -> pre p2);
+	started = (starting_started -> pre started);
+	
+fi
+    --%PROPERTY 
+(
+contract_not_constructed or 
+((not((((started and if p2_tx = a1 then aw_1 = 1
+	else aw_2 = 1
+	) and aw_TwoDonatee = 1) and not(if p2_tx = a1 then p1 = p2
+	else p1 = p2
+	))) or (
+    exists (
+        xa_tx1: address; f_tx1: functions; constructor_initial_v_tx1: int; donate_func_donatee_index_tx1: int; xn_tx1: int;  /* Transition vars */
+        aw_TwoDonatee_nx1: int; aw_TwoDonatee_0_nx1: int; aw_TwoDonatee_1_nx1: int; aw_1_nx1: int; aw_2_nx1: int; aw_1_0_nx1: int; aw_1_1_nx1: int; aw_2_0_nx1: int; aw_2_1_nx1: int; lastReverted_nx1 : bool; lastReverted_0_nx1 : bool; lastReverted_1_nx1 : bool; lastReverted_2_nx1 : bool; lastReverted_3_nx1 : bool; lastReverted_4_nx1 : bool; lastReverted_5_nx1 : bool; lastReverted_6_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; p1_nx1 : address; p1_0_nx1 : address; p1_1_nx1 : address; p2_nx1 : address; p2_0_nx1 : address; p2_1_nx1 : address; started_nx1 : bool; started_0_nx1 : bool; started_1_nx1 : bool; /* Next state vars */
+    )
+    (   /* condition */
+        (
+            if p1_nx1 = a1 then aw_1_nx1 > aw_1
+	else aw_2_nx1 > aw_2
+	
+        )
+        and
+        (
+            ((xa_tx1 = p2 and f_tx1 = donate_func and true and donate_func_donatee_index_tx1 = 1 and xn_tx1 = 1) and 
+if f_tx1 = join_func then
+(if (not(xn_tx1 >= 0 and (xa_tx1 = a1 or xa_tx1 = a2) and ((not(xa_tx1 = a1) or aw_1 >= xn_tx1) and (not(xa_tx1 = a2) or aw_2 >= xn_tx1)))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (aw_TwoDonatee_0_nx1 = aw_TwoDonatee + xn_tx1 and
+if (xa_tx1 = a1) then
+	aw_1_0_nx1 = aw_1 - xn_tx1 and
+	aw_2_0_nx1 = aw_2
+else if (xa_tx1 = a2) then
+	aw_1_0_nx1 = aw_1 and
+	aw_2_0_nx1 = aw_2 - xn_tx1
+else true
+) and 
+(if (not(not(xa_tx1=aTwoDonatee))) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
+ and (if (not(not(xa_tx1=p1))) then lastReverted_2_nx1=true else lastReverted_2_nx1=lastReverted_1_nx1)
+ and (if (not(not(started))) then lastReverted_3_nx1=true else lastReverted_3_nx1=lastReverted_2_nx1)
+ and p2_0_nx1 = xa_tx1 and started_0_nx1 = true and if (lastReverted_3_nx1) then 
+
+	aw_TwoDonatee_nx1 = aw_TwoDonatee and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	p1_nx1 = p1
+	 and p2_nx1 = p2
+	 and started_nx1 = started and 
+	true and block_num >= block_num else  
+	aw_TwoDonatee_nx1 = aw_TwoDonatee_0_nx1 and 
+	aw_1_nx1 = aw_1_0_nx1
+	 and aw_2_nx1 = aw_2_0_nx1 and 
+	p1_nx1 = p1_nx1
+	 and p2_nx1 = p2_0_nx1
+	 and started_nx1 = started_0_nx1 and 
+	true and block_num >= block_num
+
+	else if f_tx1 = donate_func then
+(if (not(xn_tx1 >= 0 and (xa_tx1 = a1 or xa_tx1 = a2) and ((not(xa_tx1 = a1) or aw_1 >= xn_tx1) and (not(xa_tx1 = a2) or aw_2 >= xn_tx1)))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (aw_TwoDonatee_0_nx1 = aw_TwoDonatee + xn_tx1 and
+if (xa_tx1 = a1) then
+	aw_1_0_nx1 = aw_1 - xn_tx1 and
+	aw_2_0_nx1 = aw_2
+else if (xa_tx1 = a2) then
+	aw_1_0_nx1 = aw_1 and
+	aw_2_0_nx1 = aw_2 - xn_tx1
+else true
+) and 
+(if (not(not(xa_tx1=aTwoDonatee))) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
+ and (if (not(started)) then lastReverted_2_nx1=true else lastReverted_2_nx1=lastReverted_1_nx1)
+ and (if (not((donate_func_donatee_index_tx1 = 1 or donate_func_donatee_index_tx1 = 2))) then lastReverted_3_nx1=true else lastReverted_3_nx1=lastReverted_2_nx1)
+ and (if donate_func_donatee_index_tx1 = 1 then ((if (not(xn_tx1 >= 0 and xn_tx1 <= aw_TwoDonatee)) then lastReverted_4_nx1=true else lastReverted_4_nx1=lastReverted_3_nx1) 
+ and aw_TwoDonatee_1_nx1 = aw_TwoDonatee_0_nx1 - xn_tx1 and
+if (starting_p1 = a1) then
+	aw_1_1_nx1 = aw_1_0_nx1 + xn_tx1 and
+	aw_2_1_nx1 = aw_2_0_nx1
+else if (starting_p1 = a2) then
+	aw_1_1_nx1 = aw_1_0_nx1 and
+	aw_2_1_nx1 = aw_2_0_nx1 + xn_tx1
+else true
+) else ((if (not(xn_tx1 >= 0 and xn_tx1 <= aw_TwoDonatee)) then lastReverted_4_nx1=true else lastReverted_4_nx1=lastReverted_3_nx1) 
+ and aw_TwoDonatee_1_nx1 = aw_TwoDonatee_0_nx1 - xn_tx1 and
+if (starting_p2 = a1) then
+	aw_1_1_nx1 = aw_1_0_nx1 + xn_tx1 and
+	aw_2_1_nx1 = aw_2_0_nx1
+else if (starting_p2 = a2) then
+	aw_1_1_nx1 = aw_1_0_nx1 and
+	aw_2_1_nx1 = aw_2_0_nx1 + xn_tx1
+else true
+)) and if (lastReverted_4_nx1) then 
+
+	aw_TwoDonatee_nx1 = aw_TwoDonatee and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	p1_nx1 = p1
+	 and p2_nx1 = p2
+	 and started_nx1 = started and 
+	true and block_num >= block_num else  
+	aw_TwoDonatee_nx1 = aw_TwoDonatee_1_nx1 and 
+	aw_1_nx1 = aw_1_1_nx1
+	 and aw_2_nx1 = aw_2_1_nx1 and 
+	p1_nx1 = p1_nx1
+	 and p2_nx1 = p2_nx1
+	 and started_nx1 = started_nx1 and 
+	true and block_num >= block_num
+
+else block_num_nx1 >= block_num and 
+	aw_TwoDonatee_nx1 = aw_TwoDonatee and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	lastReverted_nx1 = lastReverted
+	 and block_num_nx1 = block_num
+	 and p1_nx1 = p1
+	 and p2_nx1 = p2
+	 and started_nx1 = started and 
+	true
+)
+        )
+    ))))
+);
+
+--%PROPERTY 
+(
+contract_not_constructed or 
+((not((((started and if p2_tx = a1 then aw_1 = 1
+	else aw_2 = 1
+	) and aw_TwoDonatee = 1) and not(if p2_tx = a1 then p1 = p2
+	else p1 = p2
+	))) or (
+    exists (
+        xa_tx1: address; f_tx1: functions; constructor_initial_v_tx1: int; donate_func_donatee_index_tx1: int; xn_tx1: int;  /* Transition vars */
+        aw_TwoDonatee_nx1: int; aw_TwoDonatee_0_nx1: int; aw_TwoDonatee_1_nx1: int; aw_1_nx1: int; aw_2_nx1: int; aw_1_0_nx1: int; aw_1_1_nx1: int; aw_2_0_nx1: int; aw_2_1_nx1: int; lastReverted_nx1 : bool; lastReverted_0_nx1 : bool; lastReverted_1_nx1 : bool; lastReverted_2_nx1 : bool; lastReverted_3_nx1 : bool; lastReverted_4_nx1 : bool; lastReverted_5_nx1 : bool; lastReverted_6_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; p1_nx1 : address; p1_0_nx1 : address; p1_1_nx1 : address; p2_nx1 : address; p2_0_nx1 : address; p2_1_nx1 : address; started_nx1 : bool; started_0_nx1 : bool; started_1_nx1 : bool; /* Next state vars */
+    )
+    (   /* condition */
+        (
+            if p1_nx1 = a1 then aw_1_nx1 <= aw_1
+	else aw_2_nx1 <= aw_2
+	
+        )
+        and
+        (
+            ((xa_tx1 = p2 and f_tx1 = donate_func and true and donate_func_donatee_index_tx1 = 1 and xn_tx1 = 1) and 
+if f_tx1 = join_func then
+(if (not(xn_tx1 >= 0 and (xa_tx1 = a1 or xa_tx1 = a2) and ((not(xa_tx1 = a1) or aw_1 >= xn_tx1) and (not(xa_tx1 = a2) or aw_2 >= xn_tx1)))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (aw_TwoDonatee_0_nx1 = aw_TwoDonatee + xn_tx1 and
+if (xa_tx1 = a1) then
+	aw_1_0_nx1 = aw_1 - xn_tx1 and
+	aw_2_0_nx1 = aw_2
+else if (xa_tx1 = a2) then
+	aw_1_0_nx1 = aw_1 and
+	aw_2_0_nx1 = aw_2 - xn_tx1
+else true
+) and 
+(if (not(not(xa_tx1=aTwoDonatee))) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
+ and (if (not(not(xa_tx1=p1))) then lastReverted_2_nx1=true else lastReverted_2_nx1=lastReverted_1_nx1)
+ and (if (not(not(started))) then lastReverted_3_nx1=true else lastReverted_3_nx1=lastReverted_2_nx1)
+ and p2_0_nx1 = xa_tx1 and started_0_nx1 = true and if (lastReverted_3_nx1) then 
+
+	aw_TwoDonatee_nx1 = aw_TwoDonatee and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	p1_nx1 = p1
+	 and p2_nx1 = p2
+	 and started_nx1 = started and 
+	true and block_num >= block_num else  
+	aw_TwoDonatee_nx1 = aw_TwoDonatee_0_nx1 and 
+	aw_1_nx1 = aw_1_0_nx1
+	 and aw_2_nx1 = aw_2_0_nx1 and 
+	p1_nx1 = p1_nx1
+	 and p2_nx1 = p2_0_nx1
+	 and started_nx1 = started_0_nx1 and 
+	true and block_num >= block_num
+
+	else if f_tx1 = donate_func then
+(if (not(xn_tx1 >= 0 and (xa_tx1 = a1 or xa_tx1 = a2) and ((not(xa_tx1 = a1) or aw_1 >= xn_tx1) and (not(xa_tx1 = a2) or aw_2 >= xn_tx1)))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (aw_TwoDonatee_0_nx1 = aw_TwoDonatee + xn_tx1 and
+if (xa_tx1 = a1) then
+	aw_1_0_nx1 = aw_1 - xn_tx1 and
+	aw_2_0_nx1 = aw_2
+else if (xa_tx1 = a2) then
+	aw_1_0_nx1 = aw_1 and
+	aw_2_0_nx1 = aw_2 - xn_tx1
+else true
+) and 
+(if (not(not(xa_tx1=aTwoDonatee))) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
+ and (if (not(started)) then lastReverted_2_nx1=true else lastReverted_2_nx1=lastReverted_1_nx1)
+ and (if (not((donate_func_donatee_index_tx1 = 1 or donate_func_donatee_index_tx1 = 2))) then lastReverted_3_nx1=true else lastReverted_3_nx1=lastReverted_2_nx1)
+ and (if donate_func_donatee_index_tx1 = 1 then ((if (not(xn_tx1 >= 0 and xn_tx1 <= aw_TwoDonatee)) then lastReverted_4_nx1=true else lastReverted_4_nx1=lastReverted_3_nx1) 
+ and aw_TwoDonatee_1_nx1 = aw_TwoDonatee_0_nx1 - xn_tx1 and
+if (starting_p1 = a1) then
+	aw_1_1_nx1 = aw_1_0_nx1 + xn_tx1 and
+	aw_2_1_nx1 = aw_2_0_nx1
+else if (starting_p1 = a2) then
+	aw_1_1_nx1 = aw_1_0_nx1 and
+	aw_2_1_nx1 = aw_2_0_nx1 + xn_tx1
+else true
+) else ((if (not(xn_tx1 >= 0 and xn_tx1 <= aw_TwoDonatee)) then lastReverted_4_nx1=true else lastReverted_4_nx1=lastReverted_3_nx1) 
+ and aw_TwoDonatee_1_nx1 = aw_TwoDonatee_0_nx1 - xn_tx1 and
+if (starting_p2 = a1) then
+	aw_1_1_nx1 = aw_1_0_nx1 + xn_tx1 and
+	aw_2_1_nx1 = aw_2_0_nx1
+else if (starting_p2 = a2) then
+	aw_1_1_nx1 = aw_1_0_nx1 and
+	aw_2_1_nx1 = aw_2_0_nx1 + xn_tx1
+else true
+)) and if (lastReverted_4_nx1) then 
+
+	aw_TwoDonatee_nx1 = aw_TwoDonatee and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	p1_nx1 = p1
+	 and p2_nx1 = p2
+	 and started_nx1 = started and 
+	true and block_num >= block_num else  
+	aw_TwoDonatee_nx1 = aw_TwoDonatee_1_nx1 and 
+	aw_1_nx1 = aw_1_1_nx1
+	 and aw_2_nx1 = aw_2_1_nx1 and 
+	p1_nx1 = p1_nx1
+	 and p2_nx1 = p2_nx1
+	 and started_nx1 = started_nx1 and 
+	true and block_num >= block_num
+
+else block_num_nx1 >= block_num and 
+	aw_TwoDonatee_nx1 = aw_TwoDonatee and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	lastReverted_nx1 = lastReverted
+	 and block_num_nx1 = block_num
+	 and p1_nx1 = p1
+	 and p2_nx1 = p2
+	 and started_nx1 = started and 
+	true
+)
+        )
+    ))))
+);
+
+tel
+        
