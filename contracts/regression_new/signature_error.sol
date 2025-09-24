@@ -23,7 +23,7 @@ contract TwoDonatee {
         p1.transfer(msg.value)
     }
 
-    //function dummy(1) { // ok
+    //function dummy(int a) { // ok
     function dummy() {  // "Function donate requires 0 arguments, but 1 are given (line 39, column 8)"
         skip
     }
