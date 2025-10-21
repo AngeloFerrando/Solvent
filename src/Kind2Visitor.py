@@ -595,9 +595,9 @@ tel
                 self.__functions_prop[self.__prefix] = f'{body} and if ({err1}) then \n{same} else {skip}\n'
         else:
             same += '\n\tcontract_not_constructed = true;' if self.__prefix == 'constructor' else '\n\tcontract_not_constructed = (true -> pre contract_not_constructed);'
-            same += '\n\tblock_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num)};'
+            same += '\n\tblock_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};'
             skip += '\n\t' + ('contract_not_constructed = false;' if self.__prefix == 'constructor' else 'contract_not_constructed = (true -> pre contract_not_constructed);')
-            skip += '\n\tblock_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num)};'
+            skip += '\n\tblock_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};'
             self.__functions[self.__prefix] = f'{body} if ({err}) then {same} else {skip}\nfi'
 
         # if self.__requires:
