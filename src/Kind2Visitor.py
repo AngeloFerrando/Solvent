@@ -262,7 +262,7 @@ tel
         for k in self.__globals_index:
             self.__globals_index[k] = 0
         phi = self.visit(ctx.phi)
-        return f'--%PROPERTY \n(\ncontract_not_constructed or \n({phi})\n);\n'
+        return f'--%PROPERTY "{self.__prop_name}" \n(\ncontract_not_constructed or \n({phi})\n);\n'
 
 
     # Visit a parse tree produced by TxScriptParser#hashDecl.
