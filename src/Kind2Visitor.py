@@ -179,7 +179,7 @@ class Kind2Visitor(TxScriptVisitor):
                 # functions_call += '\t'*n_tabs + p + '(xa1, xn, ' + (','.join(self.__proc_args[p])+', ' if self.__proc_args[p] else '') + 'aw1, aw2, w1, w2, t_aw, t_w, block_num1' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + ', err),\n'
             n_tabs += 1
             body += 'else'
-            same = '\n\tblock_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};'
+            same = '\n\tblock_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num)};'
             same += f'\n\taw_{self.__contract_name} = (starting_aw_{self.__contract_name} -> pre aw_{self.__contract_name});'
             same += '\n\t' + '\n\t'.join([f'aw_{i} = (starting_aw_{i} -> pre aw_{i});' for i in range(1, self.__A+1)])
             # same += '\n\t' + '\n\t'.join([g.text + ' = ' + f'(starting_{g.text} -> pre {g.text});' for (g, _) in self.__globals]) if self.__globals else ''
@@ -508,7 +508,11 @@ tel
         self.__add_last_cmd = True
         body = self.visit(ctx.cmds)
         if '_xa' in body:
-            new_body = 'if (xa = a1) then \n ' + ('(' if self.__visit_properties else '') + body.format(ag='xa').replace('_xa_tx', '_1_nx').replace('_xa', '_1') + (')' if self.__visit_properties else '')
+            if self.__visit_properties:
+                new_body = '('
+            else:
+                new_body = ''
+            new_body += 'if (xa = a1) then \n ' + ('(' if self.__visit_properties else '') + body.format(ag='xa').replace('_xa_tx', '_1_nx').replace('_xa', '_1') + (')' if self.__visit_properties else '')
             for ag in range(2, self.__A+1):
                 if not self.__visit_properties:
                     if ag == self.__A:
@@ -525,7 +529,7 @@ tel
             if not self.__visit_properties:
                 body = new_body + ' fi'
             else:
-                body = new_body
+                body = new_body + ')'
         body = add_to_body + '\n' + body
         if self.__prefix == 'constructor':
             for (g, ty) in self.__globals:
@@ -569,7 +573,7 @@ tel
         else:
             skip = f' \n\taw_{self.__contract_name}_nx = {self.__t_curr_w}'
             skip += ' and \n\t' + '\n\t and '.join([f'aw_{i}_nx = {self.__t_curr_a[i]}' for i in range(1, self.__A+1)])
-            aux = '\n\t and '.join([g.text + '_nx = ' + (f'{g.text}' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_'+str(self.__globals_index[g.text]+self.__globals_modifier))+'_nx' for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['lastReverted', 'block_num']]) if self.__globals else ''        
+            aux = '\n\t and '.join([g.text + '_nx = ' + (f'{g.text}' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_'+str(self.__globals_index[g.text]+self.__globals_modifier)+'_nx') for (g, ty) in self.__globals if ty != ('MapAddr', 'int') and g.text not in ['lastReverted', 'block_num']]) if self.__globals else ''        
             skip += ' and \n\t' + (aux if aux else 'true')
             aux = '\n\t and '.join([g.text + '_' + str(ag) + '_nx = ' + (f'{g.text}_{ag}' if self.__globals_index[g.text]+self.__globals_modifier < 0 else g.text + '_' + str(ag) +'_nx' + '_' + str(self.__globals_index[g.text]+self.__globals_modifier)) for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''        
             skip += ' and \n\t' + (aux if aux else 'true')
@@ -583,7 +587,20 @@ tel
             aux = '\n\t and '.join([g.text + '_' + str(ag) + '_nx = ' + f'{g.text}_{ag}' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
             same += ' and \n\t' + (aux if aux else 'true')
         
-        err = ('lastReverted_'+str(self.__globals_index['lastReverted']+self.__globals_modifier)) if (self.__globals_index['lastReverted']+self.__globals_modifier)>=0 else 'false'
+        # err = ('lastReverted_'+str(self.__globals_index['lastReverted']+self.__globals_modifier)) if (self.__globals_index['lastReverted']+self.__globals_modifier)>=0 else 'false'
+        
+        if self.__visit_properties:
+            if self.__globals_index['lastReverted'] == 0:
+                body += '\n and lastReverted_nx = false'
+            else:
+                body += '\n and lastReverted_nx = ' + ' or '.join(['lastReverted_' + str(i) + '_nx' for i in range(0, self.__globals_index['lastReverted'])])
+        else:
+            if self.__globals_index['lastReverted'] == 0:
+                body += '\nlastReverted = false;'
+            else:
+                body += '\nlastReverted = ' + ' or '.join(['lastReverted_' + str(i) for i in range(0, self.__globals_index['lastReverted'])]) + ';'
+        
+        err = 'lastReverted'
         if self.__visit_properties:
             same += ' and block_num_nx >= block_num' #= any {block_num_tmp: int | block_num_tmp > block_num}'
             skip += ' and block_num_nx >= block_num' #any {block_num_tmp: int | block_num_tmp > block_num}'
@@ -595,9 +612,11 @@ tel
                 self.__functions_prop[self.__prefix] = f'{body} and if ({err1}) then \n{same} else {skip}\n'
         else:
             same += '\n\tcontract_not_constructed = true;' if self.__prefix == 'constructor' else '\n\tcontract_not_constructed = (true -> pre contract_not_constructed);'
-            same += '\n\tblock_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};'
+            same += '\n\tblock_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num)};'
+            # same += '\n\tlastReverted = true;'
             skip += '\n\t' + ('contract_not_constructed = false;' if self.__prefix == 'constructor' else 'contract_not_constructed = (true -> pre contract_not_constructed);')
-            skip += '\n\tblock_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};'
+            skip += '\n\tblock_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num)};'
+            # skip += '\n\tlastReverted = false;'
             self.__functions[self.__prefix] = f'{body} if ({err}) then {same} else {skip}\nfi'
 
         # if self.__requires:
@@ -708,7 +727,7 @@ tel
             sender= 'xa'
         else:
             if sender in self.__globals_index:
-                sender = 'starting_'+sender if self.__globals_index[sender]+self.__globals_modifier < 0 else sender + '_'+str(self.__globals_index[sender]+self.__globals_modifier)
+                sender = ('starting_' if not self.__visit_properties else '') + sender if self.__globals_index[sender]+self.__globals_modifier < 0 else sender + '_'+str(self.__globals_index[sender]+self.__globals_modifier)
             elif sender in self.__args_map:
                 sender = self.__args_map[sender][0]
         # if el:
@@ -746,9 +765,9 @@ tel
         self.__globals_index['lastReverted'] += 1
         if self.__visit_properties:
             err1 = err1+'_nx' if err1 != 'false' else err1
-            return f'(if (not({self.visit(ctx.child)})) then {err}_nx=true else {err}_nx={err1})\n'
+            return f'(if (not({self.visit(ctx.child)})) then {err}_nx=true else {err}_nx=false)\n'
         else:
-            return f'if (not({self.visit(ctx.child)})) then {err}=true; else {err}={err1}; fi\n'
+            return f'if (not({self.visit(ctx.child)})) then {err}=true; else {err}=false; fi\n'
         # self.__requires.add(f'{self.visit(ctx.child)}')
         # return 'skip'
 
@@ -1074,9 +1093,11 @@ tel
         for el in self.__prop_nested_i:
             if el in left or el in right:
                 # el = '_' + el
-                tx_tmp = '_tx' if tx == '_tx' and not el.endswith('nx') else ''
+                tx_tmp = '_tx' if tx == '_tx' and not el.endswith('nx') and not el in self.__globals_index else ''
                 res = ''
-                if el == 'xa':
+                if self.__visit_properties:
+                    res += '('
+                if el == 'xa': 
                     for ag in range(1, self.__A+1):
                         if ag == 1:
                             res += f'if {el}{tx_tmp} = a{ag} then '
@@ -1094,6 +1115,10 @@ tel
                         else:
                             res += f'else if {el}{tx_tmp} = a{ag} then '
                         res += f'{left} {op} {right}'.replace('_'+el, f'_{ag}').replace('_'+el.replace('_nx', '_oldnx'), f'_{ag}') + '\n\t'
+                if self.__visit_properties:
+                    res += ')'
+                else:
+                    res += 'fi'
                 return res
         return None
 

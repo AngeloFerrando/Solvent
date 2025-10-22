@@ -511,11 +511,11 @@ class TypeVisitor(TxScriptVisitor):
             raise TypeError(ctx, f'{ctx.fname.text} is not a method')
         index = 0
         for arg in ctx.args.argFormulaExpr():
-            if index >= len(self.__function_args_types[self.__prefix]):
-                raise TypeError(ctx, f'Function {ctx.fname.text} requires {len(self.__function_args_types[self.__prefix])} arguments, but {index+1} are given')
+            if index >= len(self.__function_args_types[ctx.fname.text+'_func']):
+                raise TypeError(ctx, f'Function {ctx.fname.text} requires {len(self.__function_args_types[ctx.fname.text+"_func"])} arguments, but {index+1} are given')
             ty = self.visit(arg.child)
-            if ty != self.__function_args_types[self.__prefix][index] and ty != 'CallDataArgs':
-                raise TypeError(ctx, f'argument {arg} should be {self.__function_args_types[self.__prefix][index]}, as expected by function {self.__prefix}, instead is {ty}')
+            if ty != self.__function_args_types[ctx.fname.text+'_func'][index] and ty != 'CallDataArgs':
+                raise TypeError(ctx, f'argument {arg} should be {self.__function_args_types[ctx.fname.text+"_func"][index]}, as expected by function {ctx.fname.text+"_func"}, instead is {ty}')
             index += 1
         self.__old += 1
         return self.visit(ctx.child)

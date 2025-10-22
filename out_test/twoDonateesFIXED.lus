@@ -202,7 +202,7 @@ else true
 ) and 
 (if (not(not(xa_tx1=aTwoDonatee))) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
  and (if (not(not(xa_tx1=p1))) then lastReverted_2_nx1=true else lastReverted_2_nx1=lastReverted_1_nx1)
- and (if (not(not(started))) then lastReverted_3_nx1=true else lastReverted_3_nx1=lastReverted_2_nx1)
+ and (if (not(not(started))) then lastReverted_3_nx1=true else lastReverted_3_nx1=lastReverted_2_nx1)	
  and p2_0_nx1 = xa_tx1 and started_0_nx1 = true and if (lastReverted_3_nx1) then 
 
 	aw_TwoDonatee_nx1 = aw_TwoDonatee and 
