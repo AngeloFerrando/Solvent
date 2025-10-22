@@ -593,7 +593,7 @@ tel
             if self.__globals_index['lastReverted'] == 0:
                 body += '\n and lastReverted_nx = false'
             else:
-                body += '\n and lastReverted_nx = ' + ' or '.join(['lastReverted_' + str(i) + '_nx' for i in range(0, self.__globals_index['lastReverted'])])
+                body += '\n and lastReverted_nx = (' + ' or '.join(['lastReverted_' + str(i) + '_nx' for i in range(0, self.__globals_index['lastReverted'])]) + ')'
         else:
             if self.__globals_index['lastReverted'] == 0:
                 body += '\nlastReverted = false;'
