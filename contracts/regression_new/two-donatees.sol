@@ -98,6 +98,15 @@ rule P4_true {
 }
 */
 
+rule P2b_true {
+    (started && balance[p2] > 0) ->
+    (   
+        << p2 : TwoDonatee . donate(1) $ 1 >>
+            balance[p1] > old(balance[p1])	
+    )	
+}
+
+/*
 rule P5_true {
     (started && balance[p2] == 1 && balance[this] == 1 && p1 != p2) ->
     (
@@ -113,6 +122,8 @@ rule P5_false {
             balance[p1] <= old(balance[p1])	
     )	
 }
+*/
+
 /*
 
 rule P2_false {
