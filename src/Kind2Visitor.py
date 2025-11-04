@@ -1105,7 +1105,7 @@ tel
                             res += f'else '
                         else:
                             res += f'else if {el}{tx_tmp} = a{ag} then '
-                        res += f'{left} {op} {right}'.replace(f'aw_{el}', self.__t_curr_a[ag]) + '\n\t'
+                        res += f'{left} {op} {right}'.replace(f'aw_{el}', self.__t_curr_a[ag]) + ('\n\t' if self.__visit_properties else ';\n\t')
                 else:
                     for ag in range(1, self.__A+1):
                         if ag == 1:
@@ -1114,7 +1114,7 @@ tel
                             res += f'else '
                         else:
                             res += f'else if {el}{tx_tmp} = a{ag} then '
-                        res += f'{left} {op} {right}'.replace('_'+el, f'_{ag}').replace('_'+el.replace('_nx', '_oldnx'), f'_{ag}') + '\n\t'
+                        res += f'{left} {op} {right}'.replace('_'+el, f'_{ag}').replace('_'+el.replace('_nx', '_oldnx'), f'_{ag}') + ('\n\t' if self.__visit_properties else ';\n\t')
                 if self.__visit_properties:
                     res += ')'
                 else:
@@ -1164,9 +1164,9 @@ tel
     def visitSumSubExpr(self, ctx:TxScriptParser.SumSubExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        nested_res = self.handle_nested_prop(left, right, ctx.op.text)
-        if nested_res is not None:
-            return '(' + nested_res + ')'
+        # nested_res = self.handle_nested_prop(left, right, ctx.op.text)
+        # if nested_res is not None:
+        #     return '(' + nested_res + ')'
         return '(' + left + ctx.op.text + right + ')'
         # if not self.__visit_properties:
         #     post = 'Now'
@@ -1208,9 +1208,9 @@ tel
     def visitMultDivModExpr(self, ctx:TxScriptParser.MultDivModExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        nested_res = self.handle_nested_prop(left, right, ctx.op.text)
-        if nested_res is not None:
-            return '(' + nested_res + ')'
+        # nested_res = self.handle_nested_prop(left, right, ctx.op.text)
+        # if nested_res is not None:
+        #     return '(' + nested_res + ')'
         return '(' + left + ctx.op.text + right + ')'
         # if not self.__visit_properties:
         #     post = 'Now'
