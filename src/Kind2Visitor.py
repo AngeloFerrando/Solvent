@@ -711,9 +711,11 @@ tel
         # else:
         send_chk = left + ' >= 0' + ' and '
         if self.__visit_properties:
-            send_chk += left + ' <= ' + f'aw_{self.__contract_name}'
+            send_chk += left + ' <= ' + f'{self.__t_curr_w}'
+            # send_chk += left + ' <= ' + f'aw_{self.__contract_name}'
         else:
-            send_chk += left + ' <= ' + f'(starting_aw_{self.__contract_name} -> pre aw_{self.__contract_name})'
+            send_chk += left + ' <= ' + f'({self.__t_curr_w})'
+            # send_chk += left + ' <= ' + f'(starting_aw_{self.__contract_name} -> pre aw_{self.__contract_name})'
         # for el in self.__prop_nested_i:
         #     if el in left:
         #         send = f'And([Or(j != {el}, '+'send({sender}, {amount}, {t_curr_w}, {t_new_w}, {t_curr_a}, {t_new_a})) for j in range(A+1)])'
