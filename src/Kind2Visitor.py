@@ -391,12 +391,12 @@ tel
             self.__globals_index[k] = 0
         self.__requires = set()
         err = 'lastReverted' + '_' + str(self.__globals_index['lastReverted'])
-        err1 = 'lastReverted' + '_' + str(self.__globals_index['lastReverted']-1) if self.__globals_index['lastReverted'] > 0 else 'false'
+        # err1 = 'lastReverted' + '_' + str(self.__globals_index['lastReverted']-1) if self.__globals_index['lastReverted'] > 0 else 'false'
         self.__globals_index['lastReverted'] += 1
         if not self.__visit_properties: 
             req1 = '(' + ' or '.join([f'xa = a{i}' for i in range(1, self.__A+1)]) + ')'
             req2 = '(' + ' and '.join([f'(not(xa = a{i}) or (starting_aw_{i} -> pre aw_{i}) >= xn)' for i in range(1, self.__A+1)]) + ')'
-            req = f'if (not(xn >= 0 and {req1} and {req2})) then {err}=true; else {err}={err1}; fi\n'
+            req = f'if (not(xn >= 0 and {req1} and {req2})) then {err}=true; else {err}=false; fi\n'
             # self.__requires.add('xn >= 0')
             # self.__requires.add('(' + ' or '.join([f'xa = {i}' for i in range(1, self.__A+1)]) + ')')
             # self.__requires.add('(' + ' and '.join([f'(not(xa = {i}) or (starting_aw_{i} -> pre aw_{i}) >= xn)' for i in range(1, self.__A+1)]) + ')')
@@ -408,8 +408,8 @@ tel
         else:
             req1 = '(' + ' or '.join([f'xa_tx = a{i}' for i in range(1, self.__A+1)]) + ')'
             req2 = '(' + ' and '.join([f'(not(xa_tx = a{i}) or aw_{i} >= xn_tx)' for i in range(1, self.__A+1)]) + ')'
-            err1 = err1+'_nx' if err1 != 'false' else err1
-            req = f'(if (not(xn_tx >= 0 and {req1} and {req2})) then {err}_nx=true else {err}={err1})\n'
+            # err1 = err1+'_nx' if err1 != 'false' else err1
+            req = f'(if (not(xn_tx >= 0 and {req1} and {req2})) then {err}_nx=true else {err}=false)\n'
             # self.__requires.add('xn_tx >= 0')
             # self.__requires.add('(' + ' or '.join([f'xa_tx = {i}' for i in range(1, self.__A+1)]) + ')')
             # self.__requires.add('(' + ' and '.join([f'(not(xa_tx = {i}) or aw_{i} >= xn_tx)' for i in range(1, self.__A+1)]) + ')')
@@ -443,12 +443,12 @@ tel
             self.__globals_index[k] = 0
         self.__requires = set()
         err = 'lastReverted' + '_' + str(self.__globals_index['lastReverted'])
-        err1 = 'lastReverted' + '_' + str(self.__globals_index['lastReverted']-1) if self.__globals_index['lastReverted'] > 0 else 'false'
+        # err1 = 'lastReverted' + '_' + str(self.__globals_index['lastReverted']-1) if self.__globals_index['lastReverted'] > 0 else 'false'
         self.__globals_index['lastReverted'] += 1
         if not self.__visit_properties: 
             req1 = '(' + ' or '.join([f'xa = a{i}' for i in range(1, self.__A+1)]) + ')'
             req2 = '(' + ' and '.join([f'(not(xa = a{i}) or (starting_aw_{i} -> pre aw_{i}) >= xn)' for i in range(1, self.__A+1)]) + ')'
-            req = f'if (not(xn >= 0 and {req1} and {req2})) then {err}=true; else {err}={err1}; fi\n'
+            req = f'if (not(xn >= 0 and {req1} and {req2})) then {err}=true; else {err}=false; fi\n'
             # self.__requires.add('xn >= 0')
             # self.__requires.add('(' + ' or '.join([f'xa = {i}' for i in range(1, self.__A+1)]) + ')')
             # self.__requires.add('(' + ' and '.join([f'(not(xa = {i}) or (starting_aw_{i} -> pre aw_{i}) >= xn)' for i in range(1, self.__A+1)]) + ')')
@@ -460,8 +460,8 @@ tel
         else:
             req1 = '(' + ' or '.join([f'xa_tx = a{i}' for i in range(1, self.__A+1)]) + ')'
             req2 = '(' + ' and '.join([f'(not(xa_tx = a{i}) or aw_{i} >= xn_tx)' for i in range(1, self.__A+1)]) + ')'
-            err1 = err1+'_nx' if err1 != 'false' else err1
-            req = f'(if (not(xn_tx >= 0 and {req1} and {req2})) then {err}_nx=true else {err}_nx={err1})\n'
+            # err1 = err1+'_nx' if err1 != 'false' else err1
+            req = f'(if (not(xn_tx >= 0 and {req1} and {req2})) then {err}_nx=true else {err}_nx=false)\n'
             # self.__requires.add('xn_tx >= 0')
             # self.__requires.add('(' + ' or '.join([f'xa_tx = {i}' for i in range(1, self.__A+1)]) + ')')
             # self.__requires.add('(' + ' and '.join([f'(not(xa_tx = {i}) or aw_{i} >= xn_tx)' for i in range(1, self.__A+1)]) + ')')
@@ -736,13 +736,13 @@ tel
         res = self.send(sender, left)
         # self.__requires.add(send_chk)
         err = 'lastReverted' + '_' + str(self.__globals_index['lastReverted'])
-        err1 = 'lastReverted' + '_' + str(self.__globals_index['lastReverted']-1) if self.__globals_index['lastReverted'] > 0 else 'false'
+        # err1 = 'lastReverted' + '_' + str(self.__globals_index['lastReverted']-1) if self.__globals_index['lastReverted'] > 0 else 'false'
         self.__globals_index['lastReverted'] += 1
         if self.__visit_properties:
-            err1 = err1+'_nx' if err1 != 'false' else err1
-            res = f'(if (not({send_chk})) then {err}_nx=true else {err}_nx={err1}) \n and ' + res
+            # err1 = err1+'_nx' if err1 != 'false' else err1
+            res = f'(if (not({send_chk})) then {err}_nx=true else {err}_nx=false) \n and ' + res
         else:
-            res = f'if (not({send_chk})) then {err}=true; else {err}={err1}; fi\n' + res
+            res = f'if (not({send_chk})) then {err}=true; else {err}=false; fi\n' + res
         
         if not self.__visit_properties:
             self.__t_curr_a = [f'aw_{i}_{self.__nesting_aw-1}' for i in range(self.__A+1)]
@@ -761,10 +761,10 @@ tel
     # Visit a parse tree produced by TxScriptParser#requireCmd.
     def visitRequireCmd(self, ctx:TxScriptParser.RequireCmdContext):
         err = 'lastReverted' + '_' + str(self.__globals_index['lastReverted'])
-        err1 = 'lastReverted' + '_' + str(self.__globals_index['lastReverted']-1) if self.__globals_index['lastReverted'] > 0 else 'false'
+        # err1 = 'lastReverted' + '_' + str(self.__globals_index['lastReverted']-1) if self.__globals_index['lastReverted'] > 0 else 'false'
         self.__globals_index['lastReverted'] += 1
         if self.__visit_properties:
-            err1 = err1+'_nx' if err1 != 'false' else err1
+            # err1 = err1+'_nx' if err1 != 'false' else err1
             return f'(if (not({self.visit(ctx.child)})) then {err}_nx=true else {err}_nx=false)\n'
         else:
             return f'if (not({self.visit(ctx.child)})) then {err}=true; else {err}=false; fi\n'
