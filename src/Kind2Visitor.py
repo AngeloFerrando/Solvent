@@ -1856,7 +1856,7 @@ forall (xa_tx: int;)
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by TxScriptParser#argFormulaExpr.
+     # Visit a parse tree produced by TxScriptParser#argFormulaExpr.
     def visitArgFormulaExpr(self, ctx:TxScriptParser.ArgFormulaExprContext):
-        return self.visitChildren(ctx)
+        return self.visit(ctx.child) # self.visitChildren(ctx)
    
