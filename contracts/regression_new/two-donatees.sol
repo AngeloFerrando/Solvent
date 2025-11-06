@@ -45,7 +45,6 @@ contract TwoDonatee {
 
 }
 
-/*
 rule P1_false {
     started ->
     (
@@ -58,6 +57,7 @@ rule P1_false {
     )	
 }
 
+// kind2 returns unknown
 rule P2_true {
     (started && balance[p2] > 0) ->
     (
@@ -85,6 +85,7 @@ rule P3_false {
 
 
 
+// kind2 returns unknown
 rule P4_true {
     (started && balance[p2] > 0 && balance[this] > 0) ->
     (
@@ -96,7 +97,7 @@ rule P4_true {
             balance[p1] > old(balance[p1])	
     )	
 }
-*/
+
 
 rule P2b_true {
     (started && balance[p2] > 0) ->
@@ -106,7 +107,6 @@ rule P2b_true {
     )	
 }
 
-/*
 rule P5_true {
     (started && balance[p2] == 1 && balance[this] == 1 && p1 != p2) ->
     (
@@ -122,15 +122,16 @@ rule P5_false {
             balance[p1] <= old(balance[p1])	
     )	
 }
-*/
 
-/*
+
+
+
 
 rule P2_false {
     started -> 
     (
         exists a : address .
-        a != p1 ->
+        a != p1 &&
         (
             exists f : method .
             exists args : calldataargs .    
@@ -142,11 +143,12 @@ rule P2_false {
 }
 
 
+
 rule P2b_false {
     started -> 
     (
         exists a : address .
-        a != p1 ->
+        a != p1 &&
         (
             exists donate_arg : int .    
             exists msgvalue : int .    
@@ -194,4 +196,3 @@ rule P3_true {
             balance[p1] < old(balance[p1])		
     )
 }
-*/
