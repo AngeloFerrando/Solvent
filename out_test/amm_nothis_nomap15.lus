@@ -186,7 +186,9 @@ if f_tx1 = swap_def_func then
  and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
  and (if (not((bal0_AMM>0 and bal1_AMM>0))) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
  and (if (not(swap_def_func_xin_tx1>0)) then lastReverted_3_nx1=true else lastReverted_3_nx1=false)
- and tout_0_nx1 = not(swap_def_func_tin_tx1) and counter_0_nx1 = (counter+1) and (if tout_0 then yout_0_nx1 = 15 and (if (not((yout_0>=swap_def_func_ymin_tx1 and yout_0<bal1_AMM))) then lastReverted_4_nx1=true else lastReverted_4_nx1=false)
+ and tout_0_nx1 = not(swap_def_func_tin_tx1) and counter_0_nx1 = (counter+1) and 
+ 
+ (if tout_0 then yout_0_nx1 = 15 and (if (not((yout_0>=swap_def_func_ymin_tx1 and yout_0<bal1_AMM))) then lastReverted_4_nx1=true else lastReverted_4_nx1=false)
  and bal0_AMM_0_nx1 = (bal0_AMM+swap_def_func_xin_tx1) and bal0_def_0_nx1 = (bal0_def-swap_def_func_xin_tx1) and bal1_AMM_0_nx1 = (bal1_AMM-yout_0) and bal1_def_0_nx1 = (bal1_def+yout_0) else yout_0_nx1 = 15 and (if (not((yout_0>=swap_def_func_ymin_tx1 and yout_0<bal0_AMM))) then lastReverted_4_nx1=true else lastReverted_4_nx1=false)
  and bal1_AMM_0_nx1 = (bal1_AMM+swap_def_func_xin_tx1) and bal1_def_0_nx1 = (bal1_def-swap_def_func_xin_tx1) and bal0_AMM_0_nx1 = (bal0_AMM-yout_0) and bal0_def_0_nx1 = (bal0_def+yout_0))
  and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1 or lastReverted_3_nx1 or lastReverted_4_nx1) and if (lastReverted_nx1) then 

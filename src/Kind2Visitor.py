@@ -856,7 +856,7 @@ tel
 
     # Visit a parse tree produced by TxScriptParser#ifCmd.
     def visitIfCmd(self, ctx:TxScriptParser.IfCmdContext):
-        cond = self.visit(ctx.condition)
+        cond = self.visit(ctx.condition) + ('_nx' if self.__visit_properties else '')
         backup_globals = self.__globals_index.copy()
         backup_add = self.__add_last_cmd
         self.__add_last_cmd = False
@@ -905,7 +905,7 @@ tel
 
     # Visit a parse tree produced by TxScriptParser#ifelseCmd.
     def visitIfelseCmd(self, ctx:TxScriptParser.IfelseCmdContext):
-        cond = self.visit(ctx.condition)
+        cond = self.visit(ctx.condition) + ('_nx' if self.__visit_properties else '')
         # backup = self.__globals_index.copy()
         backup_add = self.__add_last_cmd
         self.__add_last_cmd = False
