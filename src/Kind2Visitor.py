@@ -1740,13 +1740,13 @@ forall (xa_tx: int;)
         if keys:
             for p in keys[:-1]:
                 if p == keys[0]:
-                    cmd = 'if'
+                    cmd = '(if'
                 else:
                     cmd = 'else if'
                 contract += '\t'*n_tabs + cmd + f' f_tx{id} = ' + p + ' then\n'
                 n_tabs += 1
                 # contract += f'\t{self.__functions_prop[p]}\n'.replace('_nx', f'_nx{id}').replace('_tx', f'_tx{id}')
-                contract += self.bump_nx_all(self.__functions_prop[p], id, self.__vars).replace('block_num_nx1', 'block_num') + '\n'
+                contract += '('+self.bump_nx_all(self.__functions_prop[p], id, self.__vars).replace('block_num_nx1', 'block_num') + '\n'+')'
             n_tabs += 1
             contract += 'else'
             same = f' block_num_nx{id} >= block_num' #= any '+'{block_num_tmp: int | block_num_tmp > block_num}'   
@@ -1764,6 +1764,7 @@ forall (xa_tx: int;)
                 aux = '\n\t and '.join([g.text + '_' + str(ag) + f'_nx{id} = ' + f'{g.text}_{ag}_nx{id-1}' for ag in range(1, self.__A+1) for (g, ty) in self.__globals if ty == ('MapAddr', 'int')]) if self.__globals else ''
                 same += ' and \n\t' + (aux if aux else 'true')
             contract += f'{same}\n'
+            contract += ')'
         contracts = [contract]
         contracts = ' and '.join(f'({c})' for c in contracts)
         pi = f'''
