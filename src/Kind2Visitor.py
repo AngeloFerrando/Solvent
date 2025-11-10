@@ -808,9 +808,10 @@ tel
     def visitAssignCmd(self, ctx:TxScriptParser.AssignCmdContext):
         left = ctx.var.text
         # self.__globals_modifier -= 1
-        self.__id -= 1
+        backup = self.__id
+        self.__id = 0
         right = self.visit(ctx.child)
-        self.__id += 1
+        self.__id = backup
         # self.__globals_modifier += 1
         i = self.__globals_index[left]
         self.__globals_index[left] = i+1
