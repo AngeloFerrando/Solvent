@@ -1523,6 +1523,7 @@ forall (xa_tx: int;)
                 if self.__globals_index[name.replace('st.','')]+self.__globals_modifier < 0:
                     return name.replace('st.','') + i
                 else:
+                    i = '_nx'
                     return name.replace('st.', '') + '_' + str(self.__globals_index[name.replace('st.','')]+self.__globals_modifier) + i
             if name == 'sender':
                 return name + '_tx'
