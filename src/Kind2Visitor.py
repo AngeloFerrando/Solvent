@@ -1714,9 +1714,9 @@ forall (xa_tx: int;)
                 aux = 'old' * i + 'nx'
                 condition = condition.replace(aux, 'nx' + str(id - i))
         backup_globals_index = copy.deepcopy(self.__globals_index)
-        self.__id += 1
+        #self.__id += 1
         self.visit(self.__ctx)
-        self.__id -= 1
+        #self.__id -= 1
         self.__globals_index = backup_globals_index
         fname = f'{ctx.fname.text}_tx' if ctx.fname.text in self.__vars else f'{ctx.fname.text}_func'
 
