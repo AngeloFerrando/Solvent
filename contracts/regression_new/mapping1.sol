@@ -13,6 +13,12 @@ rule P1_true {
             m[a] == old(m[a]) + 1
 }
 
+rule P1b_true {
+    forall a : address .
+    exists h : method .
+        << a : Mapping1 . h() $ 0 >> 
+            m[a] > old(m[a]) 
+}
 
 
 rule P2_false {

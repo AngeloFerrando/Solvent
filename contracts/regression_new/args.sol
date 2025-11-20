@@ -11,6 +11,12 @@ contract C {
     }
 }
 
+rule P0_false {
+    exists a : address .
+    exists arg : calldataargs .
+        << a : C . add(0) $ 0 >> 
+            v == -1
+}
 
 rule P1_true {
     forall a : address .
@@ -20,7 +26,6 @@ rule P1_true {
         << a : C . h(arg) $ 0 >> 
             v == v_after
 }
-
 // false if v_after < 0
 rule P2_false {
     forall a : address .
@@ -104,5 +109,4 @@ rule P7_true {
             << a : C . h(arg) $ 0 >> 
                 v >= old(v)
 }
-
 

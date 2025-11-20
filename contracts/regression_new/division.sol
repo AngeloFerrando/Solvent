@@ -17,7 +17,7 @@ contract Division {
     }
 }
 
-/*
+
 rule P1_true {
     forall c1 : int .
     forall c2 : int .
@@ -33,7 +33,7 @@ rule P1_true {
             (v3_storage == v))
     &&
     (v12_storage == v3_storage)
-}*/
+}
 
 
 

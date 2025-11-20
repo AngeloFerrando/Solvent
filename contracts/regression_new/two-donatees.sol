@@ -185,8 +185,21 @@ rule P2d_false {
     )
 }
 
-rule P3_true {
+rule P3b_false {
     started -> 
+    (
+        exists a : address .
+        exists f : method .
+        exists args : calldataargs .    
+        exists msgvalue : int .    
+        << a : TwoDonatee . f(args) $ msgvalue >>
+            balance[p1] < old(balance[p1])		
+    )
+}
+
+// kind2 returns unknown
+rule P3c_true {
+    (started && balance[p1] > 0) -> 
     (
         exists a : address .
         exists f : method .
