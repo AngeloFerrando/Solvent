@@ -1,5 +1,5 @@
 
-type functions = enum { join_func,win_func,oracle_constructor_func,oracle_set_exchange_rate_func,timeout_func };
+type functions = enum { win_func,oracle_constructor_func,timeout_func,oracle_set_exchange_rate_func,join_func };
 type address = enum { aPricebet, a1, a2 };
 node Pricebet (xa:address;xn:int;f:functions;constructor__timeout:int;constructor__exchange_rate:int;oracle_constructor_func_init_rate:int;oracle_set_exchange_rate_func_new_rate:int;starting_aw_Pricebet: int;starting_aw_1: int;starting_aw_2: int) returns();
 (*@contract
@@ -61,12 +61,13 @@ elsif (xa = a2) then
 
 fi
 
-if (not(xn>0)) then lastReverted_1=true; else lastReverted_1=lastReverted_0; fi
+if (not(xn>0)) then lastReverted_1=true; else lastReverted_1=false; fi
 
 initial_pot_0 = xn;
 owner_0 = xa;
 deadline_0 = (block_num+constructor__timeout);
-exchange_rate_0 = constructor__exchange_rate; if (lastReverted_1) then 
+exchange_rate_0 = constructor__exchange_rate;
+lastReverted = lastReverted_0 or lastReverted_1; if (lastReverted) then 
 	aw_Pricebet = (starting_aw_Pricebet -> pre aw_Pricebet);
 	aw_1 = (starting_aw_1 -> pre aw_1);
 	aw_2 = (starting_aw_2 -> pre aw_2);
@@ -80,7 +81,7 @@ exchange_rate_0 = constructor__exchange_rate; if (lastReverted_1) then
 	oracle_constructed = (starting_oracle_constructed -> pre oracle_constructed);
 	
 	contract_not_constructed = true;
-	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)}; else 
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
 	aw_Pricebet = aw_Pricebet_0;
 	aw_1 = aw_1_0;
 	aw_2 = aw_2_0;
@@ -94,7 +95,7 @@ exchange_rate_0 = constructor__exchange_rate; if (lastReverted_1) then
 	oracle_constructed = (starting_oracle_constructed -> pre oracle_constructed);
 	
 	contract_not_constructed = false;
-	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
 fi
 elsif f = join_func then
 	if (not(xn >= 0 and (xa = a1 or xa = a2) and ((not(xa = a1) or (starting_aw_1 -> pre aw_1) >= xn) and (not(xa = a2) or (starting_aw_2 -> pre aw_2) >= xn)))) then lastReverted_0=true; else lastReverted_0=false; fi
@@ -108,11 +109,12 @@ elsif (xa = a2) then
 
 fi
 
-if (not(not(xa=aPricebet))) then lastReverted_1=true; else lastReverted_1=lastReverted_0; fi
+if (not(not(xa=aPricebet))) then lastReverted_1=true; else lastReverted_1=false; fi
 
-if (not(xn = (starting_initial_pot -> pre initial_pot))) then lastReverted_2=true; else lastReverted_2=lastReverted_1; fi
+if (not(xn = (starting_initial_pot -> pre initial_pot))) then lastReverted_2=true; else lastReverted_2=false; fi
 
-player_0 = xa; if (lastReverted_2) then 
+player_0 = xa;
+lastReverted = lastReverted_0 or lastReverted_1 or lastReverted_2; if (lastReverted) then 
 	aw_Pricebet = (starting_aw_Pricebet -> pre aw_Pricebet);
 	aw_1 = (starting_aw_1 -> pre aw_1);
 	aw_2 = (starting_aw_2 -> pre aw_2);
@@ -126,7 +128,7 @@ player_0 = xa; if (lastReverted_2) then
 	oracle_constructed = (starting_oracle_constructed -> pre oracle_constructed);
 	
 	contract_not_constructed = (true -> pre contract_not_constructed);
-	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)}; else 
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
 	aw_Pricebet = aw_Pricebet_0;
 	aw_1 = aw_1_0;
 	aw_2 = aw_2_0;
@@ -140,21 +142,21 @@ player_0 = xa; if (lastReverted_2) then
 	oracle_constructed = (starting_oracle_constructed -> pre oracle_constructed);
 	
 	contract_not_constructed = (true -> pre contract_not_constructed);
-	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
 fi
 	elsif f = win_func then
 	
 if (not(not(xa=aPricebet))) then lastReverted_0=true; else lastReverted_0=false; fi
 
-if (not(xn = 0)) then lastReverted_1=true; else lastReverted_1=lastReverted_0; fi
+if (not(xn = 0)) then lastReverted_1=true; else lastReverted_1=false; fi
 
-if (not(block_num<(starting_deadline -> pre deadline))) then lastReverted_2=true; else lastReverted_2=lastReverted_1; fi
+if (not(block_num<(starting_deadline -> pre deadline))) then lastReverted_2=true; else lastReverted_2=false; fi
 
-if (not(xa = (starting_player -> pre player))) then lastReverted_3=true; else lastReverted_3=lastReverted_2; fi
+if (not(xa = (starting_player -> pre player))) then lastReverted_3=true; else lastReverted_3=false; fi
 
-if (not((starting_oracle_exchange_rate -> pre oracle_exchange_rate)>=(starting_exchange_rate -> pre exchange_rate))) then lastReverted_4=true; else lastReverted_4=lastReverted_3; fi
+if (not((starting_oracle_exchange_rate -> pre oracle_exchange_rate)>=(starting_exchange_rate -> pre exchange_rate))) then lastReverted_4=true; else lastReverted_4=false; fi
 
-if (not((starting_aw_Pricebet -> pre aw_Pricebet) >= 0 and (starting_aw_Pricebet -> pre aw_Pricebet) <= (starting_aw_Pricebet -> pre aw_Pricebet))) then lastReverted_5=true; else lastReverted_5=lastReverted_4; fi
+if (not((starting_aw_Pricebet -> pre aw_Pricebet) >= 0 and (starting_aw_Pricebet -> pre aw_Pricebet) <= ((starting_aw_Pricebet -> pre aw_Pricebet)))) then lastReverted_5=true; else lastReverted_5=false; fi
 aw_Pricebet_0 = (starting_aw_Pricebet -> pre aw_Pricebet) - (starting_aw_Pricebet -> pre aw_Pricebet);
 if ((starting_player -> pre player) = a1) then
 	aw_1_0 = (starting_aw_1 -> pre aw_1) + (starting_aw_Pricebet -> pre aw_Pricebet);
@@ -164,7 +166,8 @@ elsif ((starting_player -> pre player) = a2) then
 	aw_2_0 = (starting_aw_2 -> pre aw_2) + (starting_aw_Pricebet -> pre aw_Pricebet);
 
 fi
- if (lastReverted_5) then 
+
+lastReverted = lastReverted_0 or lastReverted_1 or lastReverted_2 or lastReverted_3 or lastReverted_4 or lastReverted_5; if (lastReverted) then 
 	aw_Pricebet = (starting_aw_Pricebet -> pre aw_Pricebet);
 	aw_1 = (starting_aw_1 -> pre aw_1);
 	aw_2 = (starting_aw_2 -> pre aw_2);
@@ -178,7 +181,7 @@ fi
 	oracle_constructed = (starting_oracle_constructed -> pre oracle_constructed);
 	
 	contract_not_constructed = (true -> pre contract_not_constructed);
-	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)}; else 
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
 	aw_Pricebet = aw_Pricebet_0;
 	aw_1 = aw_1_0;
 	aw_2 = aw_2_0;
@@ -192,17 +195,17 @@ fi
 	oracle_constructed = (starting_oracle_constructed -> pre oracle_constructed);
 	
 	contract_not_constructed = (true -> pre contract_not_constructed);
-	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
 fi
 		elsif f = timeout_func then
 	
 if (not(not(xa=aPricebet))) then lastReverted_0=true; else lastReverted_0=false; fi
 
-if (not(xn = 0)) then lastReverted_1=true; else lastReverted_1=lastReverted_0; fi
+if (not(xn = 0)) then lastReverted_1=true; else lastReverted_1=false; fi
 
-if (not(block_num>=(starting_deadline -> pre deadline))) then lastReverted_2=true; else lastReverted_2=lastReverted_1; fi
+if (not(block_num>=(starting_deadline -> pre deadline))) then lastReverted_2=true; else lastReverted_2=false; fi
 
-if (not((starting_aw_Pricebet -> pre aw_Pricebet) >= 0 and (starting_aw_Pricebet -> pre aw_Pricebet) <= (starting_aw_Pricebet -> pre aw_Pricebet))) then lastReverted_3=true; else lastReverted_3=lastReverted_2; fi
+if (not((starting_aw_Pricebet -> pre aw_Pricebet) >= 0 and (starting_aw_Pricebet -> pre aw_Pricebet) <= ((starting_aw_Pricebet -> pre aw_Pricebet)))) then lastReverted_3=true; else lastReverted_3=false; fi
 aw_Pricebet_0 = (starting_aw_Pricebet -> pre aw_Pricebet) - (starting_aw_Pricebet -> pre aw_Pricebet);
 if ((starting_owner -> pre owner) = a1) then
 	aw_1_0 = (starting_aw_1 -> pre aw_1) + (starting_aw_Pricebet -> pre aw_Pricebet);
@@ -212,7 +215,8 @@ elsif ((starting_owner -> pre owner) = a2) then
 	aw_2_0 = (starting_aw_2 -> pre aw_2) + (starting_aw_Pricebet -> pre aw_Pricebet);
 
 fi
- if (lastReverted_3) then 
+
+lastReverted = lastReverted_0 or lastReverted_1 or lastReverted_2 or lastReverted_3; if (lastReverted) then 
 	aw_Pricebet = (starting_aw_Pricebet -> pre aw_Pricebet);
 	aw_1 = (starting_aw_1 -> pre aw_1);
 	aw_2 = (starting_aw_2 -> pre aw_2);
@@ -226,7 +230,7 @@ fi
 	oracle_constructed = (starting_oracle_constructed -> pre oracle_constructed);
 	
 	contract_not_constructed = (true -> pre contract_not_constructed);
-	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)}; else 
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
 	aw_Pricebet = aw_Pricebet_0;
 	aw_1 = aw_1_0;
 	aw_2 = aw_2_0;
@@ -240,19 +244,22 @@ fi
 	oracle_constructed = (starting_oracle_constructed -> pre oracle_constructed);
 	
 	contract_not_constructed = (true -> pre contract_not_constructed);
-	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
 fi
 			elsif f = oracle_constructor_func then
 	
 if (not(not(xa=aPricebet))) then lastReverted_0=true; else lastReverted_0=false; fi
 
-if (not(xn = 0)) then lastReverted_1=true; else lastReverted_1=lastReverted_0; fi
+if (not(xn = 0)) then lastReverted_1=true; else lastReverted_1=false; fi
 
-if (not(not((starting_oracle_constructed -> pre oracle_constructed)))) then lastReverted_2=true; else lastReverted_2=lastReverted_1; fi
+if (not(not(xa=aPricebet))) then lastReverted_2=true; else lastReverted_2=false; fi
+
+if (not(not((starting_oracle_constructed -> pre oracle_constructed)))) then lastReverted_3=true; else lastReverted_3=false; fi
 
 oracle_exchange_rate_0 = oracle_constructor_func_init_rate;
 oracle_constructed_0 = true;
-oracle_owner_0 = xa; if (lastReverted_2) then 
+oracle_owner_0 = xa;
+lastReverted = lastReverted_0 or lastReverted_1 or lastReverted_2 or lastReverted_3; if (lastReverted) then 
 	aw_Pricebet = (starting_aw_Pricebet -> pre aw_Pricebet);
 	aw_1 = (starting_aw_1 -> pre aw_1);
 	aw_2 = (starting_aw_2 -> pre aw_2);
@@ -266,7 +273,7 @@ oracle_owner_0 = xa; if (lastReverted_2) then
 	oracle_constructed = (starting_oracle_constructed -> pre oracle_constructed);
 	
 	contract_not_constructed = (true -> pre contract_not_constructed);
-	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)}; else 
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
 	aw_Pricebet = (starting_aw_Pricebet -> pre aw_Pricebet);
 	aw_1 = (starting_aw_1 -> pre aw_1);
 	aw_2 = (starting_aw_2 -> pre aw_2);
@@ -280,7 +287,7 @@ oracle_owner_0 = xa; if (lastReverted_2) then
 	oracle_constructed = oracle_constructed_0;
 	
 	contract_not_constructed = (true -> pre contract_not_constructed);
-	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
 fi
 				elsif f = oracle_set_exchange_rate_func then
 	if (not(xn >= 0 and (xa = a1 or xa = a2) and ((not(xa = a1) or (starting_aw_1 -> pre aw_1) >= xn) and (not(xa = a2) or (starting_aw_2 -> pre aw_2) >= xn)))) then lastReverted_0=true; else lastReverted_0=false; fi
@@ -294,15 +301,16 @@ elsif (xa = a2) then
 
 fi
 
-if (not(not(xa=aPricebet))) then lastReverted_1=true; else lastReverted_1=lastReverted_0; fi
+if (not(not(xa=aPricebet))) then lastReverted_1=true; else lastReverted_1=false; fi
 
-if (not(xa = (starting_oracle_owner -> pre oracle_owner))) then lastReverted_2=true; else lastReverted_2=lastReverted_1; fi
+if (not(xa = (starting_oracle_owner -> pre oracle_owner))) then lastReverted_2=true; else lastReverted_2=false; fi
 
-if (oracle_set_exchange_rate_func_new_rate>(starting_oracle_exchange_rate -> pre oracle_exchange_rate)) then if (not(xn = 1000)) then lastReverted_3=true; else lastReverted_3=lastReverted_2; fi
+if (oracle_set_exchange_rate_func_new_rate>(starting_oracle_exchange_rate -> pre oracle_exchange_rate)) then if (not(xn = ((1000*(oracle_set_exchange_rate_func_new_rate/(starting_oracle_exchange_rate -> pre oracle_exchange_rate)))+1000))) then lastReverted_3=true; else lastReverted_3=false; fi
 
-oracle_exchange_rate_0 = oracle_set_exchange_rate_func_new_rate; else if (not(xn = 1000)) then lastReverted_3=true; else lastReverted_3=lastReverted_2; fi
+oracle_exchange_rate_0 = oracle_set_exchange_rate_func_new_rate; else if (not(xn = ((1000*((starting_oracle_exchange_rate -> pre oracle_exchange_rate)/oracle_set_exchange_rate_func_new_rate))+1000))) then lastReverted_3=true; else lastReverted_3=false; fi
 
-oracle_exchange_rate_0 = oracle_set_exchange_rate_func_new_rate; fi if (lastReverted_3) then 
+oracle_exchange_rate_0 = oracle_set_exchange_rate_func_new_rate; fi
+lastReverted = lastReverted_0 or lastReverted_1 or lastReverted_2 or lastReverted_3; if (lastReverted) then 
 	aw_Pricebet = (starting_aw_Pricebet -> pre aw_Pricebet);
 	aw_1 = (starting_aw_1 -> pre aw_1);
 	aw_2 = (starting_aw_2 -> pre aw_2);
@@ -316,7 +324,7 @@ oracle_exchange_rate_0 = oracle_set_exchange_rate_func_new_rate; fi if (lastReve
 	oracle_constructed = (starting_oracle_constructed -> pre oracle_constructed);
 	
 	contract_not_constructed = (true -> pre contract_not_constructed);
-	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)}; else 
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
 	aw_Pricebet = aw_Pricebet_0;
 	aw_1 = aw_1_0;
 	aw_2 = aw_2_0;
@@ -330,10 +338,10 @@ oracle_exchange_rate_0 = oracle_set_exchange_rate_func_new_rate; fi if (lastReve
 	oracle_constructed = (starting_oracle_constructed -> pre oracle_constructed);
 	
 	contract_not_constructed = (true -> pre contract_not_constructed);
-	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
 fi
 else
-	block_num = any {block_num_tmp: int | block_num_tmp > (starting_block_num -> pre block_num)};
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
 	aw_Pricebet = (starting_aw_Pricebet -> pre aw_Pricebet);
 	aw_1 = (starting_aw_1 -> pre aw_1);
 	aw_2 = (starting_aw_2 -> pre aw_2);
@@ -348,33 +356,27 @@ else
 	oracle_constructed = (starting_oracle_constructed -> pre oracle_constructed);
 	
 fi
-    --%PROPERTY 
+    --%PROPERTY "Winning_player_can_be_frontrun" 
 (
 contract_not_constructed or 
-(true)
-);
-
---%PROPERTY 
-(
-contract_not_constructed or 
-(forall(a_tx:address;)((a_tx = aPricebet) or (exists(f_tx:functions;)exists(constructor__timeout_args_tx:int;constructor__exchange_rate_args_tx:int;oracle_constructor_func_init_rate_args_tx:int;oracle_set_exchange_rate_func_new_rate_args_tx:int;)exists(msgvalue_tx:int;)
+(forall(bal1_tx:int;)((not((
     exists (
         xa_tx1: address; f_tx1: functions; constructor__timeout_tx1: int; constructor__exchange_rate_tx1: int; oracle_constructor_func_init_rate_tx1: int; oracle_set_exchange_rate_func_new_rate_tx1: int; xn_tx1: int;  /* Transition vars */
         aw_Pricebet_nx1: int; aw_Pricebet_0_nx1: int; aw_1_nx1: int; aw_2_nx1: int; aw_1_0_nx1: int; aw_2_0_nx1: int; lastReverted_nx1 : bool; lastReverted_0_nx1 : bool; lastReverted_1_nx1 : bool; lastReverted_2_nx1 : bool; lastReverted_3_nx1 : bool; lastReverted_4_nx1 : bool; lastReverted_5_nx1 : bool; lastReverted_6_nx1 : bool; lastReverted_7_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; initial_pot_nx1 : int; initial_pot_0_nx1 : int; initial_pot_1_nx1 : int; owner_nx1 : address; owner_0_nx1 : address; owner_1_nx1 : address; oracle_owner_nx1 : address; oracle_owner_0_nx1 : address; oracle_owner_1_nx1 : address; player_nx1 : address; player_0_nx1 : address; player_1_nx1 : address; deadline_nx1 : int; deadline_0_nx1 : int; deadline_1_nx1 : int; exchange_rate_nx1 : int; exchange_rate_0_nx1 : int; exchange_rate_1_nx1 : int; oracle_exchange_rate_nx1 : int; oracle_exchange_rate_0_nx1 : int; oracle_exchange_rate_1_nx1 : int; oracle_constructed_nx1 : bool; oracle_constructed_0_nx1 : bool; oracle_constructed_1_nx1 : bool; /* Next state vars */
     )
     (   /* condition */
-        if owner_nx1 = a1 then aw_1_nx1 = (aw_1+aw_Pricebet)
-	else aw_2_nx1 = (aw_2+aw_Pricebet)
-	
+        (
+            ((if player_nx1 = a1 then bal1_tx = aw_1_nx1
+	else bal1_tx = aw_2_nx1
+	) and bal1_tx>(if player = a1 then aw_1
+	else aw_2
+	))
+        )
         and
         (
-            ((xa_tx1 = a_tx and f_tx1 = f_tx and true and xn_tx1 = msgvalue_tx) and 
-constructor__timeout_tx1 = constructor__timeout_args_tx and 
-constructor__exchange_rate_tx1 = constructor__exchange_rate_args_tx and 
-oracle_constructor_func_init_rate_tx1 = oracle_constructor_func_init_rate_args_tx and 
-oracle_set_exchange_rate_func_new_rate_tx1 = oracle_set_exchange_rate_func_new_rate_args_tx and 
-if f_tx1 = join_func then
-(if (not(xn_tx1 >= 0 and (xa_tx1 = a1 or xa_tx1 = a2) and ((not(xa_tx1 = a1) or aw_1 >= xn_tx1) and (not(xa_tx1 = a2) or aw_2 >= xn_tx1)))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+            ((xa_tx1 = player and f_tx1 = win_func and true and xn_tx1 = 0) and 
+(if f_tx1 = join_func then
+((if (not(xn_tx1 >= 0 and (xa_tx1 = a1 or xa_tx1 = a2) and ((not(xa_tx1 = a1) or aw_1 >= xn_tx1) and (not(xa_tx1 = a2) or aw_2 >= xn_tx1)))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
  and (aw_Pricebet_0_nx1 = aw_Pricebet + xn_tx1 and
 if (xa_tx1 = a1) then
 	aw_1_0_nx1 = aw_1 - xn_tx1 and
@@ -384,9 +386,10 @@ else if (xa_tx1 = a2) then
 	aw_2_0_nx1 = aw_2 - xn_tx1
 else true
 ) and 
-(if (not(not(xa_tx1=aPricebet))) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
- and (if (not(xn_tx1 = initial_pot)) then lastReverted_2_nx1=true else lastReverted_2_nx1=lastReverted_1_nx1)
- and player_0_nx1 = xa_tx1 and if (lastReverted_2_nx1) then 
+(if (not(not(xa_tx1=aPricebet))) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(xn_tx1 = initial_pot)) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and player_0_nx1 = xa_tx1
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1) and if (lastReverted_nx1) then 
 
 	aw_Pricebet_nx1 = aw_Pricebet and 
 	aw_1_nx1 = aw_1
@@ -403,33 +406,34 @@ else true
 	aw_Pricebet_nx1 = aw_Pricebet_0_nx1 and 
 	aw_1_nx1 = aw_1_0_nx1
 	 and aw_2_nx1 = aw_2_0_nx1 and 
-	initial_pot_nx1 = initial_pot_nx1
-	 and owner_nx1 = owner_nx1
-	 and oracle_owner_nx1 = oracle_owner_nx1
+	initial_pot_nx1 = initial_pot
+	 and owner_nx1 = owner
+	 and oracle_owner_nx1 = oracle_owner
 	 and player_nx1 = player_0_nx1
-	 and deadline_nx1 = deadline_nx1
-	 and exchange_rate_nx1 = exchange_rate_nx1
-	 and oracle_exchange_rate_nx1 = oracle_exchange_rate_nx1
-	 and oracle_constructed_nx1 = oracle_constructed_nx1 and 
+	 and deadline_nx1 = deadline
+	 and exchange_rate_nx1 = exchange_rate
+	 and oracle_exchange_rate_nx1 = oracle_exchange_rate
+	 and oracle_constructed_nx1 = oracle_constructed and 
 	true and block_num >= block_num
 
-	else if f_tx1 = win_func then
-
+)	else if f_tx1 = win_func then
+(
 (if (not(not(xa_tx1=aPricebet))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
- and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
- and (if (not(block_num<deadline)) then lastReverted_2_nx1=true else lastReverted_2_nx1=lastReverted_1_nx1)
- and (if (not(xa_tx1 = player)) then lastReverted_3_nx1=true else lastReverted_3_nx1=lastReverted_2_nx1)
- and (if (not(oracle_exchange_rate>=exchange_rate)) then lastReverted_4_nx1=true else lastReverted_4_nx1=lastReverted_3_nx1)
- and ((if (not(aw_Pricebet >= 0 and aw_Pricebet <= aw_Pricebet)) then lastReverted_5_nx1=true else lastReverted_5_nx1=lastReverted_4_nx1) 
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(block_num<deadline)) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and (if (not(xa_tx1 = player)) then lastReverted_3_nx1=true else lastReverted_3_nx1=false)
+ and (if (not(oracle_exchange_rate>=exchange_rate)) then lastReverted_4_nx1=true else lastReverted_4_nx1=false)
+ and ((if (not(aw_Pricebet >= 0 and aw_Pricebet <= aw_Pricebet)) then lastReverted_5_nx1=true else lastReverted_5_nx1=false) 
  and aw_Pricebet_0_nx1 = aw_Pricebet - aw_Pricebet and
-if (starting_player = a1) then
+if (player = a1) then
 	aw_1_0_nx1 = aw_1 + aw_Pricebet and
 	aw_2_0_nx1 = aw_2
-else if (starting_player = a2) then
+else if (player = a2) then
 	aw_1_0_nx1 = aw_1 and
 	aw_2_0_nx1 = aw_2 + aw_Pricebet
 else true
-) and if (lastReverted_5_nx1) then 
+)
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1 or lastReverted_3_nx1 or lastReverted_4_nx1 or lastReverted_5_nx1) and if (lastReverted_nx1) then 
 
 	aw_Pricebet_nx1 = aw_Pricebet and 
 	aw_1_nx1 = aw_1
@@ -446,31 +450,32 @@ else true
 	aw_Pricebet_nx1 = aw_Pricebet_0_nx1 and 
 	aw_1_nx1 = aw_1_0_nx1
 	 and aw_2_nx1 = aw_2_0_nx1 and 
-	initial_pot_nx1 = initial_pot_nx1
-	 and owner_nx1 = owner_nx1
-	 and oracle_owner_nx1 = oracle_owner_nx1
-	 and player_nx1 = player_nx1
-	 and deadline_nx1 = deadline_nx1
-	 and exchange_rate_nx1 = exchange_rate_nx1
-	 and oracle_exchange_rate_nx1 = oracle_exchange_rate_nx1
-	 and oracle_constructed_nx1 = oracle_constructed_nx1 and 
+	initial_pot_nx1 = initial_pot
+	 and owner_nx1 = owner
+	 and oracle_owner_nx1 = oracle_owner
+	 and player_nx1 = player
+	 and deadline_nx1 = deadline
+	 and exchange_rate_nx1 = exchange_rate
+	 and oracle_exchange_rate_nx1 = oracle_exchange_rate
+	 and oracle_constructed_nx1 = oracle_constructed and 
 	true and block_num >= block_num
 
-		else if f_tx1 = timeout_func then
-
+)		else if f_tx1 = timeout_func then
+(
 (if (not(not(xa_tx1=aPricebet))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
- and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
- and (if (not(block_num>=deadline)) then lastReverted_2_nx1=true else lastReverted_2_nx1=lastReverted_1_nx1)
- and ((if (not(aw_Pricebet >= 0 and aw_Pricebet <= aw_Pricebet)) then lastReverted_3_nx1=true else lastReverted_3_nx1=lastReverted_2_nx1) 
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(block_num>=deadline)) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and ((if (not(aw_Pricebet >= 0 and aw_Pricebet <= aw_Pricebet)) then lastReverted_3_nx1=true else lastReverted_3_nx1=false) 
  and aw_Pricebet_0_nx1 = aw_Pricebet - aw_Pricebet and
-if (starting_owner = a1) then
+if (owner = a1) then
 	aw_1_0_nx1 = aw_1 + aw_Pricebet and
 	aw_2_0_nx1 = aw_2
-else if (starting_owner = a2) then
+else if (owner = a2) then
 	aw_1_0_nx1 = aw_1 and
 	aw_2_0_nx1 = aw_2 + aw_Pricebet
 else true
-) and if (lastReverted_3_nx1) then 
+)
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1 or lastReverted_3_nx1) and if (lastReverted_nx1) then 
 
 	aw_Pricebet_nx1 = aw_Pricebet and 
 	aw_1_nx1 = aw_1
@@ -487,22 +492,24 @@ else true
 	aw_Pricebet_nx1 = aw_Pricebet_0_nx1 and 
 	aw_1_nx1 = aw_1_0_nx1
 	 and aw_2_nx1 = aw_2_0_nx1 and 
-	initial_pot_nx1 = initial_pot_nx1
-	 and owner_nx1 = owner_nx1
-	 and oracle_owner_nx1 = oracle_owner_nx1
-	 and player_nx1 = player_nx1
-	 and deadline_nx1 = deadline_nx1
-	 and exchange_rate_nx1 = exchange_rate_nx1
-	 and oracle_exchange_rate_nx1 = oracle_exchange_rate_nx1
-	 and oracle_constructed_nx1 = oracle_constructed_nx1 and 
+	initial_pot_nx1 = initial_pot
+	 and owner_nx1 = owner
+	 and oracle_owner_nx1 = oracle_owner
+	 and player_nx1 = player
+	 and deadline_nx1 = deadline
+	 and exchange_rate_nx1 = exchange_rate
+	 and oracle_exchange_rate_nx1 = oracle_exchange_rate
+	 and oracle_constructed_nx1 = oracle_constructed and 
 	true and block_num >= block_num
 
-			else if f_tx1 = oracle_constructor_func then
-
+)			else if f_tx1 = oracle_constructor_func then
+(
 (if (not(not(xa_tx1=aPricebet))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
- and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
- and (if (not(not(oracle_constructed))) then lastReverted_2_nx1=true else lastReverted_2_nx1=lastReverted_1_nx1)
- and oracle_exchange_rate_0_nx1 = oracle_constructor_func_init_rate_tx1 and oracle_constructed_0_nx1 = true and oracle_owner_0_nx1 = xa_tx1 and if (lastReverted_2_nx1) then 
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(not(xa_tx1=aPricebet))) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and (if (not(not(oracle_constructed))) then lastReverted_3_nx1=true else lastReverted_3_nx1=false)
+ and oracle_exchange_rate_0_nx1 = oracle_constructor_func_init_rate_tx1 and oracle_constructed_0_nx1 = true and oracle_owner_0_nx1 = xa_tx1
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1 or lastReverted_3_nx1) and if (lastReverted_nx1) then 
 
 	aw_Pricebet_nx1 = aw_Pricebet and 
 	aw_1_nx1 = aw_1
@@ -519,18 +526,18 @@ else true
 	aw_Pricebet_nx1 = aw_Pricebet and 
 	aw_1_nx1 = aw_1
 	 and aw_2_nx1 = aw_2 and 
-	initial_pot_nx1 = initial_pot_nx1
-	 and owner_nx1 = owner_nx1
+	initial_pot_nx1 = initial_pot
+	 and owner_nx1 = owner
 	 and oracle_owner_nx1 = oracle_owner_0_nx1
-	 and player_nx1 = player_nx1
-	 and deadline_nx1 = deadline_nx1
-	 and exchange_rate_nx1 = exchange_rate_nx1
+	 and player_nx1 = player
+	 and deadline_nx1 = deadline
+	 and exchange_rate_nx1 = exchange_rate
 	 and oracle_exchange_rate_nx1 = oracle_exchange_rate_0_nx1
 	 and oracle_constructed_nx1 = oracle_constructed_0_nx1 and 
 	true and block_num >= block_num
 
-				else if f_tx1 = oracle_set_exchange_rate_func then
-(if (not(xn_tx1 >= 0 and (xa_tx1 = a1 or xa_tx1 = a2) and ((not(xa_tx1 = a1) or aw_1 >= xn_tx1) and (not(xa_tx1 = a2) or aw_2 >= xn_tx1)))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+)				else if f_tx1 = oracle_set_exchange_rate_func then
+((if (not(xn_tx1 >= 0 and (xa_tx1 = a1 or xa_tx1 = a2) and ((not(xa_tx1 = a1) or aw_1 >= xn_tx1) and (not(xa_tx1 = a2) or aw_2 >= xn_tx1)))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
  and (aw_Pricebet_0_nx1 = aw_Pricebet + xn_tx1 and
 if (xa_tx1 = a1) then
 	aw_1_0_nx1 = aw_1 - xn_tx1 and
@@ -540,11 +547,12 @@ else if (xa_tx1 = a2) then
 	aw_2_0_nx1 = aw_2 - xn_tx1
 else true
 ) and 
-(if (not(not(xa_tx1=aPricebet))) then lastReverted_1_nx1=true else lastReverted_1_nx1=lastReverted_0_nx1)
- and (if (not(xa_tx1 = oracle_owner)) then lastReverted_2_nx1=true else lastReverted_2_nx1=lastReverted_1_nx1)
- and (if oracle_set_exchange_rate_func_new_rate_tx1>oracle_exchange_rate then (if (not(xn_tx1 = 1000)) then lastReverted_3_nx1=true else lastReverted_3_nx1=lastReverted_2_nx1)
- and oracle_exchange_rate_0_nx1 = oracle_set_exchange_rate_func_new_rate_tx1 else (if (not(xn_tx1 = 1000)) then lastReverted_3_nx1=true else lastReverted_3_nx1=lastReverted_2_nx1)
- and oracle_exchange_rate_0_nx1 = oracle_set_exchange_rate_func_new_rate_tx1) and if (lastReverted_3_nx1) then 
+(if (not(not(xa_tx1=aPricebet))) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(xa_tx1 = oracle_owner)) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and (if oracle_set_exchange_rate_func_new_rate_tx1>oracle_exchange_rate then (if (not(xn_tx1 = ((1000*(oracle_set_exchange_rate_func_new_rate_tx1/oracle_exchange_rate))+1000))) then lastReverted_3_nx1=true else lastReverted_3_nx1=false)
+ and oracle_exchange_rate_0_nx1 = oracle_set_exchange_rate_func_new_rate_tx1 else (if (not(xn_tx1 = ((1000*(oracle_exchange_rate/oracle_set_exchange_rate_func_new_rate_tx1))+1000))) then lastReverted_3_nx1=true else lastReverted_3_nx1=false)
+ and oracle_exchange_rate_0_nx1 = oracle_set_exchange_rate_func_new_rate_tx1)
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1 or lastReverted_3_nx1) and if (lastReverted_nx1) then 
 
 	aw_Pricebet_nx1 = aw_Pricebet and 
 	aw_1_nx1 = aw_1
@@ -561,17 +569,17 @@ else true
 	aw_Pricebet_nx1 = aw_Pricebet_0_nx1 and 
 	aw_1_nx1 = aw_1_0_nx1
 	 and aw_2_nx1 = aw_2_0_nx1 and 
-	initial_pot_nx1 = initial_pot_nx1
-	 and owner_nx1 = owner_nx1
-	 and oracle_owner_nx1 = oracle_owner_nx1
-	 and player_nx1 = player_nx1
-	 and deadline_nx1 = deadline_nx1
-	 and exchange_rate_nx1 = exchange_rate_nx1
+	initial_pot_nx1 = initial_pot
+	 and owner_nx1 = owner
+	 and oracle_owner_nx1 = oracle_owner
+	 and player_nx1 = player
+	 and deadline_nx1 = deadline
+	 and exchange_rate_nx1 = exchange_rate
 	 and oracle_exchange_rate_nx1 = oracle_exchange_rate_0_nx1
-	 and oracle_constructed_nx1 = oracle_constructed_nx1 and 
+	 and oracle_constructed_nx1 = oracle_constructed and 
 	true and block_num >= block_num
 
-else block_num_nx1 >= block_num and 
+)else block_num_nx1 >= block_num and 
 	aw_Pricebet_nx1 = aw_Pricebet and 
 	aw_1_nx1 = aw_1
 	and aw_2_nx1 = aw_2 and 
@@ -586,7 +594,484 @@ else block_num_nx1 >= block_num and
 	 and oracle_exchange_rate_nx1 = oracle_exchange_rate
 	 and oracle_constructed_nx1 = oracle_constructed and 
 	true
+))
+        )
+    ))) or exists(adv_tx:address;)exists(v_tx:int;)exists(qfa_tx:functions;)exists(constructor__timeout_qxa_tx:int;constructor__exchange_rate_qxa_tx:int;oracle_constructor_func_init_rate_qxa_tx:int;oracle_set_exchange_rate_func_new_rate_qxa_tx:int;)exists(bal2_tx:int;)
+    exists (
+        xa_tx1: address; f_tx1: functions; constructor__timeout_tx1: int; constructor__exchange_rate_tx1: int; oracle_constructor_func_init_rate_tx1: int; oracle_set_exchange_rate_func_new_rate_tx1: int; xn_tx1: int;  /* Transition vars */
+        aw_Pricebet_nx1: int; aw_Pricebet_0_nx1: int; aw_1_nx1: int; aw_2_nx1: int; aw_1_0_nx1: int; aw_2_0_nx1: int; lastReverted_nx1 : bool; lastReverted_0_nx1 : bool; lastReverted_1_nx1 : bool; lastReverted_2_nx1 : bool; lastReverted_3_nx1 : bool; lastReverted_4_nx1 : bool; lastReverted_5_nx1 : bool; lastReverted_6_nx1 : bool; lastReverted_7_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; initial_pot_nx1 : int; initial_pot_0_nx1 : int; initial_pot_1_nx1 : int; owner_nx1 : address; owner_0_nx1 : address; owner_1_nx1 : address; oracle_owner_nx1 : address; oracle_owner_0_nx1 : address; oracle_owner_1_nx1 : address; player_nx1 : address; player_0_nx1 : address; player_1_nx1 : address; deadline_nx1 : int; deadline_0_nx1 : int; deadline_1_nx1 : int; exchange_rate_nx1 : int; exchange_rate_0_nx1 : int; exchange_rate_1_nx1 : int; oracle_exchange_rate_nx1 : int; oracle_exchange_rate_0_nx1 : int; oracle_exchange_rate_1_nx1 : int; oracle_constructed_nx1 : bool; oracle_constructed_0_nx1 : bool; oracle_constructed_1_nx1 : bool; /* Next state vars */
+    )
+    (   /* condition */
+        (
+            
+    exists (
+        xa_tx2: address; f_tx2: functions; constructor__timeout_tx2: int; constructor__exchange_rate_tx2: int; oracle_constructor_func_init_rate_tx2: int; oracle_set_exchange_rate_func_new_rate_tx2: int; xn_tx2: int;  /* Transition vars */
+        aw_Pricebet_nx2: int; aw_Pricebet_0_nx2: int; aw_1_nx2: int; aw_2_nx2: int; aw_1_0_nx2: int; aw_2_0_nx2: int; lastReverted_nx2 : bool; lastReverted_0_nx2 : bool; lastReverted_1_nx2 : bool; lastReverted_2_nx2 : bool; lastReverted_3_nx2 : bool; lastReverted_4_nx2 : bool; lastReverted_5_nx2 : bool; lastReverted_6_nx2 : bool; lastReverted_7_nx2 : bool; block_num_nx2 : int; block_num_0_nx2 : int; initial_pot_nx2 : int; initial_pot_0_nx2 : int; initial_pot_1_nx2 : int; owner_nx2 : address; owner_0_nx2 : address; owner_1_nx2 : address; oracle_owner_nx2 : address; oracle_owner_0_nx2 : address; oracle_owner_1_nx2 : address; player_nx2 : address; player_0_nx2 : address; player_1_nx2 : address; deadline_nx2 : int; deadline_0_nx2 : int; deadline_1_nx2 : int; exchange_rate_nx2 : int; exchange_rate_0_nx2 : int; exchange_rate_1_nx2 : int; oracle_exchange_rate_nx2 : int; oracle_exchange_rate_0_nx2 : int; oracle_exchange_rate_1_nx2 : int; oracle_constructed_nx2 : bool; oracle_constructed_0_nx2 : bool; oracle_constructed_1_nx2 : bool; /* Next state vars */
+    )
+    (   /* condition */
+        (
+            ((if player_nx2 = a1 then bal2_tx = aw_1_nx2
+	else bal2_tx = aw_2_nx2
+	) and bal2_tx<bal1_tx)
+        )
+        and
+        (
+            ((xa_tx2 = player_nx1 and f_tx2 = win_func and true and xn_tx2 = 0) and 
+constructor__timeout_tx2 = constructor__timeout_qxa_tx and 
+constructor__exchange_rate_tx2 = constructor__exchange_rate_qxa_tx and 
+oracle_constructor_func_init_rate_tx2 = oracle_constructor_func_init_rate_qxa_tx and 
+oracle_set_exchange_rate_func_new_rate_tx2 = oracle_set_exchange_rate_func_new_rate_qxa_tx and 
+(if f_tx2 = join_func then
+((if (not(xn_tx2 >= 0 and (xa_tx2 = a1 or xa_tx2 = a2) and ((not(xa_tx2 = a1) or aw_1_nx1 >= xn_tx2) and (not(xa_tx2 = a2) or aw_2_nx1 >= xn_tx2)))) then lastReverted_0_nx2=true else lastReverted_0_nx2=false)
+ and (aw_Pricebet_0_nx2 = aw_Pricebet_nx1 + xn_tx2 and
+if (xa_tx2 = a1) then
+	aw_1_0_nx2 = aw_1_nx1 - xn_tx2 and
+	aw_2_0_nx2 = aw_2_nx1
+else if (xa_tx2 = a2) then
+	aw_1_0_nx2 = aw_1_nx1 and
+	aw_2_0_nx2 = aw_2_nx1 - xn_tx2
+else true
+) and 
+(if (not(not(xa_tx2=aPricebet))) then lastReverted_1_nx2=true else lastReverted_1_nx2=false)
+ and (if (not(xn_tx2 = initial_pot_nx2)) then lastReverted_2_nx2=true else lastReverted_2_nx2=false)
+ and player_0_nx2 = xa_tx2
+ and lastReverted_nx2 = (lastReverted_0_nx2 or lastReverted_1_nx2 or lastReverted_2_nx2) and if (lastReverted_nx2) then 
+
+	aw_Pricebet_nx2 = aw_Pricebet_nx1 and 
+	aw_1_nx2 = aw_1_nx1
+	 and aw_2_nx2 = aw_2_nx1 and 
+	initial_pot_nx2 = initial_pot_nx1
+	 and owner_nx2 = owner_nx1
+	 and oracle_owner_nx2 = oracle_owner_nx1
+	 and player_nx2 = player_nx1
+	 and deadline_nx2 = deadline_nx1
+	 and exchange_rate_nx2 = exchange_rate_nx1
+	 and oracle_exchange_rate_nx2 = oracle_exchange_rate_nx1
+	 and oracle_constructed_nx2 = oracle_constructed_nx1 and 
+	true and block_num_nx2 >= block_num else  
+	aw_Pricebet_nx2 = aw_Pricebet_0_nx2 and 
+	aw_1_nx2 = aw_1_0_nx2
+	 and aw_2_nx2 = aw_2_0_nx2 and 
+	initial_pot_nx2 = initial_pot_nx1
+	 and owner_nx2 = owner_nx1
+	 and oracle_owner_nx2 = oracle_owner_nx1
+	 and player_nx2 = player_0_nx2
+	 and deadline_nx2 = deadline_nx1
+	 and exchange_rate_nx2 = exchange_rate_nx1
+	 and oracle_exchange_rate_nx2 = oracle_exchange_rate_nx1
+	 and oracle_constructed_nx2 = oracle_constructed_nx1 and 
+	true and block_num_nx2 >= block_num
+
+)	else if f_tx2 = win_func then
+(
+(if (not(not(xa_tx2=aPricebet))) then lastReverted_0_nx2=true else lastReverted_0_nx2=false)
+ and (if (not(xn_tx2 = 0)) then lastReverted_1_nx2=true else lastReverted_1_nx2=false)
+ and (if (not(block_num_nx2<deadline_nx2)) then lastReverted_2_nx2=true else lastReverted_2_nx2=false)
+ and (if (not((if player_nx2 = a1 then xa_tx2 = player_nx2
+	else xa_tx2 = player_nx2
+	))) then lastReverted_3_nx2=true else lastReverted_3_nx2=false)
+ and (if (not(oracle_exchange_rate_nx2>=exchange_rate_nx2)) then lastReverted_4_nx2=true else lastReverted_4_nx2=false)
+ and ((if (not(aw_Pricebet_nx2 >= 0 and aw_Pricebet_nx2 <= aw_Pricebet_nx1)) then lastReverted_5_nx2=true else lastReverted_5_nx2=false) 
+ and aw_Pricebet_0_nx2 = aw_Pricebet_nx1 - aw_Pricebet_nx2 and
+if (player_nx2 = a1) then
+	aw_1_0_nx2 = aw_1_nx1 + aw_Pricebet_nx2 and
+	aw_2_0_nx2 = aw_2_nx1
+else if (player_nx2 = a2) then
+	aw_1_0_nx2 = aw_1_nx1 and
+	aw_2_0_nx2 = aw_2_nx1 + aw_Pricebet_nx2
+else true
 )
+ and lastReverted_nx2 = (lastReverted_0_nx2 or lastReverted_1_nx2 or lastReverted_2_nx2 or lastReverted_3_nx2 or lastReverted_4_nx2 or lastReverted_5_nx2) and if (lastReverted_nx2) then 
+
+	aw_Pricebet_nx2 = aw_Pricebet_nx1 and 
+	aw_1_nx2 = aw_1_nx1
+	 and aw_2_nx2 = aw_2_nx1 and 
+	initial_pot_nx2 = initial_pot_nx1
+	 and owner_nx2 = owner_nx1
+	 and oracle_owner_nx2 = oracle_owner_nx1
+	 and player_nx2 = player_nx1
+	 and deadline_nx2 = deadline_nx1
+	 and exchange_rate_nx2 = exchange_rate_nx1
+	 and oracle_exchange_rate_nx2 = oracle_exchange_rate_nx1
+	 and oracle_constructed_nx2 = oracle_constructed_nx1 and 
+	true and block_num_nx2 >= block_num else  
+	aw_Pricebet_nx2 = aw_Pricebet_0_nx2 and 
+	aw_1_nx2 = aw_1_0_nx2
+	 and aw_2_nx2 = aw_2_0_nx2 and 
+	initial_pot_nx2 = initial_pot_nx1
+	 and owner_nx2 = owner_nx1
+	 and oracle_owner_nx2 = oracle_owner_nx1
+	 and player_nx2 = player_nx1
+	 and deadline_nx2 = deadline_nx1
+	 and exchange_rate_nx2 = exchange_rate_nx1
+	 and oracle_exchange_rate_nx2 = oracle_exchange_rate_nx1
+	 and oracle_constructed_nx2 = oracle_constructed_nx1 and 
+	true and block_num_nx2 >= block_num
+
+)		else if f_tx2 = timeout_func then
+(
+(if (not(not(xa_tx2=aPricebet))) then lastReverted_0_nx2=true else lastReverted_0_nx2=false)
+ and (if (not(xn_tx2 = 0)) then lastReverted_1_nx2=true else lastReverted_1_nx2=false)
+ and (if (not(block_num_nx2>=deadline_nx2)) then lastReverted_2_nx2=true else lastReverted_2_nx2=false)
+ and ((if (not(aw_Pricebet_nx2 >= 0 and aw_Pricebet_nx2 <= aw_Pricebet_nx1)) then lastReverted_3_nx2=true else lastReverted_3_nx2=false) 
+ and aw_Pricebet_0_nx2 = aw_Pricebet_nx1 - aw_Pricebet_nx2 and
+if (owner_nx2 = a1) then
+	aw_1_0_nx2 = aw_1_nx1 + aw_Pricebet_nx2 and
+	aw_2_0_nx2 = aw_2_nx1
+else if (owner_nx2 = a2) then
+	aw_1_0_nx2 = aw_1_nx1 and
+	aw_2_0_nx2 = aw_2_nx1 + aw_Pricebet_nx2
+else true
+)
+ and lastReverted_nx2 = (lastReverted_0_nx2 or lastReverted_1_nx2 or lastReverted_2_nx2 or lastReverted_3_nx2) and if (lastReverted_nx2) then 
+
+	aw_Pricebet_nx2 = aw_Pricebet_nx1 and 
+	aw_1_nx2 = aw_1_nx1
+	 and aw_2_nx2 = aw_2_nx1 and 
+	initial_pot_nx2 = initial_pot_nx1
+	 and owner_nx2 = owner_nx1
+	 and oracle_owner_nx2 = oracle_owner_nx1
+	 and player_nx2 = player_nx1
+	 and deadline_nx2 = deadline_nx1
+	 and exchange_rate_nx2 = exchange_rate_nx1
+	 and oracle_exchange_rate_nx2 = oracle_exchange_rate_nx1
+	 and oracle_constructed_nx2 = oracle_constructed_nx1 and 
+	true and block_num_nx2 >= block_num else  
+	aw_Pricebet_nx2 = aw_Pricebet_0_nx2 and 
+	aw_1_nx2 = aw_1_0_nx2
+	 and aw_2_nx2 = aw_2_0_nx2 and 
+	initial_pot_nx2 = initial_pot_nx1
+	 and owner_nx2 = owner_nx1
+	 and oracle_owner_nx2 = oracle_owner_nx1
+	 and player_nx2 = player_nx1
+	 and deadline_nx2 = deadline_nx1
+	 and exchange_rate_nx2 = exchange_rate_nx1
+	 and oracle_exchange_rate_nx2 = oracle_exchange_rate_nx1
+	 and oracle_constructed_nx2 = oracle_constructed_nx1 and 
+	true and block_num_nx2 >= block_num
+
+)			else if f_tx2 = oracle_constructor_func then
+(
+(if (not(not(xa_tx2=aPricebet))) then lastReverted_0_nx2=true else lastReverted_0_nx2=false)
+ and (if (not(xn_tx2 = 0)) then lastReverted_1_nx2=true else lastReverted_1_nx2=false)
+ and (if (not(not(xa_tx2=aPricebet))) then lastReverted_2_nx2=true else lastReverted_2_nx2=false)
+ and (if (not(not(oracle_constructed_nx2))) then lastReverted_3_nx2=true else lastReverted_3_nx2=false)
+ and oracle_exchange_rate_0_nx2 = oracle_constructor_func_init_rate_tx2 and oracle_constructed_0_nx2 = true and oracle_owner_0_nx2 = xa_tx2
+ and lastReverted_nx2 = (lastReverted_0_nx2 or lastReverted_1_nx2 or lastReverted_2_nx2 or lastReverted_3_nx2) and if (lastReverted_nx2) then 
+
+	aw_Pricebet_nx2 = aw_Pricebet_nx1 and 
+	aw_1_nx2 = aw_1_nx1
+	 and aw_2_nx2 = aw_2_nx1 and 
+	initial_pot_nx2 = initial_pot_nx1
+	 and owner_nx2 = owner_nx1
+	 and oracle_owner_nx2 = oracle_owner_nx1
+	 and player_nx2 = player_nx1
+	 and deadline_nx2 = deadline_nx1
+	 and exchange_rate_nx2 = exchange_rate_nx1
+	 and oracle_exchange_rate_nx2 = oracle_exchange_rate_nx1
+	 and oracle_constructed_nx2 = oracle_constructed_nx1 and 
+	true and block_num_nx2 >= block_num else  
+	aw_Pricebet_nx2 = aw_Pricebet_nx1 and 
+	aw_1_nx2 = aw_1_nx1
+	 and aw_2_nx2 = aw_2_nx1 and 
+	initial_pot_nx2 = initial_pot_nx1
+	 and owner_nx2 = owner_nx1
+	 and oracle_owner_nx2 = oracle_owner_0_nx2
+	 and player_nx2 = player_nx1
+	 and deadline_nx2 = deadline_nx1
+	 and exchange_rate_nx2 = exchange_rate_nx1
+	 and oracle_exchange_rate_nx2 = oracle_exchange_rate_0_nx2
+	 and oracle_constructed_nx2 = oracle_constructed_0_nx2 and 
+	true and block_num_nx2 >= block_num
+
+)				else if f_tx2 = oracle_set_exchange_rate_func then
+((if (not(xn_tx2 >= 0 and (xa_tx2 = a1 or xa_tx2 = a2) and ((not(xa_tx2 = a1) or aw_1_nx1 >= xn_tx2) and (not(xa_tx2 = a2) or aw_2_nx1 >= xn_tx2)))) then lastReverted_0_nx2=true else lastReverted_0_nx2=false)
+ and (aw_Pricebet_0_nx2 = aw_Pricebet_nx1 + xn_tx2 and
+if (xa_tx2 = a1) then
+	aw_1_0_nx2 = aw_1_nx1 - xn_tx2 and
+	aw_2_0_nx2 = aw_2_nx1
+else if (xa_tx2 = a2) then
+	aw_1_0_nx2 = aw_1_nx1 and
+	aw_2_0_nx2 = aw_2_nx1 - xn_tx2
+else true
+) and 
+(if (not(not(xa_tx2=aPricebet))) then lastReverted_1_nx2=true else lastReverted_1_nx2=false)
+ and (if (not(xa_tx2 = oracle_owner_nx2)) then lastReverted_2_nx2=true else lastReverted_2_nx2=false)
+ and (if oracle_set_exchange_rate_func_new_rate_tx2>oracle_exchange_rate_nx2 then (if (not(xn_tx2 = ((1000*(oracle_set_exchange_rate_func_new_rate_tx2/oracle_exchange_rate_nx2))+1000))) then lastReverted_3_nx2=true else lastReverted_3_nx2=false)
+ and oracle_exchange_rate_0_nx2 = oracle_set_exchange_rate_func_new_rate_tx2 else (if (not(xn_tx2 = ((1000*(oracle_exchange_rate_nx2/oracle_set_exchange_rate_func_new_rate_tx2))+1000))) then lastReverted_3_nx2=true else lastReverted_3_nx2=false)
+ and oracle_exchange_rate_0_nx2 = oracle_set_exchange_rate_func_new_rate_tx2)
+ and lastReverted_nx2 = (lastReverted_0_nx2 or lastReverted_1_nx2 or lastReverted_2_nx2 or lastReverted_3_nx2) and if (lastReverted_nx2) then 
+
+	aw_Pricebet_nx2 = aw_Pricebet_nx1 and 
+	aw_1_nx2 = aw_1_nx1
+	 and aw_2_nx2 = aw_2_nx1 and 
+	initial_pot_nx2 = initial_pot_nx1
+	 and owner_nx2 = owner_nx1
+	 and oracle_owner_nx2 = oracle_owner_nx1
+	 and player_nx2 = player_nx1
+	 and deadline_nx2 = deadline_nx1
+	 and exchange_rate_nx2 = exchange_rate_nx1
+	 and oracle_exchange_rate_nx2 = oracle_exchange_rate_nx1
+	 and oracle_constructed_nx2 = oracle_constructed_nx1 and 
+	true and block_num_nx2 >= block_num else  
+	aw_Pricebet_nx2 = aw_Pricebet_0_nx2 and 
+	aw_1_nx2 = aw_1_0_nx2
+	 and aw_2_nx2 = aw_2_0_nx2 and 
+	initial_pot_nx2 = initial_pot_nx1
+	 and owner_nx2 = owner_nx1
+	 and oracle_owner_nx2 = oracle_owner_nx1
+	 and player_nx2 = player_nx1
+	 and deadline_nx2 = deadline_nx1
+	 and exchange_rate_nx2 = exchange_rate_nx1
+	 and oracle_exchange_rate_nx2 = oracle_exchange_rate_0_nx2
+	 and oracle_constructed_nx2 = oracle_constructed_nx1 and 
+	true and block_num_nx2 >= block_num
+
+)else block_num_nx2 >= block_num and 
+	aw_Pricebet_nx2 = aw_Pricebet_nx1  and 
+	aw_1_nx2 = aw_1_nx1
+	and aw_2_nx2 = aw_2_nx1 and 
+	lastReverted_nx2 = lastReverted_nx1
+	 and initial_pot_nx2 = initial_pot_nx1
+	 and owner_nx2 = owner_nx1
+	 and oracle_owner_nx2 = oracle_owner_nx1
+	 and player_nx2 = player_nx1
+	 and deadline_nx2 = deadline_nx1
+	 and exchange_rate_nx2 = exchange_rate_nx1
+	 and oracle_exchange_rate_nx2 = oracle_exchange_rate_nx1
+	 and oracle_constructed_nx2 = oracle_constructed_nx1 and 
+	true
+))
+        )
+    )
+        )
+        and
+        (
+            ((xa_tx1 = adv_tx and f_tx1 = qfa_tx and true and xn_tx1 = v_tx) and 
+constructor__timeout_tx1 = constructor__timeout_qxa_tx and 
+constructor__exchange_rate_tx1 = constructor__exchange_rate_qxa_tx and 
+oracle_constructor_func_init_rate_tx1 = oracle_constructor_func_init_rate_qxa_tx and 
+oracle_set_exchange_rate_func_new_rate_tx1 = oracle_set_exchange_rate_func_new_rate_qxa_tx and 
+(if f_tx1 = join_func then
+((if (not(xn_tx1 >= 0 and (xa_tx1 = a1 or xa_tx1 = a2) and ((not(xa_tx1 = a1) or aw_1 >= xn_tx1) and (not(xa_tx1 = a2) or aw_2 >= xn_tx1)))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (aw_Pricebet_0_nx1 = aw_Pricebet + xn_tx1 and
+if (xa_tx1 = a1) then
+	aw_1_0_nx1 = aw_1 - xn_tx1 and
+	aw_2_0_nx1 = aw_2
+else if (xa_tx1 = a2) then
+	aw_1_0_nx1 = aw_1 and
+	aw_2_0_nx1 = aw_2 - xn_tx1
+else true
+) and 
+(if (not(not(xa_tx1=aPricebet))) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(xn_tx1 = initial_pot)) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and player_0_nx1 = xa_tx1
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1) and if (lastReverted_nx1) then 
+
+	aw_Pricebet_nx1 = aw_Pricebet and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	initial_pot_nx1 = initial_pot
+	 and owner_nx1 = owner
+	 and oracle_owner_nx1 = oracle_owner
+	 and player_nx1 = player
+	 and deadline_nx1 = deadline
+	 and exchange_rate_nx1 = exchange_rate
+	 and oracle_exchange_rate_nx1 = oracle_exchange_rate
+	 and oracle_constructed_nx1 = oracle_constructed and 
+	true and block_num >= block_num else  
+	aw_Pricebet_nx1 = aw_Pricebet_0_nx1 and 
+	aw_1_nx1 = aw_1_0_nx1
+	 and aw_2_nx1 = aw_2_0_nx1 and 
+	initial_pot_nx1 = initial_pot
+	 and owner_nx1 = owner
+	 and oracle_owner_nx1 = oracle_owner
+	 and player_nx1 = player_0_nx1
+	 and deadline_nx1 = deadline
+	 and exchange_rate_nx1 = exchange_rate
+	 and oracle_exchange_rate_nx1 = oracle_exchange_rate
+	 and oracle_constructed_nx1 = oracle_constructed and 
+	true and block_num >= block_num
+
+)	else if f_tx1 = win_func then
+(
+(if (not(not(xa_tx1=aPricebet))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(block_num<deadline)) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and (if (not(xa_tx1 = player)) then lastReverted_3_nx1=true else lastReverted_3_nx1=false)
+ and (if (not(oracle_exchange_rate>=exchange_rate)) then lastReverted_4_nx1=true else lastReverted_4_nx1=false)
+ and ((if (not(aw_Pricebet >= 0 and aw_Pricebet <= aw_Pricebet)) then lastReverted_5_nx1=true else lastReverted_5_nx1=false) 
+ and aw_Pricebet_0_nx1 = aw_Pricebet - aw_Pricebet and
+if (player = a1) then
+	aw_1_0_nx1 = aw_1 + aw_Pricebet and
+	aw_2_0_nx1 = aw_2
+else if (player = a2) then
+	aw_1_0_nx1 = aw_1 and
+	aw_2_0_nx1 = aw_2 + aw_Pricebet
+else true
+)
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1 or lastReverted_3_nx1 or lastReverted_4_nx1 or lastReverted_5_nx1) and if (lastReverted_nx1) then 
+
+	aw_Pricebet_nx1 = aw_Pricebet and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	initial_pot_nx1 = initial_pot
+	 and owner_nx1 = owner
+	 and oracle_owner_nx1 = oracle_owner
+	 and player_nx1 = player
+	 and deadline_nx1 = deadline
+	 and exchange_rate_nx1 = exchange_rate
+	 and oracle_exchange_rate_nx1 = oracle_exchange_rate
+	 and oracle_constructed_nx1 = oracle_constructed and 
+	true and block_num >= block_num else  
+	aw_Pricebet_nx1 = aw_Pricebet_0_nx1 and 
+	aw_1_nx1 = aw_1_0_nx1
+	 and aw_2_nx1 = aw_2_0_nx1 and 
+	initial_pot_nx1 = initial_pot
+	 and owner_nx1 = owner
+	 and oracle_owner_nx1 = oracle_owner
+	 and player_nx1 = player
+	 and deadline_nx1 = deadline
+	 and exchange_rate_nx1 = exchange_rate
+	 and oracle_exchange_rate_nx1 = oracle_exchange_rate
+	 and oracle_constructed_nx1 = oracle_constructed and 
+	true and block_num >= block_num
+
+)		else if f_tx1 = timeout_func then
+(
+(if (not(not(xa_tx1=aPricebet))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(block_num>=deadline)) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and ((if (not(aw_Pricebet >= 0 and aw_Pricebet <= aw_Pricebet)) then lastReverted_3_nx1=true else lastReverted_3_nx1=false) 
+ and aw_Pricebet_0_nx1 = aw_Pricebet - aw_Pricebet and
+if (owner = a1) then
+	aw_1_0_nx1 = aw_1 + aw_Pricebet and
+	aw_2_0_nx1 = aw_2
+else if (owner = a2) then
+	aw_1_0_nx1 = aw_1 and
+	aw_2_0_nx1 = aw_2 + aw_Pricebet
+else true
+)
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1 or lastReverted_3_nx1) and if (lastReverted_nx1) then 
+
+	aw_Pricebet_nx1 = aw_Pricebet and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	initial_pot_nx1 = initial_pot
+	 and owner_nx1 = owner
+	 and oracle_owner_nx1 = oracle_owner
+	 and player_nx1 = player
+	 and deadline_nx1 = deadline
+	 and exchange_rate_nx1 = exchange_rate
+	 and oracle_exchange_rate_nx1 = oracle_exchange_rate
+	 and oracle_constructed_nx1 = oracle_constructed and 
+	true and block_num >= block_num else  
+	aw_Pricebet_nx1 = aw_Pricebet_0_nx1 and 
+	aw_1_nx1 = aw_1_0_nx1
+	 and aw_2_nx1 = aw_2_0_nx1 and 
+	initial_pot_nx1 = initial_pot
+	 and owner_nx1 = owner
+	 and oracle_owner_nx1 = oracle_owner
+	 and player_nx1 = player
+	 and deadline_nx1 = deadline
+	 and exchange_rate_nx1 = exchange_rate
+	 and oracle_exchange_rate_nx1 = oracle_exchange_rate
+	 and oracle_constructed_nx1 = oracle_constructed and 
+	true and block_num >= block_num
+
+)			else if f_tx1 = oracle_constructor_func then
+(
+(if (not(not(xa_tx1=aPricebet))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(not(xa_tx1=aPricebet))) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and (if (not(not(oracle_constructed))) then lastReverted_3_nx1=true else lastReverted_3_nx1=false)
+ and oracle_exchange_rate_0_nx1 = oracle_constructor_func_init_rate_tx1 and oracle_constructed_0_nx1 = true and oracle_owner_0_nx1 = xa_tx1
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1 or lastReverted_3_nx1) and if (lastReverted_nx1) then 
+
+	aw_Pricebet_nx1 = aw_Pricebet and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	initial_pot_nx1 = initial_pot
+	 and owner_nx1 = owner
+	 and oracle_owner_nx1 = oracle_owner
+	 and player_nx1 = player
+	 and deadline_nx1 = deadline
+	 and exchange_rate_nx1 = exchange_rate
+	 and oracle_exchange_rate_nx1 = oracle_exchange_rate
+	 and oracle_constructed_nx1 = oracle_constructed and 
+	true and block_num >= block_num else  
+	aw_Pricebet_nx1 = aw_Pricebet and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	initial_pot_nx1 = initial_pot
+	 and owner_nx1 = owner
+	 and oracle_owner_nx1 = oracle_owner_0_nx1
+	 and player_nx1 = player
+	 and deadline_nx1 = deadline
+	 and exchange_rate_nx1 = exchange_rate
+	 and oracle_exchange_rate_nx1 = oracle_exchange_rate_0_nx1
+	 and oracle_constructed_nx1 = oracle_constructed_0_nx1 and 
+	true and block_num >= block_num
+
+)				else if f_tx1 = oracle_set_exchange_rate_func then
+((if (not(xn_tx1 >= 0 and (xa_tx1 = a1 or xa_tx1 = a2) and ((not(xa_tx1 = a1) or aw_1 >= xn_tx1) and (not(xa_tx1 = a2) or aw_2 >= xn_tx1)))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (aw_Pricebet_0_nx1 = aw_Pricebet + xn_tx1 and
+if (xa_tx1 = a1) then
+	aw_1_0_nx1 = aw_1 - xn_tx1 and
+	aw_2_0_nx1 = aw_2
+else if (xa_tx1 = a2) then
+	aw_1_0_nx1 = aw_1 and
+	aw_2_0_nx1 = aw_2 - xn_tx1
+else true
+) and 
+(if (not(not(xa_tx1=aPricebet))) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(xa_tx1 = oracle_owner)) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and (if oracle_set_exchange_rate_func_new_rate_tx1>oracle_exchange_rate then (if (not(xn_tx1 = ((1000*(oracle_set_exchange_rate_func_new_rate_tx1/oracle_exchange_rate))+1000))) then lastReverted_3_nx1=true else lastReverted_3_nx1=false)
+ and oracle_exchange_rate_0_nx1 = oracle_set_exchange_rate_func_new_rate_tx1 else (if (not(xn_tx1 = ((1000*(oracle_exchange_rate/oracle_set_exchange_rate_func_new_rate_tx1))+1000))) then lastReverted_3_nx1=true else lastReverted_3_nx1=false)
+ and oracle_exchange_rate_0_nx1 = oracle_set_exchange_rate_func_new_rate_tx1)
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1 or lastReverted_3_nx1) and if (lastReverted_nx1) then 
+
+	aw_Pricebet_nx1 = aw_Pricebet and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	initial_pot_nx1 = initial_pot
+	 and owner_nx1 = owner
+	 and oracle_owner_nx1 = oracle_owner
+	 and player_nx1 = player
+	 and deadline_nx1 = deadline
+	 and exchange_rate_nx1 = exchange_rate
+	 and oracle_exchange_rate_nx1 = oracle_exchange_rate
+	 and oracle_constructed_nx1 = oracle_constructed and 
+	true and block_num >= block_num else  
+	aw_Pricebet_nx1 = aw_Pricebet_0_nx1 and 
+	aw_1_nx1 = aw_1_0_nx1
+	 and aw_2_nx1 = aw_2_0_nx1 and 
+	initial_pot_nx1 = initial_pot
+	 and owner_nx1 = owner
+	 and oracle_owner_nx1 = oracle_owner
+	 and player_nx1 = player
+	 and deadline_nx1 = deadline
+	 and exchange_rate_nx1 = exchange_rate
+	 and oracle_exchange_rate_nx1 = oracle_exchange_rate_0_nx1
+	 and oracle_constructed_nx1 = oracle_constructed and 
+	true and block_num >= block_num
+
+)else block_num_nx1 >= block_num and 
+	aw_Pricebet_nx1 = aw_Pricebet and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	lastReverted_nx1 = lastReverted
+	 and block_num_nx1 = block_num
+	 and initial_pot_nx1 = initial_pot
+	 and owner_nx1 = owner
+	 and oracle_owner_nx1 = oracle_owner
+	 and player_nx1 = player
+	 and deadline_nx1 = deadline
+	 and exchange_rate_nx1 = exchange_rate
+	 and oracle_exchange_rate_nx1 = oracle_exchange_rate
+	 and oracle_constructed_nx1 = oracle_constructed and 
+	true
+))
         )
     ))))
 );

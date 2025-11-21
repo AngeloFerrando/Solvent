@@ -54,27 +54,21 @@ contract Pricebet {
     function oracle_set_exchange_rate(int new_rate)  payable {
         require(msg.sender == oracle_owner);
         if (new_rate > oracle_exchange_rate) {
-        //require(msg.value == 1000 * (new_rate / oracle_exchange_rate) + 1000);
-        require(msg.value == 1000);
+        require(msg.value == 1000 * (new_rate / oracle_exchange_rate) + 1000);
+        //require(msg.value == 1000);
         oracle_exchange_rate = new_rate
         }
         else {
-        //require(msg.value == 1000 * (oracle_exchange_rate / new_rate) + 1000 );
-        require(msg.value == 1000);
+        require(msg.value == 1000 * (oracle_exchange_rate / new_rate) + 1000 );
+        //require(msg.value == 1000);
         oracle_exchange_rate = new_rate
         }
     }
 }
 
 
-rule Dummy1 {
-    True
-}
-
-
-// bug
-
-rule No_Frozen_Funds {
+/*
+rule No_Frozen_Funds_false {
     forall a : address .
     exists f : method .
     exists args : calldataargs .    
@@ -82,15 +76,74 @@ rule No_Frozen_Funds {
     << a : Pricebet . f(args) $ msgvalue >>
         balance[owner] == old(balance[owner] + balance)		
 }
-/*
+
+rule No_Frozen_Funds_owner_false {
+    exists f : method .
+    exists args : calldataargs .    
+    exists msgvalue : int .    
+    << owner : Pricebet . f(args) $ msgvalue >>
+        balance[owner] == old(balance[owner] + balance)		
+}
+*/
+
+// rule No_Frozen_Funds_after_deadline_true {
+//     block.number >= deadline ->
+//     (
+//         forall a : address .
+//         exists f : method .
+//         exists args : calldataargs .    
+//         exists msgvalue : int .    
+//         << a : Pricebet . f(args) $ msgvalue >>
+//             balance[owner] == old(balance[owner] + balance)		
+//     )
+// }
+
+// rule No_Frozen_Funds_after_deadline_exists_true {
+//     block.number >= deadline ->
+//     (
+//         exists a : address .
+//         exists f : method .
+//         exists args : calldataargs .    
+//         exists msgvalue : int .    
+//         << a : Pricebet . f(args) $ msgvalue >>
+//             balance[owner] == old(balance[owner] + balance)		
+//     )
+// }
+
+// rule No_Frozen_Funds_after_deadline_hint_true {
+//     block.number >= deadline ->
+//     (
+//         forall a : address .
+//         exists f : method .
+//         exists args : calldataargs .    
+//         exists msgvalue : int .    
+//         << a : Pricebet . timeout() $ msgvalue >>
+//             balance[owner] == old(balance[owner] + balance)		
+//     )
+// }
+
+// rule No_Frozen_Funds_after_deadline_exists_hint_true {
+//     block.number >= deadline ->
+//     (
+//         exists a : address .
+//         exists f : method .
+//         exists args : calldataargs .    
+//         exists msgvalue : int .    
+//         << a : Pricebet . timeout() $ msgvalue >>
+//             balance[owner] == old(balance[owner] + balance)		
+//     )
+// }
+
+
+
 
 
 rule Winning_player_can_be_frontrun {
-    exists bal1 : int .
-    << player : Pricebet . win() $0 >> 
+    forall bal1 : int .
+    ((<< player : Pricebet . win() $0 >> 
             (bal1 == balance[player] 
             &&
-            bal1 > old(balance[player]))
+            bal1 > old(balance[player])))
     ->
     exists adv : address .
     exists v : int .
@@ -101,5 +154,7 @@ rule Winning_player_can_be_frontrun {
         << player : Pricebet . win() $ 0 >>
             (bal2 == balance[player] 
             &&
-            bal2 < bal1)
-}*/
+            bal2 < bal1))
+}
+
+
