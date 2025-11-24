@@ -40,10 +40,16 @@ contract AMM {
 }
 
 
-rule Test {
+rule Test_true {
   forall a : address .  
     << a : AMM . swap(0 , False , 0) $ 0 >>		
       true
+}
+
+rule Test_false {
+  forall a : address .  
+    << a : AMM . swap(0 , False , 0) $ 0 >>		
+      false
 }
 
 
@@ -58,6 +64,7 @@ rule P2_true {
     << a : AMM . swap(1 , False , 0) $ 0 >>		
       bal0_AMM > old(bal0_AMM)
 }
+
 
 
 rule P3_false {
