@@ -1094,7 +1094,7 @@ tel
     def handle_nested_prop(self, left, right, op):
         tx = '_tx' if self.__visit_properties else '' 
         for el in self.__prop_nested_i:
-            if el in left or el in right:
+            if el in left or el in right.replace('_oldnx', '_nx'):
                 # el = '_' + el
                 tx_tmp = '_tx' if tx == '_tx' and not el.endswith('nx') and not el in self.__globals_index else ''
                 res = ''
@@ -1731,7 +1731,11 @@ forall (xa_tx: int;)
                 if self.__args_map[a][0].startswith(fname) and self.__args_map[a][2] == i:
                     argsFCond.append(f'{self.__args_map[a][0]}_tx{id} = {argsF[i]}')
         argsFCond = ' and '.join(argsFCond)
-        contract = f'(xa_tx{id} = {self.visit(ctx.expr)} and f_tx{id} = {fname} and {argsFCond} and xn_tx{id} = {self.visit(ctx.value)}) and \n'
+        expr_val = self.visit(ctx.expr)
+        if '_nx' in expr_val:
+            suffix = '' if id <= 1 else str(id - 1)
+            expr_val = re.sub(r'_nx(?!\d)', f'_nx{suffix}', expr_val)
+        contract = f'(xa_tx{id} = {expr_val} and f_tx{id} = {fname} and {argsFCond} and xn_tx{id} = {self.visit(ctx.value)}) and \n'
 
         for calldataarg in filter(lambda x: self.__vars[x] == 'calldataargs', self.__vars):
             for arg in self.__args_map:
