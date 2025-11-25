@@ -504,6 +504,7 @@ tel
 
     # Visit a parse tree produced by TxScriptParser#funDecl.
     def visitFun(self, ctx, add_to_body):
+        self.__prop_nested_i = set()
         args = self.visit(ctx.args)
         self.__add_last_cmd = True
         body = self.visit(ctx.cmds)
