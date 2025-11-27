@@ -167,12 +167,12 @@ class Kind2Visitor(TxScriptVisitor):
             #     aux += 1
             # functions_call += 'And(xa1 >= 1, xa1 <= A, '
             if not self.__visit_properties:
-                body = 'if (true -> pre contract_not_constructed) then\n' + self.__functions['constructor'] + '\n' 
+                body = 'if (true -> pre contract_not_constructed and f = constructor_func) then\n' + self.__functions['constructor'] + '\n' 
             for p in keys[:-1]:
                 if self.__visit_properties and p == keys[0]:
                     cmd = 'if'
                 else:
-                    cmd = 'elsif'
+                    cmd = 'elsif not(true -> pre contract_not_constructed) and'
                 body += '\t'*n_tabs + cmd + ' f = ' + p + ' then\n'
                 n_tabs += 1
                 body += f'\t{self.__functions[p]}\n'
@@ -194,7 +194,7 @@ class Kind2Visitor(TxScriptVisitor):
         all_props = '\n'.join([prop for prop in props])
         agents = ', '.join([f'a{i}' for i in range(1, self.__A+1)])
         res = f'''
-type functions = enum {{ {functions} }};
+type functions = enum {{constructor_func, {functions} }};
 type address = enum {{ a{self.__contract_name}, {agents} }};
 node {ctx.name.text} ({contract_args}) returns();
 (*@contract
