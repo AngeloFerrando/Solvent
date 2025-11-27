@@ -9,8 +9,10 @@ contract AMM {
 
 	constructor(int x0, int x1) {
         require(x0 > 0 && x1 > 0);
-        bal0[msg.sender] = bal0[msg.sender] - x0;
-        bal1[msg.sender] = bal1[msg.sender] - x1;  
+        //bal0[msg.sender] = bal0[msg.sender] - x0;
+        //bal1[msg.sender] = bal1[msg.sender] - x1;  
+        bal0[msg.sender] = 100;
+        bal1[msg.sender] = 50;  
         bal0_AMM = x0;
         bal1_AMM = x1
     }
@@ -40,42 +42,70 @@ contract AMM {
 }
 
 
-rule Test_true {
+// rule Test_true {
+//   forall a : address .  
+//     << a : AMM . swap(0 , False , 0) $ 0 >>		
+//       true
+// }
+
+// rule Test_false {
+//   forall a : address .  
+//     << a : AMM . swap(0 , False , 0) $ 0 >>		
+//       false
+// }
+
+
+// rule P1_false {
+//   forall a : address .  
+//     << a : AMM . swap(0 , False , 0) $ 0 >>		
+//       bal0_AMM > old(bal0_AMM)
+// }
+
+
+// // if swap reverts than bal0_AMM does not increase
+// rule P2_false { 
+//   forall a : address .  
+//     << a : AMM . swap(1 , False , 0) $ 0 >>		
+//       bal0_AMM > old(bal0_AMM)
+// }
+
+// // with Ints, we can have yout = 0 due to approximations
+// rule P2b_false {
+//   forall a : address .  
+//     << a : AMM . swap(1 , False , 0) $ 0 >>		
+//     !lastReverted ->
+//       bal0_AMM > old(bal0_AMM)
+// }
+
+
+
+// rule P3_false {
+//   forall a : address .  
+//     << a : AMM . swap(0 , False , 0) $ 0 >>		
+//       bal1_AMM < old(bal1_AMM)
+// }
+
+// if swap reverts than bal1_AMM does not increase
+// rule P4_false {
+//   forall a : address .  
+//     << a : AMM . swap(1 , False , 0) $ 0 >>		
+//       bal1_AMM < old(bal1_AMM)
+// }
+
+// // with Ints, we can have yout = 0 due to approximations
+// rule P4b_false {
+//   forall a : address .  
+//     << a : AMM . swap(1 , False , 0) $ 0 >>		
+//       !lastReverted 
+//         ->
+//       bal1_AMM < old(bal1_AMM)
+// }
+
+rule P4c_true {
   forall a : address .  
-    << a : AMM . swap(0 , False , 0) $ 0 >>		
-      true
-}
-
-rule Test_false {
-  forall a : address .  
-    << a : AMM . swap(0 , False , 0) $ 0 >>		
-      false
-}
-
-
-rule P1_false {
-  forall a : address .  
-    << a : AMM . swap(0 , False , 0) $ 0 >>		
-      bal0_AMM > old(bal0_AMM)
-}
-
-rule P2_true {
-  forall a : address .  
-    << a : AMM . swap(1 , False , 0) $ 0 >>		
-      bal0_AMM > old(bal0_AMM)
-}
-
-
-
-rule P3_false {
-  forall a : address .  
-    << a : AMM . swap(0 , False , 0) $ 0 >>		
-      bal1_AMM < old(bal1_AMM)
-}
-
-rule P4_true {
-  forall a : address .  
-    << a : AMM . swap(1 , False , 0) $ 0 >>		
+    << a : AMM . swap(1 , False , 1) $ 0 >>		
+      !lastReverted 
+        ->
       bal1_AMM < old(bal1_AMM)
 }
 
