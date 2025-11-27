@@ -603,8 +603,8 @@ tel
         
         err = 'lastReverted'
         if self.__visit_properties:
-            same += ' and block_num_nx >= block_num' #= any {block_num_tmp: int | block_num_tmp > block_num}'
-            skip += ' and block_num_nx >= block_num' #any {block_num_tmp: int | block_num_tmp > block_num}'
+            same += ' and block_num_nx = block_num' #= any {block_num_tmp: int | block_num_tmp > block_num}'
+            skip += ' and block_num_nx = block_num' #any {block_num_tmp: int | block_num_tmp > block_num}'
             if body.replace(' ', '').endswith('and'):
                 err1 = f'{err}_nx' if err != 'false' else 'false'
                 self.__functions_prop[self.__prefix] = f'{body} if ({err1}) then \n{same} else {skip}\n'
@@ -1331,7 +1331,7 @@ tel
                 contract += f'\t{self.__functions_prop[p]}\n'
             n_tabs += 1
             contract += 'else'
-            same = ' block_num_nx >= block_num' #any {block_num_tmp: int | block_num_tmp > block_num}'   
+            same = ' block_num_nx = block_num' #any {block_num_tmp: int | block_num_tmp > block_num}'   
             same += f' and \n\taw_{self.__contract_name}_nx = aw_{self.__contract_name} '
             same += ' and \n\t' + '\n\tand '.join([f'aw_{i}_nx = aw_{i}' for i in range(1, self.__A+1)])
             # same += ' and \n\t' + '\n\tand '.join([g.text + '_nx = ' + f'{g.text}' for (g, _) in self.__globals]) if self.__globals else ''
@@ -1758,7 +1758,7 @@ forall (xa_tx: int;)
                 contract += '('+self.bump_nx_all(self.__functions_prop[p], id, self.__vars).replace('block_num_nx1', 'block_num') + '\n'+')'
             n_tabs += 1
             contract += 'else'
-            same = f' block_num_nx{id} >= block_num' #= any '+'{block_num_tmp: int | block_num_tmp > block_num}'   
+            same = f' block_num_nx{id} = block_num' #= any '+'{block_num_tmp: int | block_num_tmp > block_num}'   
             same += f' and \n\taw_{self.__contract_name}_nx{id} = aw_{self.__contract_name}' if id <= 1 else f' and \n\taw_{self.__contract_name}_nx{id} = aw_{self.__contract_name}_nx{id-1} '
             same += ' and \n\t' + '\n\tand '.join([f'aw_{i}_nx{id} = aw_{i}' if id <= 1 else f'aw_{i}_nx{id} = aw_{i}_nx{id-1}' for i in range(1, self.__A+1)])
             # same += ' and \n\t' + '\n\tand '.join([g.text + '_nx = ' + f'{g.text}' for (g, _) in self.__globals]) if self.__globals else ''
