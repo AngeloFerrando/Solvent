@@ -1,0 +1,279 @@
+
+
+
+type functions = enum {constructor_func, swap_func };
+type address = enum { aAMM, a1, a2 };
+
+-- function imported divv (n1: int; n2: int) returns (r: int);
+-- (*@contract
+--   assume n2 = 0;
+--   guarantee r >= 0 and n2 * r = n1;
+-- *)
+
+function divv (n1: int; n2: int) returns (r: int);
+let 
+	r = n1/n2; 
+tel
+
+node AMM (xa:address;xn:int;f:functions;constructor_x0:int;constructor_x1:int;swap_func_xin:int;swap_func_tin:bool;swap_func_ymin:int;starting_aw_AMM: int;starting_aw_1: int;starting_aw_2: int) returns();
+(*@contract
+    assume starting_aw_AMM >= 0;
+assume starting_aw_1 >= 0;
+assume starting_aw_2 >= 0;
+*)
+var contract_not_constructed: bool;
+const starting_lastReverted : bool = false;
+const starting_block_num : int = 0;
+const starting_bal0_1 : int = 0;
+const starting_bal0_2 : int = 0;
+const starting_bal1_1 : int = 0;
+const starting_bal1_2 : int = 0;
+const starting_bal0_AMM : int = 0;
+const starting_bal1_AMM : int = 0;
+const starting_tout : bool = false;
+const starting_yout : int = 0;
+var aw_AMM: int;
+var aw_1: int;
+var aw_2: int;
+var lastReverted : bool;
+var lastReverted_0 : bool;
+var lastReverted_1 : bool;
+var lastReverted_2 : bool;
+var lastReverted_3 : bool;
+var lastReverted_4 : bool;
+var block_num : int;
+var bal0_1 : int;
+var bal0_2 : int;
+var bal0_1_0 : int;
+var bal0_2_0 : int;
+var bal1_1 : int;
+var bal1_2 : int;
+var bal1_1_0 : int;
+var bal1_2_0 : int;
+var bal0_AMM : int;
+var bal0_AMM_0 : int;
+var bal1_AMM : int;
+var bal1_AMM_0 : int;
+var tout : bool;
+var tout_0 : bool;
+var yout : int;
+var yout_0 : int;
+let
+    if (true -> pre contract_not_constructed and f = constructor_func) then
+
+if (xa = a1) then 
+ if (not(not(xa=aAMM))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+if (not((constructor_x0>0 and constructor_x1>0))) then lastReverted_1=true; else lastReverted_1=false; fi
+
+bal0_1_0 = 100;
+bal1_1_0 = 50;
+bal0_AMM_0 = constructor_x0;
+bal1_AMM_0 = constructor_x1; 
+ else 
+ if (not(not(xa=aAMM))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+if (not((constructor_x0>0 and constructor_x1>0))) then lastReverted_1=true; else lastReverted_1=false; fi
+
+bal0_2_0 = 100;
+bal1_2_0 = 50;
+bal0_AMM_0 = constructor_x0;
+bal1_AMM_0 = constructor_x1; fi
+lastReverted = lastReverted_0 or lastReverted_1; if (lastReverted) then 
+	aw_AMM = (starting_aw_AMM -> pre aw_AMM);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	bal0_AMM = (starting_bal0_AMM -> pre bal0_AMM);
+	bal1_AMM = (starting_bal1_AMM -> pre bal1_AMM);
+	tout = (starting_tout -> pre tout);
+	yout = (starting_yout -> pre yout);
+	bal0_1 = (starting_bal0_1 -> pre bal0_1);
+	bal1_1 = (starting_bal1_1 -> pre bal1_1);
+	bal0_2 = (starting_bal0_2 -> pre bal0_2);
+	bal1_2 = (starting_bal1_2 -> pre bal1_2);
+	contract_not_constructed = true;
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
+	aw_AMM = (starting_aw_AMM -> pre aw_AMM);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	bal0_AMM = bal0_AMM_0;
+	bal1_AMM = bal1_AMM_0;
+	tout = (starting_tout -> pre tout);
+	yout = (starting_yout -> pre yout);
+	bal0_1 = bal0_1_0;
+	bal1_1 = bal1_1_0;
+	bal0_2 = bal0_2_0;
+	bal1_2 = bal1_2_0;
+	contract_not_constructed = false;
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
+fi
+elsif not(true -> pre contract_not_constructed) and f = swap_func then
+	
+if (xa = a1) then 
+ if (not(not(xa=aAMM))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+if (not(xn = 0)) then lastReverted_1=true; else lastReverted_1=false; fi
+
+if (not(((starting_bal0_AMM -> pre bal0_AMM)>0 and (starting_bal1_AMM -> pre bal1_AMM)>0))) then lastReverted_2=true; else lastReverted_2=false; fi
+
+if (not(swap_func_xin>0)) then lastReverted_3=true; else lastReverted_3=false; fi
+
+tout_0 = not(swap_func_tin);
+if (tout_0) then yout_0 = (swap_func_xin*(divv((starting_bal1_AMM -> pre bal1_AMM),(starting_bal0_AMM -> pre bal0_AMM))));
+if (not((yout_0>=swap_func_ymin and yout_0<(starting_bal1_AMM -> pre bal1_AMM)))) then lastReverted_4=true; else lastReverted_4=false; fi
+
+bal0_AMM_0 = ((starting_bal0_AMM -> pre bal0_AMM)+swap_func_xin);
+bal0_1_0 = ((starting_bal0_1 -> pre bal0_1)-swap_func_xin);
+bal1_AMM_0 = ((starting_bal1_AMM -> pre bal1_AMM)-yout_0);
+bal1_1_0 = ((starting_bal1_1 -> pre bal1_1)+(starting_yout -> pre yout)); else yout_0 = (divv((swap_func_xin*(starting_bal0_AMM -> pre bal0_AMM)),(starting_bal1_AMM -> pre bal1_AMM)));
+if (not((yout_0>=swap_func_ymin and yout_0<(starting_bal0_AMM -> pre bal0_AMM)))) then lastReverted_4=true; else lastReverted_4=false; fi
+
+bal1_AMM_0 = ((starting_bal1_AMM -> pre bal1_AMM)+swap_func_xin);
+bal1_1_0 = ((starting_bal1_1 -> pre bal1_1)-swap_func_xin);
+bal0_AMM_0 = ((starting_bal0_AMM -> pre bal0_AMM)-yout_0);
+bal0_1_0 = ((starting_bal0_1 -> pre bal0_1)+(starting_yout -> pre yout)); fi 
+ else 
+ if (not(not(xa=aAMM))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+if (not(xn = 0)) then lastReverted_1=true; else lastReverted_1=false; fi
+
+if (not(((starting_bal0_AMM -> pre bal0_AMM)>0 and (starting_bal1_AMM -> pre bal1_AMM)>0))) then lastReverted_2=true; else lastReverted_2=false; fi
+
+if (not(swap_func_xin>0)) then lastReverted_3=true; else lastReverted_3=false; fi
+
+tout_0 = not(swap_func_tin);
+if (tout_0) then yout_0 = (swap_func_xin*(divv((starting_bal1_AMM -> pre bal1_AMM),(starting_bal0_AMM -> pre bal0_AMM))));
+if (not((yout_0>=swap_func_ymin and yout_0<(starting_bal1_AMM -> pre bal1_AMM)))) then lastReverted_4=true; else lastReverted_4=false; fi
+
+bal0_AMM_0 = ((starting_bal0_AMM -> pre bal0_AMM)+swap_func_xin);
+bal0_2_0 = ((starting_bal0_2 -> pre bal0_2)-swap_func_xin);
+bal1_AMM_0 = ((starting_bal1_AMM -> pre bal1_AMM)-yout_0);
+bal1_2_0 = ((starting_bal1_2 -> pre bal1_2)+(starting_yout -> pre yout)); else yout_0 = (divv((swap_func_xin*(starting_bal0_AMM -> pre bal0_AMM)),(starting_bal1_AMM -> pre bal1_AMM)));
+if (not((yout_0>=swap_func_ymin and yout_0<(starting_bal0_AMM -> pre bal0_AMM)))) then lastReverted_4=true; else lastReverted_4=false; fi
+
+bal1_AMM_0 = ((starting_bal1_AMM -> pre bal1_AMM)+swap_func_xin);
+bal1_2_0 = ((starting_bal1_2 -> pre bal1_2)-swap_func_xin);
+bal0_AMM_0 = ((starting_bal0_AMM -> pre bal0_AMM)-yout_0);
+bal0_2_0 = ((starting_bal0_2 -> pre bal0_2)+(starting_yout -> pre yout)); fi fi
+lastReverted = lastReverted_0 or lastReverted_1 or lastReverted_2 or lastReverted_3 or lastReverted_4; if (lastReverted) then 
+	aw_AMM = (starting_aw_AMM -> pre aw_AMM);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	bal0_AMM = (starting_bal0_AMM -> pre bal0_AMM);
+	bal1_AMM = (starting_bal1_AMM -> pre bal1_AMM);
+	tout = (starting_tout -> pre tout);
+	yout = (starting_yout -> pre yout);
+	bal0_1 = (starting_bal0_1 -> pre bal0_1);
+	bal1_1 = (starting_bal1_1 -> pre bal1_1);
+	bal0_2 = (starting_bal0_2 -> pre bal0_2);
+	bal1_2 = (starting_bal1_2 -> pre bal1_2);
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
+	aw_AMM = (starting_aw_AMM -> pre aw_AMM);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	bal0_AMM = bal0_AMM_0;
+	bal1_AMM = bal1_AMM_0;
+	tout = tout_0;
+	yout = yout_0;
+	bal0_1 = bal0_1_0;
+	bal1_1 = bal1_1_0;
+	bal0_2 = bal0_2_0;
+	bal1_2 = bal1_2_0;
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
+fi
+else
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
+	aw_AMM = (starting_aw_AMM -> pre aw_AMM);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	lastReverted = (starting_lastReverted -> pre lastReverted);
+	bal0_AMM = (starting_bal0_AMM -> pre bal0_AMM);
+	bal1_AMM = (starting_bal1_AMM -> pre bal1_AMM);
+	tout = (starting_tout -> pre tout);
+	yout = (starting_yout -> pre yout);
+	bal0_1 = (starting_bal0_1 -> pre bal0_1);
+	bal1_1 = (starting_bal1_1 -> pre bal1_1);
+	bal0_2 = (starting_bal0_2 -> pre bal0_2);
+	bal1_2 = (starting_bal1_2 -> pre bal1_2);
+fi
+    --%PROPERTY "P4c_true" 
+(
+contract_not_constructed or 
+(forall(a_tx:address;)((a_tx = aAMM) or (
+    exists (
+        xa_tx1: address; f_tx1: functions; constructor_x0_tx1: int; constructor_x1_tx1: int; swap_func_xin_tx1: int; swap_func_tin_tx1: bool; swap_func_ymin_tx1: int; xn_tx1: int;  /* Transition vars */
+        aw_AMM_nx1: int; aw_1_nx1: int; aw_2_nx1: int; lastReverted_nx1 : bool; lastReverted_0_nx1 : bool; lastReverted_1_nx1 : bool; lastReverted_2_nx1 : bool; lastReverted_3_nx1 : bool; lastReverted_4_nx1 : bool; lastReverted_5_nx1 : bool; lastReverted_6_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; bal0_1_nx1 : int; bal0_2_nx1 : int; bal0_1_nx1_0 : int; bal0_2_nx1_0 : int; bal1_1_nx1 : int; bal1_2_nx1 : int; bal1_1_nx1_0 : int; bal1_2_nx1_0 : int; bal0_AMM_nx1 : int; bal0_AMM_0_nx1 : int; bal0_AMM_1_nx1 : int; bal1_AMM_nx1 : int; bal1_AMM_0_nx1 : int; bal1_AMM_1_nx1 : int; tout_nx1 : bool; tout_0_nx1 : bool; tout_1_nx1 : bool; yout_nx1 : int; yout_0_nx1 : int; yout_1_nx1 : int; /* Next state vars */
+    )
+    (   /* condition */
+        (
+            (not(not(lastReverted_nx1)) or bal1_AMM_nx1<bal1_AMM)
+        )
+        and
+        (
+            ((xa_tx1 = a_tx and f_tx1 = swap_func and true and swap_func_xin_tx1 = 1 and swap_func_tin_tx1 = false and swap_func_ymin_tx1 = 1 and xn_tx1 = 0) and 
+(if f_tx1 = swap_func then
+(
+(if (xa = a1) then 
+ ((if (not(not(xa_tx1=aAMM))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not((bal0_AMM>0 and bal1_AMM>0))) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and (if (not(swap_func_xin_tx1>0)) then lastReverted_3_nx1=true else lastReverted_3_nx1=false)
+ and tout_0_nx1 = not(swap_func_tin_tx1) and (if tout_0_nx1 then yout_0_nx1 = (swap_func_xin_tx1*(divv(bal1_AMM,bal0_AMM))) and (if (not((yout_0_nx1>=swap_func_ymin_tx1 and yout_0_nx1<bal1_AMM))) then lastReverted_4_nx1=true else lastReverted_4_nx1=false)
+ and bal0_AMM_0_nx1 = (bal0_AMM+swap_func_xin_tx1) and bal0_1_nx1_0 = (bal0_1-swap_func_xin_tx1) and bal1_AMM_0_nx1 = (bal1_AMM-yout_0_nx1) and bal1_1_nx1_0 = (bal1_1+yout) else yout_0_nx1 = (divv((swap_func_xin_tx1*bal0_AMM),bal1_AMM)) and (if (not((yout_0_nx1>=swap_func_ymin_tx1 and yout_0_nx1<bal0_AMM))) then lastReverted_4_nx1=true else lastReverted_4_nx1=false)
+ and bal1_AMM_0_nx1 = (bal1_AMM+swap_func_xin_tx1) and bal1_1_nx1_0 = (bal1_1-swap_func_xin_tx1) and bal0_AMM_0_nx1 = (bal0_AMM-yout_0_nx1) and bal0_1_nx1_0 = (bal0_1+yout))) 
+ else 
+((if (not(not(xa_tx1=aAMM))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not((bal0_AMM>0 and bal1_AMM>0))) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and (if (not(swap_func_xin_tx1>0)) then lastReverted_3_nx1=true else lastReverted_3_nx1=false)
+ and tout_0_nx1 = not(swap_func_tin_tx1) and (if tout_0_nx1 then yout_0_nx1 = (swap_func_xin_tx1*(divv(bal1_AMM,bal0_AMM))) and (if (not((yout_0_nx1>=swap_func_ymin_tx1 and yout_0_nx1<bal1_AMM))) then lastReverted_4_nx1=true else lastReverted_4_nx1=false)
+ and bal0_AMM_0_nx1 = (bal0_AMM+swap_func_xin_tx1) and bal0_2_nx1_0 = (bal0_2-swap_func_xin_tx1) and bal1_AMM_0_nx1 = (bal1_AMM-yout_0_nx1) and bal1_2_nx1_0 = (bal1_2+yout) else yout_0_nx1 = (divv((swap_func_xin_tx1*bal0_AMM),bal1_AMM)) and (if (not((yout_0_nx1>=swap_func_ymin_tx1 and yout_0_nx1<bal0_AMM))) then lastReverted_4_nx1=true else lastReverted_4_nx1=false)
+ and bal1_AMM_0_nx1 = (bal1_AMM+swap_func_xin_tx1) and bal1_2_nx1_0 = (bal1_2-swap_func_xin_tx1) and bal0_AMM_0_nx1 = (bal0_AMM-yout_0_nx1) and bal0_2_nx1_0 = (bal0_2+yout))))
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1 or lastReverted_3_nx1 or lastReverted_4_nx1) and if (lastReverted_nx1) then 
+
+	aw_AMM_nx1 = aw_AMM and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	bal0_AMM_nx1 = bal0_AMM
+	 and bal1_AMM_nx1 = bal1_AMM
+	 and tout_nx1 = tout
+	 and yout_nx1 = yout and 
+	bal0_1_nx1 = bal0_1
+	 and bal1_1_nx1 = bal1_1
+	 and bal0_2_nx1 = bal0_2
+	 and bal1_2_nx1 = bal1_2 and block_num = block_num else  
+	aw_AMM_nx1 = aw_AMM and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	bal0_AMM_nx1 = bal0_AMM_0_nx1
+	 and bal1_AMM_nx1 = bal1_AMM_0_nx1
+	 and tout_nx1 = tout_0_nx1
+	 and yout_nx1 = yout_0_nx1 and 
+	bal0_1_nx1 = bal0_1_nx1_0
+	 and bal1_1_nx1 = bal1_1_nx1_0
+	 and bal0_2_nx1 = bal0_2_nx1_0
+	 and bal1_2_nx1 = bal1_2_nx1_0 and block_num = block_num
+
+)else block_num_nx1 = block_num and 
+	aw_AMM_nx1 = aw_AMM and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	lastReverted_nx1 = lastReverted
+	 and block_num_nx1 = block_num
+	 and bal0_AMM_nx1 = bal0_AMM
+	 and bal1_AMM_nx1 = bal1_AMM
+	 and tout_nx1 = tout
+	 and yout_nx1 = yout and 
+	bal0_1_nx1 = bal0_1
+	 and bal1_1_nx1 = bal1_1
+	 and bal0_2_nx1 = bal0_2
+	 and bal1_2_nx1 = bal1_2
+))
+        )
+    ))))
+);
+
+tel
+        
