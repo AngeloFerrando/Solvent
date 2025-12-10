@@ -196,6 +196,14 @@ class Kind2Visitor(TxScriptVisitor):
         res = f'''
 type functions = enum {{constructor_func, {functions} }};
 type address = enum {{ a{self.__contract_name}, {agents} }};
+function divv (n1: int; n2: int) returns (r: int);
+let
+    r = n1/n2;
+tel
+function mult (n1: int; n2: int) returns (r: int);
+let
+r = n1*n2;
+tel
 node {ctx.name.text} ({contract_args}) returns();
 (*@contract
     {contract_assumptions}
@@ -1215,22 +1223,12 @@ tel
         # nested_res = self.handle_nested_prop(left, right, ctx.op.text)
         # if nested_res is not None:
         #     return '(' + nested_res + ')'
+        if ctx.op.text == '/':
+            return f'divv({left}, {right})'
+        elif ctx.op.text == '*':
+            return f'mult({left}, {right})'
         return '(' + left + ctx.op.text + right + ')'
-        # if not self.__visit_properties:
-        #     post = 'Now'
-        # else:
-        #     post = ''
-        # if left in self.__globals_index:
-        #     if self.__globals_index[left]+self.__globals_modifier < 0:
-        #         left = left + post
-        #     else:
-        #         left = 't_'+left + '['+str(self.__globals_index[left]+self.__globals_modifier)+']'
-        # if right in self.__globals_index:
-        #     if self.__globals_index[right]+self.__globals_modifier < 0:
-        #         right = right + post
-        #     else:
-        #         right = 't_'+right + '['+str(self.__globals_index[right]+self.__globals_modifier)+']'
-
+        
 
     # Visit a parse tree produced by TxScriptParser#andExpr.
     def visitAndExpr(self, ctx:TxScriptParser.AndExprContext):
