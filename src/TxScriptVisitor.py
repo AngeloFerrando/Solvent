@@ -64,6 +64,11 @@ class TxScriptVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TxScriptParser#uintDecl.
+    def visitUintDecl(self, ctx:TxScriptParser.UintDeclContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TxScriptParser#boolDecl.
     def visitBoolDecl(self, ctx:TxScriptParser.BoolDeclContext):
         return self.visitChildren(ctx)
@@ -311,6 +316,11 @@ class TxScriptVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by TxScriptParser#typeInt.
     def visitTypeInt(self, ctx:TxScriptParser.TypeIntContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TxScriptParser#typeUInt.
+    def visitTypeUInt(self, ctx:TxScriptParser.TypeUIntContext):
         return self.visitChildren(ctx)
 
 

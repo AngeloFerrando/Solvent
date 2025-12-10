@@ -107,6 +107,15 @@ class TxScriptListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TxScriptParser#uintDecl.
+    def enterUintDecl(self, ctx:TxScriptParser.UintDeclContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#uintDecl.
+    def exitUintDecl(self, ctx:TxScriptParser.UintDeclContext):
+        pass
+
+
     # Enter a parse tree produced by TxScriptParser#boolDecl.
     def enterBoolDecl(self, ctx:TxScriptParser.BoolDeclContext):
         pass
@@ -554,6 +563,15 @@ class TxScriptListener(ParseTreeListener):
 
     # Exit a parse tree produced by TxScriptParser#typeInt.
     def exitTypeInt(self, ctx:TxScriptParser.TypeIntContext):
+        pass
+
+
+    # Enter a parse tree produced by TxScriptParser#typeUInt.
+    def enterTypeUInt(self, ctx:TxScriptParser.TypeUIntContext):
+        pass
+
+    # Exit a parse tree produced by TxScriptParser#typeUInt.
+    def exitTypeUInt(self, ctx:TxScriptParser.TypeUIntContext):
         pass
 
 

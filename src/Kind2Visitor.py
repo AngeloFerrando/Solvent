@@ -99,7 +99,7 @@ class Kind2Visitor(TxScriptVisitor):
                 g_init_value = self.__initial_const_globals[g_var.text]
                 contract_globals += [f'const starting_{g_var.text}_{ag} : int = {g_init_value};' for ag in range(1, self.__A+1)]
             else:
-                if g_type == 'Hash' or g_type == 'Secret':
+                if g_type == 'Hash' or g_type == 'Secret' or g_type == 'uint':
                     g_type = 'int'
                 if g_type == 'Address':
                     g_type = 'address'
@@ -117,7 +117,7 @@ class Kind2Visitor(TxScriptVisitor):
                 contract_globals += [f'var {g_var.text}_{ag} : int;' for ag in range(1, self.__A+1)]
                 contract_globals += [f'var {g_var.text}_{ag}_{i} : int;' for i in range(self.__globals_index_max[g_var.text]) for ag in range(1, self.__A+1)]
             else:
-                if g_type == 'Hash' or g_type == 'Secret':
+                if g_type == 'Hash' or g_type == 'Secret' or g_type == 'uint':
                     g_type = 'int'
                 if g_type == 'Address':
                     g_type = 'address'
@@ -299,6 +299,16 @@ tel
         if ctx.var.text in self.__not_valid_names:
             raise Exception(f'{ctx.var.text} is not a valid name for a field, please choose a different name')
         self.__globals.append((ctx.var, 'int'))
+        self.__globals_index[ctx.var.text] = 0
+        self.__globals_const[ctx.var.text] = True if ctx.const else False #self.__const
+
+    
+    # Visit a parse tree produced by TxScriptParser#uintDecl.
+    def visitUintDecl(self, ctx:TxScriptParser.UintDeclContext):
+        if self.__visit_properties: return
+        if ctx.var.text in self.__not_valid_names:
+            raise Exception(f'{ctx.var.text} is not a valid name for a field, please choose a different name')
+        self.__globals.append((ctx.var, 'uint'))
         self.__globals_index[ctx.var.text] = 0
         self.__globals_const[ctx.var.text] = True if ctx.const else False #self.__const
 
@@ -651,6 +661,8 @@ tel
                 raise Exception(f'{arg.var.text} is not a valid name for a function\'s argument, please choose a different name')
             if arg.ty.text != 'hash':
                 args.add(self.__prefix + '_' + arg.var.text)
+            if arg.ty.text == 'uint':
+                arg.ty.text = 'int'
             if arg.var.text in self.__args_map:
                 pref = self.__prefix.replace('_func', '')
                 if not self.__visit_properties:
@@ -824,12 +836,6 @@ tel
         # self.__globals_modifier += 1
         i = self.__globals_index[left]
         self.__globals_index[left] = i+1
-        # if self.__prefix == 'constructor':
-        #     for (g, ty) in self.__globals:
-        #         if ty == 'bool':
-        #             self.__initial_const_globals[left] = 'false'
-        #         else:
-        #             self.__initial_const_globals[left] = 0
         aux = 0
         while '[' in right[aux:] and ']' in right[aux:] and right[right.index('[', aux)+1:right.index(']', aux)].isnumeric():
             aux = right.index(']', aux) + 1
@@ -837,10 +843,19 @@ tel
         if aux != -1 and aux < len(right) and '[' in right[aux:] and ']' in right[aux:]:
             index = right[right.index('[', aux)+1:right.index(']', aux)]
             right = right.replace(index, 'j')
-            return f'And([Or(j!={str(index)}, t_{left}[{str(i)}] == {right}) for j in range(A+1)])' 
+            res = f'And([Or(j!={str(index)}, t_{left}[{str(i)}] == {right}) for j in range(A+1)])' 
         else:
-            return left+'_'+str(i) + ('_nx' if self.__visit_properties else '') + ' = ' + right + (';' if not self.__visit_properties else '')
-    
+            res = left+'_'+str(i) + ('_nx' if self.__visit_properties else '') + ' = ' + right + (';' if not self.__visit_properties else '')
+        for (g, ty) in self.__globals:
+            if g.text == left and ty == 'uint':
+                err = 'lastReverted' + '_' + str(self.__globals_index['lastReverted'])
+                self.__globals_index['lastReverted'] += 1
+                if self.__visit_properties:
+                    res += f'\n and (if (({left}_{str(i)}) < 0) then {err}_nx=true else {err}_nx=false)\n'
+                else:
+                    res += f'\nif (({left}_{str(i)}) < 0) then {err}=true; else {err}=false; fi\n'
+                break
+        return res
 
     # Visit a parse tree produced by TxScriptParser#assignMapCmd.
     def visitAssignMapCmd(self, ctx:TxScriptParser.AssignMapCmdContext):
@@ -1684,7 +1699,7 @@ forall (xa_tx: int;)
                 contract_globals += [f'{g_var.text}_{ag}_nx{id} : int;' for ag in range(1, self.__A+1)]
                 contract_globals += [f'{g_var.text}_{ag}_nx{id}_{i} : int;' for i in range(self.__globals_index_max[g_var.text]) for ag in range(1, self.__A+1)] 
             else:
-                if g_type == 'Hash' or g_type == 'Secret':
+                if g_type == 'Hash' or g_type == 'Secret' or g_type == 'uint':
                     g_type = 'int'
                 if g_type == 'Address':
                     g_type = 'address'
@@ -1832,6 +1847,11 @@ forall (xa_tx: int;)
 
     def visitTypeInt(self, ctx:TxScriptParser.TypeIntContext):
         return 'int'
+
+    
+    # Visit a parse tree produced by TxScriptParser#typeUInt.
+    def visitTypeUInt(self, ctx:TxScriptParser.TypeUIntContext):
+        return 'uint'
 
 
     # Visit a parse tree produced by TxScriptParser#typeBool.

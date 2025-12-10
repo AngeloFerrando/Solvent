@@ -19,6 +19,7 @@ child=fieldExpr                                                                 
 
 fieldExpr :
 'int' (const='immutable')? var=LABEL (';')?                                                         # intDecl
+    | 'uint' (const='immutable')? var=LABEL (';')?                                                  # uintDecl
     | 'bool' (const='immutable')? var=LABEL (';')?                                                  # boolDecl
     | 'string' (const='immutable')? var=LABEL (';')?                                                # strDecl
     | 'address' (const='immutable')? var=LABEL (';')?                                               # addrDecl
@@ -29,7 +30,7 @@ fieldExpr :
 
 argsExpr : (argExpr)*;
 argExpr : 
-    ty=('int'|'bool'|'address'|'string'|'hash'|'secret') var=LABEL (',')?                           # arg
+    ty=('int'|'uint'|'bool'|'address'|'string'|'hash'|'secret') var=LABEL (',')?                    # arg
     | ty='mapping (address => int)' var=LABEL (',')?                                                # argMap
 ;
 
@@ -93,6 +94,7 @@ formulaExpr :
 typeExpr : 
   'address'           # typeAddress
   | 'int'             # typeInt
+  | 'uint'            # typeUInt
   | 'bool'            # typeBool
   | 'method'          # typeMethod
   | 'calldataargs'    # typeCallDataArgs
@@ -123,7 +125,7 @@ UPPER : [A-Z.][_a-zA-Z0-9]*;
 NUMBER : ('-')? DIGIT | ('-')? (DIGIT_NOT_ZERO DIGIT+);
 REAL : NUMBER '.' (DIGIT+) | NUMBER '.' (DIGIT+);
 
-TYPE : 'int' | 'float' | 'bool' | 'address' | 'hash' | 'secret';
+TYPE : 'int' | 'uint' | 'float' | 'bool' | 'address' | 'hash' | 'secret';
 
 WS: [ \r\n\t]+ -> channel (HIDDEN);
 fragment DIGIT: ('0'..'9');

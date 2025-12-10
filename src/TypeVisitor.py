@@ -71,6 +71,12 @@ class TypeVisitor(TxScriptVisitor):
         self.__globals.append((ctx.var.text, 'Int'))
         self.__globals_const[ctx.var.text] = True if ctx.const else False #self.__const
 
+    
+    # Visit a parse tree produced by TxScriptParser#uintDecl.
+    def visitUintDecl(self, ctx:TxScriptParser.UintDeclContext):
+        self.__globals.append((ctx.var.text, 'Uint'))
+        self.__globals_const[ctx.var.text] = True if ctx.const else False #self.__const
+
 
     # Visit a parse tree produced by TxScriptParser#boolDecl.
     def visitBoolDecl(self, ctx:TxScriptParser.BoolDeclContext):
@@ -138,7 +144,7 @@ class TypeVisitor(TxScriptVisitor):
         for arg in ctx.argExpr():
             name = self.__prefix + '_' + arg.var.text
             type = arg.ty.text
-            if type in ['int', 'bool', 'address', 'string', 'hash', 'secret']:
+            if type in ['int', 'uint', 'bool', 'address', 'string', 'hash', 'secret']:
                 type = type.capitalize()
             else:
                 type = ('MapAddr', 'Int')
@@ -159,7 +165,7 @@ class TypeVisitor(TxScriptVisitor):
                 raise TypeError(ctx, 'Send command requires an address (i.e., the receiver)')
             
         amount = self.visit(ctx.amount)
-        if amount != 'Int':
+        if amount != 'Int' and amount != 'Uint':
             raise TypeError(ctx, 'Send command requires an integer amount to be sent')
 
     # Visit a parse tree produced by TxScriptParser#requireCmd.
@@ -178,7 +184,7 @@ class TypeVisitor(TxScriptVisitor):
         
         t_right = self.visit(ctx.child)
 
-        if t_left != t_right:
+        if t_left != t_right and not (t_left in ['Int', 'Uint'] and t_right in ['Int', 'Uint']):
             raise TypeError(ctx, f'Assignment requires the same types ({t_left} != {t_right})')
 
     def get_type(self, ctx, var):
@@ -238,7 +244,7 @@ class TypeVisitor(TxScriptVisitor):
             raise TypeError(ctx, f'Index of map has to be an address ({t_index} is given)')
 
         t_right = self.visit(ctx.child)
-        if t_right != 'Int':
+        if t_right != 'Int' and t_right != 'Uint':
             raise TypeError(ctx, f'Value to assign to map has to be an integer ({t_right} is given)')
         
 
@@ -275,7 +281,7 @@ class TypeVisitor(TxScriptVisitor):
     def visitGreaterEqExpr(self, ctx:TxScriptParser.GreaterEqExprContext):
         t_left = self.visit(ctx.left)
         t_right = self.visit(ctx.right)
-        if t_left != 'Int' or t_right != 'Int':
+        if (t_left != 'Int' and t_left != 'Uint') or (t_right != 'Int' and t_right != 'Uint'):
             raise TypeError(ctx, f'>= requires both operands to be integers ({t_left} and {t_right} are given)')
         return 'Bool'
         
@@ -285,7 +291,7 @@ class TypeVisitor(TxScriptVisitor):
     def visitLessExpr(self, ctx:TxScriptParser.LessExprContext):
         t_left = self.visit(ctx.left)
         t_right = self.visit(ctx.right)
-        if t_left != 'Int' or t_right != 'Int':
+        if (t_left != 'Int' and t_left != 'Uint') or (t_right != 'Int' and t_right != 'Uint'):
             raise TypeError(ctx, f'< requires both operands to be integers ({t_left} and {t_right} are given)')
         return 'Bool'
 
@@ -294,7 +300,7 @@ class TypeVisitor(TxScriptVisitor):
     def visitNeqExpr(self, ctx:TxScriptParser.NeqExprContext):
         t_left = self.visit(ctx.left)
         t_right = self.visit(ctx.right)
-        if t_left != t_right and (t_left not in ['Int', 'Address'] or t_right not in ['Int', 'Address']):
+        if t_left != t_right and (t_left not in ['Int', 'Uint', 'Address'] or t_right not in ['Int', 'Uint', 'Address']):
             raise TypeError(ctx, f'!= requires both operands to be same type ({t_left} and {t_right} are given)')
         return 'Bool'
         
@@ -303,7 +309,7 @@ class TypeVisitor(TxScriptVisitor):
     def visitGreaterExpr(self, ctx:TxScriptParser.GreaterExprContext):
         t_left = self.visit(ctx.left)
         t_right = self.visit(ctx.right)
-        if t_left != 'Int' or t_right != 'Int':
+        if (t_left != 'Int' and t_left != 'Uint') or (t_right != 'Int' and t_right != 'Uint'):
             raise TypeError(ctx, f'> requires both operands to be integers ({t_left} and {t_right} are given)')
         return 'Bool'
 
@@ -312,7 +318,7 @@ class TypeVisitor(TxScriptVisitor):
     def visitEqExpr(self, ctx:TxScriptParser.EqExprContext):
         t_left = self.visit(ctx.left)
         t_right = self.visit(ctx.right)
-        if t_left != t_right and (t_left not in ['Int', 'Address'] or t_right not in ['Int', 'Address']):
+        if t_left != t_right and (t_left not in ['Int', 'Uint', 'Address'] or t_right not in ['Int', 'Uint', 'Address']):
             raise TypeError(ctx, f'== requires both operands to be the same type ({t_left} and {t_right} are given)')
         return 'Bool'
 
@@ -329,7 +335,7 @@ class TypeVisitor(TxScriptVisitor):
     def visitSumSubExpr(self, ctx:TxScriptParser.SumSubExprContext):
         t_left = self.visit(ctx.left)
         t_right = self.visit(ctx.right)
-        if t_left != 'Int' or t_right != 'Int':
+        if (t_left != 'Int' and t_left != 'Uint') or (t_right != 'Int' and t_right != 'Uint'):
             raise TypeError(ctx, f'+/- requires both operands to be integers ({t_left} and {t_right} are given)')
         return 'Int'
 
@@ -338,7 +344,7 @@ class TypeVisitor(TxScriptVisitor):
     def visitLessEqExpr(self, ctx:TxScriptParser.LessEqExprContext):
         t_left = self.visit(ctx.left)
         t_right = self.visit(ctx.right)
-        if t_left != 'Int' or t_right != 'Int':
+        if (t_left != 'Int' and t_left != 'Uint') or (t_right != 'Int' and t_right != 'Uint'):
             raise TypeError(ctx, f'<= requires both operands to be integers ({t_left} and {t_right} are given)')
         return 'Bool'
 
@@ -347,7 +353,7 @@ class TypeVisitor(TxScriptVisitor):
     def visitMultDivModExpr(self, ctx:TxScriptParser.MultDivModExprContext):
         t_left = self.visit(ctx.left)
         t_right = self.visit(ctx.right)
-        if t_left != 'Int' or t_right != 'Int':
+        if (t_left != 'Int' and t_left != 'Uint') or (t_right != 'Int' and t_right != 'Uint'):
             raise TypeError(ctx, f'* and / require both operands to be integers ({t_left} and {t_right} are given)')
         return 'Int'
 
@@ -423,7 +429,7 @@ class TypeVisitor(TxScriptVisitor):
     def visitMapExpr(self, ctx:TxScriptParser.MapExprContext):
         t_index = self.visit(ctx.index)
         if t_index != 'Address':
-            raise TypeError(ctx, f'The index of a map must an address ({t_index} is given)') 
+            raise TypeError(ctx, f'The index of a map must be an address ({t_index} is given)') 
         if 'balance' in ctx.mapVar.text:
             t_map = ('MapAddr', 'Int') 
         else:
@@ -503,7 +509,7 @@ class TypeVisitor(TxScriptVisitor):
             raise TypeError(ctx, f'{ctx.expr} needs to have type address')
         if ctx.fname.text+'_func' not in self.__function_args_types and ctx.fname.text not in self.__vars:
             raise TypeError(ctx, f'{ctx.fname.text} does not exist')
-        if self.visit(ctx.value) != 'Int':
+        if self.visit(ctx.value) != 'Int' and self.visit(ctx.value) != 'Uint':
             raise TypeError(ctx, f'{ctx.value} needs to have integer type')
         if ctx.fname.text+'_func' in self.__function_args_types and self.__function_args_types[ctx.fname.text+'_func'] and not ctx.args.argFormulaExpr():
             raise TypeError(ctx, f'Function {ctx.fname.text} requires arguments, but none are given')
@@ -515,7 +521,7 @@ class TypeVisitor(TxScriptVisitor):
                 if index >= len(self.__function_args_types[ctx.fname.text+'_func']):
                     raise TypeError(ctx, f'Function {ctx.fname.text} requires {len(self.__function_args_types[ctx.fname.text+"_func"])} arguments, but {index+1} are given')
                 ty = self.visit(arg.child)
-                if ty != self.__function_args_types[ctx.fname.text+'_func'][index] and ty != 'CallDataArgs':
+                if ty != self.__function_args_types[ctx.fname.text+'_func'][index] and ty != 'CallDataArgs' and not (ty in ['Int', 'Uint'] and self.__function_args_types[ctx.fname.text+'_func'][index] in ['Int', 'Uint']):
                     raise TypeError(ctx, f'argument {arg} should be {self.__function_args_types[ctx.fname.text+"_func"][index]}, as expected by function {ctx.fname.text+"_func"}, instead is {ty}')
                 index += 1
         self.__old += 1
@@ -562,6 +568,11 @@ class TypeVisitor(TxScriptVisitor):
     # Visit a parse tree produced by TxScriptParser#typeInt.
     def visitTypeInt(self, ctx:TxScriptParser.TypeIntContext):
         return 'Int'
+
+
+    # Visit a parse tree produced by TxScriptParser#typeUint.
+    def visitTypeUInt(self, ctx:TxScriptParser.TypeUIntContext):
+        return 'Uint'
 
 
     # Visit a parse tree produced by TxScriptParser#typeBool.
