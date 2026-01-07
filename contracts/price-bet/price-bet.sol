@@ -138,27 +138,31 @@ rule No_Frozen_Funds_owner_false {
 
 
 
-rule Winning_player_can_be_frontrun_true {
-    forall bal1 : int .
-    ((<< player : Pricebet . win() $0 >> 
-            (bal1 == balance[player] 
-            &&
-            bal1 > old(balance[player])))
-    ->
-    exists adv : address .
-    exists v : int .
-    exists qfa : method .
-    exists qxa : calldataargs .
-    exists bal2 : int .
-    << adv : Pricebet . qfa() $ v >>		
-        << player : Pricebet . win() $ 0 >>
-            (bal2 == balance[player] 
-            &&
-            bal2 < bal1))
-}
+// rule Winning_player_can_be_frontrun_true {
+//     forall bal1 : int .
+//     ((<< player : Pricebet . win() $0 >> 
+//             (bal1 == balance[player] 
+//             &&
+//             bal1 > old(balance[player])))
+//     ->
+//     exists adv : address .
+//     (
+//         adv != player
+//         &&
+//         exists v : int .
+//         exists qfa : method .
+//         exists qxa : calldataargs .
+//         exists bal2 : int .
+//         << adv : Pricebet . qfa(qxa) $ v >>		
+//             << player : Pricebet . win() $ 0 >>
+//                 (bal2 == balance[player] 
+//                 &&
+//                 bal2 < bal1))
+//     )
+// }
 
 
-/*
+
 rule Winning_player_can_be_frontrun_by_non_oracleowner_false {
     forall bal1 : int .
     (
@@ -168,21 +172,27 @@ rule Winning_player_can_be_frontrun_by_non_oracleowner_false {
             bal1 > old(balance[player])))
         ->
         exists adv : address .
-        adv != oracle_owner
-            ->
+        (
+            adv != oracle_owner
+                &&
+            adv != player
+                &&
             (
             exists v : int .
             exists qfa : method .
             exists qxa : calldataargs .
             exists bal2 : int .
-            << adv : Pricebet . qfa() $ v >>		
-                << player : Pricebet . win() $ 0 >>
+            << adv : Pricebet . qfa(qxa) $ v >>		
+                //block.number == old(block.number) // TODO check
+                //->
+                (<< player : Pricebet . win() $ 0 >>
                     (bal2 == balance[player] 
                     &&
-                    bal2 < bal1))
+                    bal2 < bal1)))
+        )
     )
 }
-*/
+
 
 /*
 rule Winning_player_can_be_frontrun_by_anyone_false {
@@ -203,4 +213,5 @@ rule Winning_player_can_be_frontrun_by_anyone_false {
             &&
             bal2 < bal1))
 }
+
 */
