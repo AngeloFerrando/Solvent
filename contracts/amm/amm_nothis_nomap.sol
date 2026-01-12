@@ -28,7 +28,7 @@ contract AMM {
 		tout = not tin;
     counter = counter + 1;
 		if (tout) {
-        yout = xin * (bal1_AMM / bal0_AMM);
+        yout = xin * (bal1_AMM / (bal0_AMM + xin));
         //yout = 15;
         require (yout >= ymin && yout<bal1_AMM);
         bal0_AMM = bal0_AMM + xin;
@@ -37,7 +37,7 @@ contract AMM {
         bal1_def = bal1_def + yout
       }
 		else {
-        yout = xin * bal0_AMM / bal1_AMM;
+        yout = xin * bal0_AMM / (bal1_AMM + xin);
         //yout = 15;
         require (yout >= ymin && yout<bal0_AMM);
         bal1_AMM = bal1_AMM + xin;
@@ -55,7 +55,7 @@ contract AMM {
 		tout = not tin_att;
     counter = counter + 1;
 		if (tout) {
-        yout = xin_att * (bal1_AMM / bal0_AMM);
+        yout = xin_att * (bal1_AMM / (bal0_AMM + xin_att));
         require (yout >= ymin_att && yout<bal1_AMM);
         bal0_AMM = bal0_AMM + xin_att;
         bal0_att = bal0_att - xin_att;
@@ -63,7 +63,7 @@ contract AMM {
         bal1_att = bal1_att + yout
       }
 		else {
-        yout = xin_att * bal0_AMM / bal1_AMM;
+        yout = xin_att * bal0_AMM / (bal1_AMM + xin_att);
         require (yout >= ymin_att && yout<bal0_AMM);
         bal1_AMM = bal1_AMM + xin_att;
         bal1_att = bal1_att - xin_att;
