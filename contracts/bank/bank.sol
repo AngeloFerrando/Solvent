@@ -20,7 +20,28 @@ contract Bank {
     }
 }  
 
+
+
+
+
 // rule Additivity {
+//     forall c1 : int .
+//     forall c2 : int .
+//     exists v12_storage : int .
+//     exists v3_storage : int .
+//     exists v : int .
+//     forall addr : address .
+//     (<< addr : Bank . deposit() $ c1 >>		
+//        (<< addr : Bank . deposit() $ c2 >>		
+//             (v12_storage == v)))
+//     &&
+//     (<< addr : Bank . deposit() $ (c1+c2) >>		
+//             (v3_storage == v))
+//     &&
+//     (v12_storage == v3_storage)
+// }
+
+// rule Additivity_existsc3 {
 //     forall c1 : int .
 //     forall c2 : int .
 //     exists c3 : int .
@@ -39,27 +60,27 @@ contract Bank {
 // }
 
 
-// rule Reversibility_deposit {
-//     forall addr : address .
-//     forall c1 : int .
-//     exists f: method .
-//     exists args: calldataargs .
-//     exists c2 : int .
-//     (<< addr : Bank . deposit() $ c1 >>		
-//        (<< addr : Bank . f(args) $ c2 >>		
-//             (funds[addr] == old(old(funds[addr])))))
-// }
-
-
-rule Liquidity {
+rule Reversibility_deposit {
     forall addr : address .
+    forall c1 : int .
     exists f: method .
     exists args: calldataargs .
-    exists c1 : int .
-    (<< addr : Bank . f(args) $ c1 >>		
-            funds[addr] == 0
-    )
+    exists c2 : int .
+    (<< addr : Bank . deposit() $ c1 >>		
+       (<< addr : Bank . f(args) $ c2 >>		
+            (funds[addr] == old(old(funds[addr])))))
 }
+
+
+// rule Liquidity {
+//     forall addr : address .
+//     exists f: method .
+//     exists args: calldataargs .
+//     exists c1 : int .
+//     (<< addr : Bank . f(args) $ c1 >>		
+//             funds[addr] == 0
+//     )
+// }
 
 // property deposit_not_revert_liquid {
 //     Forall xa
