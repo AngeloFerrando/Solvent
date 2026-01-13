@@ -1122,9 +1122,7 @@ tel
             if el in left or el in right.replace('_oldnx', '_nx'):
                 # el = '_' + el
                 tx_tmp = '_tx' if tx == '_tx' and not el.endswith('nx') and not el in self.__globals_index else ''
-                res = ''
-                if self.__visit_properties:
-                    res += '('
+                res = '('
                 if el == 'xa': 
                     for ag in range(1, self.__A+1):
                         if ag == 1:
@@ -1133,7 +1131,7 @@ tel
                             res += f'else '
                         else:
                             res += f'else if {el}{tx_tmp} = a{ag} then '
-                        res += f'{left} {op} {right}'.replace(f'aw_{el}', self.__t_curr_a[ag]) + ('\n\t' if self.__visit_properties else ';\n\t')
+                        res += f'{left} {op} {right}'.replace(f'aw_{el}', self.__t_curr_a[ag]) + ('\n\t' if self.__visit_properties else '\n\t')
                 else:
                     for ag in range(1, self.__A+1):
                         if ag == 1:
@@ -1142,11 +1140,8 @@ tel
                             res += f'else '
                         else:
                             res += f'else if {el}{tx_tmp} = a{ag} then '
-                        res += f'{left} {op} {right}'.replace('_'+el, f'_{ag}').replace('_'+el.replace('_nx', '_oldnx'), f'_{ag}') + ('\n\t' if self.__visit_properties else ';\n\t')
-                if self.__visit_properties:
-                    res += ')'
-                else:
-                    res += 'fi'
+                        res += f'{left} {op} {right}'.replace('_'+el, f'_{ag}').replace('_'+el.replace('_nx', '_oldnx'), f'_{ag}') + ('\n\t' if self.__visit_properties else '\n\t')
+                res += ')'
                 return res
         return None
 
