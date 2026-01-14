@@ -1618,73 +1618,145 @@ forall (xa_tx: int;)
         return value
 
     @staticmethod
+    def _consume_parens(s, i):
+        assert s[i] == '('
+        depth = 0
+        j = i
+        n = len(s)
+
+        while j < n:
+            if s[j] == '(':
+                depth += 1
+            elif s[j] == ')':
+                depth -= 1
+                if depth == 0:
+                    return j + 1
+            j += 1
+
+        raise ValueError("Unbalanced parentheses")
+
+
+    @staticmethod
+    def _extract_quantified_blocks(s):
+        blocks = []
+        out = []
+        i = 0
+        n = len(s)
+
+        while i < n:
+            m = re.match(r'\b(exists|forall)\b', s[i:])
+            if not m:
+                out.append(s[i])
+                i += 1
+                continue
+
+            kw_start = i
+            i += len(m.group(0))
+
+            # skip whitespace
+            while i < n and s[i].isspace():
+                i += 1
+
+            # first (...)
+            if i >= n or s[i] != '(':
+                raise ValueError("Expected '(' after quantifier")
+            j = Kind2Visitor._consume_parens(s, i)
+
+            # skip whitespace
+            i = j
+            while i < n and s[i].isspace():
+                i += 1
+
+            # second (...)
+            if i >= n or s[i] != '(':
+                raise ValueError("Expected second '(' after quantifier")
+            k = Kind2Visitor._consume_parens(s, i)
+
+            block = s[kw_start:k]
+            key = f"__QBLOCK_{len(blocks)}__"
+            blocks.append(block)
+            out.append(key)
+            i = k
+
+        return ''.join(out), blocks
+    @staticmethod
+    def _restore_quantified_blocks(s, blocks):
+        for i, block in enumerate(blocks):
+            s = s.replace(f"__QBLOCK_{i}__", block)
+        return s
+    
+    @staticmethod
     def bump_nx_all(condition, id, vars):
         pid_nx = f'_nx{id - 1}' if id > 1 else ''
         pid_tx = f'_tx{id - 1}' if id > 1 else ''
         ignore = set(vars.keys())
 
-        # 1) Handle variables that already have a numeric _nx_<idx> suffix
-        for base, idx in set(re.findall(r'\b(\w+)_nx_(\d+)\b', condition)):
+        # ⬅️ NEW: mask exists(...) / forall(...)
+        condition_masked, blocks = Kind2Visitor._extract_quantified_blocks(condition)
+
+        # 1) Handle variables with _nx_<idx>
+        for base, idx in set(re.findall(r'\b(\w+)_nx_(\d+)\b', condition_masked)):
             if base in ignore:
                 continue
-            # a) bump the branch‐id but keep the original index
-            condition = re.sub(
+            condition_masked = re.sub(
                 rf'\b{base}_nx_{idx}\b',
                 f'{base}_nx{id}_{idx}',
-                condition
+                condition_masked
             )
-            # b) rename any bare occurrences of `base`
-            condition = re.sub(
+            condition_masked = re.sub(
                 rf'\b{base}\b',
                 f'{base}{pid_nx}',
-                condition
+                condition_masked
             )
 
-        # 2) Then handle the “plain” _nx suffix (no trailing number)
-        for base in set(re.findall(r'\b(\w+)_nx\b', condition)):
+        # 2) Plain _nx
+        for base in set(re.findall(r'\b(\w+)_nx\b', condition_masked)):
             if base in ignore:
                 continue
-            condition = re.sub(
+            condition_masked = re.sub(
                 rf'\b{base}_nx\b',
                 f'{base}_nx{id}',
-                condition
+                condition_masked
             )
-            condition = re.sub(
+            condition_masked = re.sub(
                 rf'\b{base}\b',
                 f'{base}{pid_nx}',
-                condition
+                condition_masked
             )
 
-        # 3) Repeat the same two‐step process for _tx
-        for base, idx in set(re.findall(r'\b(\w+)_tx_(\d+)\b', condition)):
+        # 3) _tx_<idx>
+        for base, idx in set(re.findall(r'\b(\w+)_tx_(\d+)\b', condition_masked)):
             if base in ignore:
                 continue
-            condition = re.sub(
+            condition_masked = re.sub(
                 rf'\b{base}_tx_{idx}\b',
                 f'{base}_tx{id}_{idx}',
-                condition
+                condition_masked
             )
-            condition = re.sub(
+            condition_masked = re.sub(
                 rf'\b{base}\b',
                 f'{base}{pid_tx}',
-                condition
+                condition_masked
             )
 
-        for base in set(re.findall(r'\b(\w+)_tx\b', condition)):
+        # 4) Plain _tx
+        for base in set(re.findall(r'\b(\w+)_tx\b', condition_masked)):
             if base in ignore:
                 continue
-            condition = re.sub(
+            condition_masked = re.sub(
                 rf'\b{base}_tx\b',
                 f'{base}_tx{id}',
-                condition
+                condition_masked
             )
-            condition = re.sub(
+            condition_masked = re.sub(
                 rf'\b{base}\b',
                 f'{base}{pid_tx}',
-                condition
+                condition_masked
             )
 
-        return condition
+        # ⬅️ NEW: restore untouched quantified blocks
+        return Kind2Visitor._restore_quantified_blocks(condition_masked, blocks)
+
 
     # Visit a parse tree produced by TxScriptParser#complexExprFormulaExpr.
     def visitComplexExprFormulaExpr(self, ctx:TxScriptParser.ComplexExprFormulaExprContext):
@@ -1716,22 +1788,22 @@ forall (xa_tx: int;)
         condition = self.visit(ctx.child)
         self.__globals_index = backup_globals_index
         self.__id -= 1
-        if 'exists' not in condition and 'forall' not in condition:
-            if '_{ag}' in condition:
-                aux = []
-                for a in range(1, self.__A+1):
-                    c = condition.format(ag=a)
-                    aux.append(f'(not(xa_tx{id} = a{a}) or {c})')
-                condition = ' and '.join(aux)
-            # condition = condition.replace('_nx', f'_nx{id}')
-            condition = self.bump_nx_all(condition, id, self.__vars)
-            n_olds = min(condition.count('old'), id)
-            # if n_olds > id:
-            #     condition = condition.replace('_oldnx', '').replace('oldnx', '').replace('_old', '').replace('old', '')
-            # else:
-            for i in range(n_olds, 0, -1):
-                aux = 'old' * i + 'nx'
-                condition = condition.replace(aux, 'nx' + str(id - i))
+        # if 'exists' not in condition and 'forall' not in condition:
+        if '_{ag}' in condition:
+            aux = []
+            for a in range(1, self.__A+1):
+                c = condition.format(ag=a)
+                aux.append(f'(not(xa_tx{id} = a{a}) or {c})')
+            condition = ' and '.join(aux)
+        # condition = condition.replace('_nx', f'_nx{id}')
+        condition = self.bump_nx_all(condition, id, self.__vars)
+        n_olds = min(condition.count('old'), id)
+        # if n_olds > id:
+        #     condition = condition.replace('_oldnx', '').replace('oldnx', '').replace('_old', '').replace('old', '')
+        # else:
+        for i in range(n_olds, 0, -1):
+            aux = 'old' * i + 'nx'
+            condition = condition.replace(aux, 'nx' + str(id - i))
         backup_globals_index = copy.deepcopy(self.__globals_index)
         #self.__id += 1
         self.visit(self.__ctx)
@@ -1809,7 +1881,7 @@ forall (xa_tx: int;)
         )
     )'''
         print(pi)
-        return pi
+        return pi.replace('_nx0', '')
         # if self.visit(ctx.expr) != 'Address':
         #     raise TypeError(ctx, f'{ctx.expr} needs to have type address')
         # if ctx.fname.text+'_func' not in self.__function_args_types:
