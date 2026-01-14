@@ -868,12 +868,21 @@ tel
         self.__id += 1
         self.__globals_modifier += 1
 
-        if left in self.__globals_index:
-            index = f'{index}_{self.__globals_index[left]}'
+        # if left in self.__globals_index:
+        #     left = f'{left}_{self.__globals_index[left]}'
+        tx = '_tx' if self.__visit_properties else ''
+        tx_tmp = '_tx' if tx == '_tx' and not left.endswith('nx') and not left in self.__globals_index else ''
+        res = ''
+        for ag in range(1, self.__A+1):
+            res += f'{left}_{ag}_{self.__globals_index[left]}' + ('_nx' if self.__visit_properties else '') + ' = '
+            res += f'if {index}{tx_tmp} = a{ag} then '
+            res += right + ' else '
+            res += f'{left}_{ag}_{self.__globals_index[left]-1}' if self.__globals_index[left] > 0 else f'(starting_{left}_{ag} -> pre {left}_{ag})'
+            res += ';\n' if not self.__visit_properties else ''
 
         i = self.__globals_index[left]
         self.__globals_index[left] = i+1
-        return f'{left}_{index} = {right}' + (';' if not self.__visit_properties else '')
+        return res #f'{left}_{index} = {right}' + (';' if not self.__visit_properties else '')
         # prev_i = f'{left}Now' if i == 0 else f't_{left}[{str(i-1)}]'
         # return f'And(And([Or(j!={str(index)}, t_{left}[{str(i)}][j] == {right}) for j in range(A+1)]), And([Or(j=={str(index)}, t_{left}[{str(i)}][j] == {prev_i}[j]) for j in range(A+1)]))' 
         # return 'And('+ 'And(' + f'[t_{left}[{str(i)}][j] == {right} for j in range(A+1) if j == {str(index)}]' + ')' + ', ' + 'And(' + f'[t_{left}[{str(i)}][j] == {prev_i}[j] for j in range(A+1) if j != {str(index)}]' + ')' ')'
@@ -1131,7 +1140,7 @@ tel
                             res += f'else '
                         else:
                             res += f'else if {el}{tx_tmp} = a{ag} then '
-                        res += f'{left} {op} {right}'.replace(f'aw_{el}', self.__t_curr_a[ag]) + ('\n\t' if self.__visit_properties else '\n\t')
+                        res += f'{left} {op} {right}'.replace(f'xa', f'{ag}') + ('\n\t' if self.__visit_properties else '\n\t')
                 else:
                     for ag in range(1, self.__A+1):
                         if ag == 1:
@@ -1187,9 +1196,9 @@ tel
     def visitSumSubExpr(self, ctx:TxScriptParser.SumSubExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        # nested_res = self.handle_nested_prop(left, right, ctx.op.text)
-        # if nested_res is not None:
-        #     return '(' + nested_res + ')'
+        nested_res = self.handle_nested_prop(left, right, ctx.op.text)
+        if nested_res is not None:
+            return '(' + nested_res + ')'
         return '(' + left + ctx.op.text + right + ')'
         # if not self.__visit_properties:
         #     post = 'Now'
