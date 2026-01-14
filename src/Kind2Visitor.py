@@ -193,7 +193,7 @@ class Kind2Visitor(TxScriptVisitor):
             # functions_call += '\t'*n_tabs + keys[-1] + '(xa1, xn, ' + (','.join(self.__proc_args[keys[-1]])+', ' if self.__proc_args[keys[-1]] else '') + 'aw1, aw2, w1, w2, t_aw, t_w, block_num1' + ((', ' + ', '.join([g.text+'Now, '+g.text+'Next, t_'+g.text for (g, _) in self.__globals])) if self.__globals else '') + ', err)'
             body += 'fi'
         all_props = '\n'.join([prop for prop in props])
-        agents = ', '.join([f'a{i}' for i in range(1, self.__A+1)])
+        agents = ', '.join([f'a{i}' for i in range(0, self.__A+1)])
         res = f'''
 type functions = enum {{constructor_func, {functions} }};
 type address = enum {{ a{self.__contract_name}, {agents} }};

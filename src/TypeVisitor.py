@@ -190,6 +190,8 @@ class TypeVisitor(TxScriptVisitor):
     def get_type(self, ctx, var):
         if var == 'lastReverted':
             return 'Bool'
+        if var == 'a0':
+            return 'Address'
         var = var.replace('app_tx_st.', '').replace('st.', '')
         var = var.replace('<tx>st.', '').replace('st.', '')
         if '.balance' in var:

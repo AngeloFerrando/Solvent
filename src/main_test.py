@@ -40,7 +40,8 @@ def parse(pattern):
         return
     # try:
     with open('./out/outputTrace.lus', 'w') as file:
-        file.write(visitor.visit(tree))
+        res = visitor.visit(tree)
+        file.write(re.sub(r'a0_tx\d*', 'a0', res))
     # visitor = Kind2Visitor(int(sys.argv[2]), int(sys.argv[3]), False, can_transactions_arrive_any_time, fixed_iteration)
     # with open('./out/outputState.py', 'w') as file:
     #     file.write(visitor.visit(tree))
@@ -90,7 +91,7 @@ def parseFile(file):
     )
     pattern = re.sub(
         r'(\bfunction\s+\w+\s*\([^)]*\)(?:\s*payable)?\s*)\{',
-        r'\1{ require(msg.sender != this); ',
+        r'\1{ require(msg.sender != this); require(msg.sender != a0);',
         pattern
     )
 
