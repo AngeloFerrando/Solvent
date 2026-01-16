@@ -1,6 +1,6 @@
 
-type functions = enum {constructor_func, fee_func,faa_func,foo_func };
-type address = enum { aMapping1, a1, a2 };
+type functions = enum {constructor_func, fee_func,fii_func,foo_func,faa_func };
+type address = enum { aMapping2, a0, a1, a2 };
 function divv (n1: int; n2: int) returns (r: int);
 let
     r = n1/n2;
@@ -9,9 +9,9 @@ function mult (n1: int; n2: int) returns (r: int);
 let
 r = n1*n2;
 tel
-node Mapping1 (xa:address;xn:int;f:functions;starting_aw_Mapping1: int;starting_aw_1: int;starting_aw_2: int) returns();
+node Mapping2 (xa:address;xn:int;f:functions;starting_aw_Mapping2: int;starting_aw_1: int;starting_aw_2: int) returns();
 (*@contract
-    assume starting_aw_Mapping1 >= 0;
+    assume starting_aw_Mapping2 >= 0;
 assume starting_aw_1 >= 0;
 assume starting_aw_2 >= 0;
 *)
@@ -20,62 +20,70 @@ const starting_lastReverted : bool = false;
 const starting_block_num : int = 0;
 const starting_m_1 : int = 0;
 const starting_m_2 : int = 0;
-var aw_Mapping1: int;
+const starting_owner : address = a1;
+var aw_Mapping2: int;
 var aw_1: int;
 var aw_2: int;
 var lastReverted : bool;
 var lastReverted_0 : bool;
 var lastReverted_1 : bool;
 var lastReverted_2 : bool;
+var lastReverted_3 : bool;
 var block_num : int;
 var m_1 : int;
 var m_2 : int;
 var m_1_0 : int;
 var m_2_0 : int;
+var owner : address;
+var owner_0 : address;
 let
     if (true -> pre contract_not_constructed and f = constructor_func) then
 
-if (not(not(xa=aMapping1))) then lastReverted_0=true; else lastReverted_0=false; fi
+if (not(not(xa=aMapping2))) then lastReverted_0=true; else lastReverted_0=false; fi
 
+owner_0 = xa;
 lastReverted = lastReverted_0; if (lastReverted) then 
-	aw_Mapping1 = (starting_aw_Mapping1 -> pre aw_Mapping1);
+	aw_Mapping2 = (starting_aw_Mapping2 -> pre aw_Mapping2);
 	aw_1 = (starting_aw_1 -> pre aw_1);
 	aw_2 = (starting_aw_2 -> pre aw_2);
-	
+	owner = (starting_owner -> pre owner);
 	m_1 = (starting_m_1 -> pre m_1);
 	m_2 = (starting_m_2 -> pre m_2);
 	contract_not_constructed = true;
 	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
-	aw_Mapping1 = (starting_aw_Mapping1 -> pre aw_Mapping1);
+	aw_Mapping2 = (starting_aw_Mapping2 -> pre aw_Mapping2);
 	aw_1 = (starting_aw_1 -> pre aw_1);
 	aw_2 = (starting_aw_2 -> pre aw_2);
-	
+	owner = owner_0;
 	m_1 = (starting_m_1 -> pre m_1);
 	m_2 = (starting_m_2 -> pre m_2);
 	contract_not_constructed = false;
 	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
 fi
 elsif not(true -> pre contract_not_constructed) and f = foo_func then
-
- if (not(not(xa=aMapping1))) then lastReverted_0=true; else lastReverted_0=false; fi
- if (not(xn = 0)) then lastReverted_1=true; else lastReverted_1=false; fi
 	
-	m_1_0 = if (xa = a1) then 10 else (starting_m_1 -> pre m_1);
-	m_2_0 = if (xa = a2) then 10 else (starting_m_2 -> pre m_2);
+if (not(not(xa=aMapping2))) then lastReverted_0=true; else lastReverted_0=false; fi
 
-lastReverted = lastReverted_0 or lastReverted_1; if (lastReverted) then 
-	aw_Mapping1 = (starting_aw_Mapping1 -> pre aw_Mapping1);
+if (not(not(xa=a0))) then lastReverted_1=true; else lastReverted_1=false; fi
+
+if (not(xn = 0)) then lastReverted_2=true; else lastReverted_2=false; fi
+
+m_1_0 = if xa = a1 then 10 else (starting_m_1 -> pre m_1);
+m_2_0 = if xa = a2 then 10 else (starting_m_2 -> pre m_2);
+
+lastReverted = lastReverted_0 or lastReverted_1 or lastReverted_2; if (lastReverted) then 
+	aw_Mapping2 = (starting_aw_Mapping2 -> pre aw_Mapping2);
 	aw_1 = (starting_aw_1 -> pre aw_1);
 	aw_2 = (starting_aw_2 -> pre aw_2);
-	
+	owner = (starting_owner -> pre owner);
 	m_1 = (starting_m_1 -> pre m_1);
 	m_2 = (starting_m_2 -> pre m_2);
 	contract_not_constructed = (true -> pre contract_not_constructed);
 	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
-	aw_Mapping1 = (starting_aw_Mapping1 -> pre aw_Mapping1);
+	aw_Mapping2 = (starting_aw_Mapping2 -> pre aw_Mapping2);
 	aw_1 = (starting_aw_1 -> pre aw_1);
 	aw_2 = (starting_aw_2 -> pre aw_2);
-	
+	owner = (starting_owner -> pre owner);
 	m_1 = m_1_0;
 	m_2 = m_2_0;
 	contract_not_constructed = (true -> pre contract_not_constructed);
@@ -83,31 +91,29 @@ lastReverted = lastReverted_0 or lastReverted_1; if (lastReverted) then
 fi
 	elsif not(true -> pre contract_not_constructed) and f = faa_func then
 	
- if (not(not(xa=aMapping1))) then lastReverted_0=true; else lastReverted_0=false; fi
- if (not(xn = 0)) then lastReverted_1=true; else lastReverted_1=false; fi
-	
- if not(
-		(if (xa = a1) 
-			then (starting_m_1 -> pre m_1) 
-		else 	/* only 2 addresses */
-			(starting_m_2 -> pre m_2) 
-		)
-		> 10
-	) 
-	 then lastReverted_2=true; else lastReverted_2=false; fi
-lastReverted = lastReverted_0 or lastReverted_1 or lastReverted_2; if (lastReverted) then 
-	aw_Mapping1 = (starting_aw_Mapping1 -> pre aw_Mapping1);
+if (not(not(xa=aMapping2))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+if (not(not(xa=a0))) then lastReverted_1=true; else lastReverted_1=false; fi
+
+if (not(xn = 0)) then lastReverted_2=true; else lastReverted_2=false; fi
+
+if (not((if xa = a1 then (starting_m_1 -> pre m_1) > 10
+	else (starting_m_2 -> pre m_2) > 10
+	))) then lastReverted_3=true; else lastReverted_3=false; fi
+
+lastReverted = lastReverted_0 or lastReverted_1 or lastReverted_2 or lastReverted_3; if (lastReverted) then 
+	aw_Mapping2 = (starting_aw_Mapping2 -> pre aw_Mapping2);
 	aw_1 = (starting_aw_1 -> pre aw_1);
 	aw_2 = (starting_aw_2 -> pre aw_2);
-	
+	owner = (starting_owner -> pre owner);
 	m_1 = (starting_m_1 -> pre m_1);
 	m_2 = (starting_m_2 -> pre m_2);
 	contract_not_constructed = (true -> pre contract_not_constructed);
 	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
-	aw_Mapping1 = (starting_aw_Mapping1 -> pre aw_Mapping1);
+	aw_Mapping2 = (starting_aw_Mapping2 -> pre aw_Mapping2);
 	aw_1 = (starting_aw_1 -> pre aw_1);
 	aw_2 = (starting_aw_2 -> pre aw_2);
-	
+	owner = (starting_owner -> pre owner);
 	m_1 = (starting_m_1 -> pre m_1);
 	m_2 = (starting_m_2 -> pre m_2);
 	contract_not_constructed = (true -> pre contract_not_constructed);
@@ -115,59 +121,240 @@ lastReverted = lastReverted_0 or lastReverted_1 or lastReverted_2; if (lastRever
 fi
 		elsif not(true -> pre contract_not_constructed) and f = fee_func then
 	
- if (not(not(xa=aMapping1))) then lastReverted_0=true; else lastReverted_0=false; fi
- if (not(xn = 0)) then lastReverted_1=true; else lastReverted_1=false; fi
-	
-	m_1_0 = if (xa = a1) 
-		then 
-			(
-				if xa = a1 
-					then (starting_m_1 -> pre m_1) 
-				else  /* only 2 addresses */
-					(starting_m_2 -> pre m_2) 
-			) 
-			+ 1
-		else (starting_m_1 -> pre m_1);
+if (not(not(xa=aMapping2))) then lastReverted_0=true; else lastReverted_0=false; fi
 
-	m_2_0 = if (xa = a2) 
-		then 
-			(
-				if xa = a1 
-					then (starting_m_1 -> pre m_1) 
-				else  /* only 2 addresses */
-					(starting_m_2 -> pre m_2) 
-			) 
-			+ 1
-		else (starting_m_2 -> pre m_2);
+if (not(not(xa=a0))) then lastReverted_1=true; else lastReverted_1=false; fi
 
-lastReverted = lastReverted_0 or lastReverted_1; if (lastReverted) then 
-	aw_Mapping1 = (starting_aw_Mapping1 -> pre aw_Mapping1);
+if (not(xn = 0)) then lastReverted_2=true; else lastReverted_2=false; fi
+
+m_1_0 = if xa = a1 then ((if xa = a1 then (starting_m_1 -> pre m_1) + 1
+	else (starting_m_2 -> pre m_2) + 1
+	)) else (starting_m_1 -> pre m_1);
+m_2_0 = if xa = a2 then ((if xa = a1 then (starting_m_1 -> pre m_1) + 1
+	else (starting_m_2 -> pre m_2) + 1
+	)) else (starting_m_2 -> pre m_2);
+
+lastReverted = lastReverted_0 or lastReverted_1 or lastReverted_2; if (lastReverted) then 
+	aw_Mapping2 = (starting_aw_Mapping2 -> pre aw_Mapping2);
 	aw_1 = (starting_aw_1 -> pre aw_1);
 	aw_2 = (starting_aw_2 -> pre aw_2);
-	
+	owner = (starting_owner -> pre owner);
 	m_1 = (starting_m_1 -> pre m_1);
 	m_2 = (starting_m_2 -> pre m_2);
 	contract_not_constructed = (true -> pre contract_not_constructed);
 	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
-	aw_Mapping1 = (starting_aw_Mapping1 -> pre aw_Mapping1);
+	aw_Mapping2 = (starting_aw_Mapping2 -> pre aw_Mapping2);
 	aw_1 = (starting_aw_1 -> pre aw_1);
 	aw_2 = (starting_aw_2 -> pre aw_2);
-	
+	owner = (starting_owner -> pre owner);
 	m_1 = m_1_0;
 	m_2 = m_2_0;
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
+fi
+			elsif not(true -> pre contract_not_constructed) and f = fii_func then
+	
+if (xa = a1) then 
+ if (not(not(xa=aMapping2))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+if (not(not(xa=a0))) then lastReverted_1=true; else lastReverted_1=false; fi
+
+if (not(xn = 0)) then lastReverted_2=true; else lastReverted_2=false; fi
+
+if (not(
+	(if (starting_owner -> pre owner) = a1 then (starting_m_1 -> pre m_1) else (starting_m_2 -> pre m_2) )
+	>
+	(if xa = a1 then (starting_m_1 -> pre m_1) else (starting_m_2 -> pre m_2) )
+	)) then lastReverted_3=true; else lastReverted_3=false; fi
+ 
+ else 
+ if (not(not(xa=aMapping2))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+if (not(not(xa=a0))) then lastReverted_1=true; else lastReverted_1=false; fi
+
+if (not(xn = 0)) then lastReverted_2=true; else lastReverted_2=false; fi
+
+if (not((if (starting_owner -> pre owner) = a1 then (starting_m_1 -> pre m_1) > (starting_m_2 -> pre m_2)
+	else (starting_m_2 -> pre m_2) > (starting_m_2 -> pre m_2)
+	))) then lastReverted_3=true; else lastReverted_3=false; fi
+ fi
+lastReverted = lastReverted_0 or lastReverted_1 or lastReverted_2 or lastReverted_3; if (lastReverted) then 
+	aw_Mapping2 = (starting_aw_Mapping2 -> pre aw_Mapping2);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	owner = (starting_owner -> pre owner);
+	m_1 = (starting_m_1 -> pre m_1);
+	m_2 = (starting_m_2 -> pre m_2);
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
+	aw_Mapping2 = (starting_aw_Mapping2 -> pre aw_Mapping2);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	owner = (starting_owner -> pre owner);
+	m_1 = (starting_m_1 -> pre m_1);
+	m_2 = (starting_m_2 -> pre m_2);
 	contract_not_constructed = (true -> pre contract_not_constructed);
 	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
 fi
 else
 	contract_not_constructed = (true -> pre contract_not_constructed);
 	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
-	aw_Mapping1 = (starting_aw_Mapping1 -> pre aw_Mapping1);
+	aw_Mapping2 = (starting_aw_Mapping2 -> pre aw_Mapping2);
 	aw_1 = (starting_aw_1 -> pre aw_1);
 	aw_2 = (starting_aw_2 -> pre aw_2);
 	lastReverted = (starting_lastReverted -> pre lastReverted);
+	owner = (starting_owner -> pre owner);
 	m_1 = (starting_m_1 -> pre m_1);
 	m_2 = (starting_m_2 -> pre m_2);
 fi
-    
+    --%PROPERTY "P1_true" 
+(
+contract_not_constructed or 
+(forall(a_tx:address;)((a_tx = aMapping2) or (a_tx = a0) or (exists(h_tx:functions;)
+    exists (
+        xa_tx1: address; f_tx1: functions;  xn_tx1: int;  /* Transition vars */
+        aw_Mapping2_nx1: int; aw_1_nx1: int; aw_2_nx1: int; lastReverted_nx1 : bool; lastReverted_0_nx1 : bool; lastReverted_1_nx1 : bool; lastReverted_2_nx1 : bool; lastReverted_3_nx1 : bool; lastReverted_4_nx1 : bool; lastReverted_5_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; m_1_nx1 : int; m_2_nx1 : int; m_1_nx1_0 : int; m_2_nx1_0 : int; owner_nx1 : address; owner_0_nx1 : address; owner_1_nx1 : address; /* Next state vars */
+    )
+    (   /* condition */
+        (
+            (if a_tx = a1 then m_1_nx1 = 10
+	else m_2_nx1 = 10
+	)
+        )
+        and
+        (
+            ((xa_tx1 = a_tx and f_tx1 = h_tx and true and xn_tx1 = 0) and 
+(if f_tx1 = foo_func then
+(
+(if (not(not(xa_tx1=aMapping2))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(not(xa_tx1=a0))) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and m_1_nx1_0 = (if xa_tx1 = a1 then 10 else m_1)
+ and m_2_nx1_0 = (if xa_tx1 = a2 then 10 else m_2)
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1) and if (lastReverted_nx1) then 
+
+	aw_Mapping2_nx1 = aw_Mapping2 and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	owner_nx1 = owner and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2 and block_num = block_num else  
+	aw_Mapping2_nx1 = aw_Mapping2 and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	owner_nx1 = owner and 
+	m_1_nx1 = m_1_nx1_0
+	 and m_2_nx1 = m_2_nx1_0 and block_num = block_num
+
+)	else if f_tx1 = faa_func then
+(
+((if (not(not(xa_tx1=aMapping2))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(not(xa_tx1=a0))) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and (if (not(
+	
+	(if xa_tx1 = a1 then m_1 else m_2) > 10
+ 
+ )) then lastReverted_3_nx1=true else lastReverted_3_nx1=false)
+) 
+
+
+
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1 or lastReverted_3_nx1) and if (lastReverted_nx1) then 
+
+	aw_Mapping2_nx1 = aw_Mapping2 and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	owner_nx1 = owner and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2 and block_num = block_num else  
+	aw_Mapping2_nx1 = aw_Mapping2 and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	owner_nx1 = owner and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2 and block_num = block_num
+
+)		else if f_tx1 = fee_func then
+(
+ ((if (not(not(xa_tx1=aMapping2))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(not(xa_tx1=a0))) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and m_1_nx1_0 = 
+ 	(if xa_tx1 = a1 
+	then (
+			(if xa_tx1 = a1 then m_1
+			else m_2
+			) 
+			+ 1 
+		)
+ 	else m_1)
+and m_2_nx1_0 = 
+ 	(if xa_tx1 = a2 
+	then (
+			(if xa_tx1 = a1 then m_1
+			else m_2
+			) 
+			+ 1 
+		)
+ 	else m_2)
+ )
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1) and if (lastReverted_nx1) then 
+
+	aw_Mapping2_nx1 = aw_Mapping2 and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	owner_nx1 = owner and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2 and block_num = block_num else  
+	aw_Mapping2_nx1 = aw_Mapping2 and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	owner_nx1 = owner and 
+	m_1_nx1 = m_1_nx1_0
+	 and m_2_nx1 = m_2_nx1_0 and block_num = block_num
+
+)			else if f_tx1 = fii_func then
+(
+ ((if (not(not(xa_tx1=aMapping2))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(not(xa_tx1=a0))) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and (if (not(
+
+	(if owner = a1 then  m_1 else m_2 )
+	>
+	(if xa_tx1 = a1 then  m_1 else m_2 )
+
+	)) then lastReverted_3_nx1=true else lastReverted_3_nx1=false)
+) 
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1 or lastReverted_3_nx1) and if (lastReverted_nx1) then 
+
+	aw_Mapping2_nx1 = aw_Mapping2 and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	owner_nx1 = owner and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2 and block_num = block_num else  
+	aw_Mapping2_nx1 = aw_Mapping2 and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	owner_nx1 = owner and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2 and block_num = block_num
+
+)else block_num_nx1 = block_num and 
+	aw_Mapping2_nx1 = aw_Mapping2 and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	lastReverted_nx1 = lastReverted
+	 and block_num_nx1 = block_num
+	 and owner_nx1 = owner and 
+	m_1_nx1 = m_1
+	 and m_2_nx1 = m_2
+))
+        )
+    ))))
+);
+
 tel
         
