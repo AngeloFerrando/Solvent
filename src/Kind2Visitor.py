@@ -878,7 +878,10 @@ tel
             res += '(' if self.__visit_properties else ''
             res += f'if {index}{tx_tmp} = a{ag} then '
             res += right + ' else '
-            res += f'{left}_{ag}_{self.__globals_index[left]-1}' if self.__globals_index[left] > 0 else f'(starting_{left}_{ag} -> pre {left}_{ag})'
+            if self.__visit_properties:
+                res += f'{left}_{ag}'
+            else:
+                res += f'{left}_{ag}_{self.__globals_index[left]-1}' if self.__globals_index[left] > 0 else f'(starting_{left}_{ag} -> pre {left}_{ag})'
             res += ';\n' if not self.__visit_properties else ')'
             res += ' and ' if self.__visit_properties and ag != self.__A else ''
 
