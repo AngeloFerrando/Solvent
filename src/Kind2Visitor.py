@@ -532,7 +532,7 @@ tel
                 new_body = '('
             else:
                 new_body = ''
-            new_body += 'if (xa = a1) then \n ' + ('(' if self.__visit_properties else '') + body.format(ag='xa').replace('_xa_tx', '_1_nx').replace('_xa', '_1') + (')' if self.__visit_properties else '')
+            new_body += 'if (xa_tx = a1) then \n ' + ('(' if self.__visit_properties else '') + body.format(ag='xa').replace('_xa_tx', '_1_nx').replace('_xa', '_1') + (')' if self.__visit_properties else '')
             for ag in range(2, self.__A+1):
                 if not self.__visit_properties:
                     if ag == self.__A:
@@ -874,11 +874,13 @@ tel
         tx_tmp = '_tx' if tx == '_tx' and not left.endswith('nx') and not left in self.__globals_index else ''
         res = ''
         for ag in range(1, self.__A+1):
-            res += f'{left}_{ag}_{self.__globals_index[left]}' + ('_nx' if self.__visit_properties else '') + ' = '
+            res += f'{left}_{ag}' + ('_nx' if self.__visit_properties else '') + f'_{self.__globals_index[left]}' + ' = '
+            res += '(' if self.__visit_properties else ''
             res += f'if {index}{tx_tmp} = a{ag} then '
             res += right + ' else '
             res += f'{left}_{ag}_{self.__globals_index[left]-1}' if self.__globals_index[left] > 0 else f'(starting_{left}_{ag} -> pre {left}_{ag})'
-            res += ';\n' if not self.__visit_properties else ''
+            res += ';\n' if not self.__visit_properties else ')'
+            res += ' and ' if self.__visit_properties and ag != self.__A else ''
 
         i = self.__globals_index[left]
         self.__globals_index[left] = i+1
@@ -1084,9 +1086,9 @@ tel
     def visitGreaterEqExpr(self, ctx:TxScriptParser.GreaterEqExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        nested_res = self.handle_nested_prop(left, right, '>=')
-        if nested_res is not None:
-            return nested_res
+        # nested_res = self.handle_nested_prop(left, right, '>=')
+        # if nested_res is not None:
+        #     return nested_res
         return left + '>=' + right
         # else:
         #     for el in self.__prop_nested_i:
@@ -1100,9 +1102,9 @@ tel
     def visitLessExpr(self, ctx:TxScriptParser.LessExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        nested_res = self.handle_nested_prop(left, right, '<')
-        if nested_res is not None:
-            return nested_res
+        # nested_res = self.handle_nested_prop(left, right, '<')
+        # if nested_res is not None:
+        #     return nested_res
         return left + '<' + right
         # else:
         #     for el in self.__prop_nested_i:
@@ -1115,9 +1117,9 @@ tel
     def visitNeqExpr(self, ctx:TxScriptParser.NeqExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        nested_res = self.handle_nested_prop(left, right, '=')
-        if nested_res is not None:
-            return 'not(' + nested_res + ')'
+        # nested_res = self.handle_nested_prop(left, right, '=')
+        # if nested_res is not None:
+        #     return 'not(' + nested_res + ')'
         return 'not(' + left + '=' + right + ')'
 
 
@@ -1160,9 +1162,9 @@ tel
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
 
-        nested_res = self.handle_nested_prop(left, right, '>')
-        if nested_res is not None:
-            return nested_res
+        # nested_res = self.handle_nested_prop(left, right, '>')
+        # if nested_res is not None:
+        #     return nested_res
         return left + '>' + right
         # else:
         #     for el in self.__prop_nested_i:
@@ -1181,9 +1183,9 @@ tel
         if right == 'tx_sender':
             self.__tx_sender = left
             return 'true'
-        nested_res = self.handle_nested_prop(left, right, '=')
-        if nested_res is not None:
-            return nested_res
+        # nested_res = self.handle_nested_prop(left, right, '=')
+        # if nested_res is not None:
+        #     return nested_res
         return f'{left} = {right}'
 
 
@@ -1196,9 +1198,9 @@ tel
     def visitSumSubExpr(self, ctx:TxScriptParser.SumSubExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        nested_res = self.handle_nested_prop(left, right, ctx.op.text)
-        if nested_res is not None:
-            return '(' + nested_res + ')'
+        # nested_res = self.handle_nested_prop(left, right, ctx.op.text)
+        # if nested_res is not None:
+        #     return '(' + nested_res + ')'
         return '(' + left + ctx.op.text + right + ')'
         # if not self.__visit_properties:
         #     post = 'Now'
@@ -1220,9 +1222,9 @@ tel
     def visitLessEqExpr(self, ctx:TxScriptParser.LessEqExprContext):
         left = self.visit(ctx.left)
         right = self.visit(ctx.right)
-        nested_res = self.handle_nested_prop(left, right, '<=')
-        if nested_res is not None:
-            return nested_res
+        # nested_res = self.handle_nested_prop(left, right, '<=')
+        # if nested_res is not None:
+        #     return nested_res
         return left + '<=' + right
         # else:
         #     for el in self.__prop_nested_i:
@@ -1428,16 +1430,18 @@ forall (xa_tx: int;)
                     return self.__t_curr_w #f'aw_{self.__contract_name}'
                 elif index == 'xa':
                     self.__prop_nested_i.add(index)
-                    return f'aw_{index}'
+                    return self.handle_nested_prop(f'aw_{index}', '', '')
                 else:
                     self.__prop_nested_i.add(index)
-                    return f'aw_{index}'
+                    return self.handle_nested_prop(f'aw_{index}', '', '')
             if ctx.mapVar.text in self.__globals_index:
                 self.__prop_nested_i.add(index)
                 if self.__globals_index[ctx.mapVar.text] + self.__globals_modifier < 0:
-                    return f'(starting_{ctx.mapVar.text}_{index} -> pre {ctx.mapVar.text}_{index})'
+                    aux = f'(starting_{ctx.mapVar.text}_{index} -> pre {ctx.mapVar.text}_{index})'
+                    return self.handle_nested_prop(aux, '', '')
                 else:
-                    return f'{ctx.mapVar.text}_{index}_' + str(self.__globals_index[ctx.mapVar.text])
+                    aux = f'{ctx.mapVar.text}_{index}_' + str(self.__globals_index[ctx.mapVar.text])
+                    return self.handle_nested_prop(aux, '', '')
             return f'{ctx.mapVar.text}_{index}' #ctx.mapVar.text + '[' + index + ']'
         else:
             if self.__id <= 1:
@@ -1452,22 +1456,27 @@ forall (xa_tx: int;)
                     return f'aw_{self.__contract_name}' + i #f'aw{i}[{ag}[
                 elif ag == 'xa':
                     self.__prop_nested_i.add(ag)#(ag+'[i]')
-                    return f'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
+                    aux = f'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
+                    return self.handle_nested_prop(aux, '', '')
                 else:
                     self.__prop_nested_i.add(ag)#(ag+'[i]')
-                    return f'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
+                    aux = f'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
+                    return self.handle_nested_prop(aux, '', '')
             if name.replace('st.','') in self.__args_map:
                 return self.__args_map[ctx.v.text][0] + i
             if name.replace('st.','') in self.__globals_index:  
                 ag = index.replace('_q', '')
                 if ag == 'xa':
                     # self.__prop_nested_i.add(ag)#(ag+'[i]')
-                    return name.replace('st.','') + f'_{ag}' + i
+                    self.__prop_nested_i.add(ag)#(ag+'[i]')
+                    aux = name.replace('st.','') + f'_{ag}' + i
+                    return self.handle_nested_prop(aux, '', '')
                 else:
                     # if '[i]' not in ag:
                     #     ag = ag+'[i]'
                     self.__prop_nested_i.add(ag)#(ag+'[i]')
-                    return name.replace('st.','') + f'_{ag}' + i
+                    aux = name.replace('st.','') + f'_{ag}' + i
+                    return self.handle_nested_prop(aux, '', '')
             return name.replace('st.', '') + ('_tx' if '_tx' not in name else '')
 
 
@@ -1507,19 +1516,19 @@ forall (xa_tx: int;)
             if 'balance' in name and '[' in name and ']' in name:
                 ag = name[name.index('[')+1:name.index(']')]
                 if ag == 'xa': # aw_q0[xa_q] == (aw[i][xa_q]+w[i])    aw_1_nx = aw_1 + w
-                    self.__prop_nested_i.add(ag)#(ag+'[i]')
-                    return f'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
+                    aux = self.__prop_nested_i.add(ag)#(ag+'[i]')
+                    return self.handle_nested_prop(f'aw_{ag}' + i, '', '') #f'aw{i}[{ag}[i]]'
                 else:
                     self.__prop_nested_i.add(ag+'[i]')#(ag+'[i]')
-                    return 'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
+                    return self.handle_nested_prop(f'aw_{ag}' + i, '', '') #f'aw{i}[{ag}[i]]'
             if '.balance' in name and name != 'st.balance':
                 ag = name[:name.index('.balance')].replace('st.', '')
                 if ag == 'xa':
                     self.__prop_nested_i.add(ag)#(ag+'[i]')
-                    return f'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
+                    return self.handle_nested_prop(f'aw_{ag}' + i, '', '') #f'aw{i}[{ag}[i]]'
                 else:
                     self.__prop_nested_i.add(ag+'[i]')#(ag+'[i]')
-                    return f'aw_{ag}' + i #f'aw{i}[{ag}[i]]'
+                    return self.handle_nested_prop(f'aw_{ag}' + i, '', '') #f'aw{i}[{ag}[i]]'
             if 'balance' in name:
                 # self.__prop_nested_i.add(self.__contract_name)
                 return f'aw_{self.__contract_name}' + i
@@ -1580,7 +1589,7 @@ forall (xa_tx: int;)
             self.__vars[var.child.text] = ty
             if ty == 'address': addr = var.child.text
         if addr:
-            return 'forall(' + ''.join(vs) + ')' + '(' + f'({addr}_tx = a{self.__contract_name}) or (' + self.visit(ctx.child) + '))'
+            return 'forall(' + ''.join(vs) + ')' + '(' + f'({addr}_tx = a{self.__contract_name}) or ({addr}_tx = a0) or (' + self.visit(ctx.child) + '))'
         else:
             return 'forall(' + ''.join(vs) + ')' + self.visit(ctx.child)
 
