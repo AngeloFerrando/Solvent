@@ -167,7 +167,7 @@ class Kind2Visitor(TxScriptVisitor):
             #     aux += 1
             # functions_call += 'And(xa1 >= 1, xa1 <= A, '
             if not self.__visit_properties:
-                body = 'if (true -> pre contract_not_constructed and f = constructor_func) then\n' + self.__functions['constructor'] + '\n' 
+                body = 'if ((true -> pre contract_not_constructed) and f = constructor_func) then\n' + self.__functions['constructor'] + '\n' 
             for p in keys[:-1]:
                 if self.__visit_properties and p == keys[0]:
                     cmd = 'if'
