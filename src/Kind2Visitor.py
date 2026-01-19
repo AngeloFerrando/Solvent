@@ -862,11 +862,12 @@ tel
     def visitAssignMapCmd(self, ctx:TxScriptParser.AssignMapCmdContext):
         left = ctx.var.text
         index = self.visit(ctx.index)
-        self.__globals_modifier -= 1
-        self.__id -= 1
-        right = self.visit(ctx.child)#.replace(str(index), 'j')
-        self.__id += 1
-        self.__globals_modifier += 1
+        # self.__globals_modifier -= 1
+        backup = self.__id
+        self.__id = 0
+        right = self.visit(ctx.child)
+        self.__id = backup
+        # self.__globals_modifier += 1
 
         # if left in self.__globals_index:
         #     left = f'{left}_{self.__globals_index[left]}'
@@ -1453,6 +1454,8 @@ forall (xa_tx: int;)
             else:
                 i = '_nx'
                 name = ctx.mapVar.text.replace('app_tx_', '')
+                if name not in ['lastReverted', 'block.number', 'msg.sender', 'msg.value', 'this'] and self.__globals_index.get(name, 1) == 0:
+                    i = ''
             if 'balance' in name:
                 ag = index.replace('_q', '')
                 if ag == 'a' + self.__contract_name:
@@ -1816,6 +1819,8 @@ forall (xa_tx: int;)
         for i in range(n_olds, 0, -1):
             aux = 'old' * i + 'nx'
             condition = condition.replace(aux, 'nx' + str(id - i))
+            aux = 'old' * i + 'tx'
+            condition = condition.replace(aux, 'tx' + str(id - i))
         backup_globals_index = copy.deepcopy(self.__globals_index)
         #self.__id += 1
         self.visit(self.__ctx)
@@ -1893,7 +1898,7 @@ forall (xa_tx: int;)
         )
     )'''
         print(pi)
-        return pi.replace('_nx0', '')
+        return pi.replace('_nx0', '').replace('_tx0', '_tx')
         # if self.visit(ctx.expr) != 'Address':
         #     raise TypeError(ctx, f'{ctx.expr} needs to have type address')
         # if ctx.fname.text+'_func' not in self.__function_args_types:
