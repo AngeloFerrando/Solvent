@@ -1,14 +1,14 @@
 // Adapted from: https://github.com/fsainas/contracts-verification-benchmark/tree/main/contracts/vault
 
 contract Vault {
-    address owner
-    address recovery
-    int wait_time
+    address owner;
+    address recovery;
+    int wait_time;
 
-    address receiver
-    int request_time
-    int amount
-    int state
+    address receiver;
+    int request_time;
+    int amount;
+    int state;
     // 0 = IDLE
     // 1 = REQ
    
@@ -49,6 +49,21 @@ contract Vault {
     }
 }
 
+
+rule Fin_owner_liquid_true {
+    (state == 1 && block.number >= request_time + wait_time
+    ) ->
+    (exists f: method .
+    exists args: calldataargs .
+    exists msgvalue : int .
+    (<< owner : Vault . f(args) $ msgvalue >>		
+              (balance[receiver]>= old(balance[receiver]) + amount)
+    ))
+}
+
+
+
+/*
 // liquid after the deadline has passed
 property fin_owner_liquid {
     Forall xa
@@ -86,3 +101,4 @@ property wd_fin_owner_notliquid {
         ]
       ]
 }
+*/
