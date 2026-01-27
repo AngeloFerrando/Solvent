@@ -87,7 +87,7 @@ class Kind2Visitor(TxScriptVisitor):
         #     self.__proc_args['coinbase'] = None
         
         functions = ','.join([f'{p}' for p in self.__proc if p != 'constructor'])
-        contract_args = ['{a}:{t}'.format(a=self.__args_map[a][0], t=self.__args_map[a][1]).replace('address', 'int') for a in self.__args_map if self.__args_map[a][1] != 'hash']
+        contract_args = ['{a}:{t}'.format(a=self.__args_map[a][0], t=self.__args_map[a][1]) for a in self.__args_map if self.__args_map[a][1] != 'hash']
         contract_args = ';'.join(
             ['xa:address', 'xn:int', 'f:functions'] + 
             contract_args + 
@@ -559,7 +559,7 @@ tel
                 #     for i in range(1, self.__A + 1):
                 #         self.__initial_const_globals[f'{g.text}_{i}'] = 0
                 elif ty == 'Address':
-                    self.__initial_const_globals[g.text] = 'a1'
+                    self.__initial_const_globals[g.text] = 'a0'
                 else:
                     self.__initial_const_globals[g.text] = 0
             # for (g, ty) in self.__globals:
@@ -1295,7 +1295,7 @@ tel
         user_is_legit = ' or '.join([f'xa_tx = {i}' for i in range(1, self.__A+1)])
         ntrans = int(ctx.nTrans.text)
         transition_vars = ''
-        transition_vars += 'f_tx: functions; ' + ' '.join(['{a}_tx: {t};'.format(a=self.__args_map[a][0], t=self.__args_map[a][1]).replace('address', 'int') for a in self.__args_map if self.__args_map[a][1] != 'hash'])
+        transition_vars += 'f_tx: functions; ' + ' '.join(['{a}_tx: {t};'.format(a=self.__args_map[a][0], t=self.__args_map[a][1]) for a in self.__args_map if self.__args_map[a][1] != 'hash'])
         transition_vars += ' xn_tx: int;'
         for i in range(2, ntrans+1):
             transition_vars += f'f_tx{i}: functions; ' + ' '.join(['{a}_tx{i}: {t};'.format(i=i, a=self.__args_map[a][0], t=self.__args_map[a][1]) for a in self.__args_map if self.__args_map[a][1] != 'hash'])
@@ -1454,8 +1454,8 @@ forall (xa_tx: int;)
             else:
                 i = '_nx'
                 name = ctx.mapVar.text.replace('app_tx_', '')
-                if name not in ['lastReverted', 'block.number', 'msg.sender', 'msg.value', 'this'] and self.__globals_index.get(name, 1) == 0:
-                    i = ''
+                # if name not in ['lastReverted', 'block.number', 'msg.sender', 'msg.value', 'this'] and self.__globals_index.get(name, 1) == 0:
+                #     i = ''
             if 'balance' in name:
                 ag = index.replace('_q', '')
                 if ag == 'a' + self.__contract_name:
@@ -1779,7 +1779,7 @@ forall (xa_tx: int;)
         for k in self.__globals_index:
             self.__globals_index[k] = 0
         transition_vars = ''
-        transition_vars += f'xa_tx{id}: address; f_tx{id}: functions; ' + ' '.join(['{a}_tx{id}: {t};'.format(id=id, a=self.__args_map[a][0], t=self.__args_map[a][1]).replace('address', 'int') for a in self.__args_map if self.__args_map[a][1] != 'hash'])
+        transition_vars += f'xa_tx{id}: address; f_tx{id}: functions; ' + ' '.join(['{a}_tx{id}: {t};'.format(id=id, a=self.__args_map[a][0], t=self.__args_map[a][1]) for a in self.__args_map if self.__args_map[a][1] != 'hash'])
         transition_vars += f' xn_tx{id}: int;'
         contract_globals = []
         contract_globals += [f'aw_{self.__contract_name}_nx{id}: int;']
@@ -1862,7 +1862,7 @@ forall (xa_tx: int;)
                 contract += '\t'*n_tabs + cmd + f' f_tx{id} = ' + p + ' then\n'
                 n_tabs += 1
                 # contract += f'\t{self.__functions_prop[p]}\n'.replace('_nx', f'_nx{id}').replace('_tx', f'_tx{id}')
-                contract += '('+self.bump_nx_all(self.__functions_prop[p], id, self.__vars).replace('block_num_nx1', 'block_num') + '\n'+')'
+                contract += '('+self.bump_nx_all(self.__functions_prop[p], id, self.__vars) + '\n'+')' # .replace('block_num_nx1', 'block_num')
             n_tabs += 1
             contract += 'else'
             same = f' block_num_nx{id} = block_num' #= any '+'{block_num_tmp: int | block_num_tmp > block_num}'   
