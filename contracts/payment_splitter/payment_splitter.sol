@@ -1,13 +1,13 @@
 contract PaymentSplitter {
-    address immutable owner
+    address owner;
 
-    mapping (address => int) shares     // number of shares of each user
-    mapping (address => int) released   // amount of ETH released to each user
+    mapping (address => int) shares;     // number of shares of each user
+    mapping (address => int) released;   // amount of ETH released to each user
 
-    int totalShares     // total number of shares
-    int totalReleased   // total amount of ETH sento to users
-    int totalReceived   // total amount of ETH received
-    int payment
+    uint totalShares;     // total number of shares
+    uint totalReleased;   // total amount of ETH sento to users
+    uint totalReceived;   // total amount of ETH received
+    uint payment;
     int state // 0 = shares can be added, 1 = shares are finalized and funds can be released
 
     constructor() {
@@ -39,14 +39,43 @@ contract PaymentSplitter {
     
         totalReceived = balance + totalReleased;
         payment = ((totalReceived * shares[a]) / totalShares) - released[a];
-        if (payment > 0) {
-            totalReleased = totalReleased + payment;
-            released[a] = released[a] + payment;
-            a.transfer(payment)
-        }
+        require(payment >= 0);
+        totalReleased = totalReleased + payment;
+        released[a] = released[a] + payment;
+        a.transfer(payment)
+        // if (payment > 0) {
+        //     totalReleased = totalReleased + payment;
+        //     released[a] = released[a] + payment;
+        //     a.transfer(payment)
+        // }
     }
 }
 
+// rule Anyone_wd_ge_liquid_True {
+//     forall addr: address .
+//     ((((balance + totalReleased) * shares[addr]) > (released[addr] * totalShares)) && state==1) ->
+//     (exists f: method .
+//     exists args: calldataargs .
+//     exists msgvalue : int .
+//     (<< addr : PaymentSplitter . f(args) $ msgvalue >>		
+//               (balance[addr] > old(balance[addr]))
+//     ))
+// }
+
+
+
+rule Anyone_wd_ge_liquid_False {
+    forall addr: address .
+    ((((balance + totalReleased) * shares[addr]) > (released[addr] * totalShares)) && state==1) ->
+    (exists f: method .
+    exists args: calldataargs .
+    exists msgvalue : int .
+    (<< addr : PaymentSplitter . f(args) $ msgvalue >>		
+              (balance[addr] > old(balance[addr]) + 3)
+    ))
+}
+
+/*
 // anyone can withdraw the corresponding releasable funds after the finalization of shares
 property anyone_wd_ge_liquid {
     Forall xa
@@ -87,3 +116,4 @@ property anyone_wd_nonliquid {
       ]
     ]
 }
+*/
