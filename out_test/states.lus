@@ -1,0 +1,266 @@
+
+type functions = enum {constructor_func, withdraw_func,finalize_func };
+type address = enum { aVault, a0, a1, a2 };
+function divv (n1: int; n2: int) returns (r: int);
+let
+    r = n1/n2;
+tel
+function mult (n1: int; n2: int) returns (r: int);
+let
+r = n1*n2;
+tel
+node Vault (xa:address;xn:int;f:functions;starting_aw_Vault: int;starting_aw_1: int;starting_aw_2: int) returns();
+(*@contract
+    assume starting_aw_Vault >= 0;
+assume starting_aw_1 >= 0;
+assume starting_aw_2 >= 0;
+*)
+var contract_not_constructed: bool;
+const starting_lastReverted : bool = false;
+const starting_block_num : int = 0;
+const starting_owner : address = a0;
+const starting_state : int = 0;
+var aw_Vault: int;
+var aw_1: int;
+var aw_2: int;
+var lastReverted : bool;
+var lastReverted_0 : bool;
+var lastReverted_1 : bool;
+var lastReverted_2 : bool;
+var lastReverted_3 : bool;
+var block_num : int;
+var owner : address;
+var owner_0 : address;
+var state : int;
+var state_0 : int;
+let
+    if ((true -> pre contract_not_constructed) and f = constructor_func) then
+
+if (not(not(xa=aVault))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+owner_0 = xa;
+state_0 = 0;
+lastReverted = lastReverted_0; if (lastReverted) then 
+	aw_Vault = (starting_aw_Vault -> pre aw_Vault);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	owner = (starting_owner -> pre owner);
+	state = (starting_state -> pre state);
+	
+	contract_not_constructed = true;
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
+	aw_Vault = (starting_aw_Vault -> pre aw_Vault);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	owner = owner_0;
+	state = state_0;
+	
+	contract_not_constructed = false;
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
+fi
+elsif not(true -> pre contract_not_constructed) and f = withdraw_func then
+	
+if (not(not(xa=aVault))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+if (not(not(xa=a0))) then lastReverted_1=true; else lastReverted_1=false; fi
+
+if (not(xn = 0)) then lastReverted_2=true; else lastReverted_2=false; fi
+
+state_0 = 1;
+lastReverted = lastReverted_0 or lastReverted_1 or lastReverted_2; if (lastReverted) then 
+	aw_Vault = (starting_aw_Vault -> pre aw_Vault);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	owner = (starting_owner -> pre owner);
+	state = (starting_state -> pre state);
+	
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
+	aw_Vault = (starting_aw_Vault -> pre aw_Vault);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	owner = (starting_owner -> pre owner);
+	state = state_0;
+	
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
+fi
+	elsif not(true -> pre contract_not_constructed) and f = finalize_func then
+	
+if (not(not(xa=aVault))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+if (not(not(xa=a0))) then lastReverted_1=true; else lastReverted_1=false; fi
+
+if (not(xn = 0)) then lastReverted_2=true; else lastReverted_2=false; fi
+
+if (not((starting_state -> pre state) = 1)) then lastReverted_3=true; else lastReverted_3=false; fi
+
+state_0 = 0;
+lastReverted = lastReverted_0 or lastReverted_1 or lastReverted_2 or lastReverted_3; if (lastReverted) then 
+	aw_Vault = (starting_aw_Vault -> pre aw_Vault);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	owner = (starting_owner -> pre owner);
+	state = (starting_state -> pre state);
+	
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
+	aw_Vault = (starting_aw_Vault -> pre aw_Vault);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	owner = (starting_owner -> pre owner);
+	state = state_0;
+	
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
+fi
+else
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
+	aw_Vault = (starting_aw_Vault -> pre aw_Vault);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	lastReverted = (starting_lastReverted -> pre lastReverted);
+	owner = (starting_owner -> pre owner);
+	state = (starting_state -> pre state);
+	
+fi
+    --%PROPERTY "Dummy_true" 
+(
+contract_not_constructed or 
+((
+    exists (
+        xa_tx1: address; f_tx1: functions;  xn_tx1: int;  /* Transition vars */
+        aw_Vault_nx1: int; aw_1_nx1: int; aw_2_nx1: int; lastReverted_nx1 : bool; lastReverted_0_nx1 : bool; lastReverted_1_nx1 : bool; lastReverted_2_nx1 : bool; lastReverted_3_nx1 : bool; lastReverted_4_nx1 : bool; lastReverted_5_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; owner_nx1 : address; owner_0_nx1 : address; owner_1_nx1 : address; state_nx1 : int; state_0_nx1 : int; state_1_nx1 : int; /* Next state vars */
+    )
+    (   /* condition */
+        (
+            
+    exists (
+        xa_tx2: address; f_tx2: functions;  xn_tx2: int;  /* Transition vars */
+        aw_Vault_nx2: int; aw_1_nx2: int; aw_2_nx2: int; lastReverted_nx2 : bool; lastReverted_0_nx2 : bool; lastReverted_1_nx2 : bool; lastReverted_2_nx2 : bool; lastReverted_3_nx2 : bool; lastReverted_4_nx2 : bool; lastReverted_5_nx2 : bool; block_num_nx2 : int; block_num_0_nx2 : int; owner_nx2 : address; owner_0_nx2 : address; owner_1_nx2 : address; state_nx2 : int; state_0_nx2 : int; state_1_nx2 : int; /* Next state vars */
+    )
+    (   /* condition */
+        (
+            true
+        )
+        and
+        (
+            ((xa_tx2 = owner_nx1 and f_tx2 = finalize_func and true and xn_tx2 = 0) and 
+(if f_tx2 = withdraw_func then
+(
+(if (not(not(xa_tx2=aVault))) then lastReverted_0_nx2=true else lastReverted_0_nx2=false)
+ and (if (not(not(xa_tx2=a0))) then lastReverted_1_nx2=true else lastReverted_1_nx2=false)
+ and (if (not(xn_tx2 = 0)) then lastReverted_2_nx2=true else lastReverted_2_nx2=false)
+ and state_0_nx2 = 1
+ and lastReverted_nx2 = (lastReverted_0_nx2 or lastReverted_1_nx2 or lastReverted_2_nx2) and if (lastReverted_nx2) then 
+
+	aw_Vault_nx2 = aw_Vault_nx1 and 
+	aw_1_nx2 = aw_1_nx1
+	 and aw_2_nx2 = aw_2_nx1 and 
+	owner_nx2 = owner_nx1
+	 and state_nx2 = state_nx1 and 
+	true and block_num_nx2 >= block_num_nx1 else  
+	aw_Vault_nx2 = aw_Vault_nx1 and 
+	aw_1_nx2 = aw_1_nx1
+	 and aw_2_nx2 = aw_2_nx1 and 
+	owner_nx2 = owner_nx1
+	 and state_nx2 = state_0_nx2 and 
+	true and block_num_nx2 >= block_num_nx1
+
+)	else if f_tx2 = finalize_func then
+(
+(if (not(not(xa_tx2=aVault))) then lastReverted_0_nx2=true else lastReverted_0_nx2=false)
+ and (if (not(not(xa_tx2=a0))) then lastReverted_1_nx2=true else lastReverted_1_nx2=false)
+ and (if (not(xn_tx2 = 0)) then lastReverted_2_nx2=true else lastReverted_2_nx2=false)
+ and (if (not(state_nx2 = 1)) then lastReverted_3_nx2=true else lastReverted_3_nx2=false)
+ and state_0_nx2 = 0
+ and lastReverted_nx2 = (lastReverted_0_nx2 or lastReverted_1_nx2 or lastReverted_2_nx2 or lastReverted_3_nx2) and if (lastReverted_nx2) then 
+
+	aw_Vault_nx2 = aw_Vault_nx1 and 
+	aw_1_nx2 = aw_1_nx1
+	 and aw_2_nx2 = aw_2_nx1 and 
+	owner_nx2 = owner_nx1
+	 and state_nx2 = state_nx1 and 
+	true and block_num_nx2 >= block_num_nx1 else  
+	aw_Vault_nx2 = aw_Vault_nx1 and 
+	aw_1_nx2 = aw_1_nx1
+	 and aw_2_nx2 = aw_2_nx1 and 
+	owner_nx2 = owner_nx1
+	 and state_nx2 = state_0_nx2 and 
+	true and block_num_nx2 >= block_num_nx1
+
+)else block_num_nx2 >= block_num and 
+	aw_Vault_nx2 = aw_Vault_nx1  and 
+	aw_1_nx2 = aw_1_nx1
+	and aw_2_nx2 = aw_2_nx1 and 
+	lastReverted_nx2 = lastReverted_nx1
+	 and owner_nx2 = owner_nx1
+	 and state_nx2 = state_nx1 and 
+	true
+))
+        )
+    )
+        )
+        and
+        (
+            ((xa_tx1 = owner and f_tx1 = withdraw_func and true and xn_tx1 = 0) and 
+(if f_tx1 = withdraw_func then
+(
+(if (not(not(xa_tx1=aVault))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(not(xa_tx1=a0))) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and state_0_nx1 = 1
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1) and if (lastReverted_nx1) then 
+
+	aw_Vault_nx1 = aw_Vault and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	owner_nx1 = owner
+	 and state_nx1 = state and 
+	true and block_num_nx1 >= block_num else  
+	aw_Vault_nx1 = aw_Vault and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	owner_nx1 = owner
+	 and state_nx1 = state_0_nx1 and 
+	true and block_num_nx1 >= block_num
+
+)	else if f_tx1 = finalize_func then
+(
+(if (not(not(xa_tx1=aVault))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(not(xa_tx1=a0))) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and (if (not(state = 1)) then lastReverted_3_nx1=true else lastReverted_3_nx1=false)
+ and state_0_nx1 = 0
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1 or lastReverted_3_nx1) and if (lastReverted_nx1) then 
+
+	aw_Vault_nx1 = aw_Vault and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	owner_nx1 = owner
+	 and state_nx1 = state and 
+	true and block_num_nx1 >= block_num else  
+	aw_Vault_nx1 = aw_Vault and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	owner_nx1 = owner
+	 and state_nx1 = state_0_nx1 and 
+	true and block_num_nx1 >= block_num
+
+)else block_num_nx1 >= block_num and 
+	aw_Vault_nx1 = aw_Vault and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	lastReverted_nx1 = lastReverted
+	 and block_num_nx1 = block_num
+	 and owner_nx1 = owner
+	 and state_nx1 = state and 
+	true
+))
+        )
+    )))
+);
+
+tel
+        
