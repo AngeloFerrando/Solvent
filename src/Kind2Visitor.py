@@ -1494,7 +1494,7 @@ forall (xa_tx: int;)
             if ctx.v.text == 'balance':
                 return self.__t_curr_w
             if ctx.v.text == 'block.number':
-                return 'block_num'
+                return '(starting_block_num -> pre block_num)'
             if ctx.v.text == 'msg.value' or ctx.v.text == 'value':
                 return 'xn'
             if ctx.v.text == 'msg.sender' or ctx.v.text == 'sender':
