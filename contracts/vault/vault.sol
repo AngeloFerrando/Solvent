@@ -3,11 +3,11 @@
 contract Vault {
     address owner;
     address recovery;
-    int wait_time;
+    uint wait_time;
 
     address receiver;
-    int request_time;
-    int amount;
+    uint request_time;
+    uint amount;
     int state;
     // 0 = IDLE
     // 1 = REQ
@@ -23,43 +23,163 @@ contract Vault {
     // receive() external payable { }
 
     function withdraw(address receiver_, int amount_) {
-        require(state == 0); // IDLE
-        require(amount_ <= balance);
-        require(msg.sender == owner);
+        // require(state == 0); // IDLE
+        // require(amount_ <= balance);
+        // require(msg.sender == owner);
 
-        request_time = block.number;
-        amount = amount_;
-        receiver = receiver_;
+        // request_time = block.number;
+        // amount = amount_;
+        // receiver = receiver_;
         state = 1 // REQ
     }
 
     function finalize() {
         require(state == 1); // REQ
-        require(block.number >= request_time + wait_time);
-        require(msg.sender == owner);
+        //require(block.number >= request_time + wait_time);
+        //require(msg.sender == owner);
 
-        state = 0; // IDLE	
-        receiver.transfer(amount)
+        state = 0 // IDLE	
+        //receiver.transfer(amount)
     }
 
-    function cancel() {
-        require(state == 1); // REQ
-        require(msg.sender == recovery);
-        state = 0 // IDLE
-    }
+    // function cancel() {
+    //     require(state == 1); // REQ
+    //     require(msg.sender == recovery);
+    //     state = 0 // IDLE
+    // }
 }
 
-
-rule Fin_owner_liquid_true {
-    (state == 1 && block.number >= request_time + wait_time
-    ) ->
-    (exists f: method .
-    exists args: calldataargs .
-    exists msgvalue : int .
-    (<< owner : Vault . f(args) $ msgvalue >>		
-              (balance[receiver]>= old(balance[receiver]) + amount)
+rule Dummy_true {
+    (
+    (
+      << owner : Vault . withdraw(owner, balance) $ 0 >>		
+        //block.number >= request_time + wait_time
+        //true
+        //->
+        << owner : Vault . finalize() $ 0 >>	
+          true	
+          //    (balance[recipient] ==  old(old(balance[recipient]))  )
+              //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+              //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
     ))
 }
+
+// rule Tx_tx_assets_transfer_trace_true {
+//     (state == 0 && balance == 0) ->
+//     (
+//     exists recipient: address .
+//     (<< owner : Vault . withdraw(recipient, balance) $ 0 >>		
+//         //block.number >= request_time + wait_time
+//         //true
+//         //->
+//         << owner : Vault . finalize() $ 0 >>		
+//               (balance[recipient] ==  old(old(balance[recipient]))  )
+//               //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+//               //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
+//     ))
+// }
+
+// rule Tx_tx_assets_transfer_true {
+//     (state == 0) ->
+//     (exists addr: address .
+//     exists recipient: address .
+//     exists f1: method .
+//     exists args1: calldataargs .
+//     exists msgvalue1 : int .
+//     exists f2: method .
+//     exists args2: calldataargs .
+//     exists msgvalue2 : int .
+//     (<< addr : Vault . f1(args1) $ msgvalue1 >>		
+//         << addr : Vault . f2(args2) $ msgvalue2 >>		
+//               (balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+//               //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
+//     ))
+// }
+
+
+// rule Tx_tx_assets_transfer_false {
+//     (state == 0) ->
+//     (exists addr: address .
+//     exists recipient: address .
+//     exists f1: method .
+//     exists args1: calldataargs .
+//     exists msgvalue1 : int .
+//     exists f2: method .
+//     exists args2: calldataargs .
+//     exists msgvalue2 : int .
+//     (<< addr : Vault . f1(args1) $ msgvalue1 >>		
+//         << addr : Vault . f2(args2) $ msgvalue2 >>		
+//               (balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)) + 1)
+//               //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
+//     ))
+// }
+
+// rule Tx_tx_assets_transfer_no_attack {
+//     (state == 0) ->
+//     (exists addr: address .
+//     exists recipient: address .
+//     exists f1: method .
+//     exists args1: calldataargs .
+//     exists msgvalue1 : int .
+//     exists f2: method .
+//     exists args2: calldataargs .
+//     exists msgvalue2 : int .
+//     forall adversary: address .
+//     (
+//       (
+//       forall f_adversary: method .
+//       forall args_adversary: calldataargs .
+//       forall msgvalue_adversary : int .
+//       (adversary != addr && adversary != recovery)
+//       ->
+//       ((<< addr : Vault . f1(args1) $ msgvalue1 >>		
+//         << adversary : Vault . f_adversary(args_adversary) $ msgvalue_adversary >>		
+//           << addr : Vault . f2(args2) $ msgvalue2 >>		
+//                 (balance[recipient] == old(old(old(balance[recipient]))) + amount)
+//                // (balance[recipient] == old(old(balance[recipient])) + amount)
+//                )
+//       ))
+//     ))
+// }
+
+
+
+// rule Tx_tx_assets_transfer_no_attack_False {
+//     (state == 0) ->
+//     (exists addr: address .
+//     exists recipient: address .
+//     exists f1: method .
+//     exists args1: calldataargs .
+//     exists msgvalue1 : int .
+//     exists f2: method .
+//     exists args2: calldataargs .
+//     exists msgvalue2 : int .
+//     forall adversary: address .
+//     ((adversary != addr && adversary != recipient)
+//     ->
+//       (
+//       forall f_adversary: method .
+//       forall args_adversary: calldataargs .
+//       forall msgvalue_adversary : int .
+//       (<< addr : Vault . f1(args1) $ msgvalue1 >>		
+//         << adversary : Vault . f_adversary(args_adversary) $ msgvalue_adversary >>		
+//           << addr : Vault . f2(args2) $ msgvalue2 >>		
+//                 (balance[recipient] == old(old(old(balance[recipient]))) + old(amount) +1)
+//                // (balance[recipient] == old(old(balance[recipient])) + amount + 1)
+//       ))
+//     ))
+// }
+
+// rule Fin_owner_liquid_true {
+//     (state == 1 && block.number >= request_time + wait_time
+//     ) ->
+//     (exists f: method .
+//     exists args: calldataargs .
+//     exists msgvalue : int .
+//     (<< owner : Vault . f(args) $ msgvalue >>		
+//               (balance[receiver]>= old(balance[receiver]) + amount)
+//     ))
+// }
 
 
 
