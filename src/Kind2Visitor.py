@@ -49,6 +49,7 @@ class Kind2Visitor(TxScriptVisitor):
         self.__payable = False
         self.__vars = {}
         self.__id = 1
+        self.__complex = False
         self.__not_valid_names = ['sender', 'msg.sender', 'value', 'msg.value', 'balance']
         self.__contract_name = ''
         if not self.__fixed_iteration == -1:
@@ -1448,12 +1449,12 @@ forall (xa_tx: int;)
                     return self.handle_nested_prop(aux, '', '')
             return f'{ctx.mapVar.text}_{index}' #ctx.mapVar.text + '[' + index + ']'
         else:
-            if self.__id <= 1:
-                name = ctx.mapVar.text
-                i = ''
-            else:
+            if self.__id > 1 and self.__complex:
                 i = '_nx'
                 name = ctx.mapVar.text.replace('app_tx_', '')
+            else:
+                name = ctx.mapVar.text
+                i = ''
                 # if name not in ['lastReverted', 'block.number', 'msg.sender', 'msg.value', 'this'] and self.__globals_index.get(name, 1) == 0:
                 #     i = ''
             if 'balance' in name:
@@ -1511,7 +1512,7 @@ forall (xa_tx: int;)
                     return ctx.v.text + '_' + str(self.__globals_index[ctx.v.text]+self.__globals_modifier)
             return ctx.v.text
         else:
-            if self.__id > 1:
+            if self.__id > 1 and self.__complex:
                 name = ctx.v.text.replace('app_tx_st', 'st')
                 i = '_nx'
             else:
@@ -1775,6 +1776,7 @@ forall (xa_tx: int;)
 
     # Visit a parse tree produced by TxScriptParser#complexExprFormulaExpr.
     def visitComplexExprFormulaExpr(self, ctx:TxScriptParser.ComplexExprFormulaExprContext):
+        self.__complex = False
         id = self.__id
         for k in self.__globals_index:
             self.__globals_index[k] = 0
@@ -1800,7 +1802,9 @@ forall (xa_tx: int;)
         next_state_vars = ' '.join(contract_globals)
         self.__id += 1
         backup_globals_index = copy.deepcopy(self.__globals_index)
+        self.__complex = True
         condition = self.visit(ctx.child)
+        self.__complex = False
         self.__globals_index = backup_globals_index
         self.__id -= 1
         # if 'exists' not in condition and 'forall' not in condition:
@@ -1840,9 +1844,10 @@ forall (xa_tx: int;)
                     argsFCond.append(f'{self.__args_map[a][0]}_tx{id} = {argsF[i]}')
         argsFCond = ' and '.join(argsFCond)
         expr_val = self.visit(ctx.expr)
-        if '_nx' in expr_val:
-            suffix = '' if id <= 1 else str(id - 1)
-            expr_val = re.sub(r'_nx(?!\d)', f'_nx{suffix}', expr_val)
+        if '_nx' not in expr_val:
+            expr_val += '_nx'
+        suffix = '0' if id <= 1 else str(id - 1)
+        expr_val = re.sub(r'_nx(?!\d)', f'_nx{suffix}', expr_val)
         contract = f'(xa_tx{id} = {expr_val} and f_tx{id} = {fname} and {argsFCond} and xn_tx{id} = {self.visit(ctx.value)}) and \n'
 
         for calldataarg in filter(lambda x: self.__vars[x] == 'calldataargs', self.__vars):

@@ -11,7 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["/media/angelo/WorkData/git/Solvent/contracts/vault/vault.sol", "5", "2", "True", "-1"]
+            "args": ["/media/angelo/WorkData/git/Solvent/contracts/regression_new/states.sol", "5", "2", "True", "-1"]
         }
     ]
 }
