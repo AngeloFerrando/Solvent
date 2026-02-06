@@ -1844,7 +1844,7 @@ forall (xa_tx: int;)
                     argsFCond.append(f'{self.__args_map[a][0]}_tx{id} = {argsF[i]}')
         argsFCond = ' and '.join(argsFCond)
         expr_val = self.visit(ctx.expr)
-        if '_nx' not in expr_val:
+        if '_nx' not in expr_val and '_tx' not in expr_val:
             expr_val += '_nx'
         suffix = '0' if id <= 1 else str(id - 1)
         expr_val = re.sub(r'_nx(?!\d)', f'_nx{suffix}', expr_val)
