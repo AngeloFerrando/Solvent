@@ -1587,6 +1587,7 @@ forall (xa_tx: int;)
         ty = self.visit(ctx.typenames)
         vs = []
         addr = None
+        method_vars = []
         for var in ctx.variables.varFormulaExpr():
             if ty == 'calldataargs':
                 for arg in self.__args_map:
@@ -1595,8 +1596,12 @@ forall (xa_tx: int;)
                 vs.append(var.child.text + '_tx:' + ty + ';')
             self.__vars[var.child.text] = ty
             if ty == 'address': addr = var.child.text
+            if ty == 'functions': method_vars.append(var.child.text)
         if addr:
             return 'forall(' + ''.join(vs) + ')' + '(' + f'({addr}_tx = a{self.__contract_name}) or ({addr}_tx = a0) or (' + self.visit(ctx.child) + '))'
+        if method_vars:
+            constructor_guard = ' or '.join([f'{name}_tx = constructor_func' for name in method_vars])
+            return 'forall(' + ''.join(vs) + ')' + '(' + constructor_guard + ' or ' + self.visit(ctx.child) + ')'
         else:
             return 'forall(' + ''.join(vs) + ')' + self.visit(ctx.child)
 
