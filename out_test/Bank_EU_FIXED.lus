@@ -1,0 +1,387 @@
+
+type functions = enum {constructor_func, withdraw_func,deposit_func };
+type address = enum { aBank, a0, a1, a2 };
+function divv (n1: int; n2: int) returns (r: int);
+let
+    r = n1/n2;
+tel
+function mult (n1: int; n2: int) returns (r: int);
+let
+r = n1*n2;
+tel
+node Bank (xa:address;xn:int;f:functions;withdraw_func_amount:int;starting_aw_Bank: int;starting_aw_1: int;starting_aw_2: int) returns();
+(*@contract
+    assume starting_aw_Bank >= 0;
+assume starting_aw_1 >= 0;
+assume starting_aw_2 >= 0;
+*)
+var contract_not_constructed: bool;
+const starting_lastReverted : bool = false;
+const starting_block_num : int = 0;
+const starting_funds_1 : int = 0;
+const starting_funds_2 : int = 0;
+var aw_Bank: int;
+var aw_Bank_0: int;
+var aw_1: int;
+var aw_2: int;
+var aw_1_0: int;
+var aw_2_0: int;
+var lastReverted : bool;
+var lastReverted_0 : bool;
+var lastReverted_1 : bool;
+var lastReverted_2 : bool;
+var lastReverted_3 : bool;
+var lastReverted_4 : bool;
+var lastReverted_5 : bool;
+var block_num : int;
+var funds_1 : int;
+var funds_2 : int;
+var funds_1_0 : int;
+var funds_2_0 : int;
+let
+    if ((true -> pre contract_not_constructed) and f = constructor_func) then
+
+if (not(not(xa=aBank))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+
+lastReverted = lastReverted_0; if (lastReverted) then 
+	aw_Bank = (starting_aw_Bank -> pre aw_Bank);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	
+	funds_1 = (starting_funds_1 -> pre funds_1);
+	funds_2 = (starting_funds_2 -> pre funds_2);
+	contract_not_constructed = true;
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
+	aw_Bank = (starting_aw_Bank -> pre aw_Bank);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	
+	funds_1 = (starting_funds_1 -> pre funds_1);
+	funds_2 = (starting_funds_2 -> pre funds_2);
+	contract_not_constructed = false;
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
+fi
+elsif not(true -> pre contract_not_constructed) and f = deposit_func then
+	if (not(xn >= 0 and (xa = a1 or xa = a2) and ((not(xa = a1) or (starting_aw_1 -> pre aw_1) >= xn) and (not(xa = a2) or (starting_aw_2 -> pre aw_2) >= xn)))) then lastReverted_0=true; else lastReverted_0=false; fi
+aw_Bank_0 = (starting_aw_Bank -> pre aw_Bank) + xn;
+if (xa = a1) then
+	aw_1_0 = (starting_aw_1 -> pre aw_1) - xn;
+	aw_2_0 = (starting_aw_2 -> pre aw_2);
+elsif (xa = a2) then
+	aw_1_0 = (starting_aw_1 -> pre aw_1);
+	aw_2_0 = (starting_aw_2 -> pre aw_2) - xn;
+
+fi
+
+if (not(not(xa=aBank))) then lastReverted_1=true; else lastReverted_1=false; fi
+
+if (not(not(xa=a0))) then lastReverted_2=true; else lastReverted_2=false; fi
+
+if (not(xn>0)) then lastReverted_3=true; else lastReverted_3=false; fi
+
+funds_1_0 = if xa = a1 then ((if xa = a1 then (starting_funds_1 -> pre funds_1)  
+	else (starting_funds_2 -> pre funds_2)  
+	)+xn) else (starting_funds_1 -> pre funds_1);
+funds_2_0 = if xa = a2 then ((if xa = a1 then (starting_funds_1 -> pre funds_1)  
+	else (starting_funds_2 -> pre funds_2)  
+	)+xn) else (starting_funds_2 -> pre funds_2);
+
+lastReverted = lastReverted_0 or lastReverted_1 or lastReverted_2 or lastReverted_3; if (lastReverted) then 
+	aw_Bank = (starting_aw_Bank -> pre aw_Bank);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	
+	funds_1 = (starting_funds_1 -> pre funds_1);
+	funds_2 = (starting_funds_2 -> pre funds_2);
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
+	aw_Bank = aw_Bank_0;
+	aw_1 = aw_1_0;
+	aw_2 = aw_2_0;
+	
+	funds_1 = funds_1_0;
+	funds_2 = funds_2_0;
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
+fi
+	elsif not(true -> pre contract_not_constructed) and f = withdraw_func then
+	
+if (not(not(xa=aBank))) then lastReverted_0=true; else lastReverted_0=false; fi
+
+if (not(not(xa=a0))) then lastReverted_1=true; else lastReverted_1=false; fi
+
+if (not(xn = 0)) then lastReverted_2=true; else lastReverted_2=false; fi
+
+if (not(withdraw_func_amount>0)) then lastReverted_3=true; else lastReverted_3=false; fi
+
+if (not(withdraw_func_amount<=(if xa = a1 then (starting_funds_1 -> pre funds_1)  
+	else (starting_funds_2 -> pre funds_2)  
+	))) then lastReverted_4=true; else lastReverted_4=false; fi
+
+funds_1_0 = if xa = a1 then ((if xa = a1 then (starting_funds_1 -> pre funds_1)  
+	else (starting_funds_2 -> pre funds_2)  
+	)-withdraw_func_amount) else (starting_funds_1 -> pre funds_1);
+funds_2_0 = if xa = a2 then ((if xa = a1 then (starting_funds_1 -> pre funds_1)  
+	else (starting_funds_2 -> pre funds_2)  
+	)-withdraw_func_amount) else (starting_funds_2 -> pre funds_2);
+
+if (not(withdraw_func_amount >= 0 and withdraw_func_amount <= ((starting_aw_Bank -> pre aw_Bank)))) then lastReverted_5=true; else lastReverted_5=false; fi
+aw_Bank_0 = (starting_aw_Bank -> pre aw_Bank) - withdraw_func_amount;
+if (xa = a1) then
+	aw_1_0 = (starting_aw_1 -> pre aw_1) + withdraw_func_amount;
+	aw_2_0 = (starting_aw_2 -> pre aw_2);
+elsif (xa = a2) then
+	aw_1_0 = (starting_aw_1 -> pre aw_1);
+	aw_2_0 = (starting_aw_2 -> pre aw_2) + withdraw_func_amount;
+
+fi
+
+lastReverted = lastReverted_0 or lastReverted_1 or lastReverted_2 or lastReverted_3 or lastReverted_4 or lastReverted_5; if (lastReverted) then 
+	aw_Bank = (starting_aw_Bank -> pre aw_Bank);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	
+	funds_1 = (starting_funds_1 -> pre funds_1);
+	funds_2 = (starting_funds_2 -> pre funds_2);
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)}; else 
+	aw_Bank = aw_Bank_0;
+	aw_1 = aw_1_0;
+	aw_2 = aw_2_0;
+	
+	funds_1 = funds_1_0;
+	funds_2 = funds_2_0;
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
+fi
+else
+	contract_not_constructed = (true -> pre contract_not_constructed);
+	block_num = any {block_num_tmp: int | block_num_tmp >= (starting_block_num -> pre block_num_tmp)};
+	aw_Bank = (starting_aw_Bank -> pre aw_Bank);
+	aw_1 = (starting_aw_1 -> pre aw_1);
+	aw_2 = (starting_aw_2 -> pre aw_2);
+	lastReverted = (starting_lastReverted -> pre lastReverted);
+	funds_1 = (starting_funds_1 -> pre funds_1);
+	funds_2 = (starting_funds_2 -> pre funds_2);
+fi
+    --%PROPERTY "Exists_unique_asset_change" 
+(
+contract_not_constructed or 
+(forall(addrA_tx:address;)((addrA_tx = aBank) or (addrA_tx = a0) or (forall(msg_value_tx:int;)forall(f_tx:functions;)(f_tx = constructor_func or (forall(withdraw_func_amount_args_tx:int;)(
+    exists (
+        xa_tx1: address; f_tx1: functions; withdraw_func_amount_tx1: int; xn_tx1: int;  /* Transition vars */
+        aw_Bank_nx1: int; aw_Bank_0_nx1: int; aw_1_nx1: int; aw_2_nx1: int; aw_1_0_nx1: int; aw_2_0_nx1: int; lastReverted_nx1 : bool; lastReverted_0_nx1 : bool; lastReverted_1_nx1 : bool; lastReverted_2_nx1 : bool; lastReverted_3_nx1 : bool; lastReverted_4_nx1 : bool; lastReverted_5_nx1 : bool; lastReverted_6_nx1 : bool; lastReverted_7_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; funds_1_nx1 : int; funds_2_nx1 : int; funds_1_nx1_0 : int; funds_2_nx1_0 : int; /* Next state vars */
+    )
+    (   /* condition */
+        (
+            ((not(not(lastReverted_nx1)) or (exists(addrB1_tx:address;)(not(not(addrB1_tx=aBank)) or ((not((if addrB1_tx = a1 then aw_1_nx1  
+	else aw_2_nx1  
+	)=(if addrB1_tx = a1 then aw_1  
+	else aw_2  
+	)) and forall(addrB2_tx:address;)((addrB2_tx = aBank) or (addrB2_tx = a0) or (((not((not(addrB1_tx=addrB2_tx) and not(addrB2_tx=aBank))) or (if addrB2_tx = a1 then aw_1_nx1  
+	else aw_2_nx1  
+	) = (if addrB2_tx = a1 then aw_1  
+	else aw_2  
+	)))))))))))
+        )
+        and
+        (
+            ((xa_tx1 = addrA_tx and f_tx1 = f_tx and true and xn_tx1 = msg_value_tx) and 
+withdraw_func_amount_tx1 = withdraw_func_amount_args_tx and 
+(if f_tx1 = deposit_func then
+((if (not(xn_tx1 >= 0 and (xa_tx1 = a1 or xa_tx1 = a2) and ((not(xa_tx1 = a1) or aw_1 >= xn_tx1) and (not(xa_tx1 = a2) or aw_2 >= xn_tx1)))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (aw_Bank_0_nx1 = aw_Bank + xn_tx1 and
+if (xa_tx1 = a1) then
+	aw_1_0_nx1 = aw_1 - xn_tx1 and
+	aw_2_0_nx1 = aw_2
+else if (xa_tx1 = a2) then
+	aw_1_0_nx1 = aw_1 and
+	aw_2_0_nx1 = aw_2 - xn_tx1
+else true
+) and 
+(if (not(not(xa_tx1=aBank))) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(not(xa_tx1=a0))) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and (if (not(xn_tx1>0)) then lastReverted_3_nx1=true else lastReverted_3_nx1=false)
+ and funds_1_nx1_0 = (if xa_tx1 = a1 then ((if xa_tx1 = a1 then funds_1  
+	else funds_2  
+	)+xn_tx1) else funds_1) and funds_2_nx1_0 = (if xa_tx1 = a2 then ((if xa_tx1 = a1 then funds_1  
+	else funds_2  
+	)+xn_tx1) else funds_2)
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1 or lastReverted_3_nx1) and if (lastReverted_nx1) then 
+
+	aw_Bank_nx1 = aw_Bank and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	true and 
+	funds_1_nx1 = funds_1
+	 and funds_2_nx1 = funds_2 and block_num_nx1 >= block_num else  
+	aw_Bank_nx1 = aw_Bank_0_nx1 and 
+	aw_1_nx1 = aw_1_0_nx1
+	 and aw_2_nx1 = aw_2_0_nx1 and 
+	true and 
+	funds_1_nx1 = funds_1_nx1_0
+	 and funds_2_nx1 = funds_2_nx1_0 and block_num_nx1 >= block_num
+
+)	else if f_tx1 = withdraw_func then
+(
+(if (not(not(xa_tx1=aBank))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(not(xa_tx1=a0))) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and (if (not(withdraw_func_amount_tx1>0)) then lastReverted_3_nx1=true else lastReverted_3_nx1=false)
+ and (if (not(withdraw_func_amount_tx1<=(if xa_tx1 = a1 then funds_1  
+	else funds_2  
+	))) then lastReverted_4_nx1=true else lastReverted_4_nx1=false)
+ and funds_1_nx1_0 = (if xa_tx1 = a1 then ((if xa_tx1 = a1 then funds_1  
+	else funds_2  
+	)-withdraw_func_amount_tx1) else funds_1) and funds_2_nx1_0 = (if xa_tx1 = a2 then ((if xa_tx1 = a1 then funds_1  
+	else funds_2  
+	)-withdraw_func_amount_tx1) else funds_2) and ((if (not(withdraw_func_amount_tx1 >= 0 and withdraw_func_amount_tx1 <= aw_Bank)) then lastReverted_5_nx1=true else lastReverted_5_nx1=false) 
+ and aw_Bank_0_nx1 = aw_Bank - withdraw_func_amount_tx1 and
+if (xa_tx1 = a1) then
+	aw_1_0_nx1 = aw_1 + withdraw_func_amount_tx1 and
+	aw_2_0_nx1 = aw_2
+else if (xa_tx1 = a2) then
+	aw_1_0_nx1 = aw_1 and
+	aw_2_0_nx1 = aw_2 + withdraw_func_amount_tx1
+else true
+)
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1 or lastReverted_3_nx1 or lastReverted_4_nx1 or lastReverted_5_nx1) and if (lastReverted_nx1) then 
+
+	aw_Bank_nx1 = aw_Bank and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	true and 
+	funds_1_nx1 = funds_1
+	 and funds_2_nx1 = funds_2 and block_num_nx1 >= block_num else  
+	aw_Bank_nx1 = aw_Bank_0_nx1 and 
+	aw_1_nx1 = aw_1_0_nx1
+	 and aw_2_nx1 = aw_2_0_nx1 and 
+	true and 
+	funds_1_nx1 = funds_1_nx1_0
+	 and funds_2_nx1 = funds_2_nx1_0 and block_num_nx1 >= block_num
+
+)else block_num_nx1 >= block_num and 
+	aw_Bank_nx1 = aw_Bank and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	lastReverted_nx1 = lastReverted
+	 and block_num_nx1 = block_num and 
+	funds_1_nx1 = funds_1
+	 and funds_2_nx1 = funds_2
+))
+        )
+    )))))))
+);
+
+--%PROPERTY "Max_One_asset_change" 
+(
+contract_not_constructed or 
+(forall(addrA_tx:address;)((addrA_tx = aBank) or (addrA_tx = a0) or (forall(msg_value_tx:int;)forall(f_tx:functions;)(f_tx = constructor_func or (forall(withdraw_func_amount_args_tx:int;)forall(addrB_tx:address;)((addrB_tx = aBank) or (addrB_tx = a0) or ((not(not(addrB_tx=addrA_tx)) or (
+    exists (
+        xa_tx1: address; f_tx1: functions; withdraw_func_amount_tx1: int; xn_tx1: int;  /* Transition vars */
+        aw_Bank_nx1: int; aw_Bank_0_nx1: int; aw_1_nx1: int; aw_2_nx1: int; aw_1_0_nx1: int; aw_2_0_nx1: int; lastReverted_nx1 : bool; lastReverted_0_nx1 : bool; lastReverted_1_nx1 : bool; lastReverted_2_nx1 : bool; lastReverted_3_nx1 : bool; lastReverted_4_nx1 : bool; lastReverted_5_nx1 : bool; lastReverted_6_nx1 : bool; lastReverted_7_nx1 : bool; block_num_nx1 : int; block_num_0_nx1 : int; funds_1_nx1 : int; funds_2_nx1 : int; funds_1_nx1_0 : int; funds_2_nx1_0 : int; /* Next state vars */
+    )
+    (   /* condition */
+        (
+            ((not(not(lastReverted_nx1)) or (((not(not((if addrA_tx = a1 then aw_1_nx1  
+	else aw_2_nx1  
+	)=(if addrA_tx = a1 then aw_1  
+	else aw_2  
+	))) or (if addrB_tx = a1 then aw_1_nx1  
+	else aw_2_nx1  
+	) = (if addrB_tx = a1 then aw_1  
+	else aw_2  
+	))))))
+        )
+        and
+        (
+            ((xa_tx1 = addrA_tx and f_tx1 = f_tx and true and xn_tx1 = msg_value_tx) and 
+withdraw_func_amount_tx1 = withdraw_func_amount_args_tx and 
+(if f_tx1 = deposit_func then
+((if (not(xn_tx1 >= 0 and (xa_tx1 = a1 or xa_tx1 = a2) and ((not(xa_tx1 = a1) or aw_1 >= xn_tx1) and (not(xa_tx1 = a2) or aw_2 >= xn_tx1)))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (aw_Bank_0_nx1 = aw_Bank + xn_tx1 and
+if (xa_tx1 = a1) then
+	aw_1_0_nx1 = aw_1 - xn_tx1 and
+	aw_2_0_nx1 = aw_2
+else if (xa_tx1 = a2) then
+	aw_1_0_nx1 = aw_1 and
+	aw_2_0_nx1 = aw_2 - xn_tx1
+else true
+) and 
+(if (not(not(xa_tx1=aBank))) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(not(xa_tx1=a0))) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and (if (not(xn_tx1>0)) then lastReverted_3_nx1=true else lastReverted_3_nx1=false)
+ and funds_1_nx1_0 = (if xa_tx1 = a1 then ((if xa_tx1 = a1 then funds_1  
+	else funds_2  
+	)+xn_tx1) else funds_1) and funds_2_nx1_0 = (if xa_tx1 = a2 then ((if xa_tx1 = a1 then funds_1  
+	else funds_2  
+	)+xn_tx1) else funds_2)
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1 or lastReverted_3_nx1) and if (lastReverted_nx1) then 
+
+	aw_Bank_nx1 = aw_Bank and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	true and 
+	funds_1_nx1 = funds_1
+	 and funds_2_nx1 = funds_2 and block_num_nx1 >= block_num else  
+	aw_Bank_nx1 = aw_Bank_0_nx1 and 
+	aw_1_nx1 = aw_1_0_nx1
+	 and aw_2_nx1 = aw_2_0_nx1 and 
+	true and 
+	funds_1_nx1 = funds_1_nx1_0
+	 and funds_2_nx1 = funds_2_nx1_0 and block_num_nx1 >= block_num
+
+)	else if f_tx1 = withdraw_func then
+(
+(if (not(not(xa_tx1=aBank))) then lastReverted_0_nx1=true else lastReverted_0_nx1=false)
+ and (if (not(not(xa_tx1=a0))) then lastReverted_1_nx1=true else lastReverted_1_nx1=false)
+ and (if (not(xn_tx1 = 0)) then lastReverted_2_nx1=true else lastReverted_2_nx1=false)
+ and (if (not(withdraw_func_amount_tx1>0)) then lastReverted_3_nx1=true else lastReverted_3_nx1=false)
+ and (if (not(withdraw_func_amount_tx1<=(if xa_tx1 = a1 then funds_1  
+	else funds_2  
+	))) then lastReverted_4_nx1=true else lastReverted_4_nx1=false)
+ and funds_1_nx1_0 = (if xa_tx1 = a1 then ((if xa_tx1 = a1 then funds_1  
+	else funds_2  
+	)-withdraw_func_amount_tx1) else funds_1) and funds_2_nx1_0 = (if xa_tx1 = a2 then ((if xa_tx1 = a1 then funds_1  
+	else funds_2  
+	)-withdraw_func_amount_tx1) else funds_2) and ((if (not(withdraw_func_amount_tx1 >= 0 and withdraw_func_amount_tx1 <= aw_Bank)) then lastReverted_5_nx1=true else lastReverted_5_nx1=false) 
+ and aw_Bank_0_nx1 = aw_Bank - withdraw_func_amount_tx1 and
+if (xa_tx1 = a1) then
+	aw_1_0_nx1 = aw_1 + withdraw_func_amount_tx1 and
+	aw_2_0_nx1 = aw_2
+else if (xa_tx1 = a2) then
+	aw_1_0_nx1 = aw_1 and
+	aw_2_0_nx1 = aw_2 + withdraw_func_amount_tx1
+else true
+)
+ and lastReverted_nx1 = (lastReverted_0_nx1 or lastReverted_1_nx1 or lastReverted_2_nx1 or lastReverted_3_nx1 or lastReverted_4_nx1 or lastReverted_5_nx1) and if (lastReverted_nx1) then 
+
+	aw_Bank_nx1 = aw_Bank and 
+	aw_1_nx1 = aw_1
+	 and aw_2_nx1 = aw_2 and 
+	true and 
+	funds_1_nx1 = funds_1
+	 and funds_2_nx1 = funds_2 and block_num_nx1 >= block_num else  
+	aw_Bank_nx1 = aw_Bank_0_nx1 and 
+	aw_1_nx1 = aw_1_0_nx1
+	 and aw_2_nx1 = aw_2_0_nx1 and 
+	true and 
+	funds_1_nx1 = funds_1_nx1_0
+	 and funds_2_nx1 = funds_2_nx1_0 and block_num_nx1 >= block_num
+
+)else block_num_nx1 >= block_num and 
+	aw_Bank_nx1 = aw_Bank and 
+	aw_1_nx1 = aw_1
+	and aw_2_nx1 = aw_2 and 
+	lastReverted_nx1 = lastReverted
+	 and block_num_nx1 = block_num and 
+	funds_1_nx1 = funds_1
+	 and funds_2_nx1 = funds_2
+))
+        )
+    ))))))))))
+);
+
+tel
+        

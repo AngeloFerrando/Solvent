@@ -8,8 +8,10 @@ contract Bank {
     }
 
     function deposit() payable {
+        require(msg.value > 0);
         funds[msg.sender] = funds[msg.sender] + msg.value
     }
+
 
     function withdraw(int amount) {
         require(amount > 0);
@@ -41,6 +43,25 @@ contract Bank {
 
 
 
+// rule Additivity_false0 {
+//     forall addr : address .
+//     forall c1 : int .
+//     forall c2 : int .
+//     exists v12_storage : int .
+//     exists v3_storage : int .
+//     (<< addr : Bank . deposit() $ c1 >>		
+//        (<< addr : Bank . deposit() $ c2 >>		
+//             (
+//                 v12_storage == funds[addr]
+//             )
+//         )
+//         )
+//     &&
+//     (<< addr : Bank . deposit() $ (c1+c2) >>		
+//             (v3_storage ==  funds[addr]  ))
+// }
+
+// valid (k=1)
 // rule Additivity_true {
 //     forall addr : address .
 //     forall c1 : int .
@@ -50,6 +71,10 @@ contract Bank {
 //     exists reverted1 : bool .
 //     exists reverted2 : bool .
 //     exists reverted3 : bool .
+//     (c1 >= 0 && c2 >= 0)
+//     //(!reverted3 && !reverted2 && !reverted1)
+//     ->
+//     (
 //     (<< addr : Bank . deposit() $ c1 >>		
 //        (<< addr : Bank . deposit() $ c2 >>		
 //             (
@@ -65,6 +90,8 @@ contract Bank {
 //                 && reverted3 == lastReverted ))
 //     &&
 //     (reverted3 || reverted2 || reverted1 || v12_storage == v3_storage)
+//     //(v12_storage == v3_storage)
+//     )
 // }
 
 // only excluding the case in which the tx3 reverts is not enough 
@@ -183,16 +210,48 @@ contract Bank {
 //     (v12_storage == v3_storage)
 // }
 
-rule Withdraw_reverse_deposit {
-    forall addr : address .
-    forall c1 : int .
-    c1 > 0 ->
-    (<< addr : Bank . deposit() $ c1 >>		
-       (<< addr : Bank . withdraw(c1) $ 0 >>		
-            (!lastReverted && old(!lastReverted)) ->
-              (funds[addr] == old(old(funds[addr])))))
-}
+// Valid (k=1)
+// rule Withdraw_reverses_deposit {
+//     forall addr : address .
+//     forall c1 : int .
+//     c1 > 0 ->
+//     (<< addr : Bank . deposit() $ c1 >>		
+//        (<< addr : Bank . withdraw(c1) $ 0 >>		
+//             (!lastReverted && old(!lastReverted)) ->
+//               (funds[addr] == old(old(funds[addr])))))
+// }
 
+
+// Valid (k=1)
+// rule BalanceGeq0 {
+//     forall addr : address .
+//     balance[addr] >= 0
+// }
+
+// Valid (k=1)
+// rule DepositNotRevImplWithNotRev {
+//     (forall addr : address .
+//     forall c1 : int .
+//     c1 > 0 ->
+//     (<< addr : Bank . deposit() $ c1 >>		
+//        (<< addr : Bank . withdraw(c1) $ 0 >>		
+//             (old(!lastReverted) -> !lastReverted) 
+//               )))
+// }
+
+// Valid (k=1)
+// rule DepositNotRevImplWithNotRev_Hint {
+//     (forall addr : address .
+//     balance[addr] >= 0)
+//     ->
+//     (forall addr : address .
+//     forall c1 : int .
+//     c1 > 0 ->
+//     (<< addr : Bank . deposit() $ c1 >>		
+//        (<< addr : Bank . withdraw(c1) $ 0 >>		
+//             (old(!lastReverted) -> !lastReverted) 
+//               )))
+// }
 
 
 // rule Deposit_increase_funds_true {
@@ -229,7 +288,7 @@ rule Withdraw_reverse_deposit {
 //             (funds[addr] > old(funds[addr])))
 // }
 
-
+// valid (k=2)
 // rule Reversibility_deposit {
 //     forall addr : address .
 //     forall c1 : int .
@@ -245,8 +304,147 @@ rule Withdraw_reverse_deposit {
 
 
 
+// TODO exists-unique-asset-change
+//         "exists-unique-asset-change": "after a non-reverting `deposit` or `withdraw` transaction to the Bank contract, the ETH balance of exactly one account (except the contract's) have changed",
+
+rule Exists_unique_asset_change {
+    forall addrA : address .
+    forall msg_value : int .
+    forall f : method .
+    (
+    forall args: calldataargs .
+    //forall amt: int .
+    (
+        << addrA : Bank . f(args) $ msg_value >>
+        (
+            (!lastReverted) 
+            ->
+            (
+
+                exists addrB1 : address .  
+                addrB1 != this
+                    ->
+                    (
+                        balance[addrB1] != old(balance[addrB1])
+                            &&
+                        forall addrB2 : address .  
+                        (( addrB2 != this)
+                        ->
+                        balance[addrB2] == old(balance[addrB2]))
+
+                    )
+            )
+        )
+    ))
+}
+
+// rule Max_One_asset_change {
+//     forall addrA : address .
+//     forall msg_value : int .
+//     forall f : method .
+//     (
+//     forall args: calldataargs .
+//     //forall amt: int .
+//     forall addrB : address .  
+//     addrB != addrA ->
+//     (
+//         << addrA : Bank . f(args) $ msg_value >>
+//         (
+//             (!lastReverted) 
+//             ->
+//             (
+//                 //(balance[addrA] != old(balance[addrA]))
+//                 (balance[addrA] != old(balance[addrA])
+//                 ->
+//                 balance[addrB] == old(balance[addrB])
+//                 )
+//             )
+//         )
+//     ))
+// }
+
+//valid (k=1)
+// rule Someone_asset_change {
+//     forall addrA : address .
+//     forall msg_value : int .
+//     forall f : method .
+//     //(f == withdraw || f == deposit )    ->
+//     (
+//     forall args: calldataargs .
+//     //forall amt: int .
+//     exists addrB : address .  
+//     //((f == deposit && msg_value > 0))
+//     //->
+//     (
+//         //<< addrA : Bank . deposit() $ msg_value >>
+//         //<< addrA : Bank . withdraw(amt) $ msg_value >>
+//         << addrB : Bank . f(args) $ msg_value >>
+//         (
+//             (!lastReverted) 
+//             ->
+//             (
+//                 (balance[addrB] != old(balance[addrB]))
+//                 //(funds[addrB] != old(funds[addrB]))
+//             )
+//         )
+//     ))
+// }
+
+// valid (k=1)
+// rule Sender_asset_change {
+//     forall addrA : address .
+//     forall msg_value : int .
+//     forall f : method .
+//     //(f == withdraw || f == deposit )    ->
+//     (
+//     forall args: calldataargs .
+//     //forall amt: int .
+//     //exists addrB : address .  
+//     //((f == deposit && msg_value > 0))
+//     //->
+//     (
+//         << addrA : Bank . f(args) $ msg_value >>
+//         (
+//             (!lastReverted) 
+//             ->
+//             (
+//                 (balance[addrA] != old(balance[addrA]))
+//                 //(funds[addrA] != old(funds[addrA]))
+//             )
+//         )
+//     ))
+// }
+
+// TODO segnalare
+// rule Asdsadsad {
+//     forall addrA : address .
+//     forall msg_value : int .
+//     forall f : method .
+//         << addrA : Bank . f(asdsadsad) $ msg_value >>
+//         true
+// }
 
 
+// TODO segnalare
+// rule WithdrawChangesBalance {
+//     forall addrA : address .
+//     forall amt: int .
+//     // forall pippo : int .
+//     // forall msg_value : int .
+//     // forall f : method .
+//     forall pippo: calldataargs .
+//     (
+//         << addrA : Bank . withdraw(amt) $ 0 >>
+//         (
+//             !lastReverted 
+//             ->
+//             (
+//                 (balance[addrA] != old(balance[addrA]))
+//                 //(funds[addrA] != old(funds[addrA]))
+//             )
+//         )
+//     )
+// }
 
 // rule Liquidity {
 //     forall addr : address .
