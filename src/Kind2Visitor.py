@@ -1658,21 +1658,28 @@ forall (xa_tx: int;)
 
 
     @staticmethod
-    def _extract_quantified_blocks(s):
+    def _extract_complex_blocks(s):
+        # Mask expanded <<...>>(...) blocks only.
+        # These currently render as: "exists ( ... ) ( ... )"
         blocks = []
         out = []
         i = 0
         n = len(s)
 
         while i < n:
-            m = re.match(r'\b(exists|forall)\b', s[i:])
-            if not m:
+            if not s.startswith('exists', i):
                 out.append(s[i])
                 i += 1
                 continue
 
             kw_start = i
-            i += len(m.group(0))
+            i += len('exists')
+
+            # Only match the complex-expression form: "exists ( ... ) ( ... )"
+            if i >= n or not s[i].isspace():
+                out.append(s[kw_start])
+                i = kw_start + 1
+                continue
 
             # skip whitespace
             while i < n and s[i].isspace():
@@ -1680,7 +1687,9 @@ forall (xa_tx: int;)
 
             # first (...)
             if i >= n or s[i] != '(':
-                raise ValueError("Expected '(' after quantifier")
+                out.append(s[kw_start])
+                i = kw_start + 1
+                continue
             j = Kind2Visitor._consume_parens(s, i)
 
             # skip whitespace
@@ -1690,20 +1699,22 @@ forall (xa_tx: int;)
 
             # second (...)
             if i >= n or s[i] != '(':
-                raise ValueError("Expected second '(' after quantifier")
+                out.append(s[kw_start])
+                i = kw_start + 1
+                continue
             k = Kind2Visitor._consume_parens(s, i)
 
             block = s[kw_start:k]
-            key = f"__QBLOCK_{len(blocks)}__"
+            key = f"__CBLOCK_{len(blocks)}__"
             blocks.append(block)
             out.append(key)
             i = k
 
         return ''.join(out), blocks
     @staticmethod
-    def _restore_quantified_blocks(s, blocks):
+    def _restore_complex_blocks(s, blocks):
         for i, block in enumerate(blocks):
-            s = s.replace(f"__QBLOCK_{i}__", block)
+            s = s.replace(f"__CBLOCK_{i}__", block)
         return s
     
     @staticmethod
@@ -1712,8 +1723,8 @@ forall (xa_tx: int;)
         pid_tx = f'_tx{id - 1}' if id > 1 else ''
         ignore = set(vars.keys())
 
-        # ⬅️ NEW: mask exists(...) / forall(...)
-        condition_masked, blocks = Kind2Visitor._extract_quantified_blocks(condition)
+        # ⬅️ Mask expanded <<...>>(...) blocks only
+        condition_masked, blocks = Kind2Visitor._extract_complex_blocks(condition)
 
         # 1) Handle variables with _nx_<idx>
         for base, idx in set(re.findall(r'\b(\w+)_nx_(\d+)\b', condition_masked)):
@@ -1775,8 +1786,8 @@ forall (xa_tx: int;)
                 condition_masked
             )
 
-        # ⬅️ NEW: restore untouched quantified blocks
-        return Kind2Visitor._restore_quantified_blocks(condition_masked, blocks)
+        # ⬅️ Restore masked <<...>>(...) blocks
+        return Kind2Visitor._restore_complex_blocks(condition_masked, blocks)
 
 
     # Visit a parse tree produced by TxScriptParser#complexExprFormulaExpr.
