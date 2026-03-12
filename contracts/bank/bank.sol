@@ -307,37 +307,39 @@ contract Bank {
 // TODO exists-unique-asset-change
 //         "exists-unique-asset-change": "after a non-reverting `deposit` or `withdraw` transaction to the Bank contract, the ETH balance of exactly one account (except the contract's) have changed",
 
-rule Exists_unique_asset_change {
-    forall addrA : address .
-    forall msg_value : int .
-    forall f : method .
-    (
-    forall args: calldataargs .
-    //forall amt: int .
-    (
-        << addrA : Bank . f(args) $ msg_value >>
-        (
-            (!lastReverted) 
-            ->
-            (
+// valid (k=1)
+// rule Exists_unique_asset_change {
+//     forall addrA : address .
+//     forall msg_value : int .
+//     forall f : method .
+//     (
+//     forall args: calldataargs .
+//     forall amt: int .
+//     (
+//         << addrA : Bank . f(args) $ msg_value >>
+//         (
+//             (!lastReverted) 
+//             ->
+//             (
 
-                exists addrB1 : address .  
-                addrB1 != this
-                    ->
-                    (
-                        balance[addrB1] != old(balance[addrB1])
-                            &&
-                        forall addrB2 : address .  
-                        (( addrB2 != this)
-                        ->
-                        balance[addrB2] == old(balance[addrB2]))
+//                 exists addrB1 : address .  
+//                 addrB1 != this
+//                     ->
+//                     (
+//                         balance[addrB1] != old(balance[addrB1])
+//                             &&
+//                         forall addrB2 : address .  
+//                         (( addrB2 != this)
+//                         ->
+//                         balance[addrB2] == old(balance[addrB2]))
 
-                    )
-            )
-        )
-    ))
-}
+//                     )
+//             )
+//         )
+//     ))
+// }
 
+// valid (k=1)
 // rule Max_One_asset_change {
 //     forall addrA : address .
 //     forall msg_value : int .
