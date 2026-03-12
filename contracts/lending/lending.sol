@@ -58,9 +58,21 @@ contract LP {
 //     )
 // }
 
-rule No_debt_can_revert_undercoll {
-    forall a : address .
-    (credits0[a] > 0 && balance1 > 0)
-    -> 
-    false
-}
+// if a has no debt (but might be un-collateralized, a can not always borrow 
+
+// does not work because when balanceOf0 is instantiated all entries are zero hence no one can increase the credits (see also Credits_less_than_0)
+// rule No_debt_can_revert_undercoll {
+//     forall a : address .
+//     (credits0[a] > 0 && balance1 > 0)
+//     -> 
+//     exists n : int .
+//     << a : LP . borrow1(n) $ 0 >> (
+//       balanceOf1[a] == old(balanceOf1[a]) + (n + 1)
+//     )
+// }
+
+
+// rule Credits_less_than_0 {
+//     forall a : address .
+//     (credits0[a] <= 0 )
+// }
