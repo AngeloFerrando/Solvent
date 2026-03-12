@@ -23,49 +23,81 @@ contract Vault {
     // receive() external payable { }
 
     function withdraw(address receiver_, int amount_) {
-        // require(state == 0); // IDLE
-        // require(amount_ <= balance);
-        // require(msg.sender == owner);
+        require(state == 0); // IDLE
+        require(amount_ <= balance);
+        require(msg.sender == owner);
 
-        // request_time = block.number;
-        // amount = amount_;
-        // receiver = receiver_;
+        request_time = block.number;
+        amount = amount_;
+        receiver = receiver_;
         state = 1 // REQ
     }
 
     function finalize() {
         require(state == 1); // REQ
-        //require(block.number >= request_time + wait_time);
-        //require(msg.sender == owner);
+        require(block.number >= request_time + wait_time);
+        require(msg.sender == owner);
 
-        state = 0 // IDLE	
-        //receiver.transfer(amount)
+        state = 0; // IDLE	
+        receiver.transfer(amount)
     }
 
-    // function cancel() {
-    //     require(state == 1); // REQ
-    //     require(msg.sender == recovery);
-    //     state = 0 // IDLE
-    // }
+    function cancel() {
+        require(state == 1); // REQ
+        require(msg.sender == recovery);
+        state = 0 // IDLE
+    }
 }
 
-rule Dummy_true {
-    (
-    (
-      << owner : Vault . withdraw(owner, balance) $ 0 >>		
-        //block.number >= request_time + wait_time
-        //true
-        //->
-        << owner : Vault . finalize() $ 0 >>	
-          true	
-          //    (balance[recipient] ==  old(old(balance[recipient]))  )
-              //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
-              //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
-    ))
-}
+// rule Dummy_true {
+//     (state == 0 && balance == 0) ->
+//     (
+//     exists recipient: address .
+//     true
+//     )
+// }
+
+// rule Dummy_false {
+//     (state == 0 && balance == 0) ->
+//     (
+//     exists recipient: address .
+//     state ==1
+//     )
+// }
+
+
+// rule Tx_tx_assets_transfer_trace_false1 {
+//     (state == 0 && balance == 0) ->
+//     (
+//     exists recipient: address .
+//     (<< owner : Vault . withdraw(recipient, balance) $ 0 >>		
+//         //block.number >= request_time + wait_time
+//         //true
+//         //->
+//         << owner : Vault . finalize() $ 0 >>		
+//               //(balance[recipient] ==  old(old(balance[recipient]))  )
+//               (balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+//               //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
+//     ))
+// }
+
+// rule Tx_tx_assets_transfer_trace_false2 {
+//     (state == 0 && balance == 0) ->
+//     (
+//     exists recipient: address .
+//     (<< owner : Vault . withdraw(recipient, balance) $ 0 >>		
+//         //block.number >= request_time + wait_time
+//         //true
+//         //->
+//         << owner : Vault . finalize() $ 0 >>		
+//               //(balance[recipient] ==  old(old(balance[recipient]))  )
+//               //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+//               (balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
+//     ))
+// }
 
 // rule Tx_tx_assets_transfer_trace_true {
-//     (state == 0 && balance == 0) ->
+//     (state == 0 && balance > 0) ->
 //     (
 //     exists recipient: address .
 //     (<< owner : Vault . withdraw(recipient, balance) $ 0 >>		
@@ -79,6 +111,22 @@ rule Dummy_true {
 //     ))
 // }
 
+// not working (issue with block number increasing?)
+rule Tx_tx_assets_transfer_trace_balance_true {
+    (state == 0 && balance > 0) ->
+    (
+    exists recipient: address .
+    (<< owner : Vault . withdraw(recipient, balance) $ 0 >>		
+        block.number >= request_time + wait_time
+        //true
+        ->
+        << owner : Vault . finalize() $ 0 >>		
+              (balance[recipient] ==  old(old(balance[recipient])) +  old(old(balance))  )
+              //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+              //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
+    ))
+}
+
 // rule Tx_tx_assets_transfer_true {
 //     (state == 0) ->
 //     (exists addr: address .
@@ -90,6 +138,8 @@ rule Dummy_true {
 //     exists args2: calldataargs .
 //     exists msgvalue2 : int .
 //     (<< addr : Vault . f1(args1) $ msgvalue1 >>		
+//         block.number >= request_time + wait_time
+//         -> 
 //         << addr : Vault . f2(args2) $ msgvalue2 >>		
 //               (balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
 //               //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
