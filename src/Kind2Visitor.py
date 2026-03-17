@@ -716,7 +716,10 @@ tel
                 else:
                     res += ';\n'
         if not self.__visit_properties: res += '\nfi\n'
-        else: res += 'else true\n'
+        else:
+            else_parts = [f'\t{self.__t_new_a[ag1]} = {self.__t_curr_a[ag1]}'
+                          for ag1 in range(1, self.__A+1)]
+            res += 'else (' + ' and\n'.join(else_parts) + ')\n'
         return res
 
     # Visit a parse tree produced by TxScriptParser#sendCmd.
