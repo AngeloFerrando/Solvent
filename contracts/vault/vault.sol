@@ -6,8 +6,8 @@ contract Vault {
     uint wait_time;
 
     address receiver;
-    uint request_time;
-    uint amount;
+    int request_time;
+    int amount;
     int state;
     // 0 = IDLE
     // 1 = REQ
@@ -111,21 +111,89 @@ contract Vault {
 //     ))
 // }
 
-// not working (issue with block number increasing?)
-rule Tx_tx_assets_transfer_trace_balance_true {
-    (state == 0 && balance > 0) ->
-    (
-    exists recipient: address .
-    (<< owner : Vault . withdraw(recipient, balance) $ 0 >>		
-        block.number >= request_time + wait_time
-        //true
-        ->
-        << owner : Vault . finalize() $ 0 >>		
-              (balance[recipient] ==  old(old(balance[recipient])) +  old(old(balance))  )
-              //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
-              //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
-    ))
-}
+// valid (k=1)
+// rule Withdraw_State_change_true {
+//     (state == 0 && balance > 0) ->
+//     (
+//     exists recipient: address .
+//     (<< owner : Vault . withdraw(recipient, balance) $ 0 >>	
+//       !lastReverted
+//       &&
+//       receiver == recipient
+//       &&
+//       amount == old(balance)
+//     ))
+// }
+
+// invalid after 0 steps
+// rule Withdraw_State_change_false {
+//     (state == 0 && balance > 0) ->
+//     (
+//     exists recipient: address .
+//     (<< owner : Vault . withdraw(recipient, balance) $ 0 >>	
+//       !lastReverted
+//       &&
+//       receiver == recipient
+//       &&
+//       amount == old(balance)+1
+//     ))
+// }
+
+// true up to 8 steps
+// rule Finilize_assets_transfer_true {
+//     (state == 1 && balance > 0 && amount > 0 && block.number >= request_time + wait_time) ->
+//         << owner : Vault . finalize() $ 0 >>		
+//               (balance[receiver] ==  old(balance[receiver]) +  amount  )
+// }
+
+//invalid after 1 steps
+// rule Finilize_assets_transfer_false {
+//     (state == 1 && balance > 0 && amount > 0 && block.number >= request_time + wait_time) ->
+//         << owner : Vault . finalize() $ 0 >>		
+//               (balance[receiver] ==  old(balance[receiver]) +  amount + 1 )
+// }
+
+//  valid (k=1)
+// rule Tx_tx_assets_transfer_trace_balance_true {
+//     (state == 0 && balance > 0) ->
+//     (
+//     exists recipient: address .
+//     (<< owner : Vault . withdraw(recipient, balance) $ 0 >>		
+//         //block.number >= request_time + wait_time
+//         //true
+//         //->
+//         << owner : Vault . finalize() $ 0 >>		
+//               (balance[recipient] ==  old(old(balance[recipient])) +  old(old(balance))  )
+//     ))
+// }
+
+//invalid after 0 steps
+// rule Bal_leq0_false {
+//   balance <= 0
+// }
+
+//invalid after 0 steps
+// rule Bal_leq0_or_State0_false {
+//   not(state == 0 && balance > 0) 
+// }
+
+//  invalid after 0 steps
+// rule Tx_tx_assets_transfer_trace_balance_false {
+//     (state == 0 && balance > 0) ->
+//     (
+//     exists recipient: address .
+//     (<< owner : Vault . withdraw(recipient, balance) $ 0 >>		
+//         //block.number >= request_time + wait_time
+//         //true
+//         //->
+//         << owner : Vault . finalize() $ 0 >>		
+//               (balance[recipient] ==  old(old(balance[recipient])) +  old(old(balance)) + 1000 )
+//               //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+//               //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
+//     ))
+// }
+
+
 
 // rule Tx_tx_assets_transfer_true {
 //     (state == 0) ->
