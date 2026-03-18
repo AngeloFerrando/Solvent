@@ -1638,7 +1638,16 @@ forall (xa_tx: int;)
         value = self.visit(ctx.child)
         # if not bool(re.search(r'_[0-9]+$', value)):
         #     value += '_' + str(self.__id)
-        value = value.replace('tx', 'oldtx').replace('nx', 'oldnx')
+        # Replace _tx only when the token before it is NOT a quantified variable name,
+        # to avoid incorrectly aging bound variables like recipient_tx, addr_tx, etc.
+        quantified_vars = set(self.__vars.keys())
+        def replace_tx(m):
+            prefix = m.group(1)
+            if prefix in quantified_vars:
+                return m.group(0)  # leave quantified var _tx unchanged
+            return prefix + '_oldtx'
+        value = re.sub(r'\b(\w+)_tx\b', replace_tx, value)
+        value = value.replace('nx', 'oldnx')
         return value
 
     @staticmethod
