@@ -70,7 +70,7 @@ contract Pricebet {
     }
 }
 
-
+// false
 // // False because deadline not yet passed
 // rule No_Frozen_Funds_false {
 //     forall a : address .
@@ -81,6 +81,7 @@ contract Pricebet {
 //         balance[owner] == old(balance[owner] + balance)		
 // }
 
+// false
 // // False because deadline not yet passed
 // rule No_Frozen_Funds_owner_false {
 //     exists f : method .
@@ -90,7 +91,7 @@ contract Pricebet {
 //         balance[owner] == old(balance[owner] + balance)		
 // }
 
-
+//true up to 5 steps
 // rule No_Frozen_Funds_after_deadline_true {
 //     block.number >= deadline ->
 //     (
@@ -103,6 +104,7 @@ contract Pricebet {
 //     )
 // }
 
+// true up to 6 steps
 // rule No_Frozen_Funds_after_deadline_exists_true {
 //     block.number >= deadline ->
 //     (
@@ -115,6 +117,7 @@ contract Pricebet {
 //     )
 // }
 
+//  true up to 6 steps
 // rule No_Frozen_Funds_after_deadline_hint_true {
 //     block.number >= deadline ->
 //     (
@@ -140,66 +143,128 @@ contract Pricebet {
 // }
 
 
+// Running example
+// if the rate is greater than 100 and the player has joined, then some user can fire some transaction to withdraw the entire pot
 
-
-
-// rule Winning_player_can_be_frontrun_true {
-//     forall bal1 : int .
-//     ((<< player : Pricebet . win() $0 >> 
-//             (bal1 == balance[player] 
-//             &&
-//             bal1 > old(balance[player]))
-//         &&
-//         oracle_constructed
-//             )
-//     ->
-//     exists adv : address .
-//     (
-//         adv != player
-//         &&
-//         exists v : int .
-//         exists qfa : method .
-//         exists qxa : calldataargs .
-//         exists bal2 : int .
-//         << adv : Pricebet . qfa(qxa) $ v >>		
-//             << player : Pricebet . win() $ 0 >>
-//                 (bal2 == balance[player] 
-//                 &&
-//                 bal2 < bal1))
-//     )
+// true up to 5 steps
+// rule Running_example_true {
+//     (oracle_exchange_rate >= exchange_rate && player_has_joined)
+//     -> 
+//     exists a : address .
+//     exists f : method .
+//     exists args : calldataargs .    
+//     exists msgvalue : int .    
+//     << a : Pricebet . f(args) $ msgvalue >>
+//         balance[a] == old(balance[a] + balance)		
 // }
 
 
+// invalid after 2 steps
+// rule Player_cannot_win_false {
+//     ! (
+//             exists bal1 : int .
+//             (<< player : Pricebet . win() $0 >> 
+//                 (bal1 == balance[player] 
+//                 &&
+//                 bal1 > old(balance[player]))
+//             )
+//         )
+// }
 
-rule Winning_player_can_be_frontrun_by_non_oracleowner_false {
-    forall bal1 : int .
-    (
-    (<< player : Pricebet . win() $0 >> 
+rule Winning_player_can_be_frontrun_true {
+    (oracle_constructed && oracle_owner != player)
+    ->
+        forall bal1 : int .
+        (
+        (<< player : Pricebet . win() $0 >> 
             (bal1 == balance[player] 
             &&
-            bal1 > old(balance[player])))
-        ->
-        exists adv : address .
-        (
-            adv != oracle_owner
-                &&
-            adv != player
-                &&
-            (
-            exists v : int .
-            exists qfa : method .
-            exists qxa : calldataargs .
-            exists bal2 : int .
-            << adv : Pricebet . qfa(qxa) $ v >>		
-                block.number == old(block.number) // TODO
-                ->
-                (<< player : Pricebet . win() $ 0 >>
-                    (bal2 == balance[player] 
-                    &&
-                    bal2 < bal1)))
+            bal1 > old(balance[player]))
         )
-    )
+        ->
+            exists adv : address .
+            (
+                adv != player  
+                &&
+                exists v : int .
+                exists qfa : method .
+                exists qxa : calldataargs .
+                exists bal2 : int .
+                << adv : Pricebet . qfa(qxa) $ v >>		
+                    (
+                    block.number == old(block.number)
+                    &&
+                    << player : Pricebet . win() $ 0 >>
+                        (bal2 == balance[player] 
+                        &&
+                        bal2 < bal1)
+                    )
+            )
+        )
 }
+
+
+// rule Winning_player_can_be_frontrun_by_non_oracleowner_false {
+//     (oracle_constructed && oracle_owner != player)
+//     ->
+//         forall bal1 : int .
+//         (
+//         (<< player : Pricebet . win() $0 >> 
+//             (bal1 == balance[player] 
+//             &&
+//             bal1 > old(balance[player]))
+//         )
+//         ->
+//             exists adv : address .
+//             (
+//                 adv != player  && adv != oracle_owner
+//                 &&
+//                 exists v : int .
+//                 exists qfa : method .
+//                 exists qxa : calldataargs .
+//                 exists bal2 : int .
+//                 << adv : Pricebet . qfa(qxa) $ v >>		
+//                     (
+//                     block.number == old(block.number)
+//                     &&
+//                     << player : Pricebet . win() $ 0 >>
+//                         (bal2 == balance[player] 
+//                         &&
+//                         bal2 < bal1)
+//                     )
+//             )
+//         )
+// }
+
+// rule Winning_player_can_be_frontrun_by_non_oracleowner_false {
+//     forall bal1 : int .
+//     (
+//     (<< player : Pricebet . win() $0 >> 
+//             (bal1 == balance[player] 
+//             &&
+//             bal1 > old(balance[player])))
+//         ->
+//         exists adv : address .
+//         (
+//             adv != oracle_owner
+//                 &&
+//             adv != player
+//                 &&
+//             (
+//             exists v : int .
+//             exists qfa : method .
+//             exists qxa : calldataargs .
+//             exists bal2 : int .
+//             << adv : Pricebet . qfa(qxa) $ v >>		
+//                 block.number == old(block.number) // TODO
+//                 ->
+//                 (<< player : Pricebet . win() $ 0 >>
+//                     (bal2 == balance[player] 
+//                     &&
+//                     bal2 < bal1)))
+//         )
+//     )
+// }
 
 
 
