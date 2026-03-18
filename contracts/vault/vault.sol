@@ -14,6 +14,7 @@ contract Vault {
    
     constructor (address recovery_, int wait_time_) payable {
     	require(msg.sender != recovery_);
+      require(wait_time_ >= 0);
         owner = msg.sender;
         recovery = recovery_;
         wait_time = wait_time_;
@@ -194,9 +195,50 @@ contract Vault {
 // }
 
 
+// valid (k=1)
+rule Tx_tx_assets_transfer_true {
+    (state == 0 && balance > 0) ->
+    (exists addr: address .
+    exists recipient: address .
+    exists f1: method .
+    exists args1: calldataargs .
+    exists msgvalue1 : int .
+    exists f2: method .
+    exists args2: calldataargs .
+    exists msgvalue2 : int .
+    (<< addr : Vault . f1(args1) $ msgvalue1 >>		
+         //block.number >= request_time + wait_time
+         //&&
+        << addr : Vault . f2(args2) $ msgvalue2 >>		
+              (balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+              //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)) + 1000)
+    ))
+}
 
-// rule Tx_tx_assets_transfer_true {
-//     (state == 0) ->
+
+// <Error> Parser error at outputTrace.lus:596:29: Unknown identifier 'constructor_recovery__args2_tx'
+// rule Tx_tx_assets_transfer_blocknumber_false_parserror {
+//     (state == 0 && balance > 0) ->
+//     (exists addr: address .
+//     exists recipient: address .
+//     exists f1: method .
+//     exists args1: calldataargs .
+//     exists msgvalue1 : int .
+//     (<< addr : Vault . f1(args1) $ msgvalue1 >>		
+//         block.number <= old(block.number)+2
+//         -> 
+//         (exists f2: method .
+//         exists args2: calldataargs .
+//         exists msgvalue2 : int .
+//         << addr : Vault . f2(args2) $ msgvalue2 >>		
+//               (balance[recipient] ==  old(old(balance[recipient])) + old(old(balance))))
+//               //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
+//     ))
+// }
+
+// this is not really expressible (at least for now), since we would need to re-quantify (universally) the blocknumber, but now it is implicitly quantified existentially
+// rule Tx_tx_assets_transfer_blocknumber_false {
+//     (state == 0 && balance > 0) ->
 //     (exists addr: address .
 //     exists recipient: address .
 //     exists f1: method .
@@ -206,14 +248,37 @@ contract Vault {
 //     exists args2: calldataargs .
 //     exists msgvalue2 : int .
 //     (<< addr : Vault . f1(args1) $ msgvalue1 >>		
-//         block.number >= request_time + wait_time
+//         block.number <= old(block.number)+2
 //         -> 
+//         (
 //         << addr : Vault . f2(args2) $ msgvalue2 >>		
-//               (balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+//               (balance[recipient] ==  old(old(balance[recipient])) + old(old(balance))))
 //               //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
 //     ))
 // }
 
+
+
+// invalid after 0 steps
+// rule Tx_tx_assets_transfer_false {
+//     (state == 0 && balance > 0) ->
+//     (exists addr: address .
+//     exists recipient: address .
+//     exists f1: method .
+//     exists args1: calldataargs .
+//     exists msgvalue1 : int .
+//     exists f2: method .
+//     exists args2: calldataargs .
+//     exists msgvalue2 : int .
+//     (<< addr : Vault . f1(args1) $ msgvalue1 >>		
+//         // block.number >= request_time + wait_time
+//         // -> 
+//         << addr : Vault . f2(args2) $ msgvalue2 >>		
+//               //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+//               //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
+//               (balance[recipient] == old(old(balance[recipient])) + old(old(balance)) + 1000)
+//     ))
+// }
 
 // rule Tx_tx_assets_transfer_false {
 //     (state == 0) ->
