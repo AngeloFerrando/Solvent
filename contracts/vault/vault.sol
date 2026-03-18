@@ -196,25 +196,60 @@ contract Vault {
 
 
 // valid (k=1)
-rule Tx_tx_assets_transfer_true {
-    (state == 0 && balance > 0) ->
-    (exists addr: address .
-    exists recipient: address .
-    exists f1: method .
-    exists args1: calldataargs .
-    exists msgvalue1 : int .
-    exists f2: method .
-    exists args2: calldataargs .
-    exists msgvalue2 : int .
-    (<< addr : Vault . f1(args1) $ msgvalue1 >>		
-         //block.number >= request_time + wait_time
-         //&&
-        << addr : Vault . f2(args2) $ msgvalue2 >>		
-              (balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
-              //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)) + 1000)
-    ))
-}
+// rule Tx_tx_assets_transfer_true {
+//     (state == 0 && balance > 0) ->
+//     (exists addr: address .
+//     exists recipient: address .
+//     exists f1: method .
+//     exists args1: calldataargs .
+//     exists msgvalue1 : int .
+//     exists f2: method .
+//     exists args2: calldataargs .
+//     exists msgvalue2 : int .
+//     (<< addr : Vault . f1(args1) $ msgvalue1 >>		
+//          //block.number >= request_time + wait_time
+//          //&&
+//         << addr : Vault . f2(args2) $ msgvalue2 >>		
+//               (balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+//               //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)) + 1000)
+//     ))
+// }
 
+// invalid after 0 steps
+// rule Tx_tx_assets_transfer_noBlockNum_interleaving_false {
+//     (state == 0 && balance > 0) ->
+//     (exists addr: address .
+//     exists recipient: address .
+//     exists f1: method .
+//     exists args1: calldataargs .
+//     exists msgvalue1 : int .
+//     exists f2: method .
+//     exists args2: calldataargs .
+//     exists msgvalue2 : int .
+//     (<< addr : Vault . f1(args1) $ msgvalue1 >>		
+//          block.number == old(block.number)
+//          &&
+//         << addr : Vault . f2(args2) $ msgvalue2 >>		
+//               (balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+//               //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)) + 1000)
+//     ))
+// }
+
+// valid (k=1)
+// rule IsPossible_noBlockNum_interleaving_true {
+//     (state == 0 && balance > 0) ->
+//     (exists addr: address .
+//     exists recipient: address .
+//     exists f1: method .
+//     exists args1: calldataargs .
+//     exists msgvalue1 : int .
+//     exists f2: method .
+//     exists args2: calldataargs .
+//     exists msgvalue2 : int .
+//     (<< addr : Vault . f1(args1) $ msgvalue1 >>		
+//          block.number == old(block.number)
+//     ))
+// }
 
 // <Error> Parser error at outputTrace.lus:596:29: Unknown identifier 'constructor_recovery__args2_tx'
 // rule Tx_tx_assets_transfer_blocknumber_false_parserror {
@@ -296,6 +331,39 @@ rule Tx_tx_assets_transfer_true {
 //               //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
 //     ))
 // }
+
+
+
+// <Error> Parser error at outputTrace.lus:291:11: Unknown identifier 'recipient_tx1'
+// rule Tx_tx_assets_transfer_no_interleaving_attack_true {
+//     (state == 0 && balance > 0) ->
+//     (exists addr: address .
+//     exists recipient: address .
+//     exists f1: method .
+//     exists args1: calldataargs .
+//     exists msgvalue1 : int .
+//     exists f2: method .
+//     exists args2: calldataargs .
+//     exists msgvalue2 : int .
+//     forall adversary: address .
+//     // (adversary != addr && adversary != recovery)
+//     // ->
+//     (
+//     << addr : Vault . f1(args1) $ msgvalue1 >>		
+//       forall f_adversary: method .
+//       forall args_adversary: calldataargs .
+//       forall msgvalue_adversary : int .
+//         << adversary : Vault . f_adversary(args_adversary) $ msgvalue_adversary >>		
+//         (
+//           // block.number == old(block.number)
+//           // &&
+//         << addr : Vault . f2(args2) $ msgvalue2 >>		
+//               (balance[recipient] ==  (old(old(balance[recipient]))) + (old(old(balance))))
+//               //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)) + 1000)
+//         )
+//     ))
+// }
+
 
 // rule Tx_tx_assets_transfer_no_attack {
 //     (state == 0) ->
