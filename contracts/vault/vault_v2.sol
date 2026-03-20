@@ -291,7 +291,7 @@ rule IsPossible_noBlockNum_interleaving_true {
 
 
 // invalid after 0 steps
-rule Tx_tx_assets_transfer_false {
+rule Tx_tx_assets_transfer_plus1000_false {
     (state == 0 && balance > 0) ->
     (exists addr: address .
     exists recipient: address .
