@@ -78,6 +78,16 @@ def run_for_property(text, contract, property_name, n_of_participants, timeout):
             print(r1.stderr, end='', file=sys.stderr)
         print(f"main_test.py exited with code {r1.returncode}", file=sys.stderr)
         return r1.returncode
+    # Ensure main_test.py produced the expected Lustre file
+    lus_path = os.path.join('out', 'outputTrace.lus')
+    if not os.path.exists(lus_path):
+        # Print translator output to help diagnose failures (e.g. type errors)
+        if r1.stdout:
+            print(r1.stdout, end='')
+        if r1.stderr:
+            print(r1.stderr, end='', file=sys.stderr)
+        print(f"Error: translator did not produce {lus_path}", file=sys.stderr)
+        return 2
 
     # Step 2: run Kind2 and capture output into a temporary file to avoid direct tty writes
     cmd2 = ['kind2/kind2', 'out/outputTrace.lus', '--smt_solver', 'cvc5', '--timeout', timeout]
@@ -91,6 +101,10 @@ def run_for_property(text, contract, property_name, n_of_participants, timeout):
     # Strip ANSI escape sequences (kind2 prints colored output)
     ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
     clean_output = ansi_escape.sub('', full_output)
+
+    # Remove specific non-fatal runtime error lines that clutter output but don't affect results
+    runtime_error_re = re.compile(r'^<Error>\s+Runtime error in bounded model checking:.*$', re.MULTILINE)
+    clean_output = runtime_error_re.sub('', clean_output)
 
     # Extract only the "Summary of properties" section and print the property lines
     summary_lines = []
