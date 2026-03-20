@@ -50,206 +50,192 @@ contract Vault {
     }
 }
 
-// rule Dummy_true {
-//     (state == 0 && balance == 0) ->
-//     (
-//     exists recipient: address .
-//     true
-//     )
-// }
+rule Dummy_true {
+    (state == 0 && balance == 0) ->
+    (
+    exists recipient: address .
+    true
+    )
+}
 
-// rule Dummy_false {
-//     (state == 0 && balance == 0) ->
-//     (
-//     exists recipient: address .
-//     state ==1
-//     )
-// }
+rule Dummy_false {
+    (state == 0 && balance == 0) ->
+    (
+    exists recipient: address .
+    state ==1
+    )
+}
 
 
-// rule Tx_tx_assets_transfer_trace_false1 {
-//     (state == 0 && balance == 0) ->
-//     (
-//     exists recipient: address .
-//     (<< owner : Vault . withdraw(recipient, balance) $ 0 >>		
-//         //block.number >= request_time + wait_time
-//         //true
-//         //->
-//         << owner : Vault . finalize() $ 0 >>		
-//               //(balance[recipient] ==  old(old(balance[recipient]))  )
-//               (balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
-//               //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
-//     ))
-// }
+rule Tx_tx_assets_transfer_trace_false2 {
+    (state == 0 && balance == 0) ->
+    (
+    exists recipient: address .
+    (<< owner : Vault . withdraw(recipient, balance) $ 0 >>		
+        //block.number >= request_time + wait_time
+        //true
+        //->
+        << owner : Vault . finalize() $ 0 >>		
+              //(balance[recipient] ==  old(old(balance[recipient]))  )
+              //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+              (balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
+    ))
+}
 
-// rule Tx_tx_assets_transfer_trace_false2 {
-//     (state == 0 && balance == 0) ->
-//     (
-//     exists recipient: address .
-//     (<< owner : Vault . withdraw(recipient, balance) $ 0 >>		
-//         //block.number >= request_time + wait_time
-//         //true
-//         //->
-//         << owner : Vault . finalize() $ 0 >>		
-//               //(balance[recipient] ==  old(old(balance[recipient]))  )
-//               //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
-//               (balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
-//     ))
-// }
-
-// rule Tx_tx_assets_transfer_trace_true {
-//     (state == 0 && balance > 0) ->
-//     (
-//     exists recipient: address .
-//     (<< owner : Vault . withdraw(recipient, balance) $ 0 >>		
-//         //block.number >= request_time + wait_time
-//         //true
-//         //->
-//         << owner : Vault . finalize() $ 0 >>		
-//               (balance[recipient] ==  old(old(balance[recipient]))  )
-//               //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
-//               //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
-//     ))
-// }
+rule Tx_tx_assets_transfer_trace_true {
+    (state == 0 && balance > 0) ->
+    (
+    exists recipient: address .
+    (<< owner : Vault . withdraw(recipient, balance) $ 0 >>		
+        //block.number >= request_time + wait_time
+        //true
+        //->
+        << owner : Vault . finalize() $ 0 >>		
+              (balance[recipient] ==  old(old(balance[recipient]))  )
+              //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+              //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
+    ))
+}
 
 // valid (k=1)
-// rule Withdraw_State_change_true {
-//     (state == 0 && balance > 0) ->
-//     (
-//     exists recipient: address .
-//     (<< owner : Vault . withdraw(recipient, balance) $ 0 >>	
-//       !lastReverted
-//       &&
-//       receiver == recipient
-//       &&
-//       amount == old(balance)
-//     ))
-// }
+rule Withdraw_State_change_true {
+    (state == 0 && balance > 0) ->
+    (
+    exists recipient: address .
+    (<< owner : Vault . withdraw(recipient, balance) $ 0 >>	
+      !lastReverted
+      &&
+      receiver == recipient
+      &&
+      amount == old(balance)
+    ))
+}
 
 // invalid after 0 steps
-// rule Withdraw_State_change_false {
-//     (state == 0 && balance > 0) ->
-//     (
-//     exists recipient: address .
-//     (<< owner : Vault . withdraw(recipient, balance) $ 0 >>	
-//       !lastReverted
-//       &&
-//       receiver == recipient
-//       &&
-//       amount == old(balance)+1
-//     ))
-// }
+rule Withdraw_State_change_false {
+    (state == 0 && balance > 0) ->
+    (
+    exists recipient: address .
+    (<< owner : Vault . withdraw(recipient, balance) $ 0 >>	
+      !lastReverted
+      &&
+      receiver == recipient
+      &&
+      amount == old(balance)+1
+    ))
+}
 
-// true up to 8 steps
-// rule Finilize_assets_transfer_true {
-//     (state == 1 && balance > 0 && amount > 0 && block.number >= request_time + wait_time) ->
-//         << owner : Vault . finalize() $ 0 >>		
-//               (balance[receiver] ==  old(balance[receiver]) +  amount  )
-// }
+/////// true up to 8 steps
+// false if receiver is address 0 !
+rule Finilize_assets_transfer_false_address0 {
+    (state == 1 && balance > 0 && amount > 0 && block.number >= request_time + wait_time) ->
+        << owner : Vault . finalize() $ 0 >>		
+              (balance[receiver] ==  old(balance[receiver]) +  amount  )
+}
 
 //invalid after 1 steps
-// rule Finilize_assets_transfer_false {
-//     (state == 1 && balance > 0 && amount > 0 && block.number >= request_time + wait_time) ->
-//         << owner : Vault . finalize() $ 0 >>		
-//               (balance[receiver] ==  old(balance[receiver]) +  amount + 1 )
-// }
+rule Finilize_assets_transfer_false {
+    (state == 1 && balance > 0 && amount > 0 && block.number >= request_time + wait_time) ->
+        << owner : Vault . finalize() $ 0 >>		
+              (balance[receiver] ==  old(balance[receiver]) +  amount + 1 )
+}
 
 //  valid (k=1)
-// rule Tx_tx_assets_transfer_trace_balance_true {
-//     (state == 0 && balance > 0) ->
-//     (
-//     exists recipient: address .
-//     (<< owner : Vault . withdraw(recipient, balance) $ 0 >>		
-//         //block.number >= request_time + wait_time
-//         //true
-//         //->
-//         << owner : Vault . finalize() $ 0 >>		
-//               (balance[recipient] ==  old(old(balance[recipient])) +  old(old(balance))  )
-//     ))
-// }
+rule Tx_tx_assets_transfer_trace_balance_true {
+    (state == 0 && balance > 0) ->
+    (
+    exists recipient: address .
+    (<< owner : Vault . withdraw(recipient, balance) $ 0 >>		
+        //block.number >= request_time + wait_time
+        //true
+        //->
+        << owner : Vault . finalize() $ 0 >>		
+              (balance[recipient] ==  old(old(balance[recipient])) +  old(old(balance))  )
+    ))
+}
 
 //invalid after 0 steps
-// rule Bal_leq0_false {
-//   balance <= 0
-// }
+rule Bal_leq0_false {
+  balance <= 0
+}
 
 //invalid after 0 steps
-// rule Bal_leq0_or_State0_false {
-//   not(state == 0 && balance > 0) 
-// }
+rule Bal_leq0_or_State0_false {
+  not(state == 0 && balance > 0) 
+}
 
 //  invalid after 0 steps
-// rule Tx_tx_assets_transfer_trace_balance_false {
-//     (state == 0 && balance > 0) ->
-//     (
-//     exists recipient: address .
-//     (<< owner : Vault . withdraw(recipient, balance) $ 0 >>		
-//         //block.number >= request_time + wait_time
-//         //true
-//         //->
-//         << owner : Vault . finalize() $ 0 >>		
-//               (balance[recipient] ==  old(old(balance[recipient])) +  old(old(balance)) + 1000 )
-//               //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
-//               //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
-//     ))
-// }
+rule Tx_tx_assets_transfer_trace_balance_false {
+    (state == 0 && balance > 0) ->
+    (
+    exists recipient: address .
+    (<< owner : Vault . withdraw(recipient, balance) $ 0 >>		
+        //block.number >= request_time + wait_time
+        //true
+        //->
+        << owner : Vault . finalize() $ 0 >>		
+              (balance[recipient] ==  old(old(balance[recipient])) +  old(old(balance)) + 1000 )
+              //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+              //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
+    ))
+}
 
 
 // valid (k=1)
-// rule Tx_tx_assets_transfer_true {
-//     (state == 0 && balance > 0) ->
-//     (exists addr: address .
-//     exists recipient: address .
-//     exists f1: method .
-//     exists args1: calldataargs .
-//     exists msgvalue1 : int .
-//     exists f2: method .
-//     exists args2: calldataargs .
-//     exists msgvalue2 : int .
-//     (<< addr : Vault . f1(args1) $ msgvalue1 >>		
-//          //block.number >= request_time + wait_time
-//          //&&
-//         << addr : Vault . f2(args2) $ msgvalue2 >>		
-//               (balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
-//               //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)) + 1000)
-//     ))
-// }
+rule Tx_tx_assets_transfer_true {
+    (state == 0 && balance > 0) ->
+    (exists addr: address .
+    exists recipient: address .
+    exists f1: method .
+    exists args1: calldataargs .
+    exists msgvalue1 : int .
+    exists f2: method .
+    exists args2: calldataargs .
+    exists msgvalue2 : int .
+    (<< addr : Vault . f1(args1) $ msgvalue1 >>		
+         //block.number >= request_time + wait_time
+         //&&
+        << addr : Vault . f2(args2) $ msgvalue2 >>		
+              (balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+              //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)) + 1000)
+    ))
+}
 
 // invalid after 0 steps
-// rule Tx_tx_assets_transfer_noBlockNum_interleaving_false {
-//     (state == 0 && balance > 0) ->
-//     (exists addr: address .
-//     exists recipient: address .
-//     exists f1: method .
-//     exists args1: calldataargs .
-//     exists msgvalue1 : int .
-//     exists f2: method .
-//     exists args2: calldataargs .
-//     exists msgvalue2 : int .
-//     (<< addr : Vault . f1(args1) $ msgvalue1 >>		
-//          block.number == old(block.number)
-//          &&
-//         << addr : Vault . f2(args2) $ msgvalue2 >>		
-//               (balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
-//               //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)) + 1000)
-//     ))
-// }
+rule Tx_tx_assets_transfer_noBlockNum_interleaving_false {
+    (state == 0 && balance > 0) ->
+    (exists addr: address .
+    exists recipient: address .
+    exists f1: method .
+    exists args1: calldataargs .
+    exists msgvalue1 : int .
+    exists f2: method .
+    exists args2: calldataargs .
+    exists msgvalue2 : int .
+    (<< addr : Vault . f1(args1) $ msgvalue1 >>		
+         block.number == old(block.number)
+         &&
+        << addr : Vault . f2(args2) $ msgvalue2 >>		
+              (balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+              //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)) + 1000)
+    ))
+}
 
 // valid (k=1)
-// rule IsPossible_noBlockNum_interleaving_true {
-//     (state == 0 && balance > 0) ->
-//     (exists addr: address .
-//     exists recipient: address .
-//     exists f1: method .
-//     exists args1: calldataargs .
-//     exists msgvalue1 : int .
-//     exists f2: method .
-//     exists args2: calldataargs .
-//     exists msgvalue2 : int .
-//     (<< addr : Vault . f1(args1) $ msgvalue1 >>		
-//          block.number == old(block.number)
-//     ))
-// }
+rule IsPossible_noBlockNum_interleaving_true {
+    (state == 0 && balance > 0) ->
+    (exists addr: address .
+    exists recipient: address .
+    exists f1: method .
+    exists args1: calldataargs .
+    exists msgvalue1 : int .
+    exists f2: method .
+    exists args2: calldataargs .
+    exists msgvalue2 : int .
+    (<< addr : Vault . f1(args1) $ msgvalue1 >>		
+         block.number == old(block.number)
+    ))
+}
 
 // <Error> Parser error at outputTrace.lus:596:29: Unknown identifier 'constructor_recovery__args2_tx'
 // rule Tx_tx_assets_transfer_blocknumber_false_parserror {
@@ -295,46 +281,27 @@ contract Vault {
 
 
 // invalid after 0 steps
-// rule Tx_tx_assets_transfer_false {
-//     (state == 0 && balance > 0) ->
-//     (exists addr: address .
-//     exists recipient: address .
-//     exists f1: method .
-//     exists args1: calldataargs .
-//     exists msgvalue1 : int .
-//     exists f2: method .
-//     exists args2: calldataargs .
-//     exists msgvalue2 : int .
-//     (<< addr : Vault . f1(args1) $ msgvalue1 >>		
-//         // block.number >= request_time + wait_time
-//         // -> 
-//         << addr : Vault . f2(args2) $ msgvalue2 >>		
-//               //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
-//               //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
-//               (balance[recipient] == old(old(balance[recipient])) + old(old(balance)) + 1000)
-//     ))
-// }
+rule Tx_tx_assets_transfer_false {
+    (state == 0 && balance > 0) ->
+    (exists addr: address .
+    exists recipient: address .
+    exists f1: method .
+    exists args1: calldataargs .
+    exists msgvalue1 : int .
+    exists f2: method .
+    exists args2: calldataargs .
+    exists msgvalue2 : int .
+    (<< addr : Vault . f1(args1) $ msgvalue1 >>		
+        // block.number >= request_time + wait_time
+        // -> 
+        << addr : Vault . f2(args2) $ msgvalue2 >>		
+              //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+              //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
+              (balance[recipient] == old(old(balance[recipient])) + old(old(balance)) + 1000)
+    ))
+}
 
-// rule Tx_tx_assets_transfer_false {
-//     (state == 0) ->
-//     (exists addr: address .
-//     exists recipient: address .
-//     exists f1: method .
-//     exists args1: calldataargs .
-//     exists msgvalue1 : int .
-//     exists f2: method .
-//     exists args2: calldataargs .
-//     exists msgvalue2 : int .
-//     (<< addr : Vault . f1(args1) $ msgvalue1 >>		
-//         << addr : Vault . f2(args2) $ msgvalue2 >>		
-//               (balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)) + 1)
-//               //(balance[recipient] == old(old(balance[recipient])) + old(amount) + 1000)
-//     ))
-// }
-
-
-
-// <Error> Parser error at outputTrace.lus:291:11: Unknown identifier 'recipient_tx1'
+// bug <Error> Parser error at out/outputTrace.lus:284:34: Unknown identifier 'aw_1_nx10'
 // rule Tx_tx_assets_transfer_no_interleaving_attack_true {
 //     (state == 0 && balance > 0) ->
 //     (exists addr: address .
@@ -345,20 +312,20 @@ contract Vault {
 //     exists f2: method .
 //     exists args2: calldataargs .
 //     exists msgvalue2 : int .
-//     forall adversary: address .
+//     //forall adversary: address .
 //     // (adversary != addr && adversary != recovery)
 //     // ->
 //     (
 //     << addr : Vault . f1(args1) $ msgvalue1 >>		
-//       forall f_adversary: method .
-//       forall args_adversary: calldataargs .
-//       forall msgvalue_adversary : int .
-//         << adversary : Vault . f_adversary(args_adversary) $ msgvalue_adversary >>		
+//       // forall f_adversary: method .
+//       // forall args_adversary: calldataargs .
+//       // forall msgvalue_adversary : int .
+//         //<< adversary : Vault . f_adversary(args_adversary) $ msgvalue_adversary >>		
 //         (
 //           // block.number == old(block.number)
 //           // &&
 //         << addr : Vault . f2(args2) $ msgvalue2 >>		
-//               (balance[recipient] ==  (old(old(balance[recipient]))) + (old(old(balance))))
+//               (balance[recipient] ==  old(old(old(balance[recipient]))) + old(old(old(balance))))
 //               //(balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)) + 1000)
 //         )
 //     ))
@@ -421,55 +388,15 @@ contract Vault {
 //     ))
 // }
 
-// rule Fin_owner_liquid_true {
-//     (state == 1 && block.number >= request_time + wait_time
-//     ) ->
-//     (exists f: method .
-//     exists args: calldataargs .
-//     exists msgvalue : int .
-//     (<< owner : Vault . f(args) $ msgvalue >>		
-//               (balance[receiver]>= old(balance[receiver]) + amount)
-//     ))
-// }
-
-
-
-/*
-// liquid after the deadline has passed
-property fin_owner_liquid {
-    Forall xa
-      [
-        state==1 && block.number >= request_time + wait_time
-          -> 
-        Exists tx [1, owner]
-        [
-          ((<tx>balance[receiver] >= balance[receiver] + amount))
-        ]
-      ]
+rule Fin_owner_liquid_true {
+    (state == 1 && block.number >= request_time + wait_time
+    ) ->
+    (exists f: method .
+    exists args: calldataargs .
+    exists msgvalue : int .
+    (<< owner : Vault . f(args) $ msgvalue >>		
+              (balance[receiver]>= old(balance[receiver]) + amount)
+    ))
 }
 
-property canc_recovery_liquid {
-    Forall xa
-      [
-        state==1 && block.number < request_time + wait_time
-          -> 
-        Exists tx [1, recovery]
-        [
-          (<tx>state == 0)
-        ]
-      ]
-}
 
-// notliquid because all the transactions in tx must be in the same block
-property wd_fin_owner_notliquid {
-    Forall xa
-      [
-        state==0 
-          -> 
-        Exists tx [2, owner]
-        [
-          ((<tx>balance[xa] >= balance[xa] + balance))
-        ]
-      ]
-}
-*/
