@@ -1,4 +1,5 @@
 // Adapted from: https://github.com/fsainas/contracts-verification-benchmark/tree/main/contracts/vault
+// mutation: in finalize, transfer amount-1 instead of amount
 
 contract Vault {
     address owner;
@@ -40,7 +41,7 @@ contract Vault {
         require(msg.sender == owner);
 
         state = 0; // IDLE	
-        receiver.transfer(amount)
+        receiver.transfer(amount - 1)
     }
 
     function cancel() {
