@@ -1,5 +1,4 @@
 // Adapted from: https://github.com/fsainas/contracts-verification-benchmark/tree/main/contracts/vault
-// mutation: in finalize, transfer amount-1 instead of amount
 
 contract Vault {
     address owner;
@@ -37,11 +36,10 @@ contract Vault {
 
     function finalize() {
         require(state == 1); // REQ
-        require(block.number >= request_time + wait_time);
         require(msg.sender == owner);
 
         state = 0; // IDLE	
-        receiver.transfer(amount - 1)
+        receiver.transfer(amount)
     }
 
     function cancel() {
@@ -141,8 +139,8 @@ rule Finilize_assets_transfer_false {
               (balance[receiver] ==  old(balance[receiver]) +  amount + 1 )
 }
 
-
-rule Tx_tx_assets_transfer_trace_balance_false {
+//  valid (k=1)
+rule Tx_tx_assets_transfer_trace_balance_true {
     (state == 0 && balance > 0) ->
     (
     exists recipient: address .
@@ -196,7 +194,8 @@ rule Tx_tx_assets_transfer_nostate0_false {
     ))
 }
 
-rule Tx_tx_assets_transfer_false {
+// valid (k=1)
+rule Tx_tx_assets_transfer_true {
     (state == 0) ->
     (exists addr: address .
     exists recipient: address .
