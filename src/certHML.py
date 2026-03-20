@@ -26,19 +26,23 @@ def find_matching_brace(text, start):
     return -1
 
 
-def remove_other_rules(text, property_name):
-    """Remove every active (non-commented) rule block except the one named property_name."""
-    # Match only lines that begin with optional whitespace then 'rule'
+def get_all_rule_names(text):
+    """Return a list of all active (non-commented) rule names in order."""
     pattern = re.compile(r'^[ \t]*rule\s+(\w+)\s*\{', re.MULTILINE)
-
-    # Collect (rule_start, brace_end, name) for all active rules
     rules = []
     for match in pattern.finditer(text):
         name = match.group(1)
-        brace_pos = match.end() - 1  # regex ends with '\{', so last char is '{'
+        brace_pos = match.end() - 1
         brace_end = find_matching_brace(text, brace_pos)
         if brace_end != -1:
             rules.append((match.start(), brace_end, name))
+    return rules
+
+
+def remove_other_rules(text, property_name, rules=None):
+    """Remove every active (non-commented) rule block except the one named property_name."""
+    if rules is None:
+        rules = get_all_rule_names(text)
 
     if not any(name == property_name for _, _, name in rules):
         raise ValueError(f"Active rule '{property_name}' not found in file")
@@ -55,24 +59,14 @@ def remove_other_rules(text, property_name):
     return ''.join(parts)
 
 
-def main():
-    if len(sys.argv) != 5:
-        print("Usage: certHML.py <contract> <property> <n_of_participants> <timeout>")
-        sys.exit(1)
+def run_for_property(text, contract, property_name, n_of_participants, timeout):
+    """Run the full verification pipeline for a single property."""
+    print(f"\n{'='*60}")
+    print(f"Property: {property_name}")
+    print(f"{'='*60}")
 
-    contract = sys.argv[1]
-    property_name = sys.argv[2]
-    n_of_participants = sys.argv[3]
-    timeout = sys.argv[4]
-
-    # Read the contract file (never modify the original)
-    with open(contract, 'r') as f:
-        text = f.read()
-
-    # Build modified text containing only the target rule
     modified_text = remove_other_rules(text, property_name)
 
-    # Write to tmp/verification_task.sol
     os.makedirs('tmp', exist_ok=True)
     with open('tmp/verification_task.sol', 'w') as f:
         f.write(modified_text)
@@ -87,7 +81,7 @@ def main():
         print(r1.stderr, end='', file=sys.stderr)
     if r1.returncode != 0:
         print(f"main_test.py exited with code {r1.returncode}", file=sys.stderr)
-        sys.exit(r1.returncode)
+        return r1.returncode
 
     # Step 2: run Kind2
     cmd2 = ['kind2/kind2', 'out/outputTrace.lus', '--smt_solver', 'cvc5', '--timeout', timeout]
@@ -105,6 +99,37 @@ def main():
     with open(out_path, 'w') as f:
         f.write(output)
     print(f"\nResults saved to {out_path}")
+    return 0
+
+
+def main():
+    if len(sys.argv) != 5:
+        print("Usage: certHML.py <contract> <property|ALL> <n_of_participants> <timeout>")
+        sys.exit(1)
+
+    contract = sys.argv[1]
+    property_name = sys.argv[2]
+    n_of_participants = sys.argv[3]
+    timeout = sys.argv[4]
+
+    # Read the contract file (never modify the original)
+    with open(contract, 'r') as f:
+        text = f.read()
+
+    if property_name == 'ALL':
+        rules = get_all_rule_names(text)
+        if not rules:
+            print("No active rules found in the contract.")
+            sys.exit(1)
+        exit_code = 0
+        for _, _, name in rules:
+            rc = run_for_property(text, contract, name, n_of_participants, timeout)
+            if rc != 0:
+                exit_code = rc
+        sys.exit(exit_code)
+    else:
+        rc = run_for_property(text, contract, property_name, n_of_participants, timeout)
+        sys.exit(rc)
 
 
 if __name__ == '__main__':
