@@ -180,10 +180,8 @@ rule Tx_tx_assets_transfer_trace_balance_false {
     ))
 }
 
-
-// valid (k=1)
-rule Tx_tx_assets_transfer_true {
-    (state == 0 && balance > 0) ->
+rule Tx_tx_assets_transfer_nostate0_false {
+    (state == 0) ->
     (exists addr: address .
     exists recipient: address .
     exists f1: method .
@@ -194,7 +192,24 @@ rule Tx_tx_assets_transfer_true {
     exists msgvalue2 : int .
     (<< addr : Vault . f1(args1) $ msgvalue1 >>		
         << addr : Vault . f2(args2) $ msgvalue2 >>		
-              (balance[recipient] ==  old(old(balance[recipient])) + old(old(balance)))
+              (balance[recipient] ==  old(old(balance[recipient] +balance)))
+    ))
+}
+
+// valid (k=1)
+rule Tx_tx_assets_transfer_true {
+    (state == 0) ->
+    (exists addr: address .
+    exists recipient: address .
+    exists f1: method .
+    exists args1: calldataargs .
+    exists msgvalue1 : int .
+    exists f2: method .
+    exists args2: calldataargs .
+    exists msgvalue2 : int .
+    (<< addr : Vault . f1(args1) $ msgvalue1 >>		
+        << addr : Vault . f2(args2) $ msgvalue2 >>		
+              (balance[recipient] ==  old(old(balance[recipient] +balance)))
     ))
 }
 
