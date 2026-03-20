@@ -53,25 +53,24 @@ rule Additivity_true {
     exists reverted2 : bool .
     exists reverted3 : bool .
     (c1 >= 0 && c2 >= 0)
-    //(!reverted3 && !reverted2 && !reverted1)
     ->
     (
     (<< addr : Bank . deposit() $ c1 >>		
+        reverted1 == lastReverted 
+          &&
        (<< addr : Bank . deposit() $ c2 >>		
             (
                 v12_storage == funds[addr]
                 && reverted2 == lastReverted
             )
         )
-        && reverted1 == lastReverted
         )
     &&
     (<< addr : Bank . deposit() $ (c1+c2) >>		
             (v3_storage ==  funds[addr] 
                 && reverted3 == lastReverted ))
     &&
-    (reverted3 || reverted2 || reverted1 || v12_storage == v3_storage)
-    //(v12_storage == v3_storage)
+    ((!reverted1 && !reverted2) -> (!reverted3 && v12_storage == v3_storage))
     )
 }
 
@@ -156,25 +155,28 @@ rule Additivity_reverted_implication_false {
 }
 
 // maybe wrong?
-// rule Additivity_reverted_implication_true {
-//     forall addr : address .
-//     forall c1 : int .
-//     forall c2 : int .
-//     exists reverted1 : bool .
-//     exists reverted2 : bool .
-//     exists reverted3 : bool .
-//     (<< addr : Bank . deposit() $ c1 >>		
-//        (<< addr : Bank . deposit() $ c2 >>		
-//              reverted2 == lastReverted
-//         )
-//         && reverted1 == lastReverted
-//         )
-//     &&
-//     (<< addr : Bank . deposit() $ (c1+c2) >>	
-//                 reverted3 == lastReverted )
-//     &&
-//     (reverted3 -> (reverted1 || reverted2) )
-// }
+rule Additivity_reverted_implication_true {
+    forall addr : address .
+    forall c1 : int .
+    forall c2 : int .
+    exists reverted1 : bool .
+    exists reverted2 : bool .
+    exists reverted3 : bool .
+    (<< addr : Bank . deposit() $ c1 >>		
+        reverted1 == lastReverted
+        &&
+       (<< addr : Bank . deposit() $ c2 >>		
+             reverted2 == lastReverted
+        )
+        )
+    &&
+    (<< addr : Bank . deposit() $ (c1+c2) >>	
+                reverted3 == lastReverted )
+    &&
+    (reverted3 -> (reverted1 || reverted2) )
+}
+
+
 
 // invalid after 0 steps
 rule Additivity_false {
@@ -283,6 +285,7 @@ rule Reversibility_deposit {
     exists c2 : int .
     (<< addr : Bank . deposit() $ c1 >>		
        (<< addr : Bank . f(args) $ c2 >>		
+            //(balance[addr] == old(old(balance[addr])))))
             (funds[addr] == old(old(funds[addr])))))
 }
 
@@ -294,20 +297,19 @@ rule Reversibility_deposit {
 //         "exists-unique-asset-change": "after a non-reverting `deposit` or `withdraw` transaction to the Bank contract, the ETH balance of exactly one account (except the contract's) have changed",
 
 // valid (k=1)
+// TODO errore
 rule Exists_unique_asset_change {
     forall addrA : address .
     forall msg_value : int .
     forall f : method .
     (
     forall args: calldataargs .
-    forall amt: int .
     (
         << addrA : Bank . f(args) $ msg_value >>
         (
             (!lastReverted) 
             ->
             (
-
                 exists addrB1 : address .  
                 addrB1 != this
                     ->
@@ -315,10 +317,12 @@ rule Exists_unique_asset_change {
                         balance[addrB1] != old(balance[addrB1])
                             &&
                         forall addrB2 : address .  
-                        (( addrB2 != this)
+                        (
+                        ( addrB2 != this 
+                        && addrB2 != addrB1
+                        )
                         ->
-                        balance[addrB2] == old(balance[addrB2]))
-
+                        balance[addrB2] == 1+old(balance[addrB2]))
                     )
             )
         )
