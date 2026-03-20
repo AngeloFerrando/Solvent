@@ -61,44 +61,74 @@ def remove_other_rules(text, property_name, rules=None):
 
 def run_for_property(text, contract, property_name, n_of_participants, timeout):
     """Run the full verification pipeline for a single property."""
-    print(f"\n{'='*60}")
-    print(f"Property: {property_name}")
-    print(f"{'='*60}")
-
+    # Only emit filtered Kind2 summary lines (no extra headings)
     modified_text = remove_other_rules(text, property_name)
 
     os.makedirs('tmp', exist_ok=True)
     with open('tmp/verification_task.sol', 'w') as f:
         f.write(modified_text)
 
-    # Step 1: translate to Lustre
+    # Step 1: translate to Lustre (suppress verbose translator output)
     cmd1 = ['python3', 'src/main_test.py', 'tmp/verification_task.sol', '2', n_of_participants]
-    print(f"Running: {' '.join(cmd1)}")
     r1 = subprocess.run(cmd1, capture_output=True, text=True)
-    if r1.stdout:
-        print(r1.stdout, end='')
-    if r1.stderr:
-        print(r1.stderr, end='', file=sys.stderr)
     if r1.returncode != 0:
+        if r1.stdout:
+            print(r1.stdout, end='')
+        if r1.stderr:
+            print(r1.stderr, end='', file=sys.stderr)
         print(f"main_test.py exited with code {r1.returncode}", file=sys.stderr)
         return r1.returncode
 
-    # Step 2: run Kind2
+    # Step 2: run Kind2 and capture output into a temporary file to avoid direct tty writes
     cmd2 = ['kind2/kind2', 'out/outputTrace.lus', '--smt_solver', 'cvc5', '--timeout', timeout]
-    print(f"Running: {' '.join(cmd2)}")
-    r2 = subprocess.run(cmd2, capture_output=True, text=True)
-    output = r2.stdout
-    if r2.stderr:
-        output += r2.stderr
-    print(output, end='')
+    os.makedirs('tmp', exist_ok=True)
+    raw_path = 'tmp/kind2_raw.out'
+    with open(raw_path, 'w') as fout:
+        r2 = subprocess.run(cmd2, stdout=fout, stderr=subprocess.STDOUT, text=True)
+    with open(raw_path, 'r') as fin:
+        full_output = fin.read()
 
-    # Save results
+    # Strip ANSI escape sequences (kind2 prints colored output)
+    ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
+    clean_output = ansi_escape.sub('', full_output)
+
+    # Extract only the "Summary of properties" section and print the property lines
+    summary_lines = []
+    if 'Summary of properties:' in clean_output:
+        idx = clean_output.find('Summary of properties:')
+        tail = clean_output[idx:]
+        for line in tail.splitlines():
+            s = line.strip()
+            if not s:
+                continue
+            if s.startswith('Summary of properties:'):
+                continue
+            if s.startswith('----') or s.startswith('==='):
+                continue
+            # Accept lines that look like "<name>: <status>"
+            if ':' in s:
+                # ignore header-like lines that are not property summaries
+                if any(k in s for k in ['Analyzing', 'Summary', 'System']):
+                    continue
+                summary_lines.append(s)
+
+    # Fallback: if we couldn't parse a summary, include last 40 chars of output
+    if not summary_lines:
+        summary_text = full_output.strip()
+        if len(summary_text) > 2000:
+            summary_text = summary_text[-2000:]
+        print(summary_text)
+        output_to_save = summary_text
+    else:
+        output_to_save = '\n'.join(summary_lines)
+        print(output_to_save)
+
+    # Save results (only the filtered summary)
     contract_base = os.path.basename(contract)
     os.makedirs('out_results', exist_ok=True)
     out_path = f"out_results/{contract_base}_{property_name}_{n_of_participants}_{timeout}.out"
     with open(out_path, 'w') as f:
-        f.write(output)
-    print(f"\nResults saved to {out_path}")
+        f.write(output_to_save)
     return 0
 
 
