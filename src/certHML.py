@@ -120,7 +120,38 @@ def run_for_property(text, contract, property_name, n_of_participants, timeout):
         print(summary_text)
         output_to_save = summary_text
     else:
-        output_to_save = '\n'.join(summary_lines)
+        # For each summary line, try to find proof method and timing in the cleaned output
+        annotated = []
+        for s in summary_lines:
+            # s looks like 'Name: status'
+            name = s.split(':', 1)[0].strip()
+            extra = ''
+            # 1) valid by <method> after Xs
+            m = re.search(rf'Property\s+{re.escape(name)}\s+is\s+valid\s+by\s+(?P<method>.*?)\s+after\s+(?P<time>[0-9.]+)s', clean_output, re.IGNORECASE)
+            if m:
+                method = m.group('method').strip()
+                time = m.group('time').strip()
+                extra = f' by {method} after {time}s.'
+            else:
+                # 2) true up to X steps (sometimes reported earlier)
+                m2 = re.search(rf'Property\s+{re.escape(name)}\s+is\s+true\s+up\s+to\s+(?P<steps>\d+)\s+steps', clean_output, re.IGNORECASE)
+                if m2:
+                    steps = m2.group('steps')
+                    extra = f' true up to {steps} steps'
+                else:
+                    # 3) invalid after X steps
+                    m3 = re.search(rf'Property\s+{re.escape(name)}\s+is\s+invalid\s+after\s+(?P<steps>\d+)\s+steps', clean_output, re.IGNORECASE)
+                    if m3:
+                        steps = m3.group('steps')
+                        extra = f' invalid after {steps} steps'
+                    else:
+                        # 4) sometimes the summary uses 'true up to' directly in the summary line; check for 'true up to' or 'invalid after' in the summary itself
+                        if 'true up to' in s:
+                            extra = ''
+                        elif 'invalid after' in s:
+                            extra = ''
+            annotated.append(s + (extra if extra else ''))
+        output_to_save = '\n'.join(annotated)
         print(output_to_save)
 
     # Save results (only the filtered summary)
