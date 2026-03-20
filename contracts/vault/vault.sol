@@ -398,7 +398,8 @@ rule Tx_tx_assets_transfer_false {
 //     ))
 // }
 
-rule Fin_owner_liquid_true {
+// false if receiver is address 0 !
+rule Fin_owner_liquid_false {
     (state == 1 && block.number >= request_time + wait_time
     ) ->
     (exists f: method .
