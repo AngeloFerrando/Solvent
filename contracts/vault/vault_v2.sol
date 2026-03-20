@@ -212,6 +212,45 @@ rule Tx_tx_assets_transfer_false {
     ))
 }
 
+rule Tx_tx_assets_transfer_noBlockNum_interleaving_true {
+    (state == 0 && wait_time > 0) ->
+    (exists addr: address .
+    exists recipient: address .
+    exists f1: method .
+    exists args1: calldataargs .
+    exists msgvalue1 : int .
+    exists f2: method .
+    exists args2: calldataargs .
+    exists msgvalue2 : int .
+    (<< addr : Vault . f1(args1) $ msgvalue1 >>		
+         block.number == old(block.number)
+         &&
+        << addr : Vault . f2(args2) $ msgvalue2 >>		
+          forall addr3 : address .
+              (balance[addr3] ==  old(old(balance[addr3])))
+    ))
+}
+
+
+rule Tx_tx_assets_transfer_noBlockNum_interleaving2_true {
+    (state == 0) ->
+    (exists addr: address .
+    exists recipient: address .
+    exists f1: method .
+    exists args1: calldataargs .
+    exists msgvalue1 : int .
+    exists f2: method .
+    exists args2: calldataargs .
+    exists msgvalue2 : int .
+    (<< addr : Vault . f1(args1) $ msgvalue1 >>		
+         (block.number - old(block.number) <= wait_time)
+         &&
+        << addr : Vault . f2(args2) $ msgvalue2 >>		
+          forall addr3 : address .
+              (balance[addr3] ==  old(old(balance[addr3])))
+    ))
+}
+
 // invalid after 0 steps
 rule Tx_tx_assets_transfer_noBlockNum_interleaving_false {
     (state == 0 && balance > 0) ->
