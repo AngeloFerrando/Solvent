@@ -181,7 +181,6 @@ rule Tx_tx_assets_transfer_trace_balance_false {
 }
 
 rule Tx_tx_assets_transfer_nostate0_false {
-    (state == 0) ->
     (exists addr: address .
     exists recipient: address .
     exists f1: method .
