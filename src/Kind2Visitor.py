@@ -552,6 +552,15 @@ tel
             else:
                 body = new_body + ')'
         body = add_to_body + '\n' + body
+        # Implicit require(addr_param != a0) for each address-typed function parameter
+        for arg_var, (full_name, arg_type, _) in self.__args_map.items():
+            if arg_type == 'address' and full_name.startswith(self.__prefix + '_'):
+                err = 'lastReverted_' + str(self.__globals_index['lastReverted'])
+                self.__globals_index['lastReverted'] += 1
+                if not self.__visit_properties:
+                    body += f'\nif (not(not({full_name}=a0))) then {err}=true; else {err}=false; fi'
+                else:
+                    body += f'\n and (if (not(not({full_name}_tx=a0))) then {err}_nx=true else {err}_nx=false)'
         if self.__prefix == 'constructor':
             for (g, ty) in self.__globals:
                 if ty == 'bool':
