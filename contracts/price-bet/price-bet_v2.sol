@@ -7,15 +7,16 @@ contract Bet {
     int rate;
     int deadline
 
-    constructor(address oracle_addr, int initial_rate, uint _timeout) {
+    constructor(address oracle_addr, int initial_rate, int _timeout) payable {
         require(oracle_addr != this);
+        require(_timeout > 0);
         owner = msg.sender;
         oracle = oracle_addr; 
         rate = initial_rate ;
         deadline = block.number + _timeout
     }
 
-    function join() {
+    function join() payable {
         require (balance == 2 * msg.value && !player_has_joined) ;
         player = msg.sender ;
         player_has_joined = true 
@@ -33,8 +34,12 @@ contract Bet {
     }
 }
 
+// rule Block_test {
+//     block.number < deadline
+// }
+
 rule Running_example1_false {
-    (rate >= 100 && player_has_joined)
+    (rate > 100 && player_has_joined && block.number > deadline)
     -> 
     exists a : address .
     exists f : method .
@@ -45,7 +50,7 @@ rule Running_example1_false {
 }
 
 rule Running_example1_before_deadline_true {
-    (rate >= 100 && player_has_joined && block.number < deadline)
+    (rate > 100 && player_has_joined && block.number < deadline)
     -> 
     exists a : address .
     exists f : method .
@@ -96,7 +101,7 @@ rule Running_example3_Frontrun_simple_trace_true {
 }
 
 
-rule Running_example3_Frontrun_simple_false {
+rule Running_example3_Frontrun_notByOracle_simple_false {
     (player_has_joined)
     ->
     (

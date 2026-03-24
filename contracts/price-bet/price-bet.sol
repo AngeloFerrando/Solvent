@@ -6,14 +6,15 @@ contract Bet {
     address player;
     int rate
 
-    constructor(address oracle_addr, int initial_rate) {
+    constructor(address oracle_addr, int initial_rate) payable {
         require(oracle_addr != this);
         owner = msg.sender;
         oracle = oracle_addr; 
-        rate = initial_rate 
+        rate = initial_rate;
+        player_has_joined = false
     }
 
-    function join() {
+    function join() payable {
         require (balance == 2 * msg.value && !player_has_joined) ;
         player = msg.sender ;
         player_has_joined = true 
@@ -31,7 +32,7 @@ contract Bet {
 }
 
 
-rule No_Frozen_Funds {
+rule No_Frozen_Funds_false {
     player_has_joined
     ->
     forall a : address .
@@ -45,7 +46,7 @@ rule No_Frozen_Funds {
 // if the rate is greater than 100 and the player has joined, then some user can fire some transaction to withdraw the entire pot
 // true up to 5 steps
 rule Running_example1_true {
-    (rate >= 100 && player_has_joined)
+    (rate > 100 && player_has_joined)
     -> 
     exists a : address .
     exists f : method .
@@ -56,7 +57,7 @@ rule Running_example1_true {
 }
 
 rule Running_example1_plus1_false {
-    (rate >= 100 && player_has_joined)
+    (rate > 100 && player_has_joined)
     -> 
     exists a : address .
     exists f : method .
@@ -122,7 +123,7 @@ rule Running_example3_Frontrun_simple_trace_true {
 }
 
 
-rule Running_example3_Frontrun_simple_false {
+rule Running_example3_Frontrun_notByOracle_simple_true {
     (player_has_joined)
     ->
     (
@@ -137,3 +138,19 @@ rule Running_example3_Frontrun_simple_false {
     )
 }
 
+
+rule Running_example3_Frontrun_notByOracle_noblocknumIncrease_false {
+    (player_has_joined)
+    ->
+    (
+    forall a : address .
+    exists b : address .
+    b != oracle &&
+    exists f : method .
+    exists args : calldataargs .
+    << b : Pricebet . f(args) $ 0 >>		
+        block.number == old(block.number) &&
+        << a : Pricebet . win() $ 0 >>
+            lastReverted
+    )
+}
