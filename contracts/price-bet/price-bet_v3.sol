@@ -1,5 +1,3 @@
-// mutation: a deadline is added, and the win function is only callable before the deadline.
-
 contract Bet {
 
     bool player_has_joined;
@@ -7,15 +5,15 @@ contract Bet {
     address oracle;
     address player;
     int rate;
-    int deadline
+    bool player_won
 
-    constructor(address oracle_addr, int initial_rate, int _timeout) payable {
+    constructor(address oracle_addr, int initial_rate) payable {
         require(oracle_addr != this);
-        require(_timeout > 0);
         owner = msg.sender;
         oracle = oracle_addr; 
-        rate = initial_rate ;
-        deadline = block.number + _timeout
+        rate = initial_rate;
+        player_has_joined = false;
+        player_won = false
     }
 
     function join() payable {
@@ -24,24 +22,40 @@ contract Bet {
         player_has_joined = true 
     }
     function win() {
-        require(rate >100);
-        require(player_has_joined);
-        require(block.number < deadline);
+        require(player_won);
         player.transfer(balance) 
     }
-
-    function set(int x) {
+    function set() {
         require (msg.sender == oracle) ;
-        rate = x 
+        player_won = true
     }
+
+    // bugged
+    // function set(int x) {
+    //     require (msg.sender == oracle) ;
+    //     rate = x ;
+    //     if (rate > 100 && player_has_joined) {
+    //         player_won = true
+    //     } else { 
+    //         skip 
+    //     }
+    // }
 }
 
-// rule Block_test {
-//     block.number < deadline
-// }
+
+rule No_Frozen_Funds_false {
+    player_has_joined
+    ->
+    forall a : address .
+    exists f : method .
+    exists args : calldataargs .    
+    exists msgvalue : int .    
+    << a : Bet . f(args) $ msgvalue >>
+        balance[owner] == old(balance[owner] + balance)		
+}
 
 rule Running_example1_false {
-    (rate > 100 && player_has_joined && block.number > deadline)
+    (rate > 100 && player_has_joined)
     -> 
     exists a : address .
     exists f : method .
@@ -51,18 +65,18 @@ rule Running_example1_false {
         balance[a] == old(balance[a] + balance)		
 }
 
-rule Running_example1_before_deadline_true {
-    (rate > 100 && player_has_joined && block.number < deadline)
+rule Running_example1_plus1_false {
+    (rate > 100 && player_has_joined)
     -> 
     exists a : address .
     exists f : method .
     exists args : calldataargs .    
     exists msgvalue : int .    
     << a : Bet . f(args) $ msgvalue >>
-        balance[a] == old(balance[a] + balance)
+        balance[a] == old(balance[a] + balance) + 1		
 }
 
-rule Running_example2_false {
+rule Running_example2_true {
     player_has_joined
     ->
     exists a1 : address .
@@ -76,9 +90,24 @@ rule Running_example2_false {
             (balance == 0)
 }
 
+rule Running_example2_baleq1_false {
+    player_has_joined
+    ->
+    exists a1 : address .
+    exists a2 : address .
+    exists f1 : method .
+    exists f2 : method .
+    exists args1 : calldataargs .
+    exists args2 : calldataargs .
+    << a1 : Pricebet . f1(args1) $ 0 >>		
+        << a2 : Pricebet . f2(args2) $ 0 >>		
+            (balance == 1)
+}
 
-rule Running_example3_Frontrun_simple_true {
-    (player_has_joined)
+
+
+rule Running_example3_Frontrun_simple_false {
+    (player_won)
     ->
     (
     forall a : address .
@@ -91,21 +120,20 @@ rule Running_example3_Frontrun_simple_true {
     )
 }
 
-rule Running_example3_Frontrun_simple_trace_true {
-    (player_has_joined)
-    ->
-    (
-    forall a : address .
-    << oracle : Pricebet . set(50) $ 0 >>		
-        << a : Pricebet . win() $ 0 >>
-            lastReverted
-    )
-}
+// rule Running_example3_Frontrun_simple_trace_false {
+//     (player_has_joined)
+//     ->
+//     (
+//     forall a : address .
+//     << oracle : Pricebet . set(50) $ 0 >>		
+//         << a : Pricebet . win() $ 0 >>
+//             lastReverted
+//     )
+// }
 
 
-
-rule Running_example3_Frontrun_notByOracle_simple_true {
-    (player_has_joined)
+rule Running_example3_Frontrun_notByOracle_simple_false {
+    (player_won)
     ->
     (
     forall a : address .
@@ -121,7 +149,7 @@ rule Running_example3_Frontrun_notByOracle_simple_true {
 
 
 rule Running_example3_Frontrun_notByOracle_noblocknumIncrease_false {
-    (player_has_joined)
+    (player_won)
     ->
     (
     forall a : address .
