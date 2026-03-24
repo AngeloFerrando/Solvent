@@ -448,6 +448,18 @@ rule Liquidity_true {
     )
 }
 
+rule Liquidity_only_user_true {
+    forall addrA : address .
+    forall addrB : address .
+    exists f: method .
+    exists args: calldataargs .
+    exists c1 : int .
+    (<< addrB : Bank . f(args) $ c1 >>		
+            (old(funds[addrA]) > 0 && funds[addrA] == 0) -> addrA == addrB
+    )
+}
+
+
 // property deposit_not_revert_liquid {
 //     Forall xa
 //       [
@@ -472,3 +484,5 @@ rule Liquidity_true {
 //         ]
 //       ]
 // }
+
+
