@@ -70,6 +70,14 @@ def run_for_property(text, contract, property_name, n_of_participants, timeout):
 
     # Step 1: translate to Lustre (suppress verbose translator output)
     cmd1 = ['python3', 'src/main_test.py', 'tmp/verification_task.sol', '2', n_of_participants]
+
+    # Delete any existing outputTrace.lus so we can reliably detect whether the
+    # translator produces a fresh one. This prevents stale output from a previous
+    # run being silently reused when the translator fails.
+    lus_path = os.path.join('out', 'outputTrace.lus')
+    if os.path.exists(lus_path):
+        os.remove(lus_path)
+
     r1 = subprocess.run(cmd1, capture_output=True, text=True)
     if r1.returncode != 0:
         if r1.stdout:
@@ -78,10 +86,9 @@ def run_for_property(text, contract, property_name, n_of_participants, timeout):
             print(r1.stderr, end='', file=sys.stderr)
         print(f"main_test.py exited with code {r1.returncode}", file=sys.stderr)
         return r1.returncode
+
     # Ensure main_test.py produced the expected Lustre file
-    lus_path = os.path.join('out', 'outputTrace.lus')
     if not os.path.exists(lus_path):
-        # Print translator output to help diagnose failures (e.g. type errors)
         if r1.stdout:
             print(r1.stdout, end='')
         if r1.stderr:
