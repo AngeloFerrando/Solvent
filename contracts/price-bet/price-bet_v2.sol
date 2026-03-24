@@ -4,13 +4,15 @@ contract Bet {
     address owner;
     address oracle;
     address player;
-    int rate
+    int rate;
+    int deadline
 
-    constructor(address oracle_addr, int initial_rate) {
+    constructor(address oracle_addr, int initial_rate, uint _timeout) {
         require(oracle_addr != this);
         owner = msg.sender;
         oracle = oracle_addr; 
-        rate = initial_rate 
+        rate = initial_rate ;
+        deadline = block.number + _timeout
     }
 
     function join() {
@@ -21,6 +23,7 @@ contract Bet {
     function win() {
         require(rate >100);
         require(player_has_joined);
+        require(block.number < deadline);
         player.transfer(balance) 
     }
 
@@ -28,31 +31,6 @@ contract Bet {
         require (msg.sender == oracle) ;
         rate = x 
     }
-}
-
-
-rule No_Frozen_Funds {
-    player_has_joined
-    ->
-    forall a : address .
-    exists f : method .
-    exists args : calldataargs .    
-    exists msgvalue : int .    
-    << a : Bet . f(args) $ msgvalue >>
-        balance[owner] == old(balance[owner] + balance)		
-}
-
-// if the rate is greater than 100 and the player has joined, then some user can fire some transaction to withdraw the entire pot
-// true up to 5 steps
-rule Running_example1_true {
-    (rate >= 100 && player_has_joined)
-    -> 
-    exists a : address .
-    exists f : method .
-    exists args : calldataargs .    
-    exists msgvalue : int .    
-    << a : Bet . f(args) $ msgvalue >>
-        balance[a] == old(balance[a] + balance)		
 }
 
 rule Running_example1_false {
@@ -63,21 +41,18 @@ rule Running_example1_false {
     exists args : calldataargs .    
     exists msgvalue : int .    
     << a : Bet . f(args) $ msgvalue >>
-        balance[a] == old(balance[a] + balance) + 1		
+        balance[a] == old(balance[a] + balance)		
 }
 
-rule Running_example2_true {
-    player_has_joined
-    ->
-    exists a1 : address .
-    exists a2 : address .
-    exists f1 : method .
-    exists f2 : method .
-    exists args1 : calldataargs .
-    exists args2 : calldataargs .
-    << a1 : Pricebet . f1(args1) $ 0 >>		
-        << a2 : Pricebet . f2(args2) $ 0 >>		
-            (balance == 0)
+rule Running_example1_before_deadline_true {
+    (rate >= 100 && player_has_joined && block.number < deadline)
+    -> 
+    exists a : address .
+    exists f : method .
+    exists args : calldataargs .    
+    exists msgvalue : int .    
+    << a : Bet . f(args) $ msgvalue >>
+        balance[a] == old(balance[a] + balance)
 }
 
 rule Running_example2_false {
@@ -91,9 +66,8 @@ rule Running_example2_false {
     exists args2 : calldataargs .
     << a1 : Pricebet . f1(args1) $ 0 >>		
         << a2 : Pricebet . f2(args2) $ 0 >>		
-            (balance == 1)
+            (balance == 0)
 }
-
 
 
 rule Running_example3_Frontrun_simple_true {
