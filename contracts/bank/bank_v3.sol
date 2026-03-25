@@ -31,7 +31,8 @@ contract Bank {
     }
 }  
 
-rule Additivity_true {
+// @groundtruth: True
+rule Additivity {
     forall addr : address .
     forall c1 : int .
     forall c2 : int .
@@ -63,7 +64,8 @@ rule Additivity_true {
 }
 
 
-rule Reversibility_deposit_false {
+// @groundtruth: False
+rule Reversibility_deposit {
     forall addr : address .
     forall c1 : int .
     exists f: method .
@@ -75,7 +77,8 @@ rule Reversibility_deposit_false {
             (funds[addr] == old(old(funds[addr])))))
 }
 
-rule Exists_unique_asset_change_true {
+// @groundtruth: True
+rule Exists_unique_asset_change {
     forall addrA : address .
     forall msg_value : int .
     forall f : method .

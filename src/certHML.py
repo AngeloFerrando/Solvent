@@ -4,6 +4,13 @@ import sys
 import os
 import subprocess
 
+# ANSI color codes for terminal output
+GREEN = '\033[92m'
+RED = '\033[91m'
+YELLOW = '\033[93m'
+BOLD = '\033[1m'
+RESET = '\033[0m'
+
 
 def find_matching_brace(text, start):
     """Return index of '}' matching the '{' at position start, skipping // comments."""
@@ -24,6 +31,31 @@ def find_matching_brace(text, start):
                 return i
         i += 1
     return -1
+
+
+def get_ground_truth_map(text):
+    """Return a dict {rule_name: bool} for rules preceded by a '// @groundtruth: True/False' annotation.
+
+    An annotation applies to the next rule declaration, ignoring any blank
+    lines or comment-only lines in between.  Any non-blank, non-comment line
+    resets the pending annotation.
+    """
+    ground_truth = {}
+    last_gt = None
+    for line in text.splitlines():
+        stripped = line.strip()
+        gt_match = re.match(r'//\s*@groundtruth:\s*(True|False)\s*$', stripped, re.IGNORECASE)
+        if gt_match:
+            last_gt = gt_match.group(1).strip().lower() == 'true'
+        elif re.match(r'rule\s+(\w+)\s*\{', stripped):
+            rule_name = re.match(r'rule\s+(\w+)\s*\{', stripped).group(1)
+            if last_gt is not None:
+                ground_truth[rule_name] = last_gt
+            last_gt = None
+        elif stripped and not stripped.startswith('//'):
+            # Non-blank, non-comment line: discard any pending annotation
+            last_gt = None
+    return ground_truth
 
 
 def get_all_rule_names(text):
@@ -59,8 +91,14 @@ def remove_other_rules(text, property_name, rules=None):
     return ''.join(parts)
 
 
-def run_for_property(text, contract, property_name, n_of_participants, timeout):
+def _strip_ansi(text):
+    """Remove ANSI escape sequences from *text*."""
+    return re.sub(r'\x1B\[[0-?]*[ -/]*[@-~]', '', text)
+
+
+def run_for_property(text, contract, property_name, n_of_participants, timeout, ground_truth_map=None):
     """Run the full verification pipeline for a single property."""
+    contract_base = os.path.basename(contract)
     # Only emit filtered Kind2 summary lines (no extra headings)
     modified_text = remove_other_rules(text, property_name)
 
@@ -151,8 +189,8 @@ def run_for_property(text, contract, property_name, n_of_participants, timeout):
             m = re.search(rf'Property\s+{re.escape(name)}\s+is\s+valid\s+by\s+(?P<method>.*?)\s+after\s+(?P<time>[0-9.]+)s', clean_output, re.IGNORECASE)
             if m:
                 method = m.group('method').strip()
-                time = m.group('time').strip()
-                extra = f' by {method} after {time}s.'
+                time_val = m.group('time').strip()
+                extra = f' by {method} after {time_val}s.'
             else:
                 # 2) true up to X steps (sometimes reported earlier)
                 m2 = re.search(rf'Property\s+{re.escape(name)}\s+is\s+true\s+up\s+to\s+(?P<steps>\d+)\s+steps', clean_output, re.IGNORECASE)
@@ -160,23 +198,40 @@ def run_for_property(text, contract, property_name, n_of_participants, timeout):
                     steps = m2.group('steps')
                     extra = f' true up to {steps} steps'
                 else:
-                    # 3) invalid after X steps
-                    m3 = re.search(rf'Property\s+{re.escape(name)}\s+is\s+invalid\s+after\s+(?P<steps>\d+)\s+steps', clean_output, re.IGNORECASE)
+                    # 3) invalid — extract timing from the <Failure> line
+                    m3 = re.search(rf'Property\s+{re.escape(name)}\s+is\s+invalid\b[^\n]*after\s+(?P<time>[0-9.]+)s', clean_output, re.IGNORECASE)
                     if m3:
-                        steps = m3.group('steps')
-                        extra = f' invalid after {steps} steps'
+                        time_val = m3.group('time').strip()
+                        extra = f', {time_val}s'
+            # Build the base line with contract-name prefix
+            line = f'{contract_base} - {s}{extra}'
+
+            # Ground truth check
+            gt_suffix = ''
+            if ground_truth_map and name in ground_truth_map:
+                expected = ground_truth_map[name]
+                s_lower = s.lower()
+                if 'invalid' in s_lower:
+                    actual = False
+                elif 'valid' in s_lower:
+                    actual = True
+                else:
+                    actual = None
+                if actual is not None:
+                    if actual == expected:
+                        gt_suffix = f' {GREEN}(ground truth: OK){RESET}'
                     else:
-                        # 4) sometimes the summary uses 'true up to' directly in the summary line; check for 'true up to' or 'invalid after' in the summary itself
-                        if 'true up to' in s:
-                            extra = ''
-                        elif 'invalid after' in s:
-                            extra = ''
-            annotated.append(s + (extra if extra else ''))
-        output_to_save = '\n'.join(annotated)
-        print(output_to_save)
+                        gt_suffix = f' {RED}(ground truth: NOT OK){RESET}'
+                else:
+                    gt_suffix = f' {YELLOW}(ground truth: unknown){RESET}'
+
+            annotated.append(line + gt_suffix)
+
+        display_output = '\n'.join(annotated)
+        output_to_save = _strip_ansi(display_output)
+        print(display_output)
 
     # Save results (only the filtered summary)
-    contract_base = os.path.basename(contract)
     os.makedirs('out_results', exist_ok=True)
     out_path = f"out_results/{contract_base}_{property_name}_{n_of_participants}_{timeout}.out"
     with open(out_path, 'w') as f:
@@ -198,6 +253,8 @@ def main():
     with open(contract, 'r') as f:
         text = f.read()
 
+    ground_truth_map = get_ground_truth_map(text)
+
     if property_name == 'ALL':
         rules = get_all_rule_names(text)
         if not rules:
@@ -205,12 +262,12 @@ def main():
             sys.exit(1)
         exit_code = 0
         for _, _, name in rules:
-            rc = run_for_property(text, contract, name, n_of_participants, timeout)
+            rc = run_for_property(text, contract, name, n_of_participants, timeout, ground_truth_map)
             if rc != 0:
                 exit_code = rc
         sys.exit(exit_code)
     else:
-        rc = run_for_property(text, contract, property_name, n_of_participants, timeout)
+        rc = run_for_property(text, contract, property_name, n_of_participants, timeout, ground_truth_map)
         sys.exit(rc)
 
 

@@ -32,7 +32,8 @@ contract Bet {
 }
 
 
-rule No_Frozen_Funds_false {
+// @groundtruth: False
+rule No_Frozen_Funds {
     player_has_joined
     ->
     forall a : address .
@@ -45,7 +46,8 @@ rule No_Frozen_Funds_false {
 
 // if the rate is greater than 100 and the player has joined, then some user can fire some transaction to withdraw the entire pot
 // true up to 5 steps
-rule Running_example1_true {
+// @groundtruth: True
+rule Running_example1 {
     (rate > 100 && player_has_joined)
     -> 
     exists a : address .
@@ -56,7 +58,8 @@ rule Running_example1_true {
         balance[a] == old(balance[a] + balance)		
 }
 
-rule Running_example1_plus1_false {
+// @groundtruth: False
+rule Running_example1_plus1 {
     (rate > 100 && player_has_joined)
     -> 
     exists a : address .
@@ -67,7 +70,8 @@ rule Running_example1_plus1_false {
         balance[a] == old(balance[a] + balance) + 1		
 }
 
-rule Running_example2_true {
+// @groundtruth: True
+rule Running_example2 {
     player_has_joined
     ->
     exists a1 : address .
@@ -81,7 +85,8 @@ rule Running_example2_true {
             (balance == 0)
 }
 
-rule Running_example2_baleq1_false {
+// @groundtruth: False
+rule Running_example2_baleq1 {
     player_has_joined
     ->
     exists a1 : address .
@@ -97,7 +102,8 @@ rule Running_example2_baleq1_false {
 
 
 
-rule Running_example3_Frontrun_simple_true {
+// @groundtruth: True
+rule Running_example3_Frontrun_simple {
     (player_has_joined)
     ->
     (
@@ -111,7 +117,8 @@ rule Running_example3_Frontrun_simple_true {
     )
 }
 
-rule Running_example3_Frontrun_simple_trace_true {
+// @groundtruth: True
+rule Running_example3_Frontrun_simple_trace {
     (player_has_joined)
     ->
     (
@@ -123,7 +130,8 @@ rule Running_example3_Frontrun_simple_trace_true {
 }
 
 
-rule Running_example3_Frontrun_notByOracle_simple_true {
+// @groundtruth: True
+rule Running_example3_Frontrun_notByOracle_simple {
     (player_has_joined)
     ->
     (
@@ -139,7 +147,8 @@ rule Running_example3_Frontrun_notByOracle_simple_true {
 }
 
 
-rule Running_example3_Frontrun_notByOracle_noblocknumIncrease_false {
+// @groundtruth: False
+rule Running_example3_Frontrun_notByOracle_noblocknumIncrease {
     (player_has_joined)
     ->
     (

@@ -42,8 +42,9 @@ contract Bank {
 // }
 
 
+// @groundtruth: True
 // valid (k=1)
-rule Additivity_true {
+rule Additivity {
     forall addr : address .
     forall c1 : int .
     forall c2 : int .
@@ -79,7 +80,8 @@ rule Additivity_true {
 //  tx1: deposit(2)
 //  tx2: deposit(-1)
 //  tx3: deposit(1)
-rule Additivity_false1 { 
+// @groundtruth: False
+rule Additivity_AssumpRev3 { 
     forall addr : address .
     forall c1 : int .
     forall c2 : int .
@@ -134,6 +136,7 @@ rule Additivity_false1 {
 // }
 
 // invalid after 0 steps
+// @groundtruth: False
 rule Additivity_reverted_implication_false {
     forall addr : address .
     forall c1 : int .
@@ -155,6 +158,7 @@ rule Additivity_reverted_implication_false {
 }
 
 // maybe wrong?
+// @groundtruth: True
 rule Additivity_reverted_implication_true {
     forall addr : address .
     forall c1 : int .
@@ -179,7 +183,8 @@ rule Additivity_reverted_implication_true {
 
 
 // invalid after 0 steps
-rule Additivity_false {
+// @groundtruth: False
+rule Additivity_NoAssumpRev {
     forall c1 : int .
     forall c2 : int .
     exists v12_storage : int .
@@ -239,7 +244,8 @@ rule DepositNotRevImplWithNotRev_Hint {
 }
 
 // valid (k=1)
-rule Deposit_increase_funds_true {
+// @groundtruth: True
+rule Deposit_increase_funds {
     forall addr : address .
     forall c1 : int .
     (<< addr : Bank . deposit() $ c1 >>		
@@ -248,7 +254,8 @@ rule Deposit_increase_funds_true {
 }
 
 // valid (k=1)
-rule Withdraw_decrease_funds_true {
+// @groundtruth: True
+rule Withdraw_decrease_funds {
     forall addr : address .
     forall c1 : int .
     (<< addr : Bank . withdraw(c1) $ 0 >>		
@@ -258,7 +265,8 @@ rule Withdraw_decrease_funds_true {
 
 
 // valid (k=1)
-rule Deposit_monotonicity_true {
+// @groundtruth: True
+rule Deposit_monotonicity_ifNotRev {
     forall addr : address .
     forall c1 : int .
     c1 > 0 ->
@@ -268,7 +276,8 @@ rule Deposit_monotonicity_true {
 }
 
 // invalid after 0 steps
-rule Deposit_monotonicity_false {
+// @groundtruth: False
+rule Deposit_monotonicity {
     forall addr : address .
     forall c1 : int .
     c1 > 0 ->
@@ -285,7 +294,6 @@ rule Reversibility_deposit {
     exists c2 : int .
     (<< addr : Bank . deposit() $ c1 >>		
        (<< addr : Bank . f(args) $ c2 >>		
-            //(balance[addr] == old(old(balance[addr])))))
             (funds[addr] == old(old(funds[addr])))))
 }
 
@@ -438,7 +446,8 @@ rule Sender_asset_change {
 //     )
 // }
 
-rule Liquidity_true {
+// @groundtruth: True
+rule Liquidity {
     forall addr : address .
     exists f: method .
     exists args: calldataargs .
@@ -448,7 +457,8 @@ rule Liquidity_true {
     )
 }
 
-rule Liquidity_only_user_true {
+// @groundtruth: True
+rule Liquidity_only_user {
     forall addrA : address .
     forall addrB : address .
     exists f: method .

@@ -72,7 +72,8 @@ contract Pricebet {
 
 // false
 // // False because deadline not yet passed
-rule No_Frozen_Funds_false {
+// @groundtruth: False
+rule No_Frozen_Funds {
     forall a : address .
     exists f : method .
     exists args : calldataargs .    
@@ -83,7 +84,8 @@ rule No_Frozen_Funds_false {
 
 // false
 // // False because deadline not yet passed
-rule No_Frozen_Funds_owner_false {
+// @groundtruth: False
+rule No_Frozen_Funds_owner {
     exists f : method .
     exists args : calldataargs .    
     exists msgvalue : int .    
@@ -92,7 +94,8 @@ rule No_Frozen_Funds_owner_false {
 }
 
 //true up to 5 steps
-rule No_Frozen_Funds_after_deadline_true {
+// @groundtruth: True
+rule No_Frozen_Funds_after_deadline {
     block.number >= deadline ->
     (
         forall a : address .
@@ -105,7 +108,8 @@ rule No_Frozen_Funds_after_deadline_true {
 }
 
 // true up to 6 steps
-rule No_Frozen_Funds_after_deadline_exists_true {
+// @groundtruth: True
+rule No_Frozen_Funds_after_deadline_exists {
     block.number >= deadline ->
     (
         exists a : address .
@@ -118,7 +122,8 @@ rule No_Frozen_Funds_after_deadline_exists_true {
 }
 
 //  true up to 6 steps
-rule No_Frozen_Funds_after_deadline_hint_true {
+// @groundtruth: True
+rule No_Frozen_Funds_after_deadline_hint {
     block.number >= deadline ->
     (
         forall a : address .
@@ -130,7 +135,8 @@ rule No_Frozen_Funds_after_deadline_hint_true {
     )
 }
 
-rule No_Frozen_Funds_after_deadline_exists_hint_true {
+// @groundtruth: True
+rule No_Frozen_Funds_after_deadline_exists_hint {
     block.number >= deadline ->
     (
         exists a : address .
@@ -145,7 +151,8 @@ rule No_Frozen_Funds_after_deadline_exists_hint_true {
 
 
 // invalid after 2 steps
-rule Player_cannot_win_false {
+// @groundtruth: False
+rule Player_cannot_win {
     ! (
             exists bal1 : int .
             (<< player : Pricebet . win() $0 >> 
@@ -245,7 +252,8 @@ rule Player_cannot_win_false {
 // Running example phi1
 // if the rate is greater than 100 and the player has joined, then some user can fire some transaction to withdraw the entire pot
 // true up to 5 steps
-rule Running_example1_true {
+// @groundtruth: True
+rule Running_example1 {
     (oracle_exchange_rate >= exchange_rate && player_has_joined)
     -> 
     exists a : address .
@@ -257,7 +265,8 @@ rule Running_example1_true {
 }
 
 
-rule Running_example2_true {
+// @groundtruth: True
+rule Running_example2 {
     exists a1 : address .
     exists a2 : address .
     exists f1 : method .
@@ -270,7 +279,8 @@ rule Running_example2_true {
 }
 
 // valid k=1
-rule Running_example3_Frontrun_simple_true {
+// @groundtruth: True
+rule Running_example3_Frontrun_simple {
     oracle_constructed
     ->
     (
@@ -285,7 +295,8 @@ rule Running_example3_Frontrun_simple_true {
 }
 
 // valid k=1
-rule Running_example3_Frontrun_simple_noOracleOwner_false {
+// @groundtruth: False
+rule Running_example3_Frontrun_simple_noOracleOwner {
     oracle_constructed
     ->
     (

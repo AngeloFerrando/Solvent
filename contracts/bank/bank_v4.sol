@@ -26,7 +26,8 @@ contract Bank {
 }  
 
 
-rule Additivity_true {
+// @groundtruth: True
+rule Additivity {
     forall addr : address .
     forall c1 : int .
     forall c2 : int .
@@ -58,7 +59,8 @@ rule Additivity_true {
 }
 
 
-rule Reversibility_deposit_true {
+// @groundtruth: True
+rule Reversibility_deposit {
     forall addr : address .
     forall c1 : int .
     exists f: method .

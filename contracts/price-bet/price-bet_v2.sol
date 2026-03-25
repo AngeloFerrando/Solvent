@@ -40,7 +40,8 @@ contract Bet {
 //     block.number < deadline
 // }
 
-rule Running_example1_false {
+// @groundtruth: False
+rule Running_example1 {
     (rate > 100 && player_has_joined && block.number > deadline)
     -> 
     exists a : address .
@@ -51,7 +52,8 @@ rule Running_example1_false {
         balance[a] == old(balance[a] + balance)		
 }
 
-rule Running_example1_before_deadline_true {
+// @groundtruth: True
+rule Running_example1_before_deadline {
     (rate > 100 && player_has_joined && block.number < deadline)
     -> 
     exists a : address .
@@ -62,7 +64,8 @@ rule Running_example1_before_deadline_true {
         balance[a] == old(balance[a] + balance)
 }
 
-rule Running_example2_false {
+// @groundtruth: False
+rule Running_example2 {
     player_has_joined
     ->
     exists a1 : address .
@@ -77,7 +80,8 @@ rule Running_example2_false {
 }
 
 
-rule Running_example3_Frontrun_simple_true {
+// @groundtruth: True
+rule Running_example3_Frontrun_simple {
     (player_has_joined)
     ->
     (
@@ -91,7 +95,8 @@ rule Running_example3_Frontrun_simple_true {
     )
 }
 
-rule Running_example3_Frontrun_simple_trace_true {
+// @groundtruth: True
+rule Running_example3_Frontrun_simple_trace {
     (player_has_joined)
     ->
     (
@@ -104,7 +109,8 @@ rule Running_example3_Frontrun_simple_trace_true {
 
 
 
-rule Running_example3_Frontrun_notByOracle_simple_true {
+// @groundtruth: True
+rule Running_example3_Frontrun_notByOracle_simple {
     (player_has_joined)
     ->
     (
@@ -120,7 +126,8 @@ rule Running_example3_Frontrun_notByOracle_simple_true {
 }
 
 
-rule Running_example3_Frontrun_notByOracle_noblocknumIncrease_false {
+// @groundtruth: False
+rule Running_example3_Frontrun_notByOracle_noblocknumIncrease {
     (player_has_joined)
     ->
     (

@@ -51,6 +51,7 @@ contract Vault {
     }
 }
 
+// @groundtruth: True
 rule Dummy_true {
     (state == 0 && balance == 0) ->
     (
@@ -59,6 +60,7 @@ rule Dummy_true {
     )
 }
 
+// @groundtruth: False
 rule Dummy_false {
     (state == 0 && balance == 0) ->
     (
@@ -83,7 +85,8 @@ rule Tx_tx_assets_transfer_trace_false2 {
     ))
 }
 
-rule Tx_tx_assets_transfer_trace_true {
+// @groundtruth: True
+rule Tx_tx_assets_transfer_trace {
     (state == 0 && balance > 0) ->
     (
     exists recipient: address .
@@ -99,7 +102,8 @@ rule Tx_tx_assets_transfer_trace_true {
 }
 
 // valid (k=1)
-rule Withdraw_State_change_true {
+// @groundtruth: True
+rule Withdraw_State_change {
     (state == 0 && balance > 0) ->
     (
     exists recipient: address .
@@ -113,7 +117,8 @@ rule Withdraw_State_change_true {
 }
 
 // invalid after 0 steps
-rule Withdraw_State_change_false {
+// @groundtruth: False
+rule Withdraw_State_change_plus1 {
     (state == 0 && balance > 0) ->
     (
     exists recipient: address .
@@ -128,21 +133,24 @@ rule Withdraw_State_change_false {
 
 /////// true up to 8 steps
 // false if receiver is address 0 !
-rule Finilize_assets_transfer_false_address0 {
+// @groundtruth: False
+rule Finilize_assets_transfer_address0 {
     (state == 1 && balance > 0 && amount > 0 && block.number >= request_time + wait_time) ->
         << owner : Vault . finalize() $ 0 >>		
               (balance[receiver] ==  old(balance[receiver]) +  amount  )
 }
 
 //invalid after 1 steps
-rule Finilize_assets_transfer_false {
+// @groundtruth: False
+rule Finilize_assets_transfer {
     (state == 1 && balance > 0 && amount > 0 && block.number >= request_time + wait_time) ->
         << owner : Vault . finalize() $ 0 >>		
               (balance[receiver] ==  old(balance[receiver]) +  amount + 1 )
 }
 
 
-rule Tx_tx_assets_transfer_trace_balance_false {
+// @groundtruth: False
+rule Tx_tx_assets_transfer_trace_balanceOrig {
     (state == 0 && balance > 0) ->
     (
     exists recipient: address .
@@ -156,17 +164,20 @@ rule Tx_tx_assets_transfer_trace_balance_false {
 }
 
 //invalid after 0 steps
-rule Bal_leq0_false {
+// @groundtruth: False
+rule Bal_leq0 {
   balance <= 0
 }
 
 //invalid after 0 steps
-rule Bal_leq0_or_State0_false {
+// @groundtruth: False
+rule Bal_leq0_or_State0 {
   not(state == 0 && balance > 0) 
 }
 
 //  invalid after 0 steps
-rule Tx_tx_assets_transfer_trace_balance_false {
+// @groundtruth: False
+rule Tx_tx_assets_transfer_trace_balance {
     (state == 0 && balance > 0) ->
     (
     exists recipient: address .
@@ -181,7 +192,8 @@ rule Tx_tx_assets_transfer_trace_balance_false {
     ))
 }
 
-rule Tx_tx_assets_transfer_nostate0_false {
+// @groundtruth: False
+rule Tx_tx_assets_transfer_nostate0 {
     (exists addr: address .
     exists recipient: address .
     exists f1: method .
@@ -196,7 +208,8 @@ rule Tx_tx_assets_transfer_nostate0_false {
     ))
 }
 
-rule Tx_tx_assets_transfer_false {
+// @groundtruth: False
+rule Tx_tx_assets_transfer {
     (state == 0) ->
     (exists addr: address .
     exists recipient: address .
@@ -212,7 +225,8 @@ rule Tx_tx_assets_transfer_false {
     ))
 }
 
-rule Tx_tx_assets_transfer_noBlockNum_interleaving_true {
+// @groundtruth: True
+rule Tx_tx_assets_transfer_noBlockNum_interleaving_balanceDontChange {
     (state == 0 && wait_time > 0) ->
     (exists addr: address .
     exists recipient: address .
@@ -232,7 +246,8 @@ rule Tx_tx_assets_transfer_noBlockNum_interleaving_true {
 }
 
 
-rule Tx_tx_assets_transfer_noBlockNum_interleaving2_true {
+// @groundtruth: True
+rule Tx_tx_assets_transfer_noBlockNum_interleaving2 {
     (state == 0) ->
     (exists addr: address .
     exists recipient: address .
@@ -252,7 +267,8 @@ rule Tx_tx_assets_transfer_noBlockNum_interleaving2_true {
 }
 
 // invalid after 0 steps
-rule Tx_tx_assets_transfer_noBlockNum_interleaving_false {
+// @groundtruth: False
+rule Tx_tx_assets_transfer_noBlockNum_interleaving_BalanceIncrease {
     (state == 0 && balance > 0) ->
     (exists addr: address .
     exists recipient: address .
@@ -271,7 +287,8 @@ rule Tx_tx_assets_transfer_noBlockNum_interleaving_false {
 }
 
 // valid (k=1)
-rule IsPossible_noBlockNum_interleaving_true {
+// @groundtruth: True
+rule IsPossible_noBlockNum_interleaving {
     (state == 0 && balance > 0) ->
     (exists addr: address .
     exists recipient: address .
@@ -330,7 +347,8 @@ rule IsPossible_noBlockNum_interleaving_true {
 
 
 // invalid after 0 steps
-rule Tx_tx_assets_transfer_plus1000_false {
+// @groundtruth: False
+rule Tx_tx_assets_transfer_plus1000 {
     (state == 0 && balance > 0) ->
     (exists addr: address .
     exists recipient: address .
@@ -438,7 +456,8 @@ rule Tx_tx_assets_transfer_plus1000_false {
 // }
 
 // false if receiver is address 0 !
-rule Fin_owner_liquid_false {
+// @groundtruth: False
+rule Fin_owner_liquid {
     (state == 1 && block.number >= request_time + wait_time
     ) ->
     (exists f: method .
