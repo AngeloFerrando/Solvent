@@ -70,7 +70,7 @@ rule Dummy_false {
 }
 
 
-rule Tx_tx_assets_transfer_trace_false2 {
+rule Two_steps_drainability_trace_false2 {
     (state == 0 && balance == 0) ->
     (
     exists recipient: address .
@@ -86,7 +86,7 @@ rule Tx_tx_assets_transfer_trace_false2 {
 }
 
 // @groundtruth: True
-rule Tx_tx_assets_transfer_trace {
+rule Two_steps_drainability_trace {
     (state == 0 && balance > 0) ->
     (
     exists recipient: address .
@@ -150,7 +150,7 @@ rule Finilize_assets_transfer {
 
 
 // @groundtruth: False
-rule Tx_tx_assets_transfer_trace_balanceOrig {
+rule Two_steps_drainability_trace_balanceOrig {
     (state == 0 && balance > 0) ->
     (
     exists recipient: address .
@@ -177,7 +177,7 @@ rule Bal_leq0_or_State0 {
 
 //  invalid after 0 steps
 // @groundtruth: False
-rule Tx_tx_assets_transfer_trace_balance {
+rule Two_steps_drainability_trace_balance {
     (state == 0 && balance > 0) ->
     (
     exists recipient: address .
@@ -193,7 +193,7 @@ rule Tx_tx_assets_transfer_trace_balance {
 }
 
 // @groundtruth: False
-rule Tx_tx_assets_transfer_nostate0 {
+rule Two_steps_drainability_nostate0 {
     (exists addr: address .
     exists recipient: address .
     exists f1: method .
@@ -209,7 +209,7 @@ rule Tx_tx_assets_transfer_nostate0 {
 }
 
 // @groundtruth: False
-rule Tx_tx_assets_transfer {
+rule Two_steps_drainability {
     (state == 0) ->
     (exists addr: address .
     exists recipient: address .
@@ -226,7 +226,7 @@ rule Tx_tx_assets_transfer {
 }
 
 // @groundtruth: True
-rule Tx_tx_assets_transfer_noBlockNum_interleaving_balanceDontChange {
+rule Two_steps_drainability_non_inflation_balanceDontChange {
     (state == 0 && wait_time > 0) ->
     (exists addr: address .
     exists recipient: address .
@@ -247,7 +247,7 @@ rule Tx_tx_assets_transfer_noBlockNum_interleaving_balanceDontChange {
 
 
 // @groundtruth: True
-rule Tx_tx_assets_transfer_noBlockNum_interleaving2 {
+rule Two_steps_drainability_non_inflation2 {
     (state == 0) ->
     (exists addr: address .
     exists recipient: address .
@@ -268,7 +268,7 @@ rule Tx_tx_assets_transfer_noBlockNum_interleaving2 {
 
 // invalid after 0 steps
 // @groundtruth: False
-rule Tx_tx_assets_transfer_noBlockNum_interleaving_BalanceIncrease {
+rule Two_steps_drainability_non_inflation_BalanceIncrease {
     (state == 0 && balance > 0) ->
     (exists addr: address .
     exists recipient: address .
@@ -304,7 +304,7 @@ rule IsPossible_noBlockNum_interleaving {
 }
 
 // <Error> Parser error at outputTrace.lus:596:29: Unknown identifier 'constructor_recovery__args2_tx'
-// rule Tx_tx_assets_transfer_blocknumber_false_parserror {
+// rule Two_steps_drainability_blocknumber_false_parserror {
 //     (state == 0 && balance > 0) ->
 //     (exists addr: address .
 //     exists recipient: address .
@@ -324,7 +324,7 @@ rule IsPossible_noBlockNum_interleaving {
 // }
 
 // this is not really expressible (at least for now), since we would need to re-quantify (universally) the blocknumber, but now it is implicitly quantified existentially
-// rule Tx_tx_assets_transfer_blocknumber_false {
+// rule Two_steps_drainability_blocknumber_false {
 //     (state == 0 && balance > 0) ->
 //     (exists addr: address .
 //     exists recipient: address .
@@ -348,7 +348,7 @@ rule IsPossible_noBlockNum_interleaving {
 
 // invalid after 0 steps
 // @groundtruth: False
-rule Tx_tx_assets_transfer_plus1000 {
+rule Two_steps_drainability_plus1000 {
     (state == 0 && balance > 0) ->
     (exists addr: address .
     exists recipient: address .
@@ -369,7 +369,7 @@ rule Tx_tx_assets_transfer_plus1000 {
 }
 
 // bug <Error> Parser error at out/outputTrace.lus:284:34: Unknown identifier 'aw_1_nx10'
-// rule Tx_tx_assets_transfer_no_interleaving_attack_true {
+// rule Two_steps_drainability_no_interleaving_attack_true {
 //     (state == 0 && balance > 0) ->
 //     (exists addr: address .
 //     exists recipient: address .
@@ -399,7 +399,7 @@ rule Tx_tx_assets_transfer_plus1000 {
 // }
 
 
-// rule Tx_tx_assets_transfer_no_attack {
+// rule Two_steps_drainability_no_attack {
 //     (state == 0) ->
 //     (exists addr: address .
 //     exists recipient: address .
@@ -429,7 +429,7 @@ rule Tx_tx_assets_transfer_plus1000 {
 
 
 
-// rule Tx_tx_assets_transfer_no_attack_False {
+// rule Two_steps_drainability_no_attack_False {
 //     (state == 0) ->
 //     (exists addr: address .
 //     exists recipient: address .
