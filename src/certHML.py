@@ -223,7 +223,12 @@ def run_for_property(text, contract, property_name, n_of_participants, timeout, 
                     else:
                         gt_suffix = f' {RED}(ground truth: NOT OK){RESET}'
                 else:
-                    gt_suffix = f' {YELLOW}(ground truth: unknown){RESET}'
+                    m_steps = re.search(r'true up to (\d+) steps', extra)
+                    if m_steps and expected is True:
+                        n = m_steps.group(1)
+                        gt_suffix = f' {GREEN}(ground truth: OK-up to {n}){RESET}'
+                    else:
+                        gt_suffix = f' {YELLOW}(ground truth: unknown){RESET}'
 
             annotated.append(line + gt_suffix)
 
