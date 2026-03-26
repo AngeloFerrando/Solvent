@@ -226,7 +226,7 @@ rule Two_steps_drainability {
 
 
 // @groundtruth: False
-rule Two_steps_drainability_non_inflation_balanceDontChange {
+rule Two_steps_drainability_non_inflation {
     (state == 0 && wait_time > 0) ->
     (exists addr: address .
     exists recipient: address .
