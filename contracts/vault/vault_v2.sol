@@ -134,7 +134,7 @@ rule Withdraw_State_change_plus1 {
 /////// true up to 8 steps
 // false if receiver is address 0 !
 // @groundtruth: False
-rule Finilize_assets_transfer_address0 {
+rule Finalize_assets_transfer_address0 {
     (state == 1 && balance > 0 && amount > 0 && block.number >= request_time + wait_time) ->
         << owner : Vault . finalize() $ 0 >>		
               (balance[receiver] ==  old(balance[receiver]) +  amount  )
@@ -142,7 +142,7 @@ rule Finilize_assets_transfer_address0 {
 
 //invalid after 1 steps
 // @groundtruth: False
-rule Finilize_assets_transfer {
+rule Finalize_assets_transfer {
     (state == 1 && balance > 0 && amount > 0 && block.number >= request_time + wait_time) ->
         << owner : Vault . finalize() $ 0 >>		
               (balance[receiver] ==  old(balance[receiver]) +  amount + 1 )
