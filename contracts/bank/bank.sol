@@ -449,11 +449,14 @@ rule Sender_asset_change {
 // @groundtruth: True
 rule Liquidity {
     forall addr : address .
+    forall n : int .
+    (n >= 0 && n <= funds[addr]) ->
     exists f: method .
     exists args: calldataargs .
-    exists c1 : int .
-    (<< addr : Bank . f(args) $ c1 >>		
-            funds[addr] == 0
+    (<< addr : Bank . f(args) $ 0 >>		
+            funds[addr] == old(funds[addr]) - n
+            &&
+            balance[addr] == old(balance[addr] + n)
     )
 }
 
@@ -461,13 +464,98 @@ rule Liquidity {
 rule Liquidity_only_user {
     forall addrA : address .
     forall addrB : address .
-    exists f: method .
-    exists args: calldataargs .
-    exists c1 : int .
+    forall f: method .
+    forall args: calldataargs .
+    forall c1 : int .
     (<< addrB : Bank . f(args) $ c1 >>		
             (old(funds[addrA]) > 0 && funds[addrA] == 0) -> addrA == addrB
     )
 }
+
+// @groundtruth: True
+rule Frontrun_deposit {
+    forall addrA : address .
+    forall nA : int .
+    forall addrB : address .
+    forall f : method .
+    forall args : calldataargs .
+    forall nB : int .
+    exists funds_later_path1 : int .
+    exists funds_later_path2 : int .
+    (addrA != addrB) ->
+    (
+        (
+        << addrA : Bank . deposit() $ nA >>		
+            funds_later_path1 == funds[addrA]
+        )
+        &&
+        (
+        << addrB : Bank . f(args) $ nB >>	
+            << addrA : Bank . deposit() $ nA >>	
+                funds_later_path2 == funds[addrA]
+        )
+        &&
+        funds_later_path1 == funds_later_path2 
+    )
+}
+
+
+// bug quantificatori
+// rule Frontrun_withdraw {
+//     forall addrA : address .
+//     forall nA : int .
+//     forall addrB : address .
+//     forall f : method .
+//     forall args : calldataargs .
+//     //forall nB : int .
+//     exists funds_later_path1 : int .
+//     exists funds_later_path2 : int .
+//     //(addrA != addrB && balance > nA + nB && nA == 1) ->
+//     (
+//         (
+//         << addrA : Bank . withdraw(nA) $ 0 >>		
+//             funds_later_path1 == funds[addrA]
+//         )
+//         &&
+//         (
+//         //<< addrB : Bank . f(args) $ nB >>	
+//         //<< addrB : Bank . deposit() $ nB >>	
+//             << addrA : Bank . withdraw(nA) $ 0 >>	
+//                 funds_later_path2 == funds[addrA]
+//         )
+//         &&
+//         funds_later_path1 == funds_later_path2 
+//     )
+// }
+
+// bug quantificatori
+// rule Frontrun {
+//     forall addrA : address .
+//     forall nA : int .
+//     forall fA : method .
+//     forall argsA : calldataargs .
+//     forall addrB : address .
+//     forall fB : method .
+//     forall argsB : calldataargs .
+//     forall nB : int .
+//     exists funds_later_path1 : int .
+//     exists funds_later_path2 : int .
+//     (addrA != addrB) ->
+//     (
+//         (
+//         << addrA : Bank . fA(argsA) $ nA >>		
+//             funds_later_path1 == funds[addrA]
+//         )
+//         &&
+//         (
+//         << addrB : Bank . fB(argsB) $ nB >>	
+//             << addrA : Bank . fA(argsA) $ nA >>	
+//                 funds_later_path2 == funds[addrA]
+//         )
+//         &&
+//         funds_later_path1 == funds_later_path2
+//     )
+// }
 
 
 // property deposit_not_revert_liquid {

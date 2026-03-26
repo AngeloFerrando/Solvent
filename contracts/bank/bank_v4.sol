@@ -1,5 +1,5 @@
 // Adapted from: https://github.com/fsainas/contracts-verification-benchmark/tree/main/contracts/bank
-// mutation: in deposit the contract subtracts 1 from the deposited amount
+// mutation: withdraw transfers 1 to the owner (and amount-1 to the sender)
 
 contract Bank {
     mapping (address => int) funds;
@@ -24,6 +24,32 @@ contract Bank {
         owner.transfer(1)
     }
 }  
+
+// @groundtruth: True
+rule Liquidity {
+    forall addr : address .
+    forall n : int .
+    (n >= 0 && n <= funds[addr]) ->
+    exists f: method .
+    exists args: calldataargs .
+    (<< addr : Bank . f(args) $ 0 >>		
+            funds[addr] == old(funds[addr]) - n
+            &&
+            balance[addr] == old(balance[addr] + n)
+    )
+}
+
+// @groundtruth: True
+rule Liquidity_only_user {
+    forall addrA : address .
+    forall addrB : address .
+    forall f: method .
+    forall args: calldataargs .
+    forall c1 : int .
+    (<< addrB : Bank . f(args) $ c1 >>		
+            (old(funds[addrA]) > 0 && funds[addrA] == 0) -> addrA == addrB
+    )
+}
 
 
 // @groundtruth: True

@@ -24,6 +24,59 @@ contract Bank {
 }  
 
 
+// @groundtruth: True
+rule Liquidity {
+    forall addr : address .
+    forall n : int .
+    (n >= 0 && n <= funds[addr]) ->
+    exists f: method .
+    exists args: calldataargs .
+    (<< addr : Bank . f(args) $ 0 >>		
+            funds[addr] == old(funds[addr]) - n
+            &&
+            balance[addr] == old(balance[addr] + n)
+    )
+}
+
+// @groundtruth: True
+rule Liquidity_only_user {
+    forall addrA : address .
+    forall addrB : address .
+    forall f: method .
+    forall args: calldataargs .
+    forall c1 : int .
+    (<< addrB : Bank . f(args) $ c1 >>		
+            (old(funds[addrA]) > 0 && funds[addrA] == 0) -> addrA == addrB
+    )
+}
+
+
+// @groundtruth: True
+rule Frontrun_deposit {
+    forall addrA : address .
+    forall nA : int .
+    forall addrB : address .
+    forall f : method .
+    forall args : calldataargs .
+    forall nB : int .
+    exists funds_later_path1 : int .
+    exists funds_later_path2 : int .
+    (addrA != addrB) ->
+    (
+        (
+        << addrA : Bank . deposit() $ nA >>		
+            funds_later_path1 == funds[addrA]
+        )
+        &&
+        (
+        << addrB : Bank . f(args) $ nB >>	
+            << addrA : Bank . deposit() $ nA >>	
+                funds_later_path2 == funds[addrA]
+        )
+        &&
+        funds_later_path1 == funds_later_path2 
+    )
+}
 
 // @groundtruth: False
 rule Additivity {

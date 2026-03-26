@@ -1,32 +1,28 @@
 // Adapted from: https://github.com/fsainas/contracts-verification-benchmark/tree/main/contracts/bank
-// mutation: withdraws must be previously enabled by the owner
+// mutation: the contract keeps track of the total funds, with a cap of 100
 
 contract Bank {
     mapping (address => int) funds;
-    address owner;
-    bool withdrawalAllowed;
+    int total_funds;
 
     constructor() {
-        owner = msg.sender;
-        withdrawalAllowed = false
+        total_funds = 0
     }
 
     function deposit() payable {
         require(msg.value > 0);
-        funds[msg.sender] = funds[msg.sender] + msg.value
+        funds[msg.sender] = funds[msg.sender] + msg.value;
+        total_funds += msg.value;
+        require(total_funds <= 100)
     }
 
-    function allow_withdraw() {
-        require(msg.sender == owner);
-        withdrawalAllowed = true
-    }
 
     function withdraw(int amount) {
         require(amount > 0);
         require(amount <= funds[msg.sender]);
-        require(withdrawalAllowed);
 
         funds[msg.sender] = funds[msg.sender] - amount;
+        total_funds = total_funds - msg.value;
         msg.sender.transfer(amount)
     }
 }  
@@ -58,7 +54,8 @@ rule Liquidity_only_user {
     )
 }
 
-// @groundtruth: True
+
+// @groundtruth: False
 rule Frontrun_deposit {
     forall addrA : address .
     forall nA : int .
@@ -84,7 +81,6 @@ rule Frontrun_deposit {
         funds_later_path1 == funds_later_path2 
     )
 }
-
 
 // @groundtruth: True
 rule Additivity {
@@ -119,7 +115,7 @@ rule Additivity {
 }
 
 
-// @groundtruth: False
+// @groundtruth: True
 rule Reversibility_deposit {
     forall addr : address .
     forall c1 : int .
