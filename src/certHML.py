@@ -223,7 +223,7 @@ def run_for_property(text, contract, property_name, n_of_participants, timeout, 
                     else:
                         gt_suffix = f' {RED}(ground truth: NOT OK){RESET}'
                 else:
-                    m_steps = re.search(r'true up to (\d+) steps', extra)
+                    m_steps = re.search(r'true up to (\d+) steps', extra) or re.search(r'true up to (\d+) steps', s)
                     if m_steps and expected is True:
                         n = m_steps.group(1)
                         gt_suffix = f' {GREEN}(ground truth: OK-up to {n}){RESET}'
