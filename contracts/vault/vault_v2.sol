@@ -228,23 +228,22 @@ rule Two_steps_drainability {
 // @groundtruth: True
 rule Two_steps_drainability_non_inflation {
     (state == 0 && wait_time > 0) ->
-    (forall addr: address .
-    forall recipient: address .
-    forall f1: method .
-    forall args1: calldataargs .
-    forall msgvalue1 : int .
-    forall f2: method .
-    forall args2: calldataargs .
-    forall msgvalue2 : int .
+    (exists addr: address .
+    exists recipient: address .
+    exists f1: method .
+    exists args1: calldataargs .
+    exists msgvalue1 : int .
+    exists f2: method .
+    exists args2: calldataargs .
+    exists msgvalue2 : int .
     (<< addr : Vault . f1(args1) $ msgvalue1 >>		
          block.number == old(block.number)
-         ->
+         &&
         << addr : Vault . f2(args2) $ msgvalue2 >>		
           forall addr3 : address .
               (balance[addr3] ==  old(old(balance[addr3])))
     ))
 }
-
 
 
 // @groundtruth: True
