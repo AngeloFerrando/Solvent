@@ -32,7 +32,7 @@ contract Bank {
 }  
 
 
-// @groundtruth: True
+// @groundtruth: False
 rule Liquidity {
     forall addr : address .
     forall n : int .
