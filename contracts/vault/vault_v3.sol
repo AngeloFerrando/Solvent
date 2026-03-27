@@ -225,7 +225,7 @@ rule Two_steps_drainability {
     ))
 }
 
-
+// TODO check quantifiers (forall insstead of exists ...?)
 // @groundtruth: False
 rule Two_steps_drainability_non_inflation {
     (state == 0 && wait_time > 0) ->
@@ -234,11 +234,13 @@ rule Two_steps_drainability_non_inflation {
     exists f1: method .
     exists args1: calldataargs .
     exists msgvalue1 : int .
-    exists f2: method .
-    exists args2: calldataargs .
-    exists msgvalue2 : int .
+    forall f2: method .
+    forall args2: calldataargs .
+    forall msgvalue2 : int .
     (<< addr : Vault . f1(args1) $ msgvalue1 >>		
          block.number == old(block.number)
+         &&
+         !lastReverted
          &&
         << addr : Vault . f2(args2) $ msgvalue2 >>		
           forall addr3 : address .
