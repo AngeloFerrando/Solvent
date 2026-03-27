@@ -55,7 +55,7 @@ rule Liquidity_only_user {
 
 
 // @groundtruth: False
-rule Frontrun_deposit {
+rule No_frontrun_deposit {
     forall addrA : address .
     forall nA : int .
     forall addrB : address .
