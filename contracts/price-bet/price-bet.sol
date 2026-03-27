@@ -148,7 +148,7 @@ rule Running_example3_Frontrun_notByOracle_simple {
 
 
 // @groundtruth: False
-rule Running_example3_Frontrun_notByOracle_noblocknumIncrease {
+rule Running_example_Frontrun_notByOracle_noblocknumIncrease {
     (player_has_joined)
     ->
     (

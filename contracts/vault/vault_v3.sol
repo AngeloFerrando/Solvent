@@ -1,4 +1,5 @@
 // Adapted from: https://github.com/fsainas/contracts-verification-benchmark/tree/main/contracts/vault
+// mutation: no wait_time requirement in finalize
 
 contract Vault {
     address owner;
