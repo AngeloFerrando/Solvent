@@ -1,0 +1,121 @@
+Counterexample:
+  Node Bet ()
+    == Constants ==
+    quant_arg_25                            0                0
+    == Inputs ==
+    xa                                     a1               a1
+    xn                                      0                1
+    f                        constructor_func        join_func
+    constructor_oracle_addr                a1             aBet
+    constructor_initial_rate              101                0
+    constructor__timeout                    1                0
+    set_func_x                              0                0
+    starting_aw_Bet                         1                0
+    starting_aw_1                           1                0
+    starting_aw_2                           1                0
+    == Locals ==
+    contract_not_constructed            false            false
+    lastReverted                        false            false
+    lastReverted_0                      false            false
+    aw_1                                    1                0
+    aw_1_0                                  1                0
+    aw_Bet                                  1                2
+    aw_Bet_0                                1                2
+    player                                 a0               a1
+    player_0                             aBet               a1
+    aw_2                                    1                1
+    aw_2_0                                  1                1
+    lastReverted_1                      false            false
+    lastReverted_2                      false            false
+    lastReverted_3                      false            false
+    player_has_joined                   false             true
+    player_has_joined_0                 false             true
+    oracle                                 a1               a1
+    oracle_0                               a1             aBet
+    rate                                  101              101
+    rate_0                                101                0
+    lastReverted_4                      false            false
+    lastReverted_5                      false            false
+    block_num                               0                2
+    deadline                                1                1
+    deadline_0                              1                0
+    lastReverted_6                      false            false
+    owner                                  a1               a1
+    owner_0                                a1             aBet
+    
+  Function mult (Bet[l288c25])
+    == Inputs ==
+    n1 2 2
+    n2 0 0
+    == Outputs ==
+    r  0 0
+    
+  'Any' operator Bet.any_l238c14 (Bet[l238c14])
+    == Inputs ==
+    starting_block_num 0 0
+    == Outputs ==
+    block_num_tmp      0 0
+    
+  'Any' operator Bet.any_l234c14 (Bet[l234c14])
+    == Inputs ==
+    starting_block_num 0 0
+    == Outputs ==
+    block_num_tmp      0 0
+    
+  'Any' operator Bet.any_l222c14 (Bet[l222c14])
+    == Inputs ==
+    starting_block_num 0 0
+    == Outputs ==
+    block_num_tmp      0 0
+    
+  'Any' operator Bet.any_l197c14 (Bet[l197c14])
+    == Inputs ==
+    starting_block_num 0 0
+    == Outputs ==
+    block_num_tmp      0 0
+    
+  'Any' operator Bet.any_l185c14 (Bet[l185c14])
+    == Inputs ==
+    starting_block_num 0 0
+    == Outputs ==
+    block_num_tmp      0 0
+    
+  'Any' operator Bet.any_l146c14 (Bet[l146c14])
+    == Inputs ==
+    starting_block_num 0 0
+    == Outputs ==
+    block_num_tmp      0 2
+    
+  'Any' operator Bet.any_l134c14 (Bet[l134c14])
+    == Inputs ==
+    starting_block_num 0 0
+    == Outputs ==
+    block_num_tmp      0 0
+    
+  'Any' operator Bet.any_l100c14 (Bet[l100c14])
+    == Inputs ==
+    starting_block_num 0 0
+    == Outputs ==
+    block_num_tmp      0 0
+    
+  'Any' operator Bet.any_l88c14 (Bet[l88c14])
+    == Inputs ==
+    starting_block_num 0 0
+    == Outputs ==
+    block_num_tmp      0 0
+    
+  Function mult (Bet[l118c21])
+    == Inputs ==
+    n1 2 2
+    n2 0 1
+    == Outputs ==
+    r  0 2
+    
+  
+--------------------------------------------------------------------------------
+Summary of properties:
+--------------------------------------------------------------------------------
+Running_example1: invalid after 1 steps
+================================================================================
+
+<Note> System divv has no property, skipping verification step.
